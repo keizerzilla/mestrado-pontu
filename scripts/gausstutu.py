@@ -47,6 +47,8 @@ def gauss_batch(folder, dest):
 	parse_format = "bs{:d}_{}_{}_{:d}.txt"
 	
 	with open(dest, "w") as dump:
+		header = "id,sample,mu,sigma\n"
+		dump.write(header)
 		for cloud in os.listdir(folder):
 			cloud_info = parse.parse(parse_format, cloud)
 			subject = str(cloud_info[0])
@@ -67,10 +69,33 @@ def bosphorus():
 	gauss_batch("../centerprofile/neutral_sort/", "/home/artur/neutral.txt")
 	gauss_batch("../centerprofile/nonneutral_sort/", "/home/artur/non.txt")
 
+# plota valores de media e variancia
+def plotter(mu, sigma, title):
+	plt.plot(mu, label="MEDIA")
+	plt.plot(sigma, label="VARIANCIA")
+	plt.legend()
+	plt.title(title)
+	plt.show()
+
 # analise dos resultados
 def analizer():
-	return None
+	sources = ["../gaussian/neutral.txt", "../gaussian/nonneutral.txt"]
+	
+	for source in sources:
+		data = pd.read_csv(source)
+		mu = np.array(data[["mu"]])
+		sigma = np.array(data[["sigma"]]) # desvio
+		sigma = np.power(sigma, 2) # variancia
+		
+		mean = np.mean(mu)
+		var = np.mean(sigma)
+		
+		print("{} > mean = {} | var = {}".format(source, mean, var))
 
+# classificacao show
+def classification():
+	return None
+	
 # chamando funcao principal
 if __name__ == "__main__":
 	analizer()
