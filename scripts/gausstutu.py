@@ -4,6 +4,10 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
+from scipy.stats import linregress
+from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
 
 # funcao-modelo da gaussiana
 def gauss(x, A, mu, sigma):
@@ -93,9 +97,70 @@ def analizer():
 		print("{} > mean = {} | var = {}".format(source, mean, var))
 
 # classificacao show
-def classification():
-	return None
+def classification(source, group_name):
+	data = pd.read_csv(source)
 	
+	X_train = np.array(data.loc[data["sample"] == 0, ["sigma", "mu"]])
+	y_train = np.ravel(data.loc[data["sample"] == 0, ["id"]])
+	
+	X_test = np.array(data.loc[data["sample"] != 0, ["sigma", "mu"]])
+	y_test = np.ravel(data.loc[data["sample"] != 0, ["id"]])
+	
+	classifiers = [
+		KNeighborsClassifier(p=1, n_neighbors=1),
+		KNeighborsClassifier(p=2, n_neighbors=1),
+		SVC(kernel="rbf"),
+		SVC(kernel="poly"),
+		GaussianNB()]
+	
+	names = [
+		"KNN_manhattam",
+		"KNN_euclidean",
+		"SVM_radial",
+		"SVM_poly",
+		"GaussianNB"]
+	
+	print("CONJUNTO:\t" + group_name)
+	print("#treino:\t" + str(X_train.shape[0]))
+	print("#test:\t\t" + str(X_test.shape[0]))
+	
+	for clf_name, clf in zip(names, classifiers):
+		clf.fit(X_train, y_train)
+		score = clf.score(X_test, y_test)
+		score_txt = str(round(score*100, 2))
+		result = "{:<16}{:<16}".format(clf_name, score_txt)
+		print(result)
+
+# analise da parte linear
+def linear():
+	x = np.array([0, 1, 2, 3, 4, 5])
+	y = np.array([0, 2, 4, 6, 8, 10])
+	slope, intercept, r_value, p_value, std_err = linregress(x, y)
+	print(slope)
+	print(intercept)
+
 # chamando funcao principal
 if __name__ == "__main__":
-	analizer()
+	#classification("../gaussian/neutral.txt", "NEUTR0")
+	#classification("../gaussian/nonneutral.txt", "NAO-NEUTR0")
+	linear()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
