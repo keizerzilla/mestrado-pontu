@@ -9,7 +9,6 @@ dst = "/home/artur/LATIN/centerprofile/40_60/"
 regr = LinearRegression()
 
 def reglinear(data):
-	
 	sample_size = -1 * int(data.size/2)
 	x_train = data[:sample_size]
 	x_test = data[sample_size:]

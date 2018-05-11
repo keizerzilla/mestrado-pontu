@@ -5,6 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 from scipy.stats import linregress
+from sklearn import preprocessing
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
@@ -20,7 +21,6 @@ def get_data(path):
 # calcula fitting
 def fitting(source):
 	# definindo dados
-	# placeholder pra source: "../centerprofile/neutral_sort/bs000_N_N_0.txt"
 	data = get_data(source)
 	hist, bin_edges = np.histogram(data, density=False)
 	bin_centres = (bin_edges[:1] + bin_edges[1:])/2
@@ -97,32 +97,37 @@ def analizer():
 		print("{} > mean = {} | var = {}".format(source, mean, var))
 
 # classificacao show
-def classification(source, group_name):
+def classification(features, source, header_save, file_save):
 	data = pd.read_csv(source)
 	
-	X_train = np.array(data.loc[data["sample"] == 0, ["sigma", "mu"]])
+	X_train = np.array(data.loc[data["sample"] == 0, features])
 	y_train = np.ravel(data.loc[data["sample"] == 0, ["id"]])
 	
-	X_test = np.array(data.loc[data["sample"] != 0, ["sigma", "mu"]])
+	X_test = np.array(data.loc[data["sample"] != 0, features])
 	y_test = np.ravel(data.loc[data["sample"] != 0, ["id"]])
+	
+	# pre-processing
+	X_train = preprocessing.scale(X_train)
+	X_test = preprocessing.scale(X_test)
+	#X_train = preprocessing.normalize(X_train)
+	#X_test = preprocessing.normalize(X_test)
 	
 	classifiers = [
 		KNeighborsClassifier(p=1, n_neighbors=1),
 		KNeighborsClassifier(p=2, n_neighbors=1),
 		SVC(kernel="rbf"),
-		SVC(kernel="poly"),
 		GaussianNB()]
 	
 	names = [
 		"KNN_manhattam",
 		"KNN_euclidean",
 		"SVM_radial",
-		"SVM_poly",
 		"GaussianNB"]
 	
-	print("CONJUNTO:\t" + group_name)
-	print("#treino:\t" + str(X_train.shape[0]))
-	print("#test:\t\t" + str(X_test.shape[0]))
+	print(header_save)
+	
+	save = open(file_save, "a+")
+	save.write(header_save + "\n")
 	
 	for clf_name, clf in zip(names, classifiers):
 		clf.fit(X_train, y_train)
@@ -130,37 +135,96 @@ def classification(source, group_name):
 		score_txt = str(round(score*100, 2))
 		result = "{:<16}{:<16}".format(clf_name, score_txt)
 		print(result)
+		save.write(result + "\n")
+	
+	save.write("\n\n")
+	save.close()
 
-# analise da parte linear
-def linear():
-	x = np.array([0, 1, 2, 3, 4, 5])
-	y = np.array([0, 2, 4, 6, 8, 10])
-	slope, intercept, r_value, p_value, std_err = linregress(x, y)
-	print(slope)
-	print(intercept)
+# analise estatistica
+def gaussian(source):
+	x = np.array(pd.read_csv(source, header=None))
+	mu = np.mean(x)
+	sigma = np.var(x)
+	std = np.std(x)
+	
+	return mu, sigma, std
 
-# chamando funcao principal
+# analise linear
+def linear(source, begin, end, plog):
+	x = np.ravel(np.array(pd.read_csv(source, header=None)))
+	
+	logx = np.log2(x)
+	logx = logx[np.where(logx >= plog)]
+	logy = np.ravel(np.arange(logx.size))
+	
+	x = x[np.where(x >= begin)]
+	x = x[np.where(x <= end)]
+	y = np.ravel(np.arange(x.size))
+	
+	slopelin, intlin, r_value, p_value, std_err = linregress(x, y)
+	slopelog, intlog, r_value, p_value, std_err = linregress(logx, logy)
+	
+	return slopelin, intlin, slopelog, intlog
+
+# analise completa dos conjuntos de dados
+def full_analysis(folder, dest, begin, end, plog):
+	parse_format = "bs{:d}_{}_{}_{:d}.txt"
+	
+	print("ANALISANDO [{}]".format(folder))
+	with open(dest, "w") as dump:
+		header = "id,sample,mu,sigma,std,slopelin,intlin,slopelog,intlog\n"
+		dump.write(header)
+		for cloud in os.listdir(folder):
+			cloud_info = parse.parse(parse_format, cloud)
+			sub = str(cloud_info[0])
+			sample = str(cloud_info[3])
+			source = folder+cloud
+			
+			mu, sigma, std = gaussian(source)
+			slopelin, intlin, slopelog, intlog = linear(source, begin, end, plog)
+			
+			to_file = "{},{},{},{},{},{},{},{},{}\n".format(sub, sample, mu, sigma, std, slopelin, intlin, slopelog, intlog)
+			dump.write(to_file)
+			#print(cloud + " OK")
+	
+# chamada da funcao principal
 if __name__ == "__main__":
-	#classification("../gaussian/neutral.txt", "NEUTR0")
-	#classification("../gaussian/nonneutral.txt", "NAO-NEUTR0")
-	linear()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	src_neutral = "../centerprofile/neutral_sort/"
+	dst_neutral = "/home/artur/fullneutral.txt"
+	file_save = "/home/artur/neutral_results.txt"
+	
+	features = ["mu", "sigma", "slopelog", "intlog"]
+	begin = 50.0
+	end = 70.0
+	plog = 4.0
+	
+	#for begin in range(0, 60, 10):
+		#full_analysis(src_neutral, dst_neutral, begin, end, plog)
+		#classification(features, dst_neutral, "({},{})|[{}]|{}".format(begin, end, plog, "-".join(features)), file_save)
+	
+	classification(features, dst_neutral, "({},{})|[{}]|{}".format(begin, end, plog, "-".join(features)), file_save)
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
