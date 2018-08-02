@@ -1,2 +1,2 @@
-# LATIN
-Repositório de códigos-fonte gerados em pesquisas no LATIN-UFC
+# LATIN src
+graduacao - mestrado - laboratorio
