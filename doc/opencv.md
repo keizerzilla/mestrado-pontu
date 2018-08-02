@@ -14,7 +14,7 @@ Guia rápido para configurar o OpenCV no Ubuntu 16.04 ou superior.
 ```apt-get install libtbb-dev```
 
 ## COMPILAÇÃO
-Baixa a release mais recente em https://github.com/opencv/opencv/releases e depois prossiga com os comandos abaixo:
+Baixe a release mais recente em https://github.com/opencv/opencv/releases e depois prossiga com os comandos abaixo:
 
 ```
 unzip opencv-<version>.zip
@@ -26,5 +26,5 @@ make
 sudo make install
 ```
 
-## TESTE
-Note que dentro do diretório ```release``` existe um diretório ```bin```. Nele você encontrará vários programas já compilados para teste. Entre em ```bin``` e execute ```./opencv_test_core```. Se nenhum erro for disparado até o final da execução, sua instalação do OpenCV foi um sucesso. Se ocorrer algum erro, use o Google para achar a solução.
+## TESTANDO INSTALAÇÃO
+Dentro do diretório ```release``` existe um diretório ```bin```. Nele você encontrará vários programas já compilados para teste. Entre em ```bin``` e execute ```./opencv_test_core```. Se nenhum erro for disparado até o final da execução, sua instalação do OpenCV foi um sucesso! Se ocorrer algum erro, use o seu mecanismo de busca preferido para achar a solução, ou abra um issue nesse repositório (:

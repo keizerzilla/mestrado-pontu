@@ -1,4 +1,4 @@
-all: char-ext pcview cloudz
+all: char-ext pcview centerprofile
 
 char-ext: char-ext.c
 	gcc char-ext.c -o ../bin/char-ext -lm
@@ -6,6 +6,6 @@ char-ext: char-ext.c
 pcview: cloudview.c
 	gcc cloudview.c -o ../bin/cloudview -lm -lGL -lGLU -lglut
 	
-cloudz: cloudz.c
-	gcc cloudz.c -o ../bin/cloudz -lm
+cloudz: centerprofile.c
+	gcc centerprofile.c -o ../bin/centerprofile -lm
 	

@@ -47,4 +47,4 @@ apt install doxygen doxygen-latex doxygen-doc doxygen-gui graphviz -y
 apt install python3-tk -y
 
 ### pip packages
-pip3 install numpy scipy pandas matplotlib scikit-learn parse
+pip3 install numpy scipy pandas matplotlib scikit-learn parse -y
