@@ -1,4 +1,4 @@
-/**
+/*
  * @file char-ext.c
  * @author Artur Rodrigues Rocha Neto
  * @date 2018
@@ -12,4 +12,3 @@ int main(int argc, char** argv)
 	printf("IMPROVED\n");
     return 0;
 }
-

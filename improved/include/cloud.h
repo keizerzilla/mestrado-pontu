@@ -1,4 +1,4 @@
-/**
+/*
  * @file cloud.h
  * @author Artur Rodrigues Rocha Neto
  * @date 2017
@@ -17,7 +17,7 @@
 
 #include "vector3.h"
 
-/**
+/*
  * @brief A estrutura que guarda uma nuvem de dados em memória (linked list)
  */
 struct cloud {
@@ -25,7 +25,7 @@ struct cloud {
     struct cloud* next;
 };
 
-/**
+/*
  * @brief cloud_new Inicializa uma estrutura do tipo cloud
  * @return Ponteiro para uma nova nuvem de pontos
  */
@@ -34,7 +34,7 @@ struct cloud* cloud_new()
     return NULL;
 }
 
-/**
+/*
  * @brief cloud_add_point Adiciona um novo ponto a uma nuvem (1 vetor)
  * @param cloud A nuvem alvo
  * @param point O ponto a ser adicionado
@@ -54,7 +54,7 @@ struct cloud* cloud_add_point(struct cloud** cloud, struct vector3* point)
     return node;
 }
 
-/**
+/*
  * @brief cloud_add_point_xyz Adiciona um novo ponto a uma nuvem (3 reais)
  * @param cloud A nuvem alvo
  * @param point O ponto a ser adicionado
@@ -75,7 +75,7 @@ struct cloud* cloud_add_point_xyz(struct cloud** cloud,
     return node;
 }
 
-/**
+/*
  * @brief cloud_add_point Adiciona um novo ponto a uma nuvem (copia de vetor)
  * @param cloud A nuvem alvo
  * @param point O ponto a ser adicionado
@@ -95,7 +95,7 @@ struct cloud* cloud_add_point_copy(struct cloud** cloud, struct vector3* point)
     return node;
 }
 
-/**
+/*
  * @brief cloud_get_center Calcula o centro de uma nuvem de pontos
  * @param cloud A Nuvem alvo
  * @return Um ponto com as coordenadas do centro da nuvem
@@ -122,7 +122,7 @@ struct vector3* cloud_get_center(struct cloud* cloud)
     return center;
 }
 
-/**
+/*
  * @brief cloud_swap_points Troca a posição em memória entre dois pontos
  * @param node1 O primeiro nó da lista
  * @param node2 O segundo nó da lista
@@ -134,7 +134,7 @@ void cloud_swap_points(struct cloud* node1, struct cloud* node2)
     node2->point = temp;
 }
 
-/**
+/*
  * @brief cloud_load_from_file Carrega uma nuvem a partir de um arquivo CSV
  * @param filename O arquivo onde a nuvem está guardada
  * @return Um estrutura cloud carregada em memória
@@ -164,7 +164,7 @@ struct cloud* cloud_load_from_file(const char* filename)
     return cloud;
 }
 
-/**
+/*
  * @brief cloud_save_to_file Salva uma nuvem em arquivo
  * @param cloud A nuvem a ser salva
  * @param filename O arquivo destino
@@ -188,7 +188,7 @@ int cloud_save_to_file(struct cloud* cloud, const char* filename)
     return 1;
 }
 
-/**
+/*
  * @brief cloud_num_of_points Conta quantos pontos constituem uma nuvem
  * @param cloud A nuvem alvo
  * @return O número de pontos dentro de cloud
@@ -205,7 +205,7 @@ int cloud_num_of_points(struct cloud* cloud)
     return size;
 }
 
-/**
+/*
  * @brief cloud_scale Escala uma nuvem a partir de um fator
  * @param cloud A nuvem alvo
  * @param f O fator de escalamento
@@ -220,7 +220,7 @@ void cloud_scale(struct cloud* cloud, real f)
     }
 }
 
-/**
+/*
  * @brief cloud_sort Ordena uma cloud em profundidade
  * @param cloud A cloud alvo
  */
@@ -244,7 +244,7 @@ void cloud_sort(struct cloud* cloud)
     }
 }
 
-/**
+/*
  * @brief cloud_axis_size Calcula os tamanhos dos 3 eixos de uma nuvem
  * @param cloud A nuvem alvo
  * @return Um ponto onde cada coordenada é o tamanho da dimensão em questão
@@ -292,7 +292,7 @@ struct vector3* cloud_axis_size(struct cloud* cloud)
     return length;
 }
 
-/**
+/*
  * @brief cloud_subcloud Secciona uma nuvem com base em corte a partir do centro
  * @param cloud A nuvem alvo
  * @param cut Valor do corte em milimetros
@@ -314,7 +314,7 @@ struct cloud* cloud_subcloud(struct cloud* cloud, real cut) {
     return sub;
 }
 
-/**
+/*
  * @brief cloud_debug Debuga uma nuvem ponto a ponto na saída padrão
  * @param cloud A nuvem a ser debugada
  * @param message Uma mensagem opcional para ser exibida no início do debug
@@ -334,7 +334,7 @@ void cloud_debug(struct cloud* cloud, const char* message)
     printf("\n");
 }
 
-/**
+/*
  * @brief cloud_free Libera a memória alocada para uma nuvem
  * @param cloud A nuvem a ser liberada
  */

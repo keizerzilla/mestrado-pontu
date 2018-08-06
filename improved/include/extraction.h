@@ -1,4 +1,4 @@
-/**
+/*
  * @file extraction.h
  * @author Artur Rodrigues Rocha Neto
  * @date 2017
@@ -24,7 +24,7 @@
 #define LEGENDRE_MOMENTS 27
 #define ZERNIKE_MOMENTS 16
 
-/**
+/*
  * @brief run_extractor Executa um dado algoritmo de extração de atributos
  * @param num_of_moments Quantos momentos devem ser calculados
  * @param input_cloud A nuvem alvo
@@ -62,7 +62,7 @@ int run_extractor(void (*ext_function)(struct cloud*, real cut, struct matrix*),
     return 1;
 }
 
-/**
+/*
  * @brief program_interface Função de inteface para extração de atributos
  * @param argc Número de argumentos passados pela linha de comando
  * @param argv Lista dos argumentos passados pela linha de comando
@@ -110,7 +110,7 @@ int program_interface(int argc, char** argv) {
     return 0;
 }
 
-/**
+/*
  * @brief center_profile Extrái distâncias dos pontos ao centro
  * @param argc Número de argumentos passados pela linha de comando
  * @param argv Lista dos argumentos passados pela linha de comando

@@ -1,4 +1,4 @@
-/**
+/*
  * @file hu.h
  * @author Artur Rodrigues Rocha Neto
  * @date 2017
@@ -17,7 +17,7 @@
 #include "cloud.h"
 #include "matrix.h"
 
-/**
+/*
  * @brief A estrutura responsavel por salvar os momentos de Hu para uma dada
  * nuvem de pontos
  *
@@ -36,7 +36,7 @@ struct hu {
     real i6;
 };
 
-/**
+/*
  * @brief hu_regular_moment Calcula o momento regular de Hu
  * @param p A ordem da dimensão x
  * @param q A ordem da dimensão y
@@ -60,7 +60,7 @@ real hu_regular_moment(int p, int q, int r, struct cloud* cloud)
     return moment;
 }
 
-/**
+/*
  * @brief hu_central_moment Calcula o momento central de Hu
  * @param p A ordem da dimensão x
  * @param q A ordem da dimensão y
@@ -88,7 +88,7 @@ real hu_central_moment(int p, int q, int r, struct cloud* cloud)
     return moment;
 }
 
-/**
+/*
  * @brief hu_normalized_moment Calcula o momento normalizado de Hu
  * @param p A ordem da dimensão x
  * @param q A ordem da dimensão y
@@ -104,7 +104,7 @@ real hu_normalized_moment(int p, int q, int r, struct cloud* cloud)
     return central / (pow(zero, (p + q + r)/3) + 1);
 }
 
-/**
+/*
  * @brief hu_cloud_moments Calcula os momentos invariantes de Hu de uma nuvem
  * @param cloud A nuvem alvo
  * @param cut O corte da nuvem

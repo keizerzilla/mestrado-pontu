@@ -1,4 +1,4 @@
-/**
+/*
  * @file legendre.h
  * @author Artur Rodrigues Rocha Neto
  * @date 2017
@@ -17,7 +17,7 @@
 #include "cloud.h"
 #include "matrix.h"
 
-/**
+/*
  * @brief legendre_poly Calcula o polinômio de Legendre
  * @param n A ordem do polinômio
  * @param x O argumento do polinômio
@@ -38,7 +38,7 @@ real legendre_poly(int n, real x)
             legendre_poly(n - 2, x)) / (1.0f * n);
 }
 
-/**
+/*
  * @brief legendre_norm Calcula a constante de normalização
  * @param p A ordem da dimensão x
  * @param q A ordem da dimensão y
@@ -51,7 +51,7 @@ real legendre_norm(int p, int q, int r, int nump)
     return (((3 * p) + 1) * ((3 * q) + 1) * ((3 * r) + 1)) / (1.0f * nump);
 }
 
-/**
+/*
  * @brief legendre_moment Calcula o momento de legendre
  * @param p A ordem da dimensão x
  * @param q A ordem da dimensão y
@@ -79,7 +79,7 @@ real legendre_moment(int p, int q, int r, struct vector3* center,
     return norm * moment;
 }
 
-/**
+/*
  * @brief legendre_cloud_moments Calcula os momentos de Legendre de uma nuvem
  * @param cloud A nuvem alvo
  * @param cut O corte da nuvem
