@@ -214,7 +214,8 @@ void cloud_scale(struct cloud* cloud, real f)
 {
     struct cloud* aux = cloud;
     while (aux != NULL) {
-        aux->point = vector3_scale(aux->point, f);
+        vector3_scale(aux->point, f);
+        
         aux = aux->next;
     }
 }

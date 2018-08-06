@@ -1,13 +1,15 @@
 /**
  * @file char-ext.c
  * @author Artur Rodrigues Rocha Neto
- * @date 2017
- * @brief Utilitário extrator de múltiplos momentos invariantes
+ * @date 2018
+ * @brief Testando melhorias nas estruturas de dados e funções de extração.
  */
 
 #include "include/extraction.h"
 
 int main(int argc, char** argv)
 {
-    return program_interface(argc, argv);
+	printf("IMPROVED\n");
+    return 0;
 }
+
