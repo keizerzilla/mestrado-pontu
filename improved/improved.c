@@ -5,7 +5,7 @@
  * @brief Testando melhorias nas estruturas de dados e funções de extração.
  */
 
-#include "include/extraction.h"
+#include "include/matrix.h"
 
 int main(int argc, char** argv)
 {

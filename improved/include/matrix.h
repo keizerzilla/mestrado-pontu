@@ -3,9 +3,8 @@
  * @author Artur Rodrigues Rocha Neto
  * @date 2017
  * @brief Arquivo contendo uma implementação simples de matrizes bidimensionais
- * que ajudam no armazenamento de diversos resultados.
- *
- * Alguns funcionalidades simples e outras mais complexas são fornecidas.
+ * que ajudam no armazenamento de diversos resultados. Alguns funcionalidades
+ * foram criadas em função das necessidades do trabalho.
  */
 
 #ifndef MATRIX_H
@@ -13,6 +12,8 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+
+#include "calc.h"
 
 /**
  * @brief A estrutura matrix
@@ -22,8 +23,8 @@
  */
 struct matrix {
     real** data;
-    int rows;
-    int cols;
+    unsigned int rows;
+    unsigned int cols;
 };
 
 /**

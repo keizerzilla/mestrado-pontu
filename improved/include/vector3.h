@@ -1,7 +1,7 @@
 /**
  * @file vector3.h
  * @author Artur Rodrigues Rocha Neto
- * @date 2018
+ * @date 2017
  * @brief Arquivo contendo uma implementação que manipula vetores em espaços de
  * três dimensões. Diversas funções matemáticas são fornecidas e forma
  * otimizadas ao máximo.
@@ -130,11 +130,22 @@ void vector3_invert(struct vector3* v)
  * @brief vector3_distance Calcula a distância euclidiana entre dois vetores
  * @param a O primeiro vetor
  * @param b O segundo vetor
- * @return A distância heuclidiana entra a e b
+ * @return A distância euclidiana entra a e b
  */
 real vector3_distance(struct vector3* a, struct vector3* b)
 {
     return calc_length3(a->x - b->x, a->y - b->y, a->z - a->z);
+}
+
+/**
+ * @brief vector3_manhattan Calcula a distância Manhattan entre dois vetores
+ * @param a O primeiro vetor
+ * @param b O segundo vetor
+ * @return A distância Manhattan entra a e b
+ */
+real vector3_manhattan(struct vector3* a, struct vector3* b)
+{
+	return abs(a->x - b->x) + abs(a->y - b->y) + abs(a->z - b->z);
 }
 
 /**
