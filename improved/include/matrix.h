@@ -22,9 +22,9 @@
  * campos que guardam a quantidade de linhas e colunas presente.
  */
 struct matrix {
-    real** data;
     uint rows;
     uint cols;
+    real* data;
 };
 
 /*
@@ -42,17 +42,26 @@ struct matrix* matrix_new(uint rows, uint cols)
 
     mat->rows = rows;
     mat->cols = cols;
-    mat->data = malloc(rows * sizeof(real*));
+    mat->data = malloc(rows * cols * sizeof(real));
 
-    uint i, j;
-    for (i = 0; i < rows; i++) {
-        mat->data[i] = malloc(cols * sizeof(real));
-
-        for (j = 0; j < cols; j++)
-            mat->data[i][j] = 0.0f;
-    }
+    for (uint i = 0; i < rows; i++)
+        for (uint j = 0; j < cols; j++)
+            mat->data[(i * cols) + j] = 0.0f;
 
     return mat;
+}
+
+/*
+ * @brief matrix_free Libera espaço alocado para uma matriz
+ * @param mat A matriz a ser desalocada
+ */
+void matrix_free(struct matrix* mat)
+{
+    free(mat->data);
+    mat->data = NULL;
+
+    free(mat);
+    mat = NULL;
 }
 
 /*
@@ -62,15 +71,14 @@ struct matrix* matrix_new(uint rows, uint cols)
  */
 int matrix_add_row(struct matrix* mat)
 {
-    real** newline = realloc(mat->data, (mat->rows + 1) * sizeof(real*));
-    if (newline != NULL) {
-        mat->data = newline;
-        mat->rows++;
-        mat->data[mat->rows - 1] = malloc(mat->cols * sizeof(real));
+    real* row = realloc(mat->data, mat->cols * (mat->rows + 1) * sizeof(real));
 
-        uint j;
-        for (j = 0; j < mat->cols; j++)
-            mat->data[mat->rows - 1][j] = 0.0f;
+    if (row != NULL) {
+        mat->data = row;
+        mat->rows++;
+
+        for (uint j = 0; j < mat->cols; j++)
+            mat->data[((mat->rows - 1) * mat->cols) + j] = 0.0f;
 
         return mat->rows;
     } else {
@@ -83,23 +91,25 @@ int matrix_add_row(struct matrix* mat)
  * @param mat A matriz alvo
  * @return A nova quantidade de colunas da matriz se sucesso. 0 caso-contrário
  */
+
+/*
 int matrix_add_column(struct matrix* mat)
 {
-    uint i;
-    for (i = 0; i < mat->rows; i++) {
-        real* newcolumn = realloc(mat->data[i], (mat->cols + 1) * sizeof(real));
+    real* col = realloc(mat->data, (mat->cols + 1) * mat->rows * sizeof(real));
 
-        if (newcolumn != NULL) {
-            mat->data[i] = newcolumn;
-            mat->data[i][mat->cols] = 0.0f;
-        } else {
-            return 0;
-        }
+    if (col != NULL) {
+        mat->data = col;
+        mat->cols++;
+
+        for (uint i = 0; i < mat->rows; i++)
+            mat->data[(i * (mat->cols - 1)) + (mat->cols - 1)] = 0.0f;
+
+        return mat->cols;
+    } else {
+        return 0;
     }
-
-    mat->cols++;
-    return mat->cols;
 }
+*/
 
 /*
  * @brief matrix_set Seta o valor em uma dada célula de uma matriz
@@ -113,7 +123,7 @@ void matrix_set(struct matrix* mat, uint i, uint j, real value)
     if (i >= mat->rows || j >= mat->cols)
         fprintf(stderr, "%s: index fora de posicao na matriz\n", __FUNCTION__);
     else
-        mat->data[i][j] = value;
+        mat->data[(i * mat->cols) + j] = value;
 }
 
 /*
@@ -129,7 +139,7 @@ real matrix_get(struct matrix* mat, uint i, uint j)
         fprintf(stderr, "%s: index fora de posicao na matriz\n", __FUNCTION__);
         return 0;
     } else {
-        return mat->data[i][j];
+        return mat->data[(i * mat->cols) + j];
     }
 }
 
@@ -151,11 +161,10 @@ int matrix_save_to_file(struct matrix* mat,
         return 0;
     }
 
-    uint rows = 0;
-    uint cols = 0;
-    for (rows = 0; rows < mat->rows; rows++) {
-        for (cols = 0; cols < mat->cols; cols++) {
-            fprintf(dump, "%le", matrix_get(mat, rows, cols));
+    for (uint rows = 0; rows < mat->rows; rows++) {
+        for (uint cols = 0; cols < mat->cols; cols++) {
+            fprintf(dump, "%e", matrix_get(mat, rows, cols));
+
             if (cols + 1 < mat->cols)
                 fprintf(dump, "%c", sep);
         }
@@ -167,22 +176,6 @@ int matrix_save_to_file(struct matrix* mat,
 }
 
 /*
- * @brief matrix_free Libera espaço alocado para uma matriz
- * @param mat A matriz a ser desalocada
- */
-void matrix_free(struct matrix* mat)
-{
-    uint i = 0;
-    for (i = 0; i < mat->rows; i++) {
-        free(mat->data[i]);
-        mat->data[i] = NULL;
-    }
-
-    free(mat);
-    mat = NULL;
-}
-
-/*
  * @brief matrix_debug Debuga uma matriz imprimindo todos os seus valores
  * @param mat A matriz a ser debugada
  * @param message Uma mensagem a ser exibida no topo do debug
@@ -191,11 +184,10 @@ void matrix_free(struct matrix* mat)
 void matrix_debug(struct matrix* mat, const char* msg, FILE* output)
 {
     fprintf(output, "matrix: %s\n", msg);
-    uint i;
-    uint j;
-    for (i = 0; i < mat->rows; i++) {
-        for (j = 0; j < mat->cols; j++)
-            fprintf(output, "%le\t", mat->data[i][j]);
+
+    for (uint i = 0; i < mat->rows; i++) {
+        for (uint j = 0; j < mat->cols; j++)
+            fprintf(output, "%e  ", mat->data[(i * mat->cols) + j]);
 
         fprintf(output, "\n");
     }
