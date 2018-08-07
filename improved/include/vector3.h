@@ -36,7 +36,6 @@ struct vector3 {
 struct vector3* vector3_new(real x, real y, real z)
 {
     struct vector3* v = malloc(sizeof(struct vector3));
-
     if (v == NULL)
         return NULL;
 

@@ -16,7 +16,7 @@
 
 #define HU "hu"
 #define ZERNIKE "zernike"
-#define TCHEBY "tchebychev"
+#define TCHEBYCHEV "tchebychev"
 #define LEGENDRE "legendre"
 
 #define HU_MOMENTS 21
@@ -38,7 +38,7 @@ int run_extractor(void (*ext_function)(struct cloud*, real cut, struct matrix*),
                   const char* result_file)
 {
 
-    struct cloud* cloud = cloud_load_from_file(input_cloud);
+    struct cloud* cloud = cloud_load_csv(input_cloud);
     struct cloud* sub = NULL;
 
     if (cut < 0)
@@ -89,7 +89,7 @@ int program_interface(int argc, char** argv) {
     } else if (!strcmp(argv[1], ZERNIKE)) {
         ext_function = &zernike_cloud_moments;
         num_of_moments = ZERNIKE_MOMENTS;
-    } else if (!strcmp(argv[1], TCHEBY)) {
+    } else if (!strcmp(argv[1], TCHEBYCHEV)) {
         ext_function = &tchebychev_cloud_moments;
         num_of_moments = TCHEBYCHEV_MOMENTS;
     } else if (!strcmp(argv[1], LEGENDRE)) {
@@ -126,7 +126,7 @@ int center_profile(int argc, char** argv) {
         exit(1);
     }
 
-    struct cloud* cloud = cloud_load_from_file(argv[1]);
+    struct cloud* cloud = cloud_load_csv(argv[1]);
     if (cloud == NULL) {
         printf("ERRO: NUVEM [%s]\nNAO ENCONTRADA!\n", argv[1]);
         exit(1);
@@ -145,7 +145,7 @@ int center_profile(int argc, char** argv) {
     real d = 0.0f;
     int count = 0;
     while (aux != NULL) {
-        d = vector3_distance(center, aux->point);
+        d = vector3_distance(center, aux->points);
         fprintf(output, "%.10e\n", d);
 
         aux = aux->next;

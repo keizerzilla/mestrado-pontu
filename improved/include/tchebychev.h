@@ -78,10 +78,10 @@ real tchebychev_moment(int p, int q, int r, int n, struct cloud* cloud)
     struct cloud* aux = cloud;
     struct vector3* center = cloud_get_center(cloud);
     while (aux != NULL) {
-        moment += tchebychev_poly(p, n, aux->point->x - center->x) *
-                  tchebychev_poly(q, n, aux->point->y - center->y) *
-                  tchebychev_poly(r, n, aux->point->z - center->z) *
-                  vector3_distance(aux->point, center);
+        moment += tchebychev_poly(p, n, aux->points->x - center->x) *
+                  tchebychev_poly(q, n, aux->points->y - center->y) *
+                  tchebychev_poly(r, n, aux->points->z - center->z) *
+                  vector3_distance(aux->points, center);
 
         aux = aux->next;
     }

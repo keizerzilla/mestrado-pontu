@@ -36,7 +36,6 @@ struct matrix {
 struct matrix* matrix_new(uint rows, uint cols)
 {
     struct matrix* mat = malloc(sizeof(struct matrix));
-
     if (mat == NULL)
         return NULL;
 

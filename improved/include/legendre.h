@@ -69,9 +69,9 @@ real legendre_moment(int p, int q, int r, struct vector3* center,
 
     struct cloud* aux = cloud;
     while (aux != NULL) {
-        moment += legendre_poly(p, aux->point->x - center->x) *
-                  legendre_poly(q, aux->point->y - center->y) *
-                  legendre_poly(r, aux->point->z - center->z);
+        moment += legendre_poly(p, aux->points->x - center->x) *
+                  legendre_poly(q, aux->points->y - center->y) *
+                  legendre_poly(r, aux->points->z - center->z);
 
         aux = aux->next;
     }

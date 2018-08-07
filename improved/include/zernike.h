@@ -203,11 +203,11 @@ real zernike_moment(int n, int m, struct zsphere* zsphere)
 
     struct cloud* cloud = zsphere->cloud;
     while (cloud != NULL) {
-        distance = zernike_radial_distance(zsphere, cloud->point);
+        distance = zernike_radial_distance(zsphere, cloud->points);
 
         if (distance <= 1.0f) {
             poly = zernike_poly(n, m, distance);
-            angle = zernike_azimuth(cloud->point);
+            angle = zernike_azimuth(cloud->points);
             even = zernike_even(poly, m, angle);
             odd = zernike_odd(poly, m, angle);
             moment += sqrt(pow(even, 2) + pow(odd, 2));
