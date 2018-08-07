@@ -61,12 +61,14 @@ struct vector3* vector3_zero()
 
 /*
  * @brief vector3_copy Faz uma cópia de um vetor
- * @param v O vetor a ser copiado
- * @return Um vetor com as mesmas coordenadas de v
+ * @param src O vetor a ser copiado
+ * @param dst O vetor que guardará a cópia
  */
-struct vector3* vector3_copy(struct vector3* v)
+void vector3_copy(struct vector3* src, struct vector3* dst)
 {
-	return vector3_new(v->x, v->y, v->z);
+    dst->x = src->x;
+    dst->y = src->y;
+    dst->z = src->z;
 }
 
 /*
@@ -338,8 +340,9 @@ struct vector3* vector3_projection(struct vector3* a, struct vector3* b)
  */
 struct vector3* vector3_reflection(struct vector3* v, struct vector3* n)
 {
-	struct vector3* r = vector3_copy(n);
-	
+    struct vector3* r = vector3_zero();
+    vector3_copy(n, r);
+
     vector3_scale(r, 2 * vector3_dot(v, n));
 	r = vector3_sub(v, r);
 	
@@ -368,8 +371,16 @@ struct vector3* vector3_normal(struct vector3* a,
                                struct vector3* b,
                                struct vector3* c)
 {
-	return vector3_cross(vector3_sub(b, a), vector3_sub(c, a));
+    struct vector3* v1 = vector3_sub(b, a);
+    struct vector3* v2 = vector3_sub(c, a);
+    struct vector3* ret = vector3_cross(v1, v2);
+
+    vector3_free(v1);
+    vector3_free(v2);
+
+    return ret;
 }
+
 
 /*
  * @brief vector3_area Acha a área da superfície de um triângulo
@@ -382,7 +393,11 @@ real vector3_area(struct vector3* a,
                   struct vector3* b,
                   struct vector3* c)
 {
-	return 0.5f * vector3_length(vector3_normal(a, b, c));
+    struct vector3* n = vector3_normal(a, b, c);
+    real ret = 0.5f * vector3_length(n);
+    vector3_free(n);
+
+    return ret;
 }
 
 /*
@@ -397,4 +412,3 @@ void vector3_debug(struct vector3* v, const char* msg, FILE* output)
 }
 
 #endif // VECTOR3_H
-

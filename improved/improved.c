@@ -5,10 +5,25 @@
  * @brief Testando melhorias nas estruturas de dados e funções de extração.
  */
 
+#include <time.h>
 #include "include/matrix.h"
 
-int main(int argc, char** argv)
+#define DATA_SIZE 100
+
+int main()
 {
-	printf("IMPROVED\n");
+    fprintf(stdout, "OPTMIZING matrix\n");
+
+    clock_t t;
+    srand(time(NULL));
+
+    t = clock();
+    for (int i = 0; i < DATA_SIZE; i++) {
+        // ???
+    }
+    t = clock() - t;
+
+    printf("%lu ticks (%.4f seconds)\n", t, (float)t/CLOCKS_PER_SEC);
+
     return 0;
 }
