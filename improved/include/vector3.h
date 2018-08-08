@@ -214,7 +214,7 @@ void vector3_setlength(struct vector3* v, real l)
  */
 struct vector3* vector3_unit(struct vector3* v)
 {
-	struct vector3* unit = vector3_zero();
+    struct vector3* unit = vector3_zero();
 	real l = vector3_length(v);
 	
 	unit->x = v->x / l;

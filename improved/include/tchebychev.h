@@ -1,4 +1,4 @@
-/*
+/**
  * @file tchebychev.h
  * @author Artur Rodrigues Rocha Neto
  * @date 2017
@@ -19,7 +19,7 @@
 #include "cloud.h"
 #include "matrix.h"
 
-/*
+/**
  * @brief tchebychev_poly Calcula o polinômio de Tchebychev
  * @param p A ordem do polinômio
  * @param n O número de pontos da nuvem
@@ -41,7 +41,7 @@ real tchebychev_poly(int p, int n, real x)
     return (num1 - num2) / p;
 }
 
-/*
+/**
  * @brief tchebychev_norm A norma dos polinômios de Tchebychev
  * @param p A ordem do polinômio
  * @param n O número de pontos da nuvem
@@ -59,7 +59,7 @@ real tchebychev_norm(int p, int n)
     return norm / (p + 1.0f);
 }
 
-/*
+/**
  * @brief tchebychev_moment Calcula um momento de Tchebychev
  * @param p A ordem da dimensão x
  * @param q A ordem da dimensão y
@@ -78,10 +78,10 @@ real tchebychev_moment(int p, int q, int r, int n, struct cloud* cloud)
     struct cloud* aux = cloud;
     struct vector3* center = cloud_get_center(cloud);
     while (aux != NULL) {
-        moment += tchebychev_poly(p, n, aux->points->x - center->x) *
-                  tchebychev_poly(q, n, aux->points->y - center->y) *
-                  tchebychev_poly(r, n, aux->points->z - center->z) *
-                  vector3_distance(aux->points, center);
+        moment += tchebychev_poly(p, n, aux->point->x - center->x) *
+                  tchebychev_poly(q, n, aux->point->y - center->y) *
+                  tchebychev_poly(r, n, aux->point->z - center->z) *
+                  vector3_distance(aux->point, center);
 
         aux = aux->next;
     }
@@ -91,7 +91,7 @@ real tchebychev_moment(int p, int q, int r, int n, struct cloud* cloud)
     return moment / norm;
 }
 
-/*
+/**
  * @brief tchebychev_cloud_moments Calcula todos os momentos de Tchebychev
  * @param cloud A nuvem alvo
  * @param cut O corte da nuvem

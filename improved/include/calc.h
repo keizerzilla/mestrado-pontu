@@ -67,5 +67,14 @@ real calc_length2(real x, real y)
     return sqrt((x * x) + (y * y));
 }
 
-#endif // CALC_H
+/*
+ * @brief calc_randr Gera números reais aleatórios
+ * @param max Valor máximo possível a ser gerado
+ * @return Um número real aleatório no intervalo [0, max]
+ */
+real calc_randr(real max)
+{
+    return (real)rand() / (real)(RAND_MAX / max);
+}
 
+#endif // CALC_H

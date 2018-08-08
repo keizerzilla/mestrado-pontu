@@ -1,4 +1,4 @@
-/*
+/**
  * @file extraction.h
  * @author Artur Rodrigues Rocha Neto
  * @date 2017
@@ -16,7 +16,7 @@
 
 #define HU "hu"
 #define ZERNIKE "zernike"
-#define TCHEBYCHEV "tchebychev"
+#define TCHEBY "tchebychev"
 #define LEGENDRE "legendre"
 
 #define HU_MOMENTS 21
@@ -24,21 +24,21 @@
 #define LEGENDRE_MOMENTS 27
 #define ZERNIKE_MOMENTS 16
 
-/*
+/**
  * @brief run_extractor Executa um dado algoritmo de extração de atributos
  * @param num_of_moments Quantos momentos devem ser calculados
  * @param input_cloud A nuvem alvo
  * @param result_file Arquivo onde os momentos serão salvos
  * @return 0 se ocorreu algum erro, 1 caso-contrário
  */
-int run_extractor(void (*ext_function)(struct cloud*, real cut, struct matrix*),
+int run_extractor(void (*ext_function)(struct cloud*, real, struct matrix*),
                   int num_of_moments,
                   real cut,
                   const char* input_cloud,
                   const char* result_file)
 {
 
-    struct cloud* cloud = cloud_load_csv(input_cloud);
+    struct cloud* cloud = cloud_load_from_file(input_cloud);
     struct cloud* sub = NULL;
 
     if (cut < 0)
@@ -62,7 +62,7 @@ int run_extractor(void (*ext_function)(struct cloud*, real cut, struct matrix*),
     return 1;
 }
 
-/*
+/**
  * @brief program_interface Função de inteface para extração de atributos
  * @param argc Número de argumentos passados pela linha de comando
  * @param argv Lista dos argumentos passados pela linha de comando
@@ -89,7 +89,7 @@ int program_interface(int argc, char** argv) {
     } else if (!strcmp(argv[1], ZERNIKE)) {
         ext_function = &zernike_cloud_moments;
         num_of_moments = ZERNIKE_MOMENTS;
-    } else if (!strcmp(argv[1], TCHEBYCHEV)) {
+    } else if (!strcmp(argv[1], TCHEBY)) {
         ext_function = &tchebychev_cloud_moments;
         num_of_moments = TCHEBYCHEV_MOMENTS;
     } else if (!strcmp(argv[1], LEGENDRE)) {
@@ -110,7 +110,7 @@ int program_interface(int argc, char** argv) {
     return 0;
 }
 
-/*
+/**
  * @brief center_profile Extrái distâncias dos pontos ao centro
  * @param argc Número de argumentos passados pela linha de comando
  * @param argv Lista dos argumentos passados pela linha de comando
@@ -126,7 +126,7 @@ int center_profile(int argc, char** argv) {
         exit(1);
     }
 
-    struct cloud* cloud = cloud_load_csv(argv[1]);
+    struct cloud* cloud = cloud_load_from_file(argv[1]);
     if (cloud == NULL) {
         printf("ERRO: NUVEM [%s]\nNAO ENCONTRADA!\n", argv[1]);
         exit(1);
@@ -145,7 +145,7 @@ int center_profile(int argc, char** argv) {
     real d = 0.0f;
     int count = 0;
     while (aux != NULL) {
-        d = vector3_distance(center, aux->points);
+        d = vector3_distance(center, aux->point);
         fprintf(output, "%.10e\n", d);
 
         aux = aux->next;

@@ -35,6 +35,7 @@ struct cloud {
 struct cloud* cloud_new(uint num_of_points)
 {
     struct cloud* cloud = malloc(sizeof(struct cloud));
+
     if (cloud == NULL) {
         fprintf(stderr, "%s: erro alocando memória para nuvem\n", __FUNCTION__);
         return NULL;
