@@ -10,7 +10,9 @@
 #include <time.h>
 #include "include/cloud.h"
 
-#define DATA_SIZE 658
+#ifndef PSIZE
+#define PSIZE 10
+#endif
 
 float randf(float max)
 {
@@ -24,35 +26,15 @@ int main(int argc, char** argv)
         exit(1);
     }
 
-    FILE* csv = fopen(argv[1], "w");
-    if (csv == NULL) {
-        fprintf(stderr, "error loading csv\n");
-        exit(1);
-    }
+    struct cloud* cloud = cloud_load_csv(argv[1]);
 
-    srand(time(NULL));
-    for (int i = 0; i < DATA_SIZE; i++) {
-        fprintf(csv, "%e,%e,%e\n", randf(256), randf(256), randf(256));
-    }
+    cloud_debug(cloud, "testando cloud_load_csv", stdout);
+    cloud_sort(cloud);
+    cloud_debug(cloud, "testando cloud_sort", stdout);
+    vector3_debug(cloud_get_center(cloud), "testando cloud_get_center", stdout);
+    vector3_debug(cloud_axis_size(cloud), "testando cloud_axis, size", stdout);
 
-    fprintf(csv, "\n\n\n\n\n\n\n\n\n\n");
-    fprintf(csv, "%e,%e,%e\n", randf(256), randf(256), randf(256));
-
-    fclose(csv);
-
-    FILE* reader = fopen(argv[1], "r");
-    if (reader == NULL) {
-        fprintf(stderr, "error loading csv\n");
-        exit(1);
-    }
-
-    int k = 0;
-    while (!feof(reader)) {
-        fscanf(reader, "%*s\n");
-        k++;
-    }
-
-    printf("linhas = %d\n", k);
+    cloud_free(cloud);
 
     return 0;
 }

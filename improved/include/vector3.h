@@ -407,7 +407,8 @@ real vector3_area(struct vector3* a,
  */
 void vector3_debug(struct vector3* v, const char* msg, FILE* output)
 {
-    fprintf(output, "vector3 (%le, %le, %le): %s\n", v->x, v->y, v->z, msg);
+    fprintf(output, "vector3: %s\n", msg);
+    fprintf(output, "%le, %le, %le\n", v->x, v->y, v->z);
 }
 
 #endif // VECTOR3_H

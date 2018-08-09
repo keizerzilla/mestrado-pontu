@@ -47,6 +47,8 @@ struct cloud* cloud_new(uint num_pts)
         return NULL;
     }
 
+    memset(cloud->points, 0, num_pts * sizeof(struct vector3));
+
     cloud->num_pts = num_pts;
 
     return cloud;
@@ -61,6 +63,45 @@ void cloud_free(struct cloud* cloud)
     free(cloud->points);
     free(cloud);
     cloud = NULL;
+}
+
+/*
+ * @brief cloud_set_point Seta os valores de um dos pontos da nuvem
+ * @param cloud A nuvem alvo
+ * @param index O índice do ponto a ser setado
+ * @param x O valor da coordenada x
+ * @param y O valor da coordenada y
+ * @param z O valor da coordenada z
+ * @return O endereço para o ponto setado
+ */
+struct vector3* cloud_set_point(struct cloud* cloud,
+                                uint index,
+                                real x,
+                                real y,
+                                real z)
+{
+    if (index >= cloud->num_pts) {
+        fprintf(stderr, "%s: index out of bounds\n", __FUNCTION__);
+        return NULL;
+    }
+
+    vector3_set(&cloud->points[index], x, y, z);
+
+    return &cloud->points[index];
+}
+
+/*
+ * @brief cloud_set_point Seta os valores de um dos pontos da nuvem
+ * @param cloud A nuvem alvo
+ * @param index O índice do ponto a ser setado
+ * @param point O valor das coordenadas a serem setadas
+ * @return O endereço para o ponto setado
+ */
+struct vector3* cloud_set_point_cpy(struct cloud* cloud,
+                                    uint index,
+                                    struct vector3* point)
+{
+    return cloud_set_point(cloud, index, point->x, point->y, point->z);
 }
 
 /*
@@ -104,31 +145,6 @@ struct vector3* cloud_add_point_cpy(struct cloud* cloud, struct vector3* point)
 }
 
 /*
- * @brief cloud_get_center Calcula o centro geométrico de uma nuvem de pontos
- * @param cloud A Nuvem alvo
- * @return Um ponto com as coordenadas do centro geométrico da nuvem
- */
-struct vector3* cloud_get_center(struct cloud* cloud)
-{
-    struct vector3* center = vector3_zero();
-
-    uint k = 0;
-    for (uint i = 0; i < cloud->num_pts; i++) {
-        center->x += cloud->points[i].x;
-        center->y += cloud->points[i].y;
-        center->z += cloud->points[i].z;
-
-        k++;
-    }
-
-    center->x /= k;
-    center->y /= k;
-    center->z /= k;
-
-    return center;
-}
-
-/*
  * @brief cloud_load_csv Carrega uma nuvem a partir de um arquivo CSV
  * @param filename O arquivo onde a nuvem está guardada
  * @return Um estrutura cloud carregada em memória ou NULL caso ocorra erro
@@ -141,24 +157,22 @@ struct cloud* cloud_load_csv(const char* filename)
         return NULL;
     }
 
-    uint num_of_points = 0;
+    uint num_pts = 0;
     while (!feof(file)) {
-        num_of_points++;
+        fscanf(file, "%*s\n");
+        num_pts++;
     }
     rewind(file);
 
-    struct cloud* cloud = cloud_new(num_of_points);
-    int scan = 0;
+    struct cloud* cloud = cloud_new(num_pts);
     real x = 0;
     real y = 0;
     real z = 0;
+    uint index = 0;
     while (!feof(file)) {
-        scan = fscanf(file, "%le,%le,%le\n", &x, &y, &z);
-
-        if (scan == EOF)
-            break;
-        else
-            cloud_add_point(cloud, x, y, z);
+        fscanf(file, "%le,%le,%le\n", &x, &y, &z);
+        cloud_set_point(cloud, index, x, y, z);
+        index++;
     }
 
     fclose(file);
@@ -200,6 +214,31 @@ int cloud_save_csv(struct cloud* cloud, const char* filename)
 uint cloud_num_of_points(struct cloud* cloud)
 {
     return cloud->num_pts;
+}
+
+/*
+ * @brief cloud_get_center Calcula o centro geométrico de uma nuvem de pontos
+ * @param cloud A Nuvem alvo
+ * @return Um ponto com as coordenadas do centro geométrico da nuvem
+ */
+struct vector3* cloud_get_center(struct cloud* cloud)
+{
+    struct vector3* center = vector3_zero();
+
+    uint k = 0;
+    for (uint i = 0; i < cloud->num_pts; i++) {
+        center->x += cloud->points[i].x;
+        center->y += cloud->points[i].y;
+        center->z += cloud->points[i].z;
+
+        k++;
+    }
+
+    center->x /= k;
+    center->y /= k;
+    center->z /= k;
+
+    return center;
 }
 
 /*
