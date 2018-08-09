@@ -162,7 +162,7 @@ int matrix_save_to_file(struct matrix* mat,
 
     for (uint rows = 0; rows < mat->rows; rows++) {
         for (uint cols = 0; cols < mat->cols; cols++) {
-            fprintf(dump, "%e", matrix_get(mat, rows, cols));
+            fprintf(dump, "%le", matrix_get(mat, rows, cols));
 
             if (cols + 1 < mat->cols)
                 fprintf(dump, "%c", sep);
@@ -186,7 +186,7 @@ void matrix_debug(struct matrix* mat, const char* msg, FILE* output)
 
     for (uint i = 0; i < mat->rows; i++) {
         for (uint j = 0; j < mat->cols; j++)
-            fprintf(output, "%e  ", mat->data[(i * mat->cols) + j]);
+            fprintf(output, "%le  ", mat->data[(i * mat->cols) + j]);
 
         fprintf(output, "\n");
     }

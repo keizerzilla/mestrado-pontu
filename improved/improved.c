@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-#include "include/vector3.h"
+#include "include/cloud.h"
 
 #define DATA_SIZE 658
 
@@ -32,8 +32,11 @@ int main(int argc, char** argv)
 
     srand(time(NULL));
     for (int i = 0; i < DATA_SIZE; i++) {
-        fprintf(csv, "%.2f,%.2f,%.2f\n", randf(256), randf(256), randf(256));
+        fprintf(csv, "%e,%e,%e\n", randf(256), randf(256), randf(256));
     }
+
+    fprintf(csv, "\n\n\n\n\n\n\n\n\n\n");
+    fprintf(csv, "%e,%e,%e\n", randf(256), randf(256), randf(256));
 
     fclose(csv);
 
@@ -43,9 +46,13 @@ int main(int argc, char** argv)
         exit(1);
     }
 
-    // contar linhas aqui
+    int k = 0;
+    while (!feof(reader)) {
+        fscanf(reader, "%*s\n");
+        k++;
+    }
 
-
+    printf("linhas = %d\n", k);
 
     return 0;
 }

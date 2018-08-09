@@ -23,7 +23,7 @@
  */
 struct cloud {
     struct vector3* points;
-    uint num_of_points;
+    uint num_pts;
 };
 
 /*
@@ -32,7 +32,7 @@ struct cloud {
  * @param num_of_points Quantos pontos possui a nuvem
  * @return O ponteiro para uma nuvem alocada ou NULL se houver algo erro
  */
-struct cloud* cloud_new(uint num_of_points)
+struct cloud* cloud_new(uint num_pts)
 {
     struct cloud* cloud = malloc(sizeof(struct cloud));
 
@@ -41,13 +41,13 @@ struct cloud* cloud_new(uint num_of_points)
         return NULL;
     }
 
-    cloud->points = malloc(num_of_points * sizeof(struct vector3));
+    cloud->points = malloc(num_pts * sizeof(struct vector3));
     if (cloud->points == NULL) {
         fprintf(stderr, "%s: erro alocando memória para ponts\n", __FUNCTION__);
         return NULL;
     }
 
-    cloud->num_of_points = num_of_points;
+    cloud->num_pts = num_pts;
 
     return cloud;
 }
@@ -66,7 +66,9 @@ void cloud_free(struct cloud* cloud)
 /*
  * @brief cloud_add_point Adiciona um novo ponto a uma nuvem
  * @param cloud A nuvem alvo
- * @param point O ponto a ser adicionado
+ * @param x A coordenada x do ponto
+ * @param y A coordenada y do ponto
+ * @param z A coordenada z do ponto
  * @return O endereço do novo ponto alocado ou NULL se não houver memória
  */
 struct vector3* cloud_add_point(struct cloud* cloud,
@@ -74,7 +76,7 @@ struct vector3* cloud_add_point(struct cloud* cloud,
                                 real y,
                                 real z)
 {
-    uint new_size = (cloud->num_of_points + 1) * sizeof(struct vector3);
+    uint new_size = (cloud->num_pts + 1) * sizeof(struct vector3);
 
     struct vector3* new_points = realloc(cloud->points, new_size);
     if (new_points == NULL) {
@@ -83,11 +85,22 @@ struct vector3* cloud_add_point(struct cloud* cloud,
     }
 
     cloud->points = new_points;
-    cloud->num_of_points++;
+    cloud->num_pts++;
 
-    vector3_set(&cloud->points[cloud->num_of_points - 1], x, y, z);
+    vector3_set(&cloud->points[cloud->num_pts - 1], x, y, z);
 
-    return &cloud->points[cloud->num_of_points - 1];
+    return &cloud->points[cloud->num_pts - 1];
+}
+
+/*
+ * @brief cloud_add_point_cpy Adiciona um novo ponto a uma nuvem
+ * @param cloud A nuvem alvo
+ * @param point O ponto a ser adicionado
+ * @return O endereço do novo ponto alocado ou NULL se não houver memória
+ */
+struct vector3* cloud_add_point_cpy(struct cloud* cloud, struct vector3* point)
+{
+    return cloud_add_point(cloud, point->x, point->y, point->z);
 }
 
 /*
@@ -100,10 +113,10 @@ struct vector3* cloud_get_center(struct cloud* cloud)
     struct vector3* center = vector3_zero();
 
     uint k = 0;
-    for (uint i = 0; i < cloud->num_of_points; i++) {
-        center->x += cloud->points->x;
-        center->y += cloud->points->y;
-        center->z += cloud->points->z;
+    for (uint i = 0; i < cloud->num_pts; i++) {
+        center->x += cloud->points[i].x;
+        center->y += cloud->points[i].y;
+        center->z += cloud->points[i].z;
 
         k++;
     }
@@ -113,19 +126,6 @@ struct vector3* cloud_get_center(struct cloud* cloud)
     center->z /= k;
 
     return center;
-}
-
-/*
- * @brief cloud_swap_points Troca a posição em memória entre dois pontos
- * @param cloud A nuvem que guarda os pontos a serem trocados
- * @param p1 O index do primeiro ponto
- * @param p2 O index do segundo ponto
- */
-void cloud_swap_points(struct cloud* cloud, uint p1, uint p2)
-{
-    struct vector3 temp = cloud->points[p1];
-    cloud->points[p1] = cloud->points[p2];
-    cloud->points[p2] = temp;
 }
 
 /*
@@ -141,18 +141,24 @@ struct cloud* cloud_load_csv(const char* filename)
         return NULL;
     }
 
-    struct cloud* cloud = cloud_new();
+    uint num_of_points = 0;
+    while (!feof(file)) {
+        num_of_points++;
+    }
+    rewind(file);
+
+    struct cloud* cloud = cloud_new(num_of_points);
     int scan = 0;
     real x = 0;
     real y = 0;
     real z = 0;
     while (!feof(file)) {
-        scan = fscanf(file, "%le %le %le\n", &x, &y, &z);
+        scan = fscanf(file, "%le,%le,%le\n", &x, &y, &z);
 
         if (scan == EOF)
             break;
         else
-            cloud_add_point_xyz(&cloud, x, y, z);
+            cloud_add_point(cloud, x, y, z);
     }
 
     fclose(file);
@@ -168,17 +174,19 @@ struct cloud* cloud_load_csv(const char* filename)
  */
 int cloud_save_csv(struct cloud* cloud, const char* filename)
 {
-    FILE* dump = fopen(filename, "w");
-    if (dump == NULL)
+    FILE* file = fopen(filename, "w");
+    if (file == NULL) {
+        fprintf(stderr, "%s: erro com arquivo %s\n", __FUNCTION__, filename);
         return 0;
+    }
 
-    struct cloud* aux = cloud;
-    while (aux != NULL) {
-        fprintf(dump, "%le %le %le\n", aux->points->x,
-                                       aux->points->y,
-                                       aux->points->z);
-
-        aux = aux->next;
+    int print = 0;
+    for (uint i = 0; i < cloud->num_pts; i++) {
+        print = fprintf(file, "%le,%le,%le\n", cloud->points[i].x,
+                                               cloud->points[i].y,
+                                               cloud->points[i].z);
+        if (print < 0)
+            break;
     }
 
     return 1;
@@ -191,7 +199,7 @@ int cloud_save_csv(struct cloud* cloud, const char* filename)
  */
 uint cloud_num_of_points(struct cloud* cloud)
 {
-    return cloud->num_of_points;
+    return cloud->num_pts;
 }
 
 /*
@@ -201,12 +209,21 @@ uint cloud_num_of_points(struct cloud* cloud)
  */
 void cloud_scale(struct cloud* cloud, real f)
 {
-    struct cloud* aux = cloud;
-    while (aux != NULL) {
-        vector3_scale(aux->points, f);
-        
-        aux = aux->next;
-    }
+    for (uint i = 0; i < cloud->num_pts; i++)
+        vector3_scale(&cloud->points[i], f);
+}
+
+/*
+ * @brief cloud_compare Função utilitária para a função de ordenação
+ * @param p1 O primeiro ponto para comparação
+ * @param p2 O segundo ponto para comparação
+ */
+int cloud_compare(const void* p1, const void* p2)
+{
+    struct vector3* dp1 = (struct vector3*)p1;
+    struct vector3* dp2 = (struct vector3*)p2;
+
+    return dp1->z - dp2->z;
 }
 
 /*
@@ -215,22 +232,7 @@ void cloud_scale(struct cloud* cloud, real f)
  */
 void cloud_sort(struct cloud* cloud)
 {
-    struct cloud* pivot = cloud;
-    while (pivot != NULL) {
-        struct cloud* aux = pivot->next;
-
-        while(aux != NULL) {
-            struct vector3* p1 = pivot->points;
-            struct vector3* p2 = aux->points;
-
-            if (p1->x > p2->x)
-                cloud_swap_points(pivot, aux);
-
-            aux = aux->next;
-        }
-
-        pivot = pivot->next;
-    }
+    qsort(cloud->points, cloud->num_pts, sizeof(struct vector3), cloud_compare);
 }
 
 /*
@@ -240,45 +242,38 @@ void cloud_sort(struct cloud* cloud)
  */
 struct vector3* cloud_axis_size(struct cloud* cloud)
 {
-    struct cloud* aux = cloud;
-
-    if (aux == NULL) {
-        printf("ERRO NUVEM VAZIA\n");
-        return NULL;
+    if (cloud->num_pts == 0) {
+        fprintf(stderr, "%s: nuvem vazia\n", __FUNCTION__);
+        return vector3_zero();
     }
 
-    real max_x = aux->points->x;
-    real min_x = aux->points->x;
+    real max_x = cloud->points[0].x;
+    real min_x = cloud->points[0].x;
 
-    real max_y = aux->points->y;
-    real min_y = aux->points->y;
+    real max_y = cloud->points[0].y;
+    real min_y = cloud->points[0].y;
 
-    real max_z = aux->points->z;
-    real min_z = aux->points->z;
+    real max_z = cloud->points[0].z;
+    real min_z = cloud->points[0].z;
 
-    while (aux != NULL) {
-        if (aux->points->x > max_x)
-            max_x = aux->points->x;
-        else if (aux->points->x < min_x)
-            min_x = aux->points->x;
+    for (uint i = 1; i < cloud->num_pts; i++) {
+        if (cloud->points[i].x > max_x)
+            max_x = cloud->points[i].x;
+        else if (cloud->points[i].x < min_x)
+            min_x = cloud->points[i].x;
 
-        if (aux->points->y > max_y)
-            max_y = aux->points->y;
-        else if (aux->points->y < min_y)
-            min_y = aux->points->y;
+        if (cloud->points[i].y > max_y)
+            max_y = cloud->points[i].y;
+        else if (cloud->points[i].y < min_y)
+            min_y = cloud->points[i].y;
 
-        if (aux->points->z > max_z)
-            max_z = aux->points->z;
-        else if (aux->points->z < min_z)
-            min_z = aux->points->z;
-
-        aux = aux->next;
+        if (cloud->points[i].z > max_z)
+            max_z = cloud->points[i].z;
+        else if (cloud->points[i].z < min_z)
+            min_z = cloud->points[i].z;
     }
 
-    struct vector3* length = vector3_new(max_x - min_x,
-                                         max_y - min_y,
-                                         max_z - min_z);
-    return length;
+    return vector3_new(max_x - min_x, max_y - min_y, max_z - min_z);
 }
 
 /*
@@ -288,18 +283,16 @@ struct vector3* cloud_axis_size(struct cloud* cloud)
  * @return A subnuvem
  */
 struct cloud* cloud_subcloud(struct cloud* cloud, real cut) {
-    struct cloud* sub = cloud_new();
+    struct cloud* sub = cloud_new(0);
     struct vector3* center = cloud_get_center(cloud);
-    struct cloud* aux = cloud;
 
-    while (aux != NULL) {
-        if (vector3_distance(center, aux->points) <= cut)
-            cloud_add_point_copy(&sub, aux->points);
-
-        aux = aux->next;
+    for (uint i = 0; i < cloud->num_pts; i++) {
+        if (vector3_distance(center, &cloud->points[i]) <= cut)
+            cloud_add_point_cpy(sub, &cloud->points[i]);
     }
 
     vector3_free(center);
+
     return sub;
 }
 
@@ -307,20 +300,15 @@ struct cloud* cloud_subcloud(struct cloud* cloud, real cut) {
  * @brief cloud_debug Debuga uma nuvem ponto a ponto na saída padrão
  * @param cloud A nuvem a ser debugada
  * @param message Uma mensagem opcional para ser exibida no início do debug
+ * @param output O arquivo aonde exibir a mensagem
  */
-void cloud_debug(struct cloud* cloud, const char* message)
+void cloud_debug(struct cloud* cloud, const char* message, FILE* output)
 {
-    printf("CLOUD DEBUG: %s\n", message);
-
-    struct cloud* aux = cloud;
-    while (aux != NULL) {
-        printf("(%le, %le, %le)\n", aux->points->x,
-                                    aux->points->y,
-                                    aux->points->z);
-        aux = aux->next;
-    }
-
-    printf("\n");
+    fprintf(output, "cloud: %s\n", message);
+    for (uint i = 0; i < cloud->num_pts; i++)
+        fprintf(output, "%le, %le, %le\n", cloud->points[i].x,
+                                           cloud->points[i].y,
+                                           cloud->points[i].z);
 }
 
 #endif // CLOUD_H
