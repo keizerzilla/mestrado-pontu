@@ -36,9 +36,11 @@ int main(int argc, char** argv)
     cloud_sort(cloud);
     struct vector3* center = cloud_get_center(cloud);
     struct vector3* axis = cloud_axis_size(cloud);
+
+    vector3_debug(center, "novo get_center", stdout);
+
     cloud_save_csv(cloud, argv[1]);
 
-    vector3_free(center);
     vector3_free(axis);
     cloud_free(cloud);
 

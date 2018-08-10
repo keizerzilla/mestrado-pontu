@@ -17,12 +17,14 @@
 #include "vector3.h"
 
 /*
- * @brief A estrutura que guarda uma nuvem de dados em memória.
- *
- * A estrutura dessa versão é um array simples mais o número de pontos.
+ * @brief A estrutura que guarda uma nuvem de dados em memória. Os campos são
+ * - pontos formadores da nuvem
+ * - o centróide da nuvem
+ * - número de pontos
  */
 struct cloud {
     struct vector3* points;
+    struct vector3* centroid;
     uint num_pts;
 };
 
@@ -49,6 +51,7 @@ struct cloud* cloud_new(uint num_pts)
 
     memset(cloud->points, 0, num_pts * sizeof(struct vector3));
 
+    cloud->centroid = NULL;
     cloud->num_pts = num_pts;
 
     return cloud;
@@ -61,6 +64,12 @@ struct cloud* cloud_new(uint num_pts)
 void cloud_free(struct cloud* cloud)
 {
     free(cloud->points);
+
+    if (cloud->centroid != NULL) {
+        vector3_free(cloud->centroid);
+        cloud->centroid = NULL;
+    }
+
     free(cloud);
     cloud = NULL;
 }
@@ -222,22 +231,22 @@ uint cloud_num_of_points(struct cloud* cloud)
  */
 struct vector3* cloud_get_center(struct cloud* cloud)
 {
-    struct vector3* center = vector3_zero();
+    if (cloud->centroid != NULL)
+        return cloud->centroid;
 
-    uint k = 0;
+    cloud->centroid = vector3_zero();
+
     for (uint i = 0; i < cloud->num_pts; i++) {
-        center->x += cloud->points[i].x;
-        center->y += cloud->points[i].y;
-        center->z += cloud->points[i].z;
-
-        k++;
+        cloud->centroid->x += cloud->points[i].x;
+        cloud->centroid->y += cloud->points[i].y;
+        cloud->centroid->z += cloud->points[i].z;
     }
 
-    center->x /= k;
-    center->y /= k;
-    center->z /= k;
+    cloud->centroid->x /= cloud->num_pts;
+    cloud->centroid->y /= cloud->num_pts;
+    cloud->centroid->z /= cloud->num_pts;
 
-    return center;
+    return cloud->centroid;
 }
 
 /*
