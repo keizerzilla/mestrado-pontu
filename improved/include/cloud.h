@@ -194,14 +194,13 @@ int cloud_save_csv(struct cloud* cloud, const char* filename)
         return 0;
     }
 
-    int print = 0;
     for (uint i = 0; i < cloud->num_pts; i++) {
-        print = fprintf(file, "%le,%le,%le\n", cloud->points[i].x,
-                                               cloud->points[i].y,
-                                               cloud->points[i].z);
-        if (print < 0)
-            break;
+        fprintf(file, "%le,%le,%le\n", cloud->points[i].x,
+                                       cloud->points[i].y,
+                                       cloud->points[i].z);
     }
+
+    fclose(file);
 
     return 1;
 }

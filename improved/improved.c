@@ -11,7 +11,7 @@
 #include "include/cloud.h"
 
 #ifndef PSIZE
-#define PSIZE 10
+#define PSIZE 4096
 #endif
 
 float randf(float max)
@@ -26,14 +26,20 @@ int main(int argc, char** argv)
         exit(1);
     }
 
-    struct cloud* cloud = cloud_load_csv(argv[1]);
+    srand(time(NULL));
 
-    cloud_debug(cloud, "testando cloud_load_csv", stdout);
+    struct cloud* cloud = cloud_new(PSIZE);
+    for (uint i = 0; i < PSIZE; i++) {
+        cloud_set_point(cloud, i, randf(256), randf(256), randf(256));
+    }
+
     cloud_sort(cloud);
-    cloud_debug(cloud, "testando cloud_sort", stdout);
-    vector3_debug(cloud_get_center(cloud), "testando cloud_get_center", stdout);
-    vector3_debug(cloud_axis_size(cloud), "testando cloud_axis, size", stdout);
+    struct vector3* center = cloud_get_center(cloud);
+    struct vector3* axis = cloud_axis_size(cloud);
+    cloud_save_csv(cloud, argv[1]);
 
+    vector3_free(center);
+    vector3_free(axis);
     cloud_free(cloud);
 
     return 0;
