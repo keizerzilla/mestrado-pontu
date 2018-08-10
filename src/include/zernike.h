@@ -201,21 +201,18 @@ real zernike_moment(int n, int m, struct zsphere* zsphere)
     real odd = 0.0f;
     real poly = 0.0f;
 
-    struct cloud* cloud = zsphere->cloud;
-    while (cloud != NULL) {
-        distance = zernike_radial_distance(zsphere, cloud->point);
+    for (uint i = 0; i < zsphere->cloud->num_pts; i++) {
+        distance = zernike_radial_distance(zsphere, &zsphere->cloud->points[i]);
 
         if (distance <= 1.0f) {
             poly = zernike_poly(n, m, distance);
-            angle = zernike_azimuth(cloud->point);
+            angle = zernike_azimuth(&zsphere->cloud->points[i]);
             even = zernike_even(poly, m, angle);
             odd = zernike_odd(poly, m, angle);
             moment += sqrt(pow(even, 2) + pow(odd, 2));
 
             zsphere->norm += 1;
         }
-
-        cloud = cloud->next;
     }
 
     return (moment * (n + 1.0f)) / zsphere->norm;
@@ -227,10 +224,9 @@ real zernike_moment(int n, int m, struct zsphere* zsphere)
  * @param cut O corte da nuvem
  * @param results A matriz onde os resultados serão salvos
  */
-void zernike_cloud_moments(struct cloud* cloud, real cut,
-                           struct matrix* results)
+void zernike_cloud_moments(struct cloud* cloud, struct matrix* results)
 {
-    struct zsphere* zsphere = zsphere_new(cloud, cut);
+    struct zsphere* zsphere = zsphere_new(cloud, 666.0f);
 
     int n = 0;
     int m = 0;

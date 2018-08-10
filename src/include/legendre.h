@@ -43,12 +43,12 @@ real legendre_poly(int n, real x)
  * @param p A ordem da dimensão x
  * @param q A ordem da dimensão y
  * @param r A ordem da dimensão z
- * @param nump Número de pontos da nuvem
+ * @param num_pts Número de pontos da nuvem
  * @return A constante de normalização(p,q,r)
  */
-real legendre_norm(int p, int q, int r, int nump)
+real legendre_norm(int p, int q, int r, int num_pts)
 {
-    return (((3 * p) + 1) * ((3 * q) + 1) * ((3 * r) + 1)) / (1.0f * nump);
+    return (((3 * p) + 1) * ((3 * q) + 1) * ((3 * r) + 1)) / (1.0f * num_pts);
 }
 
 /**
@@ -56,25 +56,19 @@ real legendre_norm(int p, int q, int r, int nump)
  * @param p A ordem da dimensão x
  * @param q A ordem da dimensão y
  * @param r A ordem da dimensão z
- * @param center O centro da nuvem
  * @param cloud A nuvem alvo
- * @param nump Número de pontos da nuvem
  * @return O momento de ordem(p,q,r) da nuvem cloud
  */
-real legendre_moment(int p, int q, int r, struct vector3* center,
-                     struct cloud* cloud, int nump)
+real legendre_moment(int p, int q, int r, struct cloud* cloud)
 {
     real moment = 0.0f;
-    real norm = legendre_norm(p, q, r, nump);
+    real norm = legendre_norm(p, q, r, cloud->num_pts);
+    struct vector3* center = cloud_get_center(cloud);
 
-    struct cloud* aux = cloud;
-    while (aux != NULL) {
-        moment += legendre_poly(p, aux->point->x - center->x) *
-                  legendre_poly(q, aux->point->y - center->y) *
-                  legendre_poly(r, aux->point->z - center->z);
-
-        aux = aux->next;
-    }
+    for (uint i = 0; i < cloud->num_pts; i++)
+        moment += legendre_poly(p, cloud->points[i].x - center->x) *
+                  legendre_poly(q, cloud->points[i].y - center->y) *
+                  legendre_poly(r, cloud->points[i].z - center->z);
 
     return norm * moment;
 }
@@ -82,11 +76,9 @@ real legendre_moment(int p, int q, int r, struct vector3* center,
 /**
  * @brief legendre_cloud_moments Calcula os momentos de Legendre de uma nuvem
  * @param cloud A nuvem alvo
- * @param cut O corte da nuvem
  * @param results A matrix aonde os resultados serão salvos
  */
-void legendre_cloud_moments(struct cloud* cloud, real cut,
-                            struct matrix* results)
+void legendre_cloud_moments(struct cloud* cloud, struct matrix* results)
 {
     int p = 0;
     int q = 0;
@@ -94,14 +86,10 @@ void legendre_cloud_moments(struct cloud* cloud, real cut,
     int row = 0;
     int col = 0;
 
-    struct vector3* center = cloud_get_center(cloud);
-    int num_pts = cloud_num_of_points(cloud);
-
     for (p = 1; p <= LEGENDRE_ORDER; p++) {
         for (q = 1; q <= LEGENDRE_ORDER; q++) {
             for (r = 1; r <= LEGENDRE_ORDER; r++) {
-                matrix_set(results, row, col, legendre_moment(p, q, r, center,
-                                                              cloud, num_pts));
+                matrix_set(results, row, col, legendre_moment(p, q, r, cloud));
                 col++;
             }
         }

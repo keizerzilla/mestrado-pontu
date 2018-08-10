@@ -31,20 +31,14 @@
  * @param result_file Arquivo onde os momentos serão salvos
  * @return 0 se ocorreu algum erro, 1 caso-contrário
  */
-int run_extractor(void (*ext_function)(struct cloud*, real cut, struct matrix*),
+int run_extractor(void (*ext_function)(struct cloud*, struct matrix*),
                   int num_of_moments,
-                  real cut,
                   const char* input_cloud,
                   const char* result_file)
 {
 
-    struct cloud* cloud = cloud_load_from_file(input_cloud);
-    struct cloud* sub = NULL;
-
-    if (cut < 0)
-        sub = cloud;
-    else
-        sub = cloud_subcloud(cloud, cut);
+    struct cloud* cloud = cloud_load_csv(input_cloud);
+    struct cloud* sub = cloud;
 
     if (cloud == NULL || sub == NULL) {
         printf("EXT: ERRO AO CARREGAR A NUVEM %s\n", input_cloud);
@@ -53,11 +47,11 @@ int run_extractor(void (*ext_function)(struct cloud*, real cut, struct matrix*),
 
     struct matrix* feat_matrix = matrix_new(1, num_of_moments);
 
-    (*ext_function)(sub, cut, feat_matrix);
+    (*ext_function)(sub, feat_matrix);
     matrix_save_to_file(feat_matrix, result_file, "a+", ',');
 
     matrix_free(feat_matrix);
-    cloud_free(sub);
+    cloud_free(cloud);
 
     return 1;
 }
@@ -69,18 +63,17 @@ int run_extractor(void (*ext_function)(struct cloud*, real cut, struct matrix*),
  * @return 0 se a execução terminou com sucesso, 1 caso-contrário
  */
 int program_interface(int argc, char** argv) {
-    if (argc != 5) {
+    if (argc != 4) {
         printf("ERRO: PARAMETROS INCORRETOS!\n");
         printf("USO: char-ext <extrator> <corte> <nuvem> <saida>\n");
         printf("EXTRATOR: hu, zernike, tchebychev, legendre\n");
-        printf("CORTE: valor inteiro em milimetros (distancia ponto-centro)\n");
         printf("NUVEM: arquivo da nuvem com pontos no formato x y z\n");
         printf("SAIDA: arquivo texto com os atributos extraidos\n");
         printf("EXEMPLO: char-ext zernike 60 sample.cloud result.txt\n\n");
         exit(1);
     }
 
-    void (*ext_function)(struct cloud*, real, struct matrix*) = NULL;
+    void (*ext_function)(struct cloud*, struct matrix*) = NULL;
     int num_of_moments = 0;
 
     if (!strcmp(argv[1], HU)) {
@@ -100,64 +93,10 @@ int program_interface(int argc, char** argv) {
         exit(1);
     }
 
-    real cut = atof(argv[2]);
-
-    if (run_extractor(ext_function, num_of_moments, cut, argv[3], argv[4]))
+    if (run_extractor(ext_function, num_of_moments, argv[3], argv[4]))
         printf("[%s][%s][OK]\n", argv[1], argv[3]);
     else
         printf("ERROS DURANTE EXECUCAO! ABORTANDO!\n");
-
-    return 0;
-}
-
-/**
- * @brief center_profile Extrái distâncias dos pontos ao centro
- * @param argc Número de argumentos passados pela linha de comando
- * @param argv Lista dos argumentos passados pela linha de comando
- * @return 0 se a execução terminou com sucesso, 1 caso-contrário
- */
-int center_profile(int argc, char** argv) {
-    if (argc != 3) {
-        printf("ERRO: PARAMETROS INCORRETOS!\n");
-        printf("USO: cloudz <nuvem> <saida>\n");
-        printf("NUVEM: caminho completo para o arquivo a nuvem\n");
-        printf("SAIDA: arquivo onde as distancias serao salvas\n");
-        printf("EXEMPLO: cloudz bs000_N_1.cloud nuvem_d.txt\n\n");
-        exit(1);
-    }
-
-    struct cloud* cloud = cloud_load_from_file(argv[1]);
-    if (cloud == NULL) {
-        printf("ERRO: NUVEM [%s]\nNAO ENCONTRADA!\n", argv[1]);
-        exit(1);
-    }
-
-    FILE* output = fopen(argv[2], "w");
-    if (output == NULL) {
-        printf("ERRO: ARQUIVO [%s]\nNAO FOI POSSIVEL ABRIR!\n", argv[2]);
-        exit(1);
-    }
-
-    printf("ANALISANDO [%s]... ", argv[1]);
-
-    struct cloud* aux = cloud;
-    struct vector3* center = cloud_get_center(cloud);
-    real d = 0.0f;
-    int count = 0;
-    while (aux != NULL) {
-        d = vector3_distance(center, aux->point);
-        fprintf(output, "%.10e\n", d);
-
-        aux = aux->next;
-        d = 0.0f;
-        count++;
-    }
-
-    printf("DONE! [%d]\n", count);
-
-    fclose(output);
-    vector3_free(center);
-    cloud_free(cloud);
 
     return 0;
 }

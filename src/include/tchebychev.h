@@ -74,19 +74,13 @@ real tchebychev_moment(int p, int q, int r, int n, struct cloud* cloud)
     real norm = tchebychev_norm(p, n) *
                 tchebychev_norm(q, n) *
                 tchebychev_norm(r, n);
-
-    struct cloud* aux = cloud;
     struct vector3* center = cloud_get_center(cloud);
-    while (aux != NULL) {
-        moment += tchebychev_poly(p, n, aux->point->x - center->x) *
-                  tchebychev_poly(q, n, aux->point->y - center->y) *
-                  tchebychev_poly(r, n, aux->point->z - center->z) *
-                  vector3_distance(aux->point, center);
 
-        aux = aux->next;
-    }
-
-    vector3_free(center);
+    for (uint i = 0; i < cloud->num_pts; i++)
+        moment += tchebychev_poly(p, n, cloud->points[i].x - center->x) *
+                  tchebychev_poly(q, n, cloud->points[i].y - center->y) *
+                  tchebychev_poly(r, n, cloud->points[i].z - center->z) *
+                  vector3_distance(&cloud->points[i], center);
 
     return moment / norm;
 }
@@ -97,8 +91,7 @@ real tchebychev_moment(int p, int q, int r, int n, struct cloud* cloud)
  * @param cut O corte da nuvem
  * @param results A matriz aonde os resultados serão salvos
  */
-void tchebychev_cloud_moments(struct cloud* cloud, real cut,
-                              struct matrix* results)
+void tchebychev_cloud_moments(struct cloud* cloud, struct matrix* results)
 {
     int p = 0;
     int q = 0;
@@ -119,4 +112,3 @@ void tchebychev_cloud_moments(struct cloud* cloud, real cut,
 }
 
 #endif // TCHEBYCHEV_H
-

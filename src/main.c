@@ -8,10 +8,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-#include "include/cloud.h"
+#include "include/hu.h"
+#include "include/legendre.h"
+#include "include/tchebychev.h"
+#include "include/zernike.h"
+#include "include/extraction.h"
 
 #ifndef PSIZE
-#define PSIZE 4096
+#define PSIZE 40960
 #endif
 
 float randf(float max)
@@ -21,7 +25,7 @@ float randf(float max)
 
 int main(int argc, char** argv)
 {
-    if (argc != 2) {
+    if (argc != 3) {
         fprintf(stderr, "mising arguments\n");
         exit(1);
     }
@@ -29,19 +33,16 @@ int main(int argc, char** argv)
     srand(time(NULL));
 
     struct cloud* cloud = cloud_new(PSIZE);
-    for (uint i = 0; i < PSIZE; i++) {
+    for (uint i = 0; i < PSIZE; i++)
         cloud_set_point(cloud, i, randf(256), randf(256), randf(256));
-    }
-
-    cloud_sort(cloud);
-    struct vector3* center = cloud_get_center(cloud);
-    struct vector3* axis = cloud_axis_size(cloud);
-
-    vector3_debug(center, "novo get_center", stdout);
 
     cloud_save_csv(cloud, argv[1]);
 
-    vector3_free(axis);
+    struct matrix* results = matrix_new(1, 21);
+    hu_cloud_moments(cloud, results);
+    matrix_save_to_file(results, argv[2], "w", ',');
+    matrix_free(results);
+
     cloud_free(cloud);
 
     return 0;
