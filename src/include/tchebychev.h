@@ -1,14 +1,12 @@
 /**
- * @file tchebychev.h
- * @author Artur Rodrigues Rocha Neto
- * @date 2017
- * @brief Arquivo contendo as implementações necessárias para o cálculo dos
- * momentos de Tchebychev.
- *
- * Os momentos de Tchebychev são calculados com base no próprio espaço dos
- * pontos da nuvem. Ou seja, diferente de outros momentos, não há necessidade de
- * efetuar uma transformação das coordenadas dos pontos de um domínio para
- * outro.
+ * \file tchebychev.h
+ * \author Artur Rodrigues Rocha Neto
+ * \date 2017
+ * \brief Arquivo contendo as implementações necessárias para o cálculo dos
+ * momentos de Tchebychev. Os momentos de Tchebychev são calculados com base no
+ * próprio espaço dos pontos da nuvem. Ou seja, diferente de outros momentos,
+ * não há necessidade de efetuar uma transformação das coordenadas dos pontos de
+ * um domínio para outro.
  */
 
 #ifndef TCHEBYCHEV_H
@@ -20,11 +18,11 @@
 #include "matrix.h"
 
 /**
- * @brief tchebychev_poly Calcula o polinômio de Tchebychev
- * @param p A ordem do polinômio
- * @param n O número de pontos da nuvem
- * @param x O argumento do polinômio
- * @return O polinômio de Tchebychev de ordem(p)
+ * \brief tchebychev_poly Calcula o polinômio de Tchebychev
+ * \param p A ordem do polinômio
+ * \param n O número de pontos da nuvem
+ * \param x O argumento do polinômio
+ * \return O polinômio de Tchebychev de ordem(p)
  */
 real tchebychev_poly(int p, int n, real x)
 {
@@ -42,10 +40,10 @@ real tchebychev_poly(int p, int n, real x)
 }
 
 /**
- * @brief tchebychev_norm A norma dos polinômios de Tchebychev
- * @param p A ordem do polinômio
- * @param n O número de pontos da nuvem
- * @return A norma do polinômio de ordem(p)
+ * \brief tchebychev_norm A norma dos polinômios de Tchebychev
+ * \param p A ordem do polinômio
+ * \param n O número de pontos da nuvem
+ * \return A norma do polinômio de ordem(p)
  */
 real tchebychev_norm(int p, int n)
 {
@@ -60,13 +58,13 @@ real tchebychev_norm(int p, int n)
 }
 
 /**
- * @brief tchebychev_moment Calcula um momento de Tchebychev
- * @param p A ordem da dimensão x
- * @param q A ordem da dimensão y
- * @param r A ordem da dimensão z
- * @param n O número de pontos da nuvem
- * @param cloud A nuvem alvo
- * @return O momento de Tchebychev de ordem(p,q,r)
+ * \brief tchebychev_moment Calcula um momento de Tchebychev
+ * \param p A ordem da dimensão x
+ * \param q A ordem da dimensão y
+ * \param r A ordem da dimensão z
+ * \param n O número de pontos da nuvem
+ * \param cloud A nuvem alvo
+ * \return O momento de Tchebychev de ordem(p,q,r)
  */
 real tchebychev_moment(int p, int q, int r, int n, struct cloud* cloud)
 {
@@ -86,10 +84,10 @@ real tchebychev_moment(int p, int q, int r, int n, struct cloud* cloud)
 }
 
 /**
- * @brief tchebychev_cloud_moments Calcula todos os momentos de Tchebychev
- * @param cloud A nuvem alvo
- * @param cut O corte da nuvem
- * @param results A matriz aonde os resultados serão salvos
+ * \brief tchebychev_cloud_moments Calcula todos os momentos de Tchebychev
+ * \param cloud A nuvem alvo
+ * \param cut O corte da nuvem
+ * \param results A matriz aonde os resultados serão salvos
  */
 void tchebychev_cloud_moments(struct cloud* cloud, struct matrix* results)
 {

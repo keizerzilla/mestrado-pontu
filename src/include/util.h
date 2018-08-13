@@ -1,8 +1,8 @@
-/*
- * @file util.h
- * @author Artur Rodrigues Rocha Neto
- * @date 2018
- * @brief Arquivo com funções utilitárias genéricas.
+/**
+ * \file util.h
+ * \author Artur Rodrigues Rocha Neto
+ * \date 2018
+ * \brief Arquivo com funções utilitárias genéricas.
  */
 
 #ifndef UTIL_H

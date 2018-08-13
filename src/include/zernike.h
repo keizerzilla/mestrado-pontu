@@ -1,12 +1,10 @@
 /**
- * @file zernike.h
- * @author Artur Rodrigues Rocha Neto
- * @date 2017
- * @brief Arquivo contendo as implementações necessárias para o cálculo dos
- * momentos de Zernike.
- *
- * Os momentos de Zernike mapeam um conjunto de dados em um domínio complexo,
- * minimizando redundâncias ou sobreposição de informações.
+ * \file zernike.h
+ * \author Artur Rodrigues Rocha Neto
+ * \date 2017
+ * \brief Arquivo contendo as implementações necessárias para o cálculo dos
+ * momentos de Zernike. Os momentos de Zernike mapeam um conjunto de dados no
+ * domínio complexo, minimizando redundâncias e sobreposição de informações.
  */
 
 #ifndef ZERNIKE_H
@@ -16,10 +14,8 @@
 #include "matrix.h"
 
 /**
- * @brief A estrutura zsphere
- *
- * Uma zspehere nada mais é que o subconjunto de uma nuvem delimitada por um
- * raio em torno de um ponto central.
+ * \brief Estrutura que guarda o subconjunto de uma nuvem delimitada por um raio
+ * em torno de um ponto central.
  */
 struct zsphere {
     struct cloud* cloud;
@@ -29,10 +25,10 @@ struct zsphere {
 };
 
 /**
- * @brief zsphere_new Aloca espaço para uma nova zsphere
- * @param cloud A nuvem a ser delimitada
- * @param radius O raio da zsphere
- * @return O ponteiro para a zsphere alocada, NULL caso não haja memória
+ * \brief zsphere_new Aloca espaço para uma nova zsphere
+ * \param cloud A nuvem a ser delimitada
+ * \param radius O raio da zsphere
+ * \return O ponteiro para a zsphere alocada, NULL caso não haja memória
  */
 struct zsphere* zsphere_new(struct cloud* cloud, real radius)
 {
@@ -50,8 +46,8 @@ struct zsphere* zsphere_new(struct cloud* cloud, real radius)
 }
 
 /**
- * @brief zsphere_free Libera a memória alocada para uma zsphere (nunca usada)
- * @param zsphere A zsphere alvo
+ * \brief zsphere_free Libera a memória alocada para uma zsphere (nunca usada)
+ * \param zsphere A zsphere alvo
  */
 void zsphere_free(struct zsphere* zsphere)
 {
@@ -63,9 +59,9 @@ void zsphere_free(struct zsphere* zsphere)
 }
 
 /**
- * @brief zernike_factorial_recursive Calcula o fatorial de um número inteiro
- * @param n O número que ser quer calcular o fatorial
- * @return O fatorial de n
+ * \brief zernike_factorial_recursive Calcula o fatorial de um número inteiro
+ * \param n O número que ser quer calcular o fatorial
+ * \return O fatorial de n
  */
 int zernike_factorial_recursive(int n)
 {
@@ -76,9 +72,9 @@ int zernike_factorial_recursive(int n)
 }
 
 /**
- * @brief zernike_factorial_loop Calcula o fatorial de um número inteiro
- * @param n O número que ser quer calcular o fatorial
- * @return O fatorial de n
+ * \brief zernike_factorial_loop Calcula o fatorial de um número inteiro
+ * \param n O número que ser quer calcular o fatorial
+ * \return O fatorial de n
  */
 int zernike_factorial_loop(int n)
 {
@@ -92,11 +88,11 @@ int zernike_factorial_loop(int n)
 }
 
 /**
- * @brief zernike_core Calcula o core do polinômio de Zernike
- * @param n A ordem do polinômio
- * @param m A repetição do polinômio
- * @param s O indíce do somatório
- * @return O core de ordem(n,m) e índice(s)
+ * \brief zernike_core Calcula o core do polinômio de Zernike
+ * \param n A ordem do polinômio
+ * \param m A repetição do polinômio
+ * \param s O indíce do somatório
+ * \return O core de ordem(n,m) e índice(s)
  */
 real zernike_core(int n, int m, int s)
 {
@@ -109,10 +105,10 @@ real zernike_core(int n, int m, int s)
 }
 
 /**
- * @brief zernike_radial_distance Distância radial entre um ponto e o centro
- * @param zsphere A zsphere alvo
- * @param point O ponto alvo
- * @return A distância radial (normalizada)
+ * \brief zernike_radial_distance Distância radial entre um ponto e o centro
+ * \param zsphere A zsphere alvo
+ * \param point O ponto alvo
+ * \return A distância radial (normalizada)
  */
 real zernike_radial_distance(struct zsphere* zsphere, struct vector3* point)
 {
@@ -120,10 +116,10 @@ real zernike_radial_distance(struct zsphere* zsphere, struct vector3* point)
 }
 
 /**
- * @brief zernike_conditions As condições de contorno dos polinômios de Zernike
- * @param n A ordem do polinômio
- * @param m A repetição
- * @return 1 se as condições forem satisfeitas, 0 caso-contrário
+ * \brief zernike_conditions As condições de contorno dos polinômios de Zernike
+ * \param n A ordem do polinômio
+ * \param m A repetição
+ * \return 1 se as condições forem satisfeitas, 0 caso-contrário
  */
 int zernike_conditions(int n, int m)
 {
@@ -134,11 +130,11 @@ int zernike_conditions(int n, int m)
 }
 
 /**
- * @brief zernike_polyn Calcula um polinômio regular de Zernike
- * @param n A ordem do polinômio
- * @param m A repetição
- * @param distance A distância em questão
- * @return O polinômio regular de Zernike de ordem(n) e repetição(m)
+ * \brief zernike_polyn Calcula um polinômio regular de Zernike
+ * \param n A ordem do polinômio
+ * \param m A repetição
+ * \param distance A distância em questão
+ * \return O polinômio regular de Zernike de ordem(n) e repetição(m)
  */
 real zernike_poly(int n, int m, real distance)
 {
@@ -152,9 +148,9 @@ real zernike_poly(int n, int m, real distance)
 }
 
 /**
- * @brief zernike_azimuth Calcula o ângulo azimutal de um vetor (ponto)
- * @param point O ponto alvo
- * @return O ângulo do vetor no plano(x,y)
+ * \brief zernike_azimuth Calcula o ângulo azimutal de um vetor (ponto)
+ * \param point O ponto alvo
+ * \return O ângulo do vetor no plano(x,y)
  */
 real zernike_azimuth(struct vector3* point)
 {
@@ -162,11 +158,11 @@ real zernike_azimuth(struct vector3* point)
 }
 
 /**
- * @brief zernike_even A parte par de um polinômio radial de Zernike
- * @param radpoly O polinômio radial
- * @param m A repeticao do polinomio
- * @param angle O ângulo azimutal do polinômio associado
- * @return A parte par do polinômio complexo
+ * \brief zernike_even A parte par de um polinômio radial de Zernike
+ * \param radpoly O polinômio radial
+ * \param m A repeticao do polinomio
+ * \param angle O ângulo azimutal do polinômio associado
+ * \return A parte par do polinômio complexo
  */
 real zernike_even(real radpoly, int m, real angle)
 {
@@ -174,11 +170,11 @@ real zernike_even(real radpoly, int m, real angle)
 }
 
 /**
- * @brief zernike_odd A parte impar de um polinômio radial de Zernike
- * @param radpoly O polinômio radial
- * @param m A repeticao do polinomio
- * @param angle O ângulo azimutal do polinômio associado
- * @return A parte ímpar do polinômio complexo
+ * \brief zernike_odd A parte impar de um polinômio radial de Zernike
+ * \param radpoly O polinômio radial
+ * \param m A repeticao do polinomio
+ * \param angle O ângulo azimutal do polinômio associado
+ * \return A parte ímpar do polinômio complexo
  */
 real zernike_odd(real radpoly, int m, real angle)
 {
@@ -186,11 +182,11 @@ real zernike_odd(real radpoly, int m, real angle)
 }
 
 /**
- * @brief zernike_moment Calcula um momento de Zernike
- * @param n A ordem do polinômio
- * @param m A repetição do polinômio
- * @param zsphere A zsphere alvo
- * @return O momento de Zernike de ordem(n) e repetição(m)
+ * \brief zernike_moment Calcula um momento de Zernike
+ * \param n A ordem do polinômio
+ * \param m A repetição do polinômio
+ * \param zsphere A zsphere alvo
+ * \return O momento de Zernike de ordem(n) e repetição(m)
  */
 real zernike_moment(int n, int m, struct zsphere* zsphere)
 {
@@ -219,10 +215,10 @@ real zernike_moment(int n, int m, struct zsphere* zsphere)
 }
 
 /**
- * @brief zernike_cloud_moments Calcula todos os momentos de Zernike deuma nuvem
- * @param cloud A nuvem alvo
- * @param cut O corte da nuvem
- * @param results A matriz onde os resultados serão salvos
+ * \brief zernike_cloud_moments Calcula todos os momentos de Zernike deuma nuvem
+ * \param cloud A nuvem alvo
+ * \param cut O corte da nuvem
+ * \param results A matriz onde os resultados serão salvos
  */
 void zernike_cloud_moments(struct cloud* cloud, struct matrix* results)
 {

@@ -1,14 +1,13 @@
 /**
- * @file hu.h
- * @author Artur Rodrigues Rocha Neto
- * @date 2017
- * @brief Arquivo contendo as implementações necessárias para o cálculo dos
- * momentos invariantes de Hu para nuvens de pontos.
- *
- * Os momentos de Hu são 7 valores que descrevem uma nuvem com base em
- * heurísticas invariantes à escala, à rotação e à translação. Para nuvens de
- * pontos, calculamos esses 7 momentos para cada uma dos planos da nuvem (xy,
- * xz e yz). No total, 21 momentos são extráidos de cada nuvem.
+ * \file hu.h
+ * \author Artur Rodrigues Rocha Neto
+ * \date 2017
+ * \brief Implementações necessárias para o cálculo dos momentos invariantes de
+ * Hu para nuvens de pontos. Os momentos de Hu são 7 valores que descrevem uma
+ * imagem com base em heurísticas invariantes à escala, à rotação e à
+ * translação. Para nuvens de pontos, calculamos esses 7 momentos para cada uma
+ * dos planos da nuvem (xy, xz e yz). No total, 21 momentos são extráidos de
+ * cada nuvem.
  */
 
 #ifndef HU_H
@@ -18,13 +17,8 @@
 #include "matrix.h"
 
 /**
- * @brief A estrutura responsavel por salvar os momentos de Hu para uma dada
- * nuvem de pontos
- *
- * Os momentos de Hu são 7 valores que descrevem uma nuvem com base em
- * heurísticas invariantes à escala, à rotação e à translação. Para nuvens de
- * pontos, calculamos esses 7 momentos para cada uma dos planos da nuvem (xy,
- * xz e yz). No total, 21 momentos são extráidos de cada nuvem.
+ * \brief Estrutura responsavel por armazenar os momentos de Hu para uma dada
+ * nuvem de pontos.
  */
 struct hu {
     real i1;
@@ -37,12 +31,12 @@ struct hu {
 };
 
 /**
- * @brief hu_regular_moment Calcula o momento regular de Hu
- * @param p A ordem da dimensão x
- * @param q A ordem da dimensão y
- * @param r A ordem da dimensão z
- * @param cloud A nuvem alvo
- * @return O momento regular(p,q,r) da nuvem cloud
+ * \brief hu_regular_moment Calcula o momento regular de Hu
+ * \param p A ordem da dimensão x
+ * \param q A ordem da dimensão y
+ * \param r A ordem da dimensão z
+ * \param cloud A nuvem alvo
+ * \return O momento regular(p,q,r) da nuvem cloud
  */
 real hu_regular_moment(int p, int q, int r, struct cloud* cloud)
 {
@@ -56,12 +50,12 @@ real hu_regular_moment(int p, int q, int r, struct cloud* cloud)
 }
 
 /**
- * @brief hu_central_moment Calcula o momento central de Hu
- * @param p A ordem da dimensão x
- * @param q A ordem da dimensão y
- * @param r A ordem da dimensão z
- * @param cloud A nuvem alvo
- * @return O momento central(p,q,r) da nuvem cloud
+ * \brief hu_central_moment Calcula o momento central de Hu
+ * \param p A ordem da dimensão x
+ * \param q A ordem da dimensão y
+ * \param r A ordem da dimensão z
+ * \param cloud A nuvem alvo
+ * \return O momento central(p,q,r) da nuvem cloud
  */
 real hu_central_moment(int p, int q, int r, struct cloud* cloud)
 {
@@ -78,12 +72,12 @@ real hu_central_moment(int p, int q, int r, struct cloud* cloud)
 }
 
 /**
- * @brief hu_normalized_moment Calcula o momento normalizado de Hu
- * @param p A ordem da dimensão x
- * @param q A ordem da dimensão y
- * @param r A ordem da dimensão z
- * @param cloud A nuvem alvo
- * @return O momento normalizado(p,q,r) da nuvem cloud
+ * \brief hu_normalized_moment Calcula o momento normalizado de Hu
+ * \param p A ordem da dimensão x
+ * \param q A ordem da dimensão y
+ * \param r A ordem da dimensão z
+ * \param cloud A nuvem alvo
+ * \return O momento normalizado(p,q,r) da nuvem cloud
  */
 real hu_normalized_moment(int p, int q, int r, struct cloud* cloud)
 {
@@ -94,9 +88,9 @@ real hu_normalized_moment(int p, int q, int r, struct cloud* cloud)
 }
 
 /**
- * @brief hu_cloud_moments Calcula os momentos invariantes de Hu de uma nuvem
- * @param cloud A nuvem alvo
- * @param results A matriz aonde os momentos serão salvos
+ * \brief hu_cloud_moments Calcula os momentos invariantes de Hu de uma nuvem
+ * \param cloud A nuvem alvo
+ * \param results A matriz aonde os momentos serão salvos
  */
 void hu_cloud_moments(struct cloud* cloud, struct matrix* results)
 {

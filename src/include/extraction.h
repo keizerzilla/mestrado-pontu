@@ -1,9 +1,9 @@
 /**
- * @file extraction.h
- * @author Artur Rodrigues Rocha Neto
- * @date 2017
- * @brief Arquivo contendo as funções reponsáveis pelo pipeline de extraçao de
- * atributos das nuvens através dos diversos algoritmos implementados.
+ * \file extraction.h
+ * \author Artur Rodrigues Rocha Neto
+ * \date 2017
+ * \brief Funções reponsáveis pelo pipeline de extraçao de atributos das nuvens
+ * através dos diversos algoritmos implementados.
  */
 
 #ifndef EXTRACTION_H
@@ -25,11 +25,11 @@
 #define ZERNIKE_MOMENTS 16
 
 /**
- * @brief run_extractor Executa um dado algoritmo de extração de atributos
- * @param num_of_moments Quantos momentos devem ser calculados
- * @param input_cloud A nuvem alvo
- * @param result_file Arquivo onde os momentos serão salvos
- * @return 0 se ocorreu algum erro, 1 caso-contrário
+ * \brief run_extractor Executa um dado algoritmo de extração de atributos
+ * \param num_of_moments Quantos momentos devem ser calculados
+ * \param input_cloud A nuvem alvo
+ * \param result_file Arquivo onde os momentos serão salvos
+ * \return 0 se ocorreu algum erro, 1 caso-contrário
  */
 int run_extractor(void (*ext_function)(struct cloud*, struct matrix*),
                   int num_of_moments,
@@ -57,10 +57,10 @@ int run_extractor(void (*ext_function)(struct cloud*, struct matrix*),
 }
 
 /**
- * @brief program_interface Função de inteface para extração de atributos
- * @param argc Número de argumentos passados pela linha de comando
- * @param argv Lista dos argumentos passados pela linha de comando
- * @return 0 se a execução terminou com sucesso, 1 caso-contrário
+ * \brief program_interface Função de inteface para extração de atributos
+ * \param argc Número de argumentos passados pela linha de comando
+ * \param argv Lista dos argumentos passados pela linha de comando
+ * \return 0 se a execução terminou com sucesso, 1 caso-contrário
  */
 int program_interface(int argc, char** argv) {
     if (argc != 4) {

@@ -1,12 +1,10 @@
 /**
- * @file legendre.h
- * @author Artur Rodrigues Rocha Neto
- * @date 2017
- * @brief Arquivo contendo as implementações necessárias para o cálculo dos
- * momentos de Legendre para nuvens de pontos.
- *
- * O momentos de Legendre são derivados da relação recursiva dos polinômios de
- * Legendre.
+ * \file legendre.h
+ * \author Artur Rodrigues Rocha Neto
+ * \date 2017
+ * \brief Implementações necessárias para o cálculo dos momentos de Legendre
+ * para nuvens de pontos. O momentos de Legendre são derivados da relação
+ * recursiva dos polinômios de Legendre.
  */
 
 #ifndef LEGENDRE_H
@@ -18,10 +16,10 @@
 #include "matrix.h"
 
 /**
- * @brief legendre_poly Calcula o polinômio de Legendre
- * @param n A ordem do polinômio
- * @param x O argumento do polinômio
- * @return O polinômio de x de ordem n
+ * \brief legendre_poly Calcula o polinômio de Legendre
+ * \param n A ordem do polinômio
+ * \param x O argumento do polinômio
+ * \return O polinômio de x de ordem n
  */
 real legendre_poly(int n, real x)
 {
@@ -39,12 +37,12 @@ real legendre_poly(int n, real x)
 }
 
 /**
- * @brief legendre_norm Calcula a constante de normalização
- * @param p A ordem da dimensão x
- * @param q A ordem da dimensão y
- * @param r A ordem da dimensão z
- * @param num_pts Número de pontos da nuvem
- * @return A constante de normalização(p,q,r)
+ * \brief legendre_norm Calcula a constante de normalização
+ * \param p A ordem da dimensão x
+ * \param q A ordem da dimensão y
+ * \param r A ordem da dimensão z
+ * \param num_pts Número de pontos da nuvem
+ * \return A constante de normalização(p,q,r)
  */
 real legendre_norm(int p, int q, int r, int num_pts)
 {
@@ -52,12 +50,12 @@ real legendre_norm(int p, int q, int r, int num_pts)
 }
 
 /**
- * @brief legendre_moment Calcula o momento de legendre
- * @param p A ordem da dimensão x
- * @param q A ordem da dimensão y
- * @param r A ordem da dimensão z
- * @param cloud A nuvem alvo
- * @return O momento de ordem(p,q,r) da nuvem cloud
+ * \brief legendre_moment Calcula o momento de legendre
+ * \param p A ordem da dimensão x
+ * \param q A ordem da dimensão y
+ * \param r A ordem da dimensão z
+ * \param cloud A nuvem alvo
+ * \return O momento de ordem(p,q,r) da nuvem cloud
  */
 real legendre_moment(int p, int q, int r, struct cloud* cloud)
 {
@@ -74,9 +72,9 @@ real legendre_moment(int p, int q, int r, struct cloud* cloud)
 }
 
 /**
- * @brief legendre_cloud_moments Calcula os momentos de Legendre de uma nuvem
- * @param cloud A nuvem alvo
- * @param results A matrix aonde os resultados serão salvos
+ * \brief legendre_cloud_moments Calcula os momentos de Legendre de uma nuvem
+ * \param cloud A nuvem alvo
+ * \param results A matrix aonde os resultados serão salvos
  */
 void legendre_cloud_moments(struct cloud* cloud, struct matrix* results)
 {
