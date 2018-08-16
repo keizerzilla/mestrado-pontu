@@ -25,7 +25,7 @@ struct cloud {
 };
 
 /**
- * \brief cloud_new Inicializa uma estrutura do tipo cloud
+ * \brief Inicializa uma estrutura do tipo cloud
  * \param cloud A estrutura que salvará a nuvem
  * \param num_of_points Quantos pontos possui a nuvem
  * \return O ponteiro para uma nuvem alocada ou NULL se houver algo erro
@@ -54,7 +54,7 @@ struct cloud* cloud_new(uint num_pts)
 }
 
 /**
- * \brief cloud_free Libera a memória alocada para uma nuvem
+ * \brief Libera a memória alocada para uma nuvem
  * \param cloud A nuvem a ser liberada
  */
 void cloud_free(struct cloud* cloud)
@@ -71,7 +71,7 @@ void cloud_free(struct cloud* cloud)
 }
 
 /**
- * \brief cloud_set_point Seta os valores de um dos pontos da nuvem
+ * \brief Seta os valores de um dos pontos da nuvem
  * \param cloud A nuvem alvo
  * \param index O índice do ponto a ser setado
  * \param x O valor da coordenada x
@@ -96,7 +96,7 @@ struct vector3* cloud_set_point(struct cloud* cloud,
 }
 
 /**
- * \brief cloud_set_point Seta os valores de um dos pontos da nuvem
+ * \brief Seta os valores de um dos pontos da nuvem
  * \param cloud A nuvem alvo
  * \param index O índice do ponto a ser setado
  * \param point O valor das coordenadas a serem setadas
@@ -110,7 +110,7 @@ struct vector3* cloud_set_point_cpy(struct cloud* cloud,
 }
 
 /**
- * \brief cloud_add_point Adiciona um novo ponto a uma nuvem
+ * \brief Adiciona um novo ponto a uma nuvem
  * \param cloud A nuvem alvo
  * \param x A coordenada x do ponto
  * \param y A coordenada y do ponto
@@ -139,7 +139,7 @@ struct vector3* cloud_add_point(struct cloud* cloud,
 }
 
 /**
- * \brief cloud_add_point_cpy Adiciona um novo ponto a uma nuvem
+ * \brief Adiciona um novo ponto a uma nuvem
  * \param cloud A nuvem alvo
  * \param point O ponto a ser adicionado
  * \return O endereço do novo ponto alocado ou NULL se não houver memória
@@ -150,7 +150,7 @@ struct vector3* cloud_add_point_cpy(struct cloud* cloud, struct vector3* point)
 }
 
 /**
- * \brief cloud_load_csv Carrega uma nuvem a partir de um arquivo CSV
+ * \brief Carrega uma nuvem a partir de um arquivo CSV
  * \param filename O arquivo onde a nuvem está guardada
  * \return Um estrutura cloud carregada em memória ou NULL caso ocorra erro
  */
@@ -175,7 +175,7 @@ struct cloud* cloud_load_csv(const char* filename)
     real z = 0;
     uint index = 0;
     while (!feof(file)) {
-        fscanf(file, "%le,%le,%le\n", &x, &y, &z);
+        fscanf(file, "%le %le %le\n", &x, &y, &z);
         cloud_set_point(cloud, index, x, y, z);
         index++;
     }
@@ -186,7 +186,7 @@ struct cloud* cloud_load_csv(const char* filename)
 }
 
 /**
- * \brief cloud_save_to_file Salva uma nuvem em arquivo
+ * \brief Salva uma nuvem em arquivo
  * \param cloud A nuvem a ser salva
  * \param filename O arquivo destino
  * \return 0 se ocorreu algum erro, 1 caso-contrário
@@ -200,7 +200,7 @@ int cloud_save_csv(struct cloud* cloud, const char* filename)
     }
 
     for (uint i = 0; i < cloud->num_pts; i++) {
-        fprintf(file, "%le,%le,%le\n", cloud->points[i].x,
+        fprintf(file, "%le %le %le\n", cloud->points[i].x,
                                        cloud->points[i].y,
                                        cloud->points[i].z);
     }
@@ -211,7 +211,7 @@ int cloud_save_csv(struct cloud* cloud, const char* filename)
 }
 
 /**
- * \brief cloud_num_of_points Conta quantos pontos constituem uma nuvem
+ * \brief Conta quantos pontos constituem uma nuvem
  * \param cloud A nuvem alvo
  * \return O número de pontos de cloud
  */
@@ -221,7 +221,7 @@ uint cloud_num_of_points(struct cloud* cloud)
 }
 
 /**
- * \brief cloud_get_center Calcula o centro geométrico de uma nuvem de pontos
+ * \brief Calcula o centro geométrico de uma nuvem de pontos
  * \param cloud A Nuvem alvo
  * \return Um ponto com as coordenadas do centro geométrico da nuvem
  */
@@ -246,7 +246,7 @@ struct vector3* cloud_get_center(struct cloud* cloud)
 }
 
 /**
- * \brief cloud_scale Escala uma nuvem a partir de um fator
+ * \brief Escala uma nuvem a partir de um fator
  * \param cloud A nuvem alvo
  * \param f O fator de escalamento
  */
@@ -257,7 +257,7 @@ void cloud_scale(struct cloud* cloud, real f)
 }
 
 /**
- * \brief cloud_compare Função utilitária para a função de ordenação
+ * \brief Função utilitária para a função de ordenação
  * \param p1 O primeiro ponto para comparação
  * \param p2 O segundo ponto para comparação
  */
@@ -270,7 +270,7 @@ int cloud_compare(const void* p1, const void* p2)
 }
 
 /**
- * \brief cloud_sort Ordena uma cloud em profundidade
+ * \brief Ordena uma cloud em profundidade
  * \param cloud A cloud alvo
  */
 void cloud_sort(struct cloud* cloud)
@@ -279,7 +279,7 @@ void cloud_sort(struct cloud* cloud)
 }
 
 /**
- * \brief cloud_axis_size Calcula os tamanhos dos 3 eixos de uma nuvem
+ * \brief Calcula os tamanhos dos 3 eixos de uma nuvem
  * \param cloud A nuvem alvo
  * \return Um ponto onde cada coordenada é o tamanho da dimensão em questão
  */
@@ -320,7 +320,7 @@ struct vector3* cloud_axis_size(struct cloud* cloud)
 }
 
 /**
- * \brief cloud_subcloud Secciona uma nuvem com base em corte a partir do centro
+ * \brief Secciona uma nuvem com base em corte a partir do centro
  * \param cloud A nuvem alvo
  * \param cut Valor do corte em milimetros
  * \return A subnuvem
@@ -334,13 +334,11 @@ struct cloud* cloud_subcloud(struct cloud* cloud, real cut) {
             cloud_add_point_cpy(sub, &cloud->points[i]);
     }
 
-    vector3_free(center);
-
     return sub;
 }
 
 /**
- * \brief cloud_debug Debuga uma nuvem ponto a ponto na saída padrão
+ * \brief Debuga uma nuvem ponto a ponto na saída padrão
  * \param cloud A nuvem a ser debugada
  * \param message Uma mensagem opcional para ser exibida no início do debug
  * \param output O arquivo aonde exibir a mensagem
@@ -349,9 +347,9 @@ void cloud_debug(struct cloud* cloud, const char* message, FILE* output)
 {
     fprintf(output, "cloud: %s\n", message);
     for (uint i = 0; i < cloud->num_pts; i++)
-        fprintf(output, "%le, %le, %le\n", cloud->points[i].x,
-                                           cloud->points[i].y,
-                                           cloud->points[i].z);
+        fprintf(output, "%le %le %le\n", cloud->points[i].x,
+                                         cloud->points[i].y,
+                                         cloud->points[i].z);
 }
 
 #endif // CLOUD_H

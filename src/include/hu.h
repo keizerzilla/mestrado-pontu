@@ -13,6 +13,8 @@
 #ifndef HU_H
 #define HU_H
 
+#define HU_MOMENTS 21
+
 #include "cloud.h"
 #include "matrix.h"
 
@@ -31,7 +33,7 @@ struct hu {
 };
 
 /**
- * \brief hu_regular_moment Calcula o momento regular de Hu
+ * \brief Calcula o momento regular de Hu
  * \param p A ordem da dimensão x
  * \param q A ordem da dimensão y
  * \param r A ordem da dimensão z
@@ -50,7 +52,7 @@ real hu_regular_moment(int p, int q, int r, struct cloud* cloud)
 }
 
 /**
- * \brief hu_central_moment Calcula o momento central de Hu
+ * \brief Calcula o momento central de Hu
  * \param p A ordem da dimensão x
  * \param q A ordem da dimensão y
  * \param r A ordem da dimensão z
@@ -72,7 +74,7 @@ real hu_central_moment(int p, int q, int r, struct cloud* cloud)
 }
 
 /**
- * \brief hu_normalized_moment Calcula o momento normalizado de Hu
+ * \brief Calcula o momento normalizado de Hu
  * \param p A ordem da dimensão x
  * \param q A ordem da dimensão y
  * \param r A ordem da dimensão z
@@ -88,12 +90,14 @@ real hu_normalized_moment(int p, int q, int r, struct cloud* cloud)
 }
 
 /**
- * \brief hu_cloud_moments Calcula os momentos invariantes de Hu de uma nuvem
+ * \brief Calcula os momentos invariantes de Hu de uma nuvem
  * \param cloud A nuvem alvo
- * \param results A matriz aonde os momentos serão salvos
+ * \return A matriz aonde os momentos serão salvos
  */
-void hu_cloud_moments(struct cloud* cloud, struct matrix* results)
+struct matrix* hu_cloud_moments(struct cloud* cloud)
 {
+    struct matrix* results = matrix_new(1, HU_MOMENTS);
+
     real a;
     real b;
     real c;
@@ -206,6 +210,8 @@ void hu_cloud_moments(struct cloud* cloud, struct matrix* results)
     matrix_set(results, 0, 18, hu_yz.i5);
     matrix_set(results, 0, 19, hu_yz.i6);
     matrix_set(results, 0, 20, hu_yz.i7);
+
+    return results;
 }
 
 #endif // HU_H

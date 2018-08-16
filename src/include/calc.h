@@ -36,7 +36,7 @@ real calc_squared_length3(real x, real y, real z)
 }
 
 /**
- * \brief calc_length3 Calcula o tamanho em 3 dimensões
+ * \brief Calcula o tamanho em 3 dimensões
  * \param x Coordenada x
  * \param y Coordenada y
  * \param z Coordenada z
@@ -48,7 +48,7 @@ real calc_length3(real x, real y, real z)
 }
 
 /**
- * \brief calc_squared_length2 Calcula o tamanho quadrático em 2 dimensões
+ * \brief Calcula o tamanho quadrático em 2 dimensões
  * \param x Coordenada x
  * \param y Coordenada y
  * \return  O tamanho quadrático 2D do ponto(x,y)
@@ -59,7 +59,7 @@ real calc_squared_length2(real x, real y)
 }
 
 /**
- * \brief calc_length2 Calcula o tamanho em 2 dimensões
+ * \brief Calcula o tamanho em 2 dimensões
  * \param x Coordenada x
  * \param y Coordenada y
  * \return  O tamanho 2D do ponto(x,y)
@@ -70,7 +70,7 @@ real calc_length2(real x, real y)
 }
 
 /**
- * \brief calc_randr Gera números reais aleatórios
+ * \brief Gera números reais aleatórios
  * \param max Valor máximo possível a ser gerado
  * \return Um número real aleatório no intervalo [0, max]
  */

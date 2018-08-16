@@ -1,5 +1,4 @@
-all: main
+all: mcalc
 
-main: main.c
-	gcc main.c -o ../bin/main -lm
-	
+mcalc: mcalc.c
+	gcc mcalc.c -o ../bin/mcalc -lm

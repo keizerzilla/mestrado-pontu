@@ -11,12 +11,13 @@
 #define LEGENDRE_H
 
 #define LEGENDRE_ORDER 3
+#define LEGENDRE_MOMENTS 27
 
 #include "cloud.h"
 #include "matrix.h"
 
 /**
- * \brief legendre_poly Calcula o polinômio de Legendre
+ * \brief Calcula o polinômio de Legendre
  * \param n A ordem do polinômio
  * \param x O argumento do polinômio
  * \return O polinômio de x de ordem n
@@ -37,7 +38,7 @@ real legendre_poly(int n, real x)
 }
 
 /**
- * \brief legendre_norm Calcula a constante de normalização
+ * \brief Calcula a constante de normalização
  * \param p A ordem da dimensão x
  * \param q A ordem da dimensão y
  * \param r A ordem da dimensão z
@@ -50,7 +51,7 @@ real legendre_norm(int p, int q, int r, int num_pts)
 }
 
 /**
- * \brief legendre_moment Calcula o momento de legendre
+ * \brief Calcula o momento de legendre
  * \param p A ordem da dimensão x
  * \param q A ordem da dimensão y
  * \param r A ordem da dimensão z
@@ -72,12 +73,14 @@ real legendre_moment(int p, int q, int r, struct cloud* cloud)
 }
 
 /**
- * \brief legendre_cloud_moments Calcula os momentos de Legendre de uma nuvem
+ * \brief Calcula os momentos de Legendre de uma nuvem
  * \param cloud A nuvem alvo
- * \param results A matrix aonde os resultados serão salvos
+ * \return A matrix aonde os resultados serão salvos
  */
-void legendre_cloud_moments(struct cloud* cloud, struct matrix* results)
+struct matrix* legendre_cloud_moments(struct cloud* cloud)
 {
+    struct matrix* results = matrix_new(1, LEGENDRE_MOMENTS);
+
     int p = 0;
     int q = 0;
     int r = 0;
@@ -92,6 +95,8 @@ void legendre_cloud_moments(struct cloud* cloud, struct matrix* results)
             }
         }
     }
+
+    return results;
 }
 
 #endif // LEGENDRE_H

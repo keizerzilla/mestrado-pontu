@@ -25,7 +25,7 @@ struct vector3 {
 };
 
 /**
- * \brief vector3_new Cria um novo vetor
+ * \brief Cria um novo vetor
  * \param x A coordenada x
  * \param y A coordenada y
  * \param z A coordenada z
@@ -45,7 +45,7 @@ struct vector3* vector3_new(real x, real y, real z)
 }
 
 /**
- * \brief vector3_zero Cria um vetor vazio
+ * \brief Cria um vetor vazio
  * \param x A coordenada x
  * \param y A coordenada y
  * \param z A coordenada z
@@ -57,7 +57,7 @@ struct vector3* vector3_zero()
 }
 
 /**
- * \brief vector3_copy Faz uma cópia de um vetor
+ * \brief Faz uma cópia de um vetor
  * \param src O vetor a ser copiado
  * \param dst O vetor que guardará a cópia
  */
@@ -69,7 +69,7 @@ void vector3_copy(struct vector3* src, struct vector3* dst)
 }
 
 /**
- * \brief vector3_free Libera espaço de memória alocado para um vetor
+ * \brief Libera espaço de memória alocado para um vetor
  * \param v O vetor a ser liberado
  */
 void vector3_free(struct vector3* v)
@@ -79,7 +79,7 @@ void vector3_free(struct vector3* v)
 }
 
 /**
- * \brief vector3_add Soma dois vetores
+ * \brief Soma dois vetores
  * \param a O primeiro vetor
  * \param b O segundo vetor
  * \return O vetor resultante da soma de a com b
@@ -90,7 +90,7 @@ struct vector3* vector3_add(struct vector3* a, struct vector3* b)
 }
 
 /**
- * \brief vector3_sub Subtrái dois vetores
+ * \brief Subtrái dois vetores
  * \param a O primeiro vetor
  * \param b O segundo vetor
  * \return O vetor resultante da subtração de a com b
@@ -101,7 +101,7 @@ struct vector3* vector3_sub(struct vector3* a, struct vector3* b)
 }
 
 /**
- * \brief vector3_set Seta os valores de um vetor
+ * \brief Seta os valores de um vetor
  * \param v O vetor alvo
  * \param x O valor da coordenada x
  * \param y O valor da coordenada y
@@ -115,7 +115,7 @@ void vector3_set(struct vector3* v, real x, real y, real z)
 }
 
 /**
- * \brief vector3_invert Inverte um vetor
+ * \brief Inverte um vetor
  * \param v O vetor a ser invertido
  */
 void vector3_invert(struct vector3* v)
@@ -126,7 +126,7 @@ void vector3_invert(struct vector3* v)
 }
 
 /**
- * \brief vector3_distance Calcula a distância euclidiana entre dois vetores
+ * \brief Calcula a distância euclidiana entre dois vetores
  * \param a O primeiro vetor
  * \param b O segundo vetor
  * \return A distância euclidiana entra a e b
@@ -137,7 +137,7 @@ real vector3_distance(struct vector3* a, struct vector3* b)
 }
 
 /**
- * \brief vector3_manhattan Calcula a distância Manhattan entre dois vetores
+ * \brief Calcula a distância Manhattan entre dois vetores
  * \param a O primeiro vetor
  * \param b O segundo vetor
  * \return A distância Manhattan entra a e b
@@ -148,7 +148,7 @@ real vector3_manhattan(struct vector3* a, struct vector3* b)
 }
 
 /**
- * \brief vector3_squared_length Calcula o tamanho quadrático de um vetor
+ * \brief Calcula o tamanho quadrático de um vetor
  * \param v O vetor alvo
  * \return O tamanho quadrático de v
  */
@@ -158,7 +158,7 @@ real vector3_squared_length(struct vector3* v)
 }
 
 /**
- * \brief vector3_length Calcula o tamanho de um vetor
+ * \brief Calcula o tamanho de um vetor
  * \param v O vetor alvo
  * \return O tamanho de v
  */
@@ -168,7 +168,7 @@ real vector3_length(struct vector3* v)
 }
 
 /**
- * \brief vector3_squared_length Calcula o tamanho quadrático (2D) de um vetor
+ * \brief Calcula o tamanho quadrático (2D) de um vetor
  * \param v O vetor alvo
  * \return O tamanho quadrático de v
  */
@@ -178,7 +178,7 @@ real vector3_squared_length2(struct vector3* v)
 }
 
 /**
- * \brief vector3_length Calcula o tamanho (2D) de um vetor
+ * \brief Calcula o tamanho (2D) de um vetor
  * \param v O vetor alvo
  * \return O tamanho de v
  */
@@ -188,7 +188,7 @@ real vector3_length2(struct vector3* v)
 }
 
 /**
- * \brief vector3_setlength Muda tamanho de um vetor sem alterar a sua direção
+ * \brief Muda tamanho de um vetor sem alterar a sua direção
  * \param v O vetor a ser modificado
  * \param l O novo tamanho do vetor
  */
@@ -206,7 +206,7 @@ void vector3_setlength(struct vector3* v, real l)
 }
 
 /**
- * \brief vector3_unit Retorna o vetor unitário de um vetor
+ * \brief Retorna o vetor unitário de um vetor
  * \param v O vetor alvo
  * \return Um novo vetor de tamanho 1 e direção igual a v
  */
@@ -223,7 +223,7 @@ struct vector3* vector3_unit(struct vector3* v)
 }
 
 /**
- * \brief vector3_normalize Normaliza um vetor
+ * \brief Normaliza um vetor
  * \param v O vetor alvo
  */
 void vector3_normalize(struct vector3* v)
@@ -236,7 +236,7 @@ void vector3_normalize(struct vector3* v)
 }
 
 /**
- * \brief vector3_scale Escala um vetor através de um fator numérico
+ * \brief Escala um vetor através de um fator numérico
  * \param v O vetor alvo
  * \param factor O fator de escalamento
  */
@@ -248,7 +248,7 @@ void vector3_scale(struct vector3* v, real f)
 }
 
 /**
- * \brief vector3_dot Calcula o produto escalar entre dois vetores
+ * \brief Calcula o produto escalar entre dois vetores
  * \param a O primeiro vetor
  * \param b O segundo vetor
  * \return O produto escalar entre a e b
@@ -259,7 +259,7 @@ real vector3_dot(struct vector3* a, struct vector3* b)
 }
 
 /**
- * \brief vector3_cross Calcula o produto vetorial entre dois vetores
+ * \brief Calcula o produto vetorial entre dois vetores
  * \param a O primeiro vetor
  * \param b O segundo vetor
  * \return O produto vetorial entre a e b
@@ -272,7 +272,7 @@ struct vector3* vector3_cross(struct vector3* a, struct vector3* b)
 }
 
 /**
- * \brief vector3_cross2 Calcula o produto vetorial 2D entre dois vetores
+ * \brief Calcula o produto vetorial 2D entre dois vetores
  * \param a O primeiro vetor
  * \param b O segundo vetor
  * \return O produto vetorial 2D entre a e b
@@ -283,7 +283,7 @@ real vector3_cross2(struct vector3* a, struct vector3* b)
 }
 
 /**
- * \brief vector3_push2D Zera o eixo z do vetor
+ * \brief Zera o eixo z do vetor
  * \param v O vetor alvo
  */
 void vector3_push2(struct vector3* v) {
@@ -291,7 +291,7 @@ void vector3_push2(struct vector3* v) {
 }
 
 /**
- * \brief vector3_lerp Efetua interpolação linear em um vetor
+ * \brief Efetua interpolação linear em um vetor
  * \param s O vetor a ser interpolado
  * \param t O vetor alvo/objetivo
  * \param v A velocidade da interpolação
@@ -304,7 +304,7 @@ void vector3_lerp(struct vector3* s, struct vector3* t, real v)
 }
 
 /**
- * \brief vector3_volume Calcula o volume de uma caixa com dimensões x, y, z
+ * \brief Calcula o volume de uma caixa com dimensões x, y, z
  * \param v O vetor que guarda as dimensões da caixa
  * \return O volume
  */
@@ -314,7 +314,7 @@ real vector3_volume(struct vector3* v)
 }
 
 /**
- * \brief vector3_projection Calcula a projeção de um vetor sobre outro
+ * \brief Calcula a projeção de um vetor sobre outro
  * \param a O primeiro vetor
  * \param b O segundo vetor
  * \return O vetor projeção de a sobre b
@@ -330,7 +330,7 @@ struct vector3* vector3_projection(struct vector3* a, struct vector3* b)
 }
 
 /**
- * \brief vector3_reflection Retorna a reflexão de um vetor em um plano
+ * \brief Retorna a reflexão de um vetor em um plano
  * \param v O vetor sendo refletido
  * \param n O vetor normal ao plano
  * \return O vetor reflexão de v em n
@@ -347,7 +347,7 @@ struct vector3* vector3_reflection(struct vector3* v, struct vector3* n)
 }
 
 /**
- * \brief vector3_angle Calcula o ângulo entre dois vetores
+ * \brief Calcula o ângulo entre dois vetores
  * \param a O primeiro vetor
  * \param b O segundo vetor
  * \return O ângulo entre a e b
@@ -358,7 +358,7 @@ real vector3_angle(struct vector3* a, struct vector3* b)
 }
 
 /**
- * \brief vector3_normal Acha a normal à superfície de um triângulo
+ * \brief Acha a normal à superfície de um triângulo
  * \param a O primeiro vetor
  * \param b O segundo vetor
  * \param c O terceiro vetor
@@ -380,7 +380,7 @@ struct vector3* vector3_normal(struct vector3* a,
 
 
 /**
- * \brief vector3_area Acha a área da superfície de um triângulo
+ * \brief Acha a área da superfície de um triângulo
  * \param a O primeiro vetor
  * \param b O segundo vetor
  * \param c O terceiro vetor
@@ -398,7 +398,7 @@ real vector3_area(struct vector3* a,
 }
 
 /**
- * \brief vector3_debug Debuga um vetor exibindo suas coordenadas e uma mensagem
+ * \brief Debuga um vetor exibindo suas coordenadas e uma mensagem
  * \param v O vetor a ser debugado
  * \param msg Uma mensagem a ser exibida no topo do debug
  * \param output O arquivo aonde exibir a mensagem

@@ -13,12 +13,13 @@
 #define TCHEBYCHEV_H
 
 #define TCHEBYCHEV_ORDER 2
+#define TCHEBYCHEV_MOMENTS 36
 
 #include "cloud.h"
 #include "matrix.h"
 
 /**
- * \brief tchebychev_poly Calcula o polinômio de Tchebychev
+ * \brief Calcula o polinômio de Tchebychev
  * \param p A ordem do polinômio
  * \param n O número de pontos da nuvem
  * \param x O argumento do polinômio
@@ -40,7 +41,7 @@ real tchebychev_poly(int p, int n, real x)
 }
 
 /**
- * \brief tchebychev_norm A norma dos polinômios de Tchebychev
+ * \brief A norma dos polinômios de Tchebychev
  * \param p A ordem do polinômio
  * \param n O número de pontos da nuvem
  * \return A norma do polinômio de ordem(p)
@@ -58,7 +59,7 @@ real tchebychev_norm(int p, int n)
 }
 
 /**
- * \brief tchebychev_moment Calcula um momento de Tchebychev
+ * \brief Calcula um momento de Tchebychev
  * \param p A ordem da dimensão x
  * \param q A ordem da dimensão y
  * \param r A ordem da dimensão z
@@ -84,13 +85,15 @@ real tchebychev_moment(int p, int q, int r, int n, struct cloud* cloud)
 }
 
 /**
- * \brief tchebychev_cloud_moments Calcula todos os momentos de Tchebychev
+ * \brief Calcula todos os momentos de Tchebychev
  * \param cloud A nuvem alvo
  * \param cut O corte da nuvem
- * \param results A matriz aonde os resultados serão salvos
+ * \return A matriz aonde os resultados serão salvos
  */
-void tchebychev_cloud_moments(struct cloud* cloud, struct matrix* results)
+struct matrix* tchebychev_cloud_moments(struct cloud* cloud)
 {
+    struct matrix* results = matrix_new(1, TCHEBYCHEV_MOMENTS);
+
     int p = 0;
     int q = 0;
     int r = 0;
@@ -107,6 +110,8 @@ void tchebychev_cloud_moments(struct cloud* cloud, struct matrix* results)
             }
         }
     }
+
+    return results;
 }
 
 #endif // TCHEBYCHEV_H

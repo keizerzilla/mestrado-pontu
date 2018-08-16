@@ -25,7 +25,7 @@ struct matrix {
 };
 
 /**
- * \brief matrix_new Aloca memória para uma nova matriz
+ * \brief Aloca memória para uma nova matriz
  * \param rows Quantidade de linhas da matriz
  * \param cols Quantidade de colunas da matriz
  * \return Um ponteiro para o endereço aonde a matriz está na memória
@@ -48,7 +48,7 @@ struct matrix* matrix_new(uint rows, uint cols)
 }
 
 /**
- * \brief matrix_free Libera espaço alocado para uma matriz
+ * \brief Libera espaço alocado para uma matriz
  * \param mat A matriz a ser desalocada
  */
 void matrix_free(struct matrix* mat)
@@ -61,7 +61,7 @@ void matrix_free(struct matrix* mat)
 }
 
 /**
- * \brief matrix_add_row Adiciona uma nova linha a uma matriz
+ * \brief Adiciona uma nova linha a uma matriz
  * \param mat A matriz alvo
  * \return A nova quantidade de linhas da matriz se sucesso, 0 caso-contrário
  */
@@ -83,7 +83,7 @@ int matrix_add_row(struct matrix* mat)
 }
 
 /**
- * \brief matrix_set Seta o valor em uma dada célula de uma matriz
+ * \brief Seta o valor em uma dada célula de uma matriz
  * \param mat A matriz alvo
  * \param i O índice da linha
  * \param j O índice da coluna
@@ -98,7 +98,7 @@ void matrix_set(struct matrix* mat, uint i, uint j, real value)
 }
 
 /**
- * \brief matrix_get Recupera um valor salvo na matriz
+ * \brief Recupera um valor salvo na matriz
  * \param mat A matriz alvo
  * \param i O índice da linha
  * \param j O índice da coluna
@@ -115,7 +115,7 @@ real matrix_get(struct matrix* mat, uint i, uint j)
 }
 
 /**
- * \brief matrix_save_to_file Salva uma matriz em arquivo
+ * \brief Salva uma matriz em arquivo
  * \param mat A matriz a ser salva
  * \param filename O caminho para o arquivo destino
  * \param sep O caractér seperador entre cada elemento das linhas
@@ -149,7 +149,7 @@ int matrix_save_to_file(struct matrix* mat,
 }
 
 /**
- * \brief matrix_debug Debuga uma matriz imprimindo todos os seus valores
+ * \brief Debuga uma matriz imprimindo todos os seus valores
  * \param mat A matriz a ser debugada
  * \param message Uma mensagem a ser exibida no topo do debug
  * \param output Arquivo aonde a mensagem será salva
