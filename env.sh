@@ -12,4 +12,8 @@ if [ ! -d "dump/" ]; then
 	mkdir dump/
 fi
 
-echo "Done!"
+if [ ! -d "results/" ]; then
+	mkdir results/
+fi
+
+echo "Pronto!"

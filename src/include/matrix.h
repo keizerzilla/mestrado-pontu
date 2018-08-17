@@ -118,13 +118,11 @@ real matrix_get(struct matrix* mat, uint i, uint j)
  * \brief Salva uma matriz em arquivo
  * \param mat A matriz a ser salva
  * \param filename O caminho para o arquivo destino
- * \param sep O caractér seperador entre cada elemento das linhas
  * \return 1 se a matriz for salva com sucesso, 0 caso-contrário
  */
 int matrix_save_to_file(struct matrix* mat,
                         const char* filename,
-                        const char* mode,
-                        char sep)
+                        const char* mode)
 {
     FILE* file = fopen(filename, mode);
     if (file == NULL) {
@@ -137,7 +135,7 @@ int matrix_save_to_file(struct matrix* mat,
             fprintf(file, "%le", matrix_get(mat, rows, cols));
 
             if (cols + 1 < mat->cols)
-                fprintf(file, "%c", sep);
+                fprintf(file, "%c", ',');
         }
 
         fprintf(file, "\n");

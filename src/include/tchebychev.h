@@ -99,7 +99,7 @@ struct matrix* tchebychev_cloud_moments(struct cloud* cloud)
     int r = 0;
     int row = 0;
     int col = 0;
-    int n = cloud_num_of_points(cloud);
+    int n = cloud_size(cloud);
 
     for (p = 0; p <= TCHEBYCHEV_ORDER; p++) {
         for (q = 0; q <= TCHEBYCHEV_ORDER; q++) {

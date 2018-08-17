@@ -291,6 +291,18 @@ void vector3_push2(struct vector3* v) {
 }
 
 /**
+ * @brief Calcula a distância de Minkowski entre dois vetores
+ * @param v1 O primeiro vetor
+ * @param v2 O segundo vetor
+ * @param m A ordem da distância
+ * @return A distância de ordem 'm' entre v1 e v2
+ */
+real vector3_minkowski(struct vector3* v1, struct vector3* v2, real m)
+{
+    return pow(pow(v1->x - v2->x, m) + pow(v1->y - v2->y, m), 1.0f/m);
+}
+
+/**
  * \brief Efetua interpolação linear em um vetor
  * \param s O vetor a ser interpolado
  * \param t O vetor alvo/objetivo

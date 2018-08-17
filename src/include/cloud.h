@@ -215,7 +215,7 @@ int cloud_save_csv(struct cloud* cloud, const char* filename)
  * \param cloud A nuvem alvo
  * \return O número de pontos de cloud
  */
-uint cloud_num_of_points(struct cloud* cloud)
+uint cloud_size(struct cloud* cloud)
 {
     return cloud->num_pts;
 }
@@ -279,6 +279,28 @@ void cloud_sort(struct cloud* cloud)
 }
 
 /**
+ * @brief Concatena (soma) duas nuvens
+ * @param c1 A primeira nuvem
+ * @param c2 A segunda nuvem
+ * @return Uma nuvem com os pontos de c1 e c2
+ */
+struct cloud* cloud_add(struct cloud* c1, struct cloud* c2)
+{
+    uint size_c1 = cloud_size(c1);
+    uint size_c2 = cloud_size(c2);
+
+    struct cloud* c3 = cloud_new(size_c1 + size_c2);
+
+    for (uint i = 0; i < size_c1; i++)
+        cloud_set_point_cpy(c3, i, &c1->points[i]);
+
+    for (uint j = 0; j < size_c2; j++)
+        cloud_set_point_cpy(c3, j + size_c1, &c2->points[j]);
+
+    return c3;
+}
+
+/**
  * \brief Calcula os tamanhos dos 3 eixos de uma nuvem
  * \param cloud A nuvem alvo
  * \return Um ponto onde cada coordenada é o tamanho da dimensão em questão
@@ -323,7 +345,7 @@ struct vector3* cloud_axis_size(struct cloud* cloud)
  * \brief Secciona uma nuvem com base em corte a partir do centro
  * \param cloud A nuvem alvo
  * \param cut Valor do corte em milimetros
- * \return A subnuvem
+ * \return A subnuvem cortada
  */
 struct cloud* cloud_subcloud(struct cloud* cloud, real cut) {
     struct cloud* sub = cloud_new(0);
