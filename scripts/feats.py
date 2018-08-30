@@ -8,7 +8,7 @@ folder = "../datasets/bosphorus/neutrals-free/"
 moments = "../dump/hu-moments-neutrals-free-train.dat"
 classes = "../dump/hu-classes-neutrals-free-train.dat"
 parse_fmt = "bs{:d}_{}_{}_{:w}.cloud"
-hard_mode = True
+hard_mode = False
 class_file = open(classes, "w")
 
 for cloud in os.listdir(folder):
