@@ -14,7 +14,7 @@
 
 void util_errormsg(const char* msg)
 {
-    fprintf(stderr, msg);
+    fprintf(stderr, "erro:\t%s\n", msg);
 }
 
 void util_error(const char* msg)
