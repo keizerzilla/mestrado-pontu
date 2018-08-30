@@ -35,13 +35,13 @@ struct cloud* cloud_new(uint num_pts)
     struct cloud* cloud = malloc(sizeof(struct cloud));
 
     if (cloud == NULL) {
-        fprintf(stderr, "%s: erro alocando memória para nuvem\n", __FUNCTION__);
+        fprintf(stderr, "%s: erro alocando memoria cloud\n", __FUNCTION__);
         return NULL;
     }
 
     cloud->points = malloc(num_pts * sizeof(struct vector3));
     if (cloud->points == NULL) {
-        fprintf(stderr, "%s: erro alocando memória para ponts\n", __FUNCTION__);
+        fprintf(stderr, "%s: erro alocando memoria points\n", __FUNCTION__);
         return NULL;
     }
 
@@ -86,7 +86,7 @@ struct vector3* cloud_set_point(struct cloud* cloud,
                                 real z)
 {
     if (index >= cloud->num_pts) {
-        fprintf(stderr, "%s: index out of bounds\n", __FUNCTION__);
+        fprintf(stderr, "%s: indice fora de intervalo\n", __FUNCTION__);
         return NULL;
     }
 
@@ -158,13 +158,13 @@ struct cloud* cloud_load_csv(const char* filename)
 {
     FILE* file = fopen(filename, "r");
     if (file == NULL) {
-        fprintf(stderr, "%s: erro com arquivo %s\n", __FUNCTION__, filename);
+        fprintf(stderr, "%s: erro abrir arquivo %s\n", __FUNCTION__, filename);
         return NULL;
     }
 
     uint num_pts = 0;
-    while (!feof(file)) {
-        fscanf(file, "%*s\n");
+    while (!feof(file) && (fscanf(file, "%*s\n") != EOF)) {
+        //fscanf(file, "%*s\n");
         num_pts++;
     }
     rewind(file);
@@ -174,8 +174,8 @@ struct cloud* cloud_load_csv(const char* filename)
     real y = 0;
     real z = 0;
     uint index = 0;
-    while (!feof(file)) {
-        fscanf(file, "%le %le %le\n", &x, &y, &z);
+    while (!feof(file) && (fscanf(file, "%le %le %le\n", &x, &y, &z) != EOF)) {
+        //fscanf(file, "%le %le %le\n", &x, &y, &z);
         cloud_set_point(cloud, index, x, y, z);
         index++;
     }
@@ -195,7 +195,7 @@ int cloud_save_csv(struct cloud* cloud, const char* filename)
 {
     FILE* file = fopen(filename, "w");
     if (file == NULL) {
-        fprintf(stderr, "%s: erro com arquivo %s\n", __FUNCTION__, filename);
+        fprintf(stderr, "%s: erro abrir arquivo %s\n", __FUNCTION__, filename);
         return 0;
     }
 

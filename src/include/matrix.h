@@ -120,13 +120,11 @@ real matrix_get(struct matrix* mat, uint i, uint j)
  * \param filename O caminho para o arquivo destino
  * \return 1 se a matriz for salva com sucesso, 0 caso-contrário
  */
-int matrix_save_to_file(struct matrix* mat,
-                        const char* filename,
-                        const char* mode)
+int matrix_save_to_file(struct matrix* mat, const char* filename)
 {
-    FILE* file = fopen(filename, mode);
+    FILE* file = fopen(filename, "w");
     if (file == NULL) {
-        fprintf(stderr, "%s: erro com arquivo %s\n", __FUNCTION__, filename);
+        fprintf(stderr, "%s: erro abrir arquivo %s\n", __FUNCTION__, filename);
         return 0;
     }
 

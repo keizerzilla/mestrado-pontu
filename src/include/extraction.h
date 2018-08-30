@@ -53,12 +53,12 @@ void extraction_interface(int argc, char** argv)
     }
 
     if (optm == NULL || opti == NULL || opto == NULL) {
-        fprintf(stderr, "error: missing arguments!\n");
-        fprintf(stderr, "required arguments: -m | -i | -o\n");
+        fprintf(stderr, "erro: faltando argumentos!\n");
+        fprintf(stderr, "argumentos obrigatorios: -m | -i | -o\n");
         exit(1);
     }
 
-    struct matrix* (*mfunc)(struct cloud*);
+    struct matrix* (*mfunc)(struct cloud*) = &hu_cloud_moments;
     if (!strcmp(optm, HU))
         mfunc = &hu_cloud_moments;
     else if (!strcmp(optm, LEGENDRE))
@@ -72,7 +72,7 @@ void extraction_interface(int argc, char** argv)
         struct cloud* cloud = cloud_load_csv(opti);
         struct matrix* results = (*mfunc)(cloud);
 
-        matrix_save_to_file(results, opto, "a");
+        matrix_save_to_file(results, opto);
         matrix_free(results);
         cloud_free(cloud);
     } else {
@@ -80,7 +80,7 @@ void extraction_interface(int argc, char** argv)
         struct cloud* sub = cloud_subcloud(cloud, atof(optc));
         struct matrix* results = (*mfunc)(sub);
 
-        matrix_save_to_file(results, opto, "w");
+        matrix_save_to_file(results, opto);
         matrix_free(results);
         cloud_free(cloud);
         cloud_free(sub);
