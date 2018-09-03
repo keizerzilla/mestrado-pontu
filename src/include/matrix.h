@@ -14,6 +14,7 @@
 #include <stdio.h>
 
 #include "calc.h"
+#include "util.h"
 
 /**
  * \brief Estrutura matrix bidimensional.
@@ -92,7 +93,7 @@ int matrix_add_row(struct matrix* mat)
 void matrix_set(struct matrix* mat, uint i, uint j, real value)
 {
     if (i >= mat->rows || j >= mat->cols)
-        fprintf(stderr, "%s: index fora de posicao na matriz\n", __FUNCTION__);
+        util_error("%s: index fora de posicao na matriz\n", __FUNCTION__);
     else
         mat->data[(i * mat->cols) + j] = value;
 }
@@ -107,7 +108,7 @@ void matrix_set(struct matrix* mat, uint i, uint j, real value)
 real matrix_get(struct matrix* mat, uint i, uint j)
 {
     if (i >= mat->rows || j >= mat->cols) {
-        fprintf(stderr, "%s: index fora de posicao na matriz\n", __FUNCTION__);
+        util_error("%s: index fora de posicao na matriz\n", __FUNCTION__);
         return 0;
     } else {
         return mat->data[(i * mat->cols) + j];
@@ -124,7 +125,7 @@ int matrix_save_to_file(struct matrix* mat, const char* filename)
 {
     FILE* file = fopen(filename, "w");
     if (file == NULL) {
-        fprintf(stderr, "%s: erro abrir arquivo %s\n", __FUNCTION__, filename);
+        util_error("%s: erro abrir arquivo %s\n", __FUNCTION__, filename);
         return 0;
     }
 

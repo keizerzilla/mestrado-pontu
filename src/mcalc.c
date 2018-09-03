@@ -9,6 +9,7 @@
 
 int main(int argc, char** argv)
 {
+    util_prompt("mcalc - Artur Rodrigues Rocha Neto @UFC/INTERFACES");
     extraction_interface(argc, argv);
 	return 0;
 }

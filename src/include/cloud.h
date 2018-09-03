@@ -14,6 +14,7 @@
 #include <string.h>
 
 #include "vector3.h"
+#include "util.h"
 
 /**
  * \brief Estrutura que guarda uma nuvem de pontos em memória.
@@ -35,13 +36,13 @@ struct cloud* cloud_new(uint num_pts)
     struct cloud* cloud = malloc(sizeof(struct cloud));
 
     if (cloud == NULL) {
-        fprintf(stderr, "%s: erro alocando memoria cloud\n", __FUNCTION__);
+        util_error("%s: erro alocando memoria cloud", __FUNCTION__);
         return NULL;
     }
 
     cloud->points = malloc(num_pts * sizeof(struct vector3));
     if (cloud->points == NULL) {
-        fprintf(stderr, "%s: erro alocando memoria points\n", __FUNCTION__);
+        util_error("%s: erro alocando memoria points", __FUNCTION__);
         return NULL;
     }
 
@@ -86,7 +87,7 @@ struct vector3* cloud_set_point(struct cloud* cloud,
                                 real z)
 {
     if (index >= cloud->num_pts) {
-        fprintf(stderr, "%s: indice fora de intervalo\n", __FUNCTION__);
+        util_error("%s: indice fora de intervalo", __FUNCTION__);
         return NULL;
     }
 
@@ -126,7 +127,7 @@ struct vector3* cloud_add_point(struct cloud* cloud,
 
     struct vector3* new_points = realloc(cloud->points, new_size);
     if (new_points == NULL) {
-        fprintf(stderr, "%s: erro adicionando novo ponto\n", __FUNCTION__);
+        util_error("%s: erro adicionando novo ponto", __FUNCTION__);
         return NULL;
     }
 
@@ -158,7 +159,7 @@ struct cloud* cloud_load_csv(const char* filename)
 {
     FILE* file = fopen(filename, "r");
     if (file == NULL) {
-        fprintf(stderr, "%s: erro abrir arquivo %s\n", __FUNCTION__, filename);
+        util_error("%s: erro abrir arquivo %s", __FUNCTION__, filename);
         return NULL;
     }
 
@@ -195,7 +196,7 @@ int cloud_save_csv(struct cloud* cloud, const char* filename)
 {
     FILE* file = fopen(filename, "w");
     if (file == NULL) {
-        fprintf(stderr, "%s: erro abrir arquivo %s\n", __FUNCTION__, filename);
+        util_error("%s: erro abrir arquivo %s", __FUNCTION__, filename);
         return 0;
     }
 
@@ -308,7 +309,7 @@ struct cloud* cloud_add(struct cloud* c1, struct cloud* c2)
 struct vector3* cloud_axis_size(struct cloud* cloud)
 {
     if (cloud->num_pts == 0) {
-        fprintf(stderr, "%s: nuvem vazia\n", __FUNCTION__);
+        util_error("%s: nuvem vazia", __FUNCTION__);
         return vector3_zero();
     }
 

@@ -53,8 +53,11 @@ void extraction_interface(int argc, char** argv)
     }
 
     if (optm == NULL || opti == NULL || opto == NULL) {
-        fprintf(stderr, "erro: faltando argumentos!\n");
-        fprintf(stderr, "argumentos obrigatorios: -m | -i | -o\n");
+        util_error("faltando argumentos!");
+        util_info("argumentos obrigatorios: -m | -i | -o\n \
+-m: extrator (hu, zernike, legendre ou tchebychev)\n \
+-i: nuvem de entrada no formato CSV\n \
+-o: arquivo de saida aonde os momentos serao salvos");
         exit(1);
     }
 
@@ -70,6 +73,11 @@ void extraction_interface(int argc, char** argv)
 
     if (optc == NULL) {
         struct cloud* cloud = cloud_load_csv(opti);
+        if (cloud == NULL) {
+            util_seg("abortando");
+            exit(1);
+        }
+
         struct matrix* results = (*mfunc)(cloud);
 
         matrix_save_to_file(results, opto);
@@ -77,7 +85,17 @@ void extraction_interface(int argc, char** argv)
         cloud_free(cloud);
     } else {
         struct cloud* cloud = cloud_load_csv(opti);
+        if (cloud == NULL) {
+            util_seg("abortando");
+            exit(1);
+        }
+
         struct cloud* sub = cloud_subcloud(cloud, atof(optc));
+        if (sub == NULL) {
+            util_seg("abortando");
+            exit(1);
+        }
+
         struct matrix* results = (*mfunc)(sub);
 
         matrix_save_to_file(results, opto);
