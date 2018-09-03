@@ -15,7 +15,8 @@
 #include "cloud.h"
 #include "util.h"
 
-#define HU "hu"
+#define HU_TUTU "hu_tutu"
+#define HU_1980 "hu_1980"
 #define ZERNIKE "zernike"
 #define LEGENDRE "legendre"
 #define TCHEBYCHEV "tchebychev"
@@ -30,10 +31,9 @@ void extraction_interface(int argc, char** argv)
     char* optm = NULL;
     char* opti = NULL;
     char* opto = NULL;
-    char* optc = NULL;
 
     int opt;
-    while ((opt = getopt(argc, argv, "m:i:o:c:")) != -1) {
+    while ((opt = getopt(argc, argv, "m:i:o:")) != -1) {
         switch (opt) {
             case 'm':
                 optm = optarg;
@@ -44,9 +44,6 @@ void extraction_interface(int argc, char** argv)
             case 'o':
                 opto = optarg;
                 break;
-            case 'c':
-                optc = optarg;
-                break;
             default:
                 abort();
         }
@@ -55,15 +52,17 @@ void extraction_interface(int argc, char** argv)
     if (optm == NULL || opti == NULL || opto == NULL) {
         util_error("faltando argumentos!");
         util_info("argumentos obrigatorios: -m | -i | -o\n \
--m: extrator (hu, zernike, legendre ou tchebychev)\n \
+-m: extrator (hu_tutu, hu_1980, zernike, legendre ou tchebychev)\n \
 -i: nuvem de entrada no formato CSV\n \
--o: arquivo de saida aonde os momentos serao salvos");
+-o: arquivo aonde os momentos serao salvos, ou stdout para saida padrao");
         exit(1);
     }
 
     struct matrix* (*mfunc)(struct cloud*) = &hu_cloud_moments;
-    if (!strcmp(optm, HU))
+    if (!strcmp(optm, HU_TUTU))
         mfunc = &hu_cloud_moments;
+    else if(!strcmp(optm, HU_1980))
+        mfunc = &hu_cloud_moments_sadjadi_hall;
     else if (!strcmp(optm, LEGENDRE))
         mfunc = &legendre_cloud_moments;
     else if (!strcmp(optm, TCHEBYCHEV))
@@ -71,36 +70,19 @@ void extraction_interface(int argc, char** argv)
     else if (!strcmp(optm, ZERNIKE))
         mfunc = &zernike_cloud_moments;
 
-    if (optc == NULL) {
-        struct cloud* cloud = cloud_load_csv(opti);
-        if (cloud == NULL) {
-            util_seg("abortando");
-            exit(1);
-        }
-
-        struct matrix* results = (*mfunc)(cloud);
-
-        matrix_save_to_file(results, opto);
-        matrix_free(results);
-        cloud_free(cloud);
-    } else {
-        struct cloud* cloud = cloud_load_csv(opti);
-        if (cloud == NULL) {
-            util_seg("abortando");
-            exit(1);
-        }
-
-        struct cloud* sub = cloud_subcloud(cloud, atof(optc));
-        if (sub == NULL) {
-            util_seg("abortando");
-            exit(1);
-        }
-
-        struct matrix* results = (*mfunc)(sub);
-
-        matrix_save_to_file(results, opto);
-        matrix_free(results);
-        cloud_free(cloud);
-        cloud_free(sub);
+    struct cloud* cloud = cloud_load_csv(opti);
+    if (cloud == NULL) {
+        util_seg("abortando");
+        exit(1);
     }
+
+    struct matrix* results = (*mfunc)(cloud);
+
+    if (!strcmp(opto, "stdout"))
+        matrix_debug(stdout, results);
+    else
+        matrix_save_to_file(results, opto);
+
+    matrix_free(results);
+    cloud_free(cloud);
 }

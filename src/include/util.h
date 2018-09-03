@@ -36,6 +36,7 @@ void util_error(const char* msg, ...)
     va_end(arglist);
 
     fprintf(stderr, "%s[ERRO]:\t%s\n", KRED, buffer);
+    fprintf(stdout, "%s", KNRM);
 }
 
 /**
@@ -52,6 +53,7 @@ void util_info(const char* msg, ...)
     va_end(arglist);
 
     fprintf(stdout, "%s[INFO]:\t%s\n", KGRN, buffer);
+    fprintf(stdout, "%s", KNRM);
 }
 
 /**
@@ -68,6 +70,7 @@ void util_prompt(const char* msg, ...)
     va_end(arglist);
 
     fprintf(stdout, "%s[TUTU]:\t%s\n", KWHT, buffer);
+    fprintf(stdout, "%s", KNRM);
 }
 
 /**
@@ -83,7 +86,8 @@ void util_seg(const char* msg, ...)
     vsprintf(buffer, msg, arglist);
     va_end(arglist);
 
-    fprintf(stdout, "%s[>>>>]:\t%s\n", KGRN, buffer);
+    fprintf(stdout, "%s> %s\n", KMAG, buffer);
+    fprintf(stdout, "%s", KNRM);
 }
 
 #endif

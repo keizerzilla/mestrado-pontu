@@ -410,15 +410,13 @@ real vector3_area(struct vector3* a,
 }
 
 /**
- * \brief Debuga um vetor exibindo suas coordenadas e uma mensagem
- * \param v O vetor a ser debugado
- * \param msg Uma mensagem a ser exibida no topo do debug
+ * \brief Debuga um vetor exibindo suas coordenadas
  * \param output O arquivo aonde exibir a mensagem
+ * \param v O vetor a ser debugado
  */
-void vector3_debug(struct vector3* v, const char* msg, FILE* output)
+void vector3_debug(FILE* output, struct vector3* v)
 {
-    fprintf(output, "vector3: %s\n", msg);
-    fprintf(output, "%le, %le, %le\n", v->x, v->y, v->z);
+    fprintf(output, "%le %le %le\n", v->x, v->y, v->z);
 }
 
 #endif // VECTOR3_H

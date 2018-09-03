@@ -9,7 +9,7 @@
 
 int main(int argc, char** argv)
 {
-    util_prompt("mcalc - Artur Rodrigues Rocha Neto @UFC/INTERFACES");
+    util_error("CORRIGIR STACK SMASHING ERROR!!!");
     extraction_interface(argc, argv);
-	return 0;
+    return 0;
 }

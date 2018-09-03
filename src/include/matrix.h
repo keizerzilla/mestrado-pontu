@@ -147,17 +147,14 @@ int matrix_save_to_file(struct matrix* mat, const char* filename)
 
 /**
  * \brief Debuga uma matriz imprimindo todos os seus valores
+ * \param output Arquivo aonde a matrix será exibida
  * \param mat A matriz a ser debugada
- * \param message Uma mensagem a ser exibida no topo do debug
- * \param output Arquivo aonde a mensagem será salva
  */
-void matrix_debug(struct matrix* mat, const char* msg, FILE* output)
+void matrix_debug(FILE* output, struct matrix* mat)
 {
-    fprintf(output, "matrix: %s\n", msg);
-
     for (uint i = 0; i < mat->rows; i++) {
         for (uint j = 0; j < mat->cols; j++)
-            fprintf(output, "%le  ", mat->data[(i * mat->cols) + j]);
+            fprintf(output, "%le ", mat->data[(i * mat->cols) + j]);
 
         fprintf(output, "\n");
     }
