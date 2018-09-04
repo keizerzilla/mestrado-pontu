@@ -22,6 +22,22 @@
 #define TCHEBYCHEV "tchebychev"
 
 /**
+ * @brief Exibe mensagem ao usuário informando como usar o extrator de momentos
+ */
+void extraction_help()
+{
+    util_error("faltando argumentos!");
+    printf("argumentos obrigatorios: [ -m | -i | -o ]\n");
+    printf("  -m: momento usado para extracao de atributos\n");
+    printf("      > hu_tutu, hu_1980, zernike, legendre ou tchebychev\n");
+    printf("  -i: nuvem de entrada no formato XYZ\n");
+    printf("  -o: arquivo aonde os momentos serao salvos\n");
+    printf("      > path para arquivo texto ou stdout para saida padrao\n");
+    printf("ex1: mcalc -m hu_1980 -i ../data/cloud1.xyz -o hu1.txt\n");
+    printf("ex2: mcalc -m legendre -i ../dataset/bunny.xyz -o stdout\n");
+}
+
+/**
  * \brief Interface para análise de nuvens de pontos
  * \param argc Número de parâmetros passados pela linha de comando
  * \param argv Parâmetros passados por linha de comando
@@ -50,11 +66,7 @@ void extraction_interface(int argc, char** argv)
     }
 
     if (optm == NULL || opti == NULL || opto == NULL) {
-        util_error("faltando argumentos!");
-        util_info("argumentos obrigatorios: -m | -i | -o\n \
--m: extrator (hu_tutu, hu_1980, zernike, legendre ou tchebychev)\n \
--i: nuvem de entrada no formato CSV\n \
--o: arquivo aonde os momentos serao salvos, ou stdout para saida padrao");
+        extraction_help();
         exit(1);
     }
 
@@ -70,7 +82,7 @@ void extraction_interface(int argc, char** argv)
     else if (!strcmp(optm, ZERNIKE))
         mfunc = &zernike_cloud_moments;
 
-    struct cloud* cloud = cloud_load_csv(opti);
+    struct cloud* cloud = cloud_load_xyz(opti);
     if (cloud == NULL) {
         util_seg("abortando");
         exit(1);

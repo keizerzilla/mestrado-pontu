@@ -9,7 +9,6 @@
 
 int main(int argc, char** argv)
 {
-    util_error("CORRIGIR STACK SMASHING ERROR!!!");
     extraction_interface(argc, argv);
     return 0;
 }

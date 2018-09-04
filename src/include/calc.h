@@ -9,6 +9,11 @@
 #define CALC_H
 
 #include <math.h>
+#include <float.h>
+
+#define CALC_PI      3.14159265358979323846264338327950288
+#define CALC_PI_2    1.57079632679489661923132169163975144
+#define CALC_DEG2RAD CALC_PI/180.0
 
 /**
  * \var real

@@ -151,11 +151,11 @@ struct vector3* cloud_add_point_cpy(struct cloud* cloud, struct vector3* point)
 }
 
 /**
- * \brief Carrega uma nuvem a partir de um arquivo CSV
+ * \brief Carrega uma nuvem a partir de um arquivo XYZ
  * \param filename O arquivo onde a nuvem está guardada
  * \return Um estrutura cloud carregada em memória ou NULL caso ocorra erro
  */
-struct cloud* cloud_load_csv(const char* filename)
+struct cloud* cloud_load_xyz(const char* filename)
 {
     FILE* file = fopen(filename, "r");
     if (file == NULL) {
@@ -187,12 +187,12 @@ struct cloud* cloud_load_csv(const char* filename)
 }
 
 /**
- * \brief Salva uma nuvem em arquivo
+ * \brief Salva uma nuvem em arquivo XYZ
  * \param cloud A nuvem a ser salva
  * \param filename O arquivo destino
  * \return 0 se ocorreu algum erro, 1 caso-contrário
  */
-int cloud_save_csv(struct cloud* cloud, const char* filename)
+int cloud_save_xyz(struct cloud* cloud, const char* filename)
 {
     FILE* file = fopen(filename, "w");
     if (file == NULL) {
@@ -255,6 +255,73 @@ void cloud_scale(struct cloud* cloud, real f)
 {
     for (uint i = 0; i < cloud->num_pts; i++)
         vector3_scale(&cloud->points[i], f);
+}
+
+/**
+ * @brief Efetua translação na nuvem a partir de um vector alvo
+ * @param cloud A nuvem a ser transformada
+ * @param t O vetor transformação
+ */
+void cloud_translate_vector(struct cloud* cloud, struct vector3* dest)
+{
+    struct vector3* t = vector3_sub(dest, cloud_get_center(cloud));
+
+    for (uint i = 0; i < cloud->num_pts; i++)
+        vector3_increase(&cloud->points[i], t);
+
+    vector3_free(t);
+}
+
+/**
+ * @brief Efetua translação na nuvem a partir das coordenadas alvo
+ * @param cloud A nuvem a ser transformada
+ * @param x Coordenada x
+ * @param y Coordenada y
+ * @param z Coordenada z
+ */
+void cloud_translate_real(struct cloud* cloud, real x, real y, real z)
+{
+    struct vector3* dest = vector3_new(x, y, z);
+    struct vector3* t = vector3_sub(dest, cloud_get_center(cloud));
+
+    for (uint i = 0; i < cloud->num_pts; i++)
+        vector3_increase(&cloud->points[i], t);
+
+    vector3_free(dest);
+    vector3_free(t);
+}
+
+/**
+ * @brief Rotaciona nuvem em torno do eixo x
+ * @param cloud A nuvem a ser rotacionada
+ * @param d O ângulo de rotação em graus
+ */
+void cloud_rotate_x(struct cloud* cloud, real d)
+{
+    for (uint i = 0; i < cloud->num_pts; i++)
+        vector3_rotate_x(&cloud->points[i], d);
+}
+
+/**
+ * @brief Rotaciona nuvem em torno do eixo y
+ * @param cloud A nuvem a ser rotacionada
+ * @param d O ângulo de rotação em graus
+ */
+void cloud_rotate_y(struct cloud* cloud, real d)
+{
+    for (uint i = 0; i < cloud->num_pts; i++)
+        vector3_rotate_y(&cloud->points[i], d);
+}
+
+/**
+ * @brief Rotaciona nuvem em torno do eixo z
+ * @param cloud A nuvem a ser rotacionada
+ * @param d O ângulo de rotação em graus
+ */
+void cloud_rotate_z(struct cloud* cloud, real d)
+{
+    for (uint i = 0; i < cloud->num_pts; i++)
+        vector3_rotate_z(&cloud->points[i], d);
 }
 
 /**

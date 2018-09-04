@@ -79,7 +79,7 @@ void vector3_free(struct vector3* v)
 }
 
 /**
- * \brief Soma dois vetores
+ * \brief Soma dois vetores gerando um novo sem mudar os operandos
  * \param a O primeiro vetor
  * \param b O segundo vetor
  * \return O vetor resultante da soma de a com b
@@ -90,7 +90,19 @@ struct vector3* vector3_add(struct vector3* a, struct vector3* b)
 }
 
 /**
- * \brief Subtrái dois vetores
+ * @brief Soma dois vetores modificando um deles permanentemente
+ * @param src O vetor a ser modificado (somado)
+ * @param inc O vetor que servirá de incremento
+ */
+void vector3_increase(struct vector3* src, struct vector3* inc)
+{
+    src->x += inc->x;
+    src->y += inc->y;
+    src->z += inc->z;
+}
+
+/**
+ * \brief Subtrái dois vetores gerando um novo sem modificar os operandos
  * \param a O primeiro vetor
  * \param b O segundo vetor
  * \return O vetor resultante da subtração de a com b
@@ -98,6 +110,18 @@ struct vector3* vector3_add(struct vector3* a, struct vector3* b)
 struct vector3* vector3_sub(struct vector3* a, struct vector3* b)
 {
     return vector3_new(a->x - b->x, a->y - b->y, a->z - b->z);
+}
+
+/**
+ * @brief vector3_decrease
+ * @param src O vetor a ser modificado (diminuído)
+ * @param dec O vetor que servirá de decremento
+ */
+void vector3_decrease(struct vector3* src, struct vector3* dec)
+{
+    src->x -= dec->x;
+    src->y -= dec->y;
+    src->z -= dec->z;
 }
 
 /**
@@ -245,6 +269,51 @@ void vector3_scale(struct vector3* v, real f)
     v->x *= f;
     v->y *= f;
     v->z *= f;
+}
+
+/**
+ * @brief Rotaciona vetor em torno do eixo x
+ * @param v O vetor alvo
+ * @param d O ângulo de rotação em graus
+ */
+void vector3_rotate_x(struct vector3* v, real d)
+{
+    real rad = d * CALC_DEG2RAD;
+    real rsin = sin(rad);
+    real rcos = cos(rad);
+
+    v->y = (v->y * rcos) - (v->z * rsin);
+    v->z = (v->y * rsin) + (v->z * rcos);
+}
+
+/**
+ * @brief Rotaciona vetor em torno do eixo y
+ * @param v O vetor alvo
+ * @param d O ângulo de rotação em graus
+ */
+void vector3_rotate_y(struct vector3* v, real d)
+{
+    real rad = d * CALC_DEG2RAD;
+    real rsin = sin(rad);
+    real rcos = cos(rad);
+
+    v->x = (v->x * rcos) + (v->z * rsin);
+    v->z = (-1 * (v->x * rsin)) + (v->z * rcos);
+}
+
+/**
+ * @brief Rotaciona vetor em torno do eixo z
+ * @param v O vetor alvo
+ * @param d O ângulo de rotação em graus
+ */
+void vector3_rotate_z(struct vector3* v, real d)
+{
+    real rad = d * CALC_DEG2RAD;
+    real rsin = sin(rad);
+    real rcos = cos(rad);
+
+    v->x = (v->x * rcos) - (v->y * rsin);
+    v->y = (v->x * rsin) + (v->y * rcos);
 }
 
 /**
