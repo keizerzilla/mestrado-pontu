@@ -20,8 +20,8 @@
 void greetings()
 {
 	printf("cloudz: Utilitario Manipulador de Nuvens de Pontos\n");
-	printf("Artur Rodrigues Rocha Neto @INTERFACES/UFC - 2018\n");
-	printf("!digite help para ver a lista de comandos!\n\n");
+	printf("Artur Rodrigues Rocha Neto @INTERFACES/UFC - c2018\n");
+	printf("[!!] digite help para ver a lista de comandos [!!]\n\n");
 }
 
 void help()
@@ -125,6 +125,8 @@ void rotatez(struct cloud* cloud, const char* param)
 	}
 }
 
+/******************************************************************************/
+
 int prompt(struct cloud* cloud)
 {
 	int running = 1;
@@ -169,24 +171,68 @@ int prompt(struct cloud* cloud)
 	return running;
 }
 
+void cli(int argc, char** argv, struct cloud* cloud)
+{
+	char* command = argv[2];
+	char param[PARAM_SIZE];
+	
+	memset(param, 0, PARAM_SIZE);
+	for (int i = 3; i < argc; i++) {
+		strcat(param, argv[i]);
+		if (i+1 < argc)
+			strcat(param, " ");
+	}
+	
+	if(!strcmp(command, QUIT)) {
+		return;
+	} else if (!strcmp(command, HELP)) {
+		help();
+	} else if (!strcmp(command, SORT)) {
+		sort(cloud);
+	} else if (!strcmp(command, CENTER)) {
+		center(cloud);
+	} else if (!strcmp(command, SIZE)) {
+		size(cloud);
+	} else if (!strcmp(command, SAVE)) {
+		save(cloud, param);
+	} else if (!strcmp(command, SCALE)) {
+		scale(cloud, param);
+	} else if (!strcmp(command, TRANSLATE)) {
+		translate(cloud, param);
+	} else if (!strcmp(command, ROTATEX)) {
+		rotatex(cloud, param);
+	} else if (!strcmp(command, ROTATEY)) {
+		rotatey(cloud, param);
+	} else if (!strcmp(command, ROTATEZ)) {
+		rotatez(cloud, param);
+	} else {
+		util_error("comando %s desconhecido!", command);
+	}
+}
+
 int main(int argc, char** argv)
 {
+	if (argc < 2) {
+		util_error("numero incorreto de argumentos");
+		util_info("uso: cloudz <arquivo_nuvem> <!comando> <!parametros>");
+		util_info("<comando> e <parametros> sao opcionais");
+		
+		exit(1);
+	} else if (argc > 2) {
+		struct cloud* cloud = cloud_load_xyz(argv[1]);
+		cli(argc, argv, cloud);
+		cloud_free(cloud);
+		
+		return 0;
+	}
+	
 	greetings();
 	
-	if (argc != 2) {
-		util_error("numero incorreto de argumentos");
-		util_info("uso: cloudz <arquivo_nuvem>");
-		exit(1);
-	}
-	
 	struct cloud* cloud = cloud_load_xyz(argv[1]);
-	if (cloud == NULL) {
-		util_error("nao foi possivel iniciar o programa");
+	if (cloud == NULL)
 		exit(1);
-	}
 	
 	while(prompt(cloud));
-	
 	cloud_free(cloud);
 	
 	return 0;
