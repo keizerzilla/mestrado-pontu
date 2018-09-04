@@ -41,6 +41,90 @@ void help()
 	printf("\n");
 }
 
+void sort(struct cloud* cloud)
+{
+	cloud_sort(cloud);
+	printf("nuvem ordenada\n");
+}
+
+void center(struct cloud* cloud)
+{
+	vector3_debug(stdout, cloud_get_center(cloud));
+}
+
+void size(struct cloud* cloud)
+{
+	printf("%d\n", cloud_size(cloud));
+}
+
+void save(struct cloud* cloud, const char* param)
+{
+	if (cloud_save_xyz(cloud, param))
+		printf("nuvem salva em %s\n", param);
+}
+
+void scale(struct cloud* cloud, const char* param)
+{
+	real f;
+	
+	if (sscanf(param, "%lf", &f) < 1) {
+		util_error("parametros incorretos para comando scale");
+	} else {
+		cloud_scale(cloud, f);
+		printf("escalamento de %.4fx concluido\n", f);
+	}
+}
+
+void translate(struct cloud* cloud, const char* param)
+{
+	real x;
+	real y;
+	real z;
+	
+	if (sscanf(param, "%lf %lf %lf", &x, &y, &z) < 3) {
+		util_error("parametros incorretos para comando translate");
+	} else {
+		cloud_translate_real(cloud, x, y, z);
+		printf("nuvem movida para (%.2f, %.2f, %.2f)\n", x, y, z);
+	}
+}
+
+void rotatex(struct cloud* cloud, const char* param)
+{
+	real d;
+	
+	if (sscanf(param, "%lf", &d) < 1) {
+		util_error("parametros incorretos para comando rotatex");
+	} else {
+		cloud_rotate_x(cloud, d);
+		printf("nuvem rotacionada em torno de x por %.2fº\n", d);
+	}
+}
+
+void rotatey(struct cloud* cloud, const char* param)
+{
+	real d;
+	
+	if (sscanf(param, "%lf", &d) < 1) {
+		util_error("parametros incorretos para comando rotatey");
+	} else {
+		cloud_rotate_y(cloud, d);
+		printf("nuvem rotacionada em torno de y por %.2fº\n", d);
+	}
+}
+
+void rotatez(struct cloud* cloud, const char* param)
+{
+	real d;
+	
+	if (sscanf(param, "%lf", &d) < 1) {
+		util_error("parametros incorretos para comando rotatez");
+	} else {
+		cloud_rotate_z(cloud, d);
+		printf("nuvem rotacionada em torno de z por %.2fº\n", d);
+	}
+}
+
 int prompt(struct cloud* cloud)
 {
 	int running = 1;
@@ -61,62 +145,23 @@ int prompt(struct cloud* cloud)
 	} else if (!strcmp(command, HELP)) {
 		help();
 	} else if (!strcmp(command, SORT)) {
-		cloud_sort(cloud);
-		printf("nuvem ordenada\n");
+		sort(cloud);
 	} else if (!strcmp(command, CENTER)) {
-		struct vector3* center = cloud_get_center(cloud);
-		vector3_debug(stdout, center);
+		center(cloud);
 	} else if (!strcmp(command, SIZE)) {
-		printf("%d\n", cloud_size(cloud));
+		size(cloud);
 	} else if (!strcmp(command, SAVE)) {
-		if (cloud_save_xyz(cloud, param))
-			printf("nuvem salva em %s\n", param);
+		save(cloud, param);
 	} else if (!strcmp(command, SCALE)) {
-		real f;
-		if (sscanf(param, "%lf", &f) < 1) {
-			util_error("parametros incorretos para comando scale");
-		} else {
-			cloud_scale(cloud, f);
-			printf("escalamento de %.4fx concluido\n", f);
-		}
+		scale(cloud, param);
 	} else if (!strcmp(command, TRANSLATE)) {
-		real x;
-		real y;
-		real z;
-		
-		if (sscanf(param, "%lf %lf %lf", &x, &y, &z) < 3) {
-			util_error("parametros incorretos para comando translate");
-		} else {
-			cloud_translate_real(cloud, x, y, z);
-			printf("nuvem movida para (%f, %f, %f)\n", x, y, z);
-		}
+		translate(cloud, param);
 	} else if (!strcmp(command, ROTATEX)) {
-		real d;
-		
-		if (sscanf(param, "%lf", &d) < 1) {
-			util_error("parametros incorretos para comando rotatex");
-		} else {
-			cloud_rotate_x(cloud, d);
-			printf("nuvem rotacionada em torno de x por %fº\n", d);
-		}
+		rotatex(cloud, param);
 	} else if (!strcmp(command, ROTATEY)) {
-		real d;
-		
-		if (sscanf(param, "%lf", &d) < 1) {
-			util_error("parametros incorretos para comando rotatey");
-		} else {
-			cloud_rotate_y(cloud, d);
-			printf("nuvem rotacionada em torno de y por %fº\n", d);
-		}
+		rotatey(cloud, param);
 	} else if (!strcmp(command, ROTATEZ)) {
-		real d;
-		
-		if (sscanf(param, "%lf", &d) < 1) {
-			util_error("parametros incorretos para comando rotatez");
-		} else {
-			cloud_rotate_z(cloud, d);
-			printf("nuvem rotacionada em torno de z por %fº\n", d);
-		}
+		rotatez(cloud, param);
 	} else {
 		util_error("comando %s desconhecido!", command);
 	}
