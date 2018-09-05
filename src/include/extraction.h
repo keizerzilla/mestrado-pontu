@@ -15,8 +15,8 @@
 #include "cloud.h"
 #include "util.h"
 
-#define HU_TUTU "hu_tutu"
-#define HU_1980 "hu_1980"
+#define HU_TUTU "hututu"
+#define HU_1980 "hu1980"
 #define ZERNIKE "zernike"
 #define LEGENDRE "legendre"
 #define TCHEBYCHEV "tchebychev"
@@ -27,10 +27,10 @@
 void extraction_help()
 {
     util_error("faltando argumentos!");
-    printf("argumentos obrigatorios: [ -m | -i | -o ]\n");
+    printf("argumentos obrigatorios: [ -m | -c | -o ]\n");
     printf("  -m: momento usado para extracao de atributos\n");
-    printf("      > hu_tutu, hu_1980, zernike, legendre ou tchebychev\n");
-    printf("  -i: nuvem de entrada no formato XYZ\n");
+    printf("      > hututu, hu1980, zernike, legendre ou tchebychev\n");
+    printf("  -c: nuvem de entrada no formato XYZ\n");
     printf("  -o: arquivo aonde os momentos serao salvos\n");
     printf("      > path para arquivo texto ou stdout para saida padrao\n");
     printf("ex1: mcalc -m hu_1980 -i ../data/cloud1.xyz -o hu1.txt\n");
@@ -49,12 +49,12 @@ void extraction_interface(int argc, char** argv)
     char* opto = NULL;
 
     int opt;
-    while ((opt = getopt(argc, argv, "m:i:o:")) != -1) {
+    while ((opt = getopt(argc, argv, "m:c:o:")) != -1) {
         switch (opt) {
             case 'm':
                 optm = optarg;
                 break;
-            case 'i':
+            case 'c':
                 opti = optarg;
                 break;
             case 'o':
@@ -70,9 +70,9 @@ void extraction_interface(int argc, char** argv)
         exit(1);
     }
 
-    struct matrix* (*mfunc)(struct cloud*) = &hu_cloud_moments;
+    struct matrix* (*mfunc)(struct cloud*) = &hu_cloud_moments_artur_tcc;
     if (!strcmp(optm, HU_TUTU))
-        mfunc = &hu_cloud_moments;
+        mfunc = &hu_cloud_moments_artur_tcc;
     else if(!strcmp(optm, HU_1980))
         mfunc = &hu_cloud_moments_sadjadi_hall;
     else if (!strcmp(optm, LEGENDRE))
@@ -98,3 +98,4 @@ void extraction_interface(int argc, char** argv)
     matrix_free(results);
     cloud_free(cloud);
 }
+

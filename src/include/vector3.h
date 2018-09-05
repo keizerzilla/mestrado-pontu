@@ -58,10 +58,10 @@ struct vector3* vector3_zero()
 
 /**
  * \brief Faz uma cópia de um vetor
- * \param src O vetor a ser copiado
  * \param dst O vetor que guardará a cópia
+ * \param src O vetor a ser copiado
  */
-void vector3_copy(struct vector3* src, struct vector3* dst)
+void vector3_copy(struct vector3* dst, struct vector3* src)
 {
     dst->x = src->x;
     dst->y = src->y;
@@ -308,7 +308,7 @@ void vector3_rotate_y(struct vector3* v, real d)
  */
 void vector3_rotate_z(struct vector3* v, real d)
 {
-    real rad = d * CALC_DEG2RAD;
+	real rad = d * CALC_DEG2RAD;
     real rsin = sin(rad);
     real rcos = cos(rad);
 

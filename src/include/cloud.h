@@ -164,10 +164,9 @@ struct cloud* cloud_load_xyz(const char* filename)
     }
 
     uint num_pts = 0;
-    while (!feof(file) && (fscanf(file, "%*s\n") != EOF)) {
-        //fscanf(file, "%*s\n");
+    while (!feof(file) && (fscanf(file, "%*s %*s %*s\n") != EOF))
         num_pts++;
-    }
+	
     rewind(file);
 
     struct cloud* cloud = cloud_new(num_pts);
@@ -176,7 +175,6 @@ struct cloud* cloud_load_xyz(const char* filename)
     real z = 0;
     uint index = 0;
     while (!feof(file) && (fscanf(file, "%le %le %le\n", &x, &y, &z) != EOF)) {
-        //fscanf(file, "%le %le %le\n", &x, &y, &z);
         cloud_set_point(cloud, index, x, y, z);
         index++;
     }
@@ -226,12 +224,12 @@ uint cloud_size(struct cloud* cloud)
  * \param cloud A Nuvem alvo
  * \return Um ponto com as coordenadas do centro geométrico da nuvem
  */
-struct vector3* cloud_get_center(struct cloud* cloud)
+struct vector3* cloud_calc_center(struct cloud* cloud)
 {
-    if (cloud->centroid != NULL)
-        return cloud->centroid;
-
-    cloud->centroid = vector3_zero();
+	if (cloud->centroid != NULL)
+		vector3_free(cloud->centroid);
+	
+	cloud->centroid = vector3_zero();
 
     for (uint i = 0; i < cloud->num_pts; i++) {
         cloud->centroid->x += cloud->points[i].x;
@@ -247,6 +245,19 @@ struct vector3* cloud_get_center(struct cloud* cloud)
 }
 
 /**
+ * \brief Retorna o centro geométrico de uma nuvem de pontos
+ * \param cloud A Nuvem alvo
+ * \return Um ponto com as coordenadas do centro geométrico da nuvem
+ */
+struct vector3* cloud_get_center(struct cloud* cloud)
+{
+    if (cloud->centroid != NULL)
+        return cloud->centroid;
+
+    return cloud_calc_center(cloud);
+}
+
+/**
  * \brief Escala uma nuvem a partir de um fator
  * \param cloud A nuvem alvo
  * \param f O fator de escalamento
@@ -258,7 +269,7 @@ void cloud_scale(struct cloud* cloud, real f)
 }
 
 /**
- * @brief Efetua translação na nuvem a partir de um vector alvo
+ * @brief Efetua translação na nuvem a partir de um vetor alvo
  * @param cloud A nuvem a ser transformada
  * @param t O vetor transformação
  */
@@ -270,6 +281,7 @@ void cloud_translate_vector(struct cloud* cloud, struct vector3* dest)
         vector3_increase(&cloud->points[i], t);
 
     vector3_free(t);
+	cloud_calc_center(cloud);
 }
 
 /**
@@ -289,6 +301,7 @@ void cloud_translate_real(struct cloud* cloud, real x, real y, real z)
 
     vector3_free(dest);
     vector3_free(t);
+    cloud_calc_center(cloud);
 }
 
 /**
@@ -309,7 +322,7 @@ void cloud_rotate_x(struct cloud* cloud, real d)
  */
 void cloud_rotate_y(struct cloud* cloud, real d)
 {
-    for (uint i = 0; i < cloud->num_pts; i++)
+	for (uint i = 0; i < cloud->num_pts; i++)
         vector3_rotate_y(&cloud->points[i], d);
 }
 
@@ -320,7 +333,7 @@ void cloud_rotate_y(struct cloud* cloud, real d)
  */
 void cloud_rotate_z(struct cloud* cloud, real d)
 {
-    for (uint i = 0; i < cloud->num_pts; i++)
+	for (uint i = 0; i < cloud->num_pts; i++)
         vector3_rotate_z(&cloud->points[i], d);
 }
 

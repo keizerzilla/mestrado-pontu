@@ -96,12 +96,12 @@ real hu_normalized_moment(int p, int q, int r, struct cloud* cloud)
  */
 struct matrix* hu_cloud_moments_sadjadi_hall(struct cloud* cloud)
 {
-    real hu200 = hu_normalized_moment(2, 0, 0, cloud);
-    real hu020 = hu_normalized_moment(0, 2, 0, cloud);
-    real hu002 = hu_normalized_moment(0, 0, 2, cloud);
-    real hu110 = hu_normalized_moment(1, 1, 0, cloud);
-    real hu101 = hu_normalized_moment(1, 0, 1, cloud);
-    real hu011 = hu_normalized_moment(0, 1, 1, cloud);
+    real hu200 = hu_central_moment(2, 0, 0, cloud);
+    real hu020 = hu_central_moment(0, 2, 0, cloud);
+    real hu002 = hu_central_moment(0, 0, 2, cloud);
+    real hu110 = hu_central_moment(1, 1, 0, cloud);
+    real hu101 = hu_central_moment(1, 0, 1, cloud);
+    real hu011 = hu_central_moment(0, 1, 1, cloud);
 
     real j1 = hu200 + hu020 + hu002;
     real j2 = hu200*hu020 + hu200*hu002 + hu020*hu002 -
@@ -119,11 +119,11 @@ struct matrix* hu_cloud_moments_sadjadi_hall(struct cloud* cloud)
 }
 
 /**
- * \brief Calcula os momentos invariantes de Hu de uma nuvem
+ * \brief Calcula os momentos invariantes de Hu de uma nuvem (Rocha Neto, 2017)
  * \param cloud A nuvem alvo
  * \return A matriz aonde os momentos serão salvos
  */
-struct matrix* hu_cloud_moments(struct cloud* cloud)
+struct matrix* hu_cloud_moments_artur_tcc(struct cloud* cloud)
 {
     struct matrix* results = matrix_new(1, HU_MOMENTS);
 
