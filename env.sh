@@ -8,8 +8,4 @@ if [ ! -d "datasets/" ]; then
 	mkdir datasets/
 fi
 
-if [ ! -d "results/" ]; then
-	mkdir results/
-fi
-
 echo "Pronto!"

@@ -1,3 +1,8 @@
+import sys
+import os
+import subprocess
+import parse
+
 """
 feats.py
 Artur Rodrigues Rocha Neto
@@ -6,11 +11,6 @@ Artur Rodrigues Rocha Neto
 Funções para extração de momentos e formatação de datasets. Até o momento, o
 padrão de arquivo Bosphorus é um único suportado.
 """
-
-import sys
-import os
-import subprocess
-import parse
 
 """
 Normaliza as extenções dos arquivos de nuvem (HISTÓRICA).
@@ -67,12 +67,13 @@ def moment_extraction_batch(moment, dataset, output, header):
 
 
 if __name__ == "__main__":
+	datasets = ["../datasets/bosphorus_no-outliers/Neutrals", "../datasets/bosphorus_no-outliers/NonNeutrals"]
 	moments = ["hututu", "hu1980"]
-	datasets = ["../datasets/Neutrals", "../datasets/NonNeutrals"]
-	header = "j1,j2,j3,sample,subject"
+	header = "j1,j2,j3,sample,subject" # ATENCAO PRA ESSE CARINHA AQUI!
 	
 	for data in datasets:
 		for moment in moments:
-			output = "../results/{}-{}.dat".format(moment, os.path.split(data)[1])
+			output = "../results/bosphorus_no-outliers/{}-{}.dat".format(moment, os.path.split(data)[1])
 			moment_extraction_batch(moment, data, output, header)
-
+	
+	
