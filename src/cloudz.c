@@ -19,9 +19,12 @@
 
 void greetings()
 {
+	printf("%s", ANSI_COLOR_OKGREEN);
+	printf("%s", ANSI_COLOR_BOLD);
 	printf("cloudz: Utilitario Manipulador de Nuvens de Pontos\n");
 	printf("Artur Rodrigues Rocha Neto @INTERFACES/UFC - c2018\n");
 	printf("[!!] digite help para ver a lista de comandos [!!]\n\n");
+	printf("%s", ANSI_COLOR_DEFAULT);
 }
 
 void help()
@@ -44,23 +47,24 @@ void help()
 void sort(struct cloud* cloud)
 {
 	cloud_sort(cloud);
-	printf("nuvem ordenada\n");
+	util_info("nuvem ordenada");
 }
 
 void center(struct cloud* cloud)
 {
-	vector3_debug(stdout, cloud_get_center(cloud));
+	struct vector3* center = cloud_get_center(cloud);
+	util_info("%.4f %.4f %.4f", center->x, center->y, center->z);
 }
 
 void size(struct cloud* cloud)
 {
-	printf("%d\n", cloud_size(cloud));
+	util_info("%d", cloud_size(cloud));
 }
 
 void save(struct cloud* cloud, const char* param)
 {
 	if (cloud_save_xyz(cloud, param))
-		printf("nuvem salva em %s\n", param);
+		util_info("nuvem salva em %s", param);
 }
 
 void scale(struct cloud* cloud, const char* param)
@@ -71,7 +75,7 @@ void scale(struct cloud* cloud, const char* param)
 		util_error("parametros incorretos para comando scale");
 	} else {
 		cloud_scale(cloud, f);
-		printf("escalamento de %.4fx concluido\n", f);
+		util_info("nuvem escalada %.2fx", f);
 	}
 }
 
@@ -85,7 +89,7 @@ void translate(struct cloud* cloud, const char* param)
 		util_error("parametros incorretos para comando translate");
 	} else {
 		cloud_translate_real(cloud, x, y, z);
-		printf("nuvem movida para (%.2f, %.2f, %.2f)\n", x, y, z);
+		util_info("nuvem translada para (%.4f, %.4f, %.4f)", x, y, z);
 	}
 }
 
@@ -97,7 +101,7 @@ void rotatex(struct cloud* cloud, const char* param)
 		util_error("parametros incorretos para comando rotatex");
 	} else {
 		cloud_rotate_x(cloud, d);
-		printf("nuvem rotacionada em torno de x por %.2fº\n", d);
+		util_info("nuvem rotacionada %.2fº em torno de x", d);
 	}
 }
 
@@ -109,7 +113,7 @@ void rotatey(struct cloud* cloud, const char* param)
 		util_error("parametros incorretos para comando rotatey");
 	} else {
 		cloud_rotate_y(cloud, d);
-		printf("nuvem rotacionada em torno de y por %.2fº\n", d);
+		util_info("nuvem rotacionada %.2fº em torno de y", d);
 	}
 }
 
@@ -121,11 +125,9 @@ void rotatez(struct cloud* cloud, const char* param)
 		util_error("parametros incorretos para comando rotatez");
 	} else {
 		cloud_rotate_z(cloud, d);
-		printf("nuvem rotacionada em torno de z por %.2fº\n", d);
+		util_info("nuvem rotacionada %.2fº em torno de z", d);
 	}
 }
-
-/******************************************************************************/
 
 int prompt(struct cloud* cloud)
 {

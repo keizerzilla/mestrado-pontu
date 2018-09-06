@@ -13,14 +13,21 @@
 #include <limits.h>
 #include <stdarg.h>
 
-#define KNRM  "\x1B[0m"
-#define KRED  "\x1B[31m"
-#define KGRN  "\x1B[32m"
-#define KYEL  "\x1B[33m"
-#define KBLU  "\x1B[34m"
-#define KMAG  "\x1B[35m"
-#define KCYN  "\x1B[36m"
-#define KWHT  "\x1B[37m"
+#define ANSI_COLOR_DEFAULT		"\033[00m"
+#define ANSI_COLOR_BOLD			"\033[01m"
+#define ANSI_COLOR_UNDERLINE	"\033[04m"
+#define ANSI_COLOR_RED			"\033[31m"
+#define ANSI_COLOR_GREEN		"\033[32m"
+#define ANSI_COLOR_BLUE			"\033[34m"
+#define ANSI_COLOR_YELLOW		"\033[33m"
+#define ANSI_COLOR_MAGENTA		"\033[35m"
+#define ANSI_COLOR_CYAN			"\033[36m"
+#define ANSI_COLOR_WHITE		"\033[37m"
+#define ANSI_COLOR_FAIL			"\033[91m"
+#define ANSI_COLOR_OKGREEN		"\033[92m"
+#define ANSI_COLOR_WARNING		"\033[93m"
+#define ANSI_COLOR_OKBLUE		"\033[94m"
+#define ANSI_COLOR_HEADER		"\033[95m"
 
 /**
  * @brief Mensagem de nível de erro
@@ -34,9 +41,10 @@ void util_error(const char* msg, ...)
     va_start(arglist, msg);
     vsprintf(buffer, msg, arglist);
     va_end(arglist);
-
-    fprintf(stderr, "%s[ERRO]:\t%s\n", KRED, buffer);
-    fprintf(stdout, "%s", KNRM);
+	
+	fprintf(stderr, "%s%s", ANSI_COLOR_BOLD, ANSI_COLOR_FAIL);
+    fprintf(stderr, "[ERRO]\t%s\n", buffer);
+    fprintf(stdout, "%s", ANSI_COLOR_DEFAULT);
 }
 
 /**
@@ -51,9 +59,10 @@ void util_info(const char* msg, ...)
     va_start(arglist, msg);
     vsprintf(buffer, msg, arglist);
     va_end(arglist);
-
-    fprintf(stdout, "%s[INFO]:\t%s\n", KGRN, buffer);
-    fprintf(stdout, "%s", KNRM);
+	
+	fprintf(stderr, "%s%s", ANSI_COLOR_BOLD, ANSI_COLOR_OKBLUE);
+    fprintf(stdout, "[INFO]\t%s\n", buffer);
+    fprintf(stdout, "%s", ANSI_COLOR_DEFAULT);
 }
 
 /**
@@ -68,9 +77,10 @@ void util_prompt(const char* msg, ...)
     va_start(arglist, msg);
     vsprintf(buffer, msg, arglist);
     va_end(arglist);
-
-    fprintf(stdout, "%s[TUTU]:\t%s\n", KWHT, buffer);
-    fprintf(stdout, "%s", KNRM);
+	
+	fprintf(stderr, "%s%s", ANSI_COLOR_BOLD, ANSI_COLOR_OKGREEN);
+    fprintf(stdout, "[!!!!]\t%s\n", buffer);
+    fprintf(stdout, "%s", ANSI_COLOR_DEFAULT);
 }
 
 /**
@@ -85,9 +95,11 @@ void util_seg(const char* msg, ...)
     va_start(arglist, msg);
     vsprintf(buffer, msg, arglist);
     va_end(arglist);
-
-    fprintf(stdout, "%s> %s\n", KMAG, buffer);
-    fprintf(stdout, "%s", KNRM);
+	
+	fprintf(stderr, "%s%s", ANSI_COLOR_BOLD, ANSI_COLOR_MAGENTA);
+    fprintf(stdout, "[!!!!]\t%s\n", buffer);
+    fprintf(stdout, "%s", ANSI_COLOR_DEFAULT);
 }
 
 #endif
+
