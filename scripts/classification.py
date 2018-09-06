@@ -41,16 +41,6 @@ def classification(name, features, normalization):
 	X_test = np.array(testset.drop(["subject"], axis=1))
 	y_test = np.ravel(testset[["subject"]])
 	
-	# normalizacao
-	"""
-	train_mean = np.mean(X_train)
-	train_std = np.std(X_train)
-	test_mean = np.mean(X_test)
-	test_std = np.std(X_test)
-	X_train = (X_train - train_mean)/train_std
-	X_test = (X_test - test_mean)/test_std
-	"""
-	
 	print(name)
 	for clf_name, clf in zip(names, classifiers):
 		clf.fit(X_train, y_train)
