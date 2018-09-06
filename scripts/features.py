@@ -68,7 +68,7 @@ def moment_extraction_batch(moment, dataset, output, header):
 
 if __name__ == "__main__":
 	datasets = ["../datasets/bosphorus_no-outliers/Neutrals", "../datasets/bosphorus_no-outliers/NonNeutrals"]
-	moments = ["hututu", "hu1980"]
+	moments = ["hututu", "hu1980", "zernike"]
 	header = "j1,j2,j3,sample,subject" # ATENCAO PRA ESSE CARINHA AQUI!
 	
 	for data in datasets:
