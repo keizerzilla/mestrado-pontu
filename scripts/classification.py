@@ -1,7 +1,9 @@
+import time
 import numpy as np
 import pandas as pd
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.preprocessing import StandardScaler
 
 """
 classification.py
@@ -12,7 +14,9 @@ Funções para classificação, análise de resultados e pré-processamento.
 """
 
 """
-Executa classificação hardmode usando os 4 classificadores em pesquisa.
+Executa classificação hardmode usando os 4 classificadores em pesquisa. Uma
+normalização padrão (centro na médida e escala no desvio padrão) pode ser
+calculada no conjunto de dados.
 
 name -- O nome do teste em execução
 features -- O caminho para o dataset de features
@@ -41,18 +45,27 @@ def classification(name, features, normalization):
 	X_test = np.array(testset.drop(["subject"], axis=1))
 	y_test = np.ravel(testset[["subject"]])
 	
+	if (normalization):
+		scaler = StandardScaler().fit(X_train)
+		X_train = scaler.transform(X_train)
+		X_test = scaler.transform(X_test)
+	
 	print(name)
 	for clf_name, clf in zip(names, classifiers):
+		start_time = time.time()
+		
 		clf.fit(X_train, y_train)
 		score = clf.score(X_test, y_test)
 		score_txt = str(round(score*100, 2))
-		result = "{:<16}{:<16}".format(clf_name, score_txt)
+		
+		elapsed_time = round(time.time() - start_time, 4)
+		result = "{:<16}{:<16}{:<16}".format(clf_name, score_txt, elapsed_time)
 		print(result)
 	print()
 	
 if __name__ == "__main__":
-	classification("hututu", "../results/bosphorus/hututu-Neutrals.dat", False)
-	classification("hu1980", "../results/bosphorus/hu1980-Neutrals.dat", False)
-	classification("hututu_no-outliers", "../results/bosphorus_no-outliers/hututu-Neutrals.dat", False)
-	classification("hu1980_no-outliers", "../results/bosphorus_no-outliers/hu1980-Neutrals.dat", False)
+	classification("hututu", "../results/bosphorus/hututu-Neutrals.dat", True)
+	classification("hu1980", "../results/bosphorus/hu1980-Neutrals.dat", True)
+	classification("hututu_no-outliers", "../results/bosphorus_no-outliers/hututu-Neutrals.dat", True)
+	classification("hu1980_no-outliers", "../results/bosphorus_no-outliers/hu1980-Neutrals.dat", True)
 	
