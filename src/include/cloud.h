@@ -16,6 +16,21 @@
 #include "vector3.h"
 #include "util.h"
 
+#define PCD_VERSION     "VERSION"
+#define PCD_FIELDS      "FIELDS"
+#define PCD_SIZE        "SIZE"
+#define PCD_TYPE        "TYPE"
+#define PCD_COUNT       "COUNT"
+#define PCD_WIDTH       "WIDTH"
+#define PCD_HEIGHT      "HEIGHT"
+#define PCD_VIEWPOINT   "VIEWPOINT"
+#define PCD_POINTS      "POINTS"
+#define PCD_DATA        "DATA"
+#define PCD_COMMENT     "#"
+
+#define PCD_KEYWORDSIZE    10
+#define PCD_PARAMSIZE      80
+
 /**
  * \brief Estrutura que guarda uma nuvem de pontos em memória.
  */
@@ -217,6 +232,71 @@ int cloud_save_xyz(struct cloud* cloud, const char* filename)
 uint cloud_size(struct cloud* cloud)
 {
     return cloud->num_pts;
+}
+
+/**
+ * \brief Carrega uma nuvem a partir de um arquivo PCD
+ * \param filename O arquivo onde a nuvem está guardada
+ * \return Um estrutura cloud carregada em memória ou NULL caso ocorra erro
+ */
+struct cloud* cloud_load_pcd(const char* filename)
+{
+    FILE* file = fopen(filename, "r");
+    if (file == NULL) {
+        util_error("%s: erro abrir arquivo %s", __FUNCTION__, filename);
+        return NULL;
+    }
+
+    char keyword[PCD_KEYWORDSIZE];
+    char param[PCD_PARAMSIZE];
+    while (!feof(file) && fscanf(file, "%s %[^\t\n]", keyword, param) != EOF) {
+        printf("keyword: %s\n", keyword);
+        printf("param: %s\n", param);
+
+        if (!strcmp(keyword, PCD_COMMENT)) {
+            // asdf
+        } else if (!strcmp(keyword, PCD_VERSION)) {
+            // asdf
+        } else if (!strcmp(keyword, PCD_FIELDS)) {
+            // asdf
+        } else if (!strcmp(keyword, PCD_SIZE)) {
+            // asdf
+        } else if (!strcmp(keyword, PCD_TYPE)) {
+            // asdf
+        } else if (!strcmp(keyword, PCD_COUNT)) {
+            // asdf
+        } else if (!strcmp(keyword, PCD_WIDTH)) {
+            // asdf
+        } else if (!strcmp(keyword, PCD_HEIGHT)) {
+            // asdf
+        } else if (!strcmp(keyword, PCD_VIEWPOINT)) {
+            // asdf
+        } else if (!strcmp(keyword, PCD_POINTS)) {
+            // asdf
+        } else if (!strcmp(keyword, PCD_DATA)) {
+            // asdf
+        } else {
+            util_error("%s: keyword [%s] desconhecido", __FUNCTION__, keyword);
+        }
+
+        memset(keyword, 0, PCD_KEYWORDSIZE);
+        memset(param, 0, PCD_PARAMSIZE);
+    }
+
+    fclose(file);
+
+    return NULL;
+}
+
+/**
+ * @brief Salva nuvem em arquivo usando formato PCD
+ * @param cloud A nuvem a ser salva
+ * @param filename O arquivo destino
+ * @return 1 se tiver dado tudo certo, 0 caso contrário
+ */
+int cloud_save_pcd(struct cloud* cloud, const char* filename)
+{
+    return 0;
 }
 
 /**
