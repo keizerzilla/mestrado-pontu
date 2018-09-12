@@ -52,16 +52,33 @@ def moment_extraction_batch(moment, dataset, output, header):
 				dump.write(moment_extraction_cloud(moment, dataset+"/"+cloud))
 				print("{} OK".format(cloud))
 
+"""
+Retira grafo de subamostragem bem louco.
+
+dataset -- O conjunto de dados alvo
+output -- Aonde as subnuvens ficarão salvas
+"""
+def extract_graph(dataset, output):
+	for cloud in os.listdir(dataset):
+		if cloud.endswith(".xyz"):
+			infile = os.path.join(dataset, cloud)
+			if not os.path.isfile(infile): continue
+			outfile = os.path.join(output, cloud)
+			cmd = ["../bin/cloudgraph", infile, outfile]
+			subprocess.call(cmd)
+			print(outfile + " OK")
 
 if __name__ == "__main__":
-	datasets = ["../datasets/bosphorus_no-outliers/Neutrals"]
-	moments = ["hu1980"]
-	#header = "l1,l2,l3,l4,l5,l6,l7,l8,l9,l10,l11,l12,l13,l14,l15,l16,l17,l18,l19,l20,l21,sample,subject"
-	header = "l1,l2,l3,sample,subject"
+	datasets = ["../datasets/graphs"]
+	moments = ["hututu"]
+	header = "l1,l2,l3,l4,l5,l6,l7,l8,l9,l10,l11,l12,l13,l14,l15,l16,l17,l18,l19,l20,l21,sample,subject"
+	#header = "l1,l2,l3,sample,subject"
 	
 	for data in datasets:
 		for moment in moments:
-			output = "../results/bosphorus_no-outliers/nosetip/{}-{}.dat".format(moment, os.path.split(data)[1])
+			output = "../results/graphs/nosetip/{}-{}.dat".format(moment, os.path.split(data)[1])
 			moment_extraction_batch(moment, data, output, header)
+	
+	#extract_graph("../datasets/bosphorus_no-outliers/Neutrals", "../datasets/graphs")
 	
 	

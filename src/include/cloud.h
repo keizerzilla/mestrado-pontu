@@ -75,13 +75,13 @@ struct cloud* cloud_new(uint num_pts)
  */
 void cloud_free(struct cloud* cloud)
 {
-    free(cloud->points);
+	free(cloud->points);
 
     if (cloud->centroid != NULL) {
         vector3_free(cloud->centroid);
         cloud->centroid = NULL;
     }
-
+	
     free(cloud);
     cloud = NULL;
 }
@@ -241,6 +241,8 @@ uint cloud_size(struct cloud* cloud)
  */
 struct cloud* cloud_load_pcd(const char* filename)
 {
+	util_seg("%s: Essa função está incompleta!", __FUNCTION__);
+	
     FILE* file = fopen(filename, "r");
     if (file == NULL) {
         util_error("%s: erro abrir arquivo %s", __FUNCTION__, filename);
@@ -289,13 +291,15 @@ struct cloud* cloud_load_pcd(const char* filename)
 }
 
 /**
- * @brief Salva nuvem em arquivo usando formato PCD
+ * @brief Salva nuvem em arquivo usando formato PCD (incompleto!)
  * @param cloud A nuvem a ser salva
  * @param filename O arquivo destino
  * @return 1 se tiver dado tudo certo, 0 caso contrário
  */
 int cloud_save_pcd(struct cloud* cloud, const char* filename)
 {
+	util_seg("%s: Essa função está incompleta!", __FUNCTION__);
+	
     FILE* file = fopen(filename, "w");
     if (file == NULL) {
         util_error("%s: erro abrir arquivo %s", __FUNCTION__, filename);
@@ -451,7 +455,7 @@ int cloud_compare(const void* p1, const void* p2)
 {
     struct vector3* dp1 = (struct vector3*)p1;
     struct vector3* dp2 = (struct vector3*)p2;
-
+	
     return dp2->z - dp1->z;
 }
 
@@ -465,7 +469,7 @@ void cloud_sort(struct cloud* cloud)
 }
 
 /**
- * @brief Concatena (soma) duas nuvens
+ * @brief Concatena ("soma") duas nuvens
  * @param c1 A primeira nuvem
  * @param c2 A segunda nuvem
  * @return Uma nuvem com os pontos de c1 e c2
@@ -500,10 +504,8 @@ struct vector3* cloud_axis_size(struct cloud* cloud)
 
     real max_x = cloud->points[0].x;
     real min_x = cloud->points[0].x;
-
     real max_y = cloud->points[0].y;
     real min_y = cloud->points[0].y;
-
     real max_z = cloud->points[0].z;
     real min_z = cloud->points[0].z;
 
@@ -533,7 +535,8 @@ struct vector3* cloud_axis_size(struct cloud* cloud)
  * \param cut Valor do corte em milimetros
  * \return A subnuvem cortada
  */
-struct cloud* cloud_subcloud(struct cloud* cloud, real cut) {
+struct cloud* cloud_cut_center(struct cloud* cloud, real cut)
+{
     struct cloud* sub = cloud_new(0);
     struct vector3* center = cloud_get_center(cloud);
 
@@ -546,21 +549,113 @@ struct cloud* cloud_subcloud(struct cloud* cloud, real cut) {
 }
 
 /**
- * \brief Descobre o ponto mais próximo ao centro
+ * \brief Secciona uma nuvem ao longo de uma direção com base em uma referência
+ * \param cloud A nuvem alvo
+ * \param ref O ponto de referência
+ * \param dir A direção do corte: 1 para positiva, -1 para negativa
+ * \return A subnuvem cortada
+ */
+struct cloud* cloud_cut_plane(struct cloud* cloud,
+                              struct vector3* ref,
+                              struct vector3* dir)
+{
+    struct cloud* sub = cloud_new(0);
+    real d = -1 * (ref->x*dir->x + ref->y*dir->y + ref->z*dir->z);
+    real quad = vector3_length(dir);
+    
+    real tempd = 0;
+	for (uint i = 0; i < cloud->num_pts; i++) {
+		tempd = dir->x*cloud->points[i].x +
+		        dir->y*cloud->points[i].y +
+		        dir->z*cloud->points[i].z;
+		tempd = (tempd + d) / quad;
+		if (tempd > 0)
+			cloud_add_point_cpy(sub, &cloud->points[i]);
+	}
+	
+    return sub;
+}
+
+/**
+ * \brief Cria caminho de pontos ao longo de uma direção (incompleto!)
+ * \param cloud A nuvem alvo
+ * \param ref O ponto de partida
+ * \param dir A direção do caminho
+ * \return Uma subnuvem com o caminho
+ */
+struct cloud* cloud_path_on_direction(struct cloud* cloud,
+                                      struct vector3* ref,
+                                      struct vector3* dir)
+{
+	util_seg("%s: Essa função está incompleta!", __FUNCTION__);
+	util_seg("%s: Resolver implementando distância reta-ponto", __FUNCTION__);
+	
+	struct cloud* sub = cloud_new(1);
+	return sub;
+}
+
+/**
+ * \brief Descobre o ponto da nuvem mais próximo a um ponto arbitrário
+ * \param cloud A nuvem alvo
+ * \return Endereço do ponto mais próximo
+ */
+struct vector3* cloud_closest_point(struct cloud* cloud, struct vector3* p)
+{
+	uint index = 0;
+	real tempd = 0;
+	real d = vector3_distance(p, &cloud->points[0]);
+	for (uint i = 1; i < cloud->num_pts; i++) {
+        tempd = vector3_distance(p, &cloud->points[i]);
+        if (tempd < d) {
+            d = tempd;
+            index = i;
+		}
+    }
+    
+    return &cloud->points[index];
+}
+
+/**
+ * \brief Descobre o ponto da nuvem mais próximo ao seu centro de massa
  * \param cloud A nuvem alvo
  * \return Endereço do ponto mais próximo
  */
 struct vector3* cloud_closest_to_center(struct cloud* cloud)
 {
-	struct vector3* center = cloud_get_center(cloud);
-	
+	return cloud_closest_point(cloud, cloud_get_center(cloud));
+}
+
+/**
+ * \brief Descobre o ponto com menor coordenada X
+ * \param cloud A nuvem alvo
+ * \return Endereço do ponto com menor X
+ */
+struct vector3* cloud_min_x(struct cloud* cloud)
+{
 	uint index = 0;
-	real tempd = 0;
-	real d = vector3_distance(center, &cloud->points[0]);
+	real min_x = cloud->points[0].x;
 	for (uint i = 1; i < cloud->num_pts; i++) {
-        tempd = vector3_distance(center, &cloud->points[i]);
-        if (tempd < d) {
-            d = tempd;
+        if (min_x < cloud->points[i].x) {
+            min_x = cloud->points[i].x;
+            index = i;
+		}
+    }
+    
+    return &cloud->points[index];
+}
+
+/**
+ * \brief Descobre o ponto com menor coordenada Y
+ * \param cloud A nuvem alvo
+ * \return Endereço do ponto com menor Y
+ */
+struct vector3* cloud_min_y(struct cloud* cloud)
+{
+	uint index = 0;
+	real min_y = cloud->points[0].y;
+	for (uint i = 1; i < cloud->num_pts; i++) {
+        if (min_y < cloud->points[i].y) {
+            min_y = cloud->points[i].y;
             index = i;
 		}
     }
@@ -585,6 +680,38 @@ struct vector3* cloud_min_z(struct cloud* cloud)
     }
     
     return &cloud->points[index];
+}
+
+/**
+ * \brief Ainda não sei interpretar isso, mas conserva certas curvaturas
+ * \param cloud A nuvem alvo
+ * \return A máscara da nuvem
+ */
+struct cloud* cloud_binary_mask(struct cloud* cloud)
+{
+	cloud_sort(cloud);
+	
+	struct cloud* mask = cloud_new(0);
+	struct vector3* refpoint = cloud_min_z(cloud);
+	cloud_add_point_cpy(mask, refpoint);
+	
+	real d1 = 0;
+	real d2 = 0;
+	for (uint i = 0; i < cloud->num_pts; i++) {
+		if (cloud->points[i].y > refpoint->y) {
+			d1 = vector3_distance(refpoint, &cloud->points[i+1]);
+			d2 = vector3_distance(refpoint, &cloud->points[i+2]);
+			
+			if (d1 < d2)
+				refpoint = &cloud->points[i + 1];
+			else if (d2 < d1)
+				refpoint = &cloud->points[i + 2];
+			
+			cloud_add_point_cpy(mask, refpoint);
+		}
+	}
+	
+	return mask;
 }
 
 /**

@@ -43,7 +43,7 @@ void util_error(const char* msg, ...)
     va_end(arglist);
 	
 	fprintf(stderr, "%s%s", ANSI_COLOR_BOLD, ANSI_COLOR_FAIL);
-    fprintf(stderr, "[ERRO]\t%s\n", buffer);
+    fprintf(stderr, "[ERRO] %s\n", buffer);
     fprintf(stdout, "%s", ANSI_COLOR_DEFAULT);
 }
 
@@ -61,7 +61,7 @@ void util_info(const char* msg, ...)
     va_end(arglist);
 	
 	fprintf(stderr, "%s%s", ANSI_COLOR_BOLD, ANSI_COLOR_OKBLUE);
-    fprintf(stdout, "[INFO]\t%s\n", buffer);
+    fprintf(stdout, "[INFO] %s\n", buffer);
     fprintf(stdout, "%s", ANSI_COLOR_DEFAULT);
 }
 
@@ -79,7 +79,7 @@ void util_prompt(const char* msg, ...)
     va_end(arglist);
 	
 	fprintf(stderr, "%s%s", ANSI_COLOR_BOLD, ANSI_COLOR_OKGREEN);
-    fprintf(stdout, "[!!!!]\t%s\n", buffer);
+    fprintf(stdout, "[!!!!] %s\n", buffer);
     fprintf(stdout, "%s", ANSI_COLOR_DEFAULT);
 }
 
@@ -97,7 +97,7 @@ void util_seg(const char* msg, ...)
     va_end(arglist);
 	
 	fprintf(stderr, "%s%s", ANSI_COLOR_BOLD, ANSI_COLOR_MAGENTA);
-    fprintf(stdout, "[!!!!]\t%s\n", buffer);
+    fprintf(stdout, "[!!!!] %s\n", buffer);
     fprintf(stdout, "%s", ANSI_COLOR_DEFAULT);
 }
 

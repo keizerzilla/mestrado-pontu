@@ -431,7 +431,7 @@ struct vector3* vector3_reflection(struct vector3* v, struct vector3* n)
  * \brief Calcula o ângulo entre dois vetores
  * \param a O primeiro vetor
  * \param b O segundo vetor
- * \return O ângulo entre a e b
+ * \return O ângulo entre a e b em radianos
  */
 real vector3_angle(struct vector3* a, struct vector3* b)
 {

@@ -1,69 +1,67 @@
+/**
+ * \file cloudgraph.c
+ * \author Artur Rodrigues Rocha Neto
+ * \date 2018
+ * \brief Tentativas de sub-amostragem e segmentação
+ */
+
 #include "include/cloud.h"
 
-int main(int argc, char** argv)
+/**
+ * Linha nao direta
+ */
+void line_mask(char** argv)
 {
-	util_info("cloudgraph");
+	struct cloud* cloud = cloud_load_xyz(argv[1]);
 	
-	if (argc != 3) {
-		util_error("numero incorreto de parametros!");
-		util_error("uso: cloudgraph <nuvem.xyz> <lendmark.xyz>");
-		exit(1);
+	struct vector3* ref = cloud_min_z(cloud);
+	struct vector3* dir = vector3_new(1, 1, 0);
+	struct cloud* mask = cloud_cut_plane(cloud, ref, dir);
+	struct cloud* path = cloud_new(0);
+	
+	cloud_add_point_cpy(path, ref);
+	
+	while (mask->num_pts) {
+		ref = cloud_closest_point(mask, ref);
+		cloud_add_point_cpy(path, ref);
+		//cloud_free(mask); //SEGFAULT
+		mask = cloud_cut_plane(cloud, ref, dir);
 	}
 	
+	cloud_save_xyz(path, argv[2]);
+	
+	cloud_free(path);
+	cloud_free(mask);
+	cloud_free(cloud);
+}
+
+/**
+ * Tentando arrumar a linha pra ficar bem retinha
+ */
+void super_mask(char** argv)
+{
 	struct cloud* cloud = cloud_load_xyz(argv[1]);
 	cloud_sort(cloud);
 	
-	struct cloud* graph = cloud_new(0);
-	//struct vector3* refpoint = cloud_min_z(cloud);
-	struct vector3* refpoint = &cloud->points[0];
+	struct vector3* ref = cloud_min_z(cloud);
+	struct vector3* dir = vector3_new(1, 1, 0);
+	struct cloud* path = cloud_path_on_direction(cloud, ref, dir);
 	
-	cloud_add_point_cpy(graph, refpoint);
+	cloud_save_xyz(path, argv[2]);
 	
-	real d1 = 0;
-	real d2 = 0;
-	
-	uint i = 0;
-	while (i < cloud->num_pts) {
-		if (cloud->points[i].y < refpoint->y) {
-			i++;
-			continue;
-		}
-		
-		d1 = vector3_distance(refpoint, &cloud->points[i+1]);
-		d2 = vector3_distance(refpoint, &cloud->points[i+2]);
-		
-		if (d1 < d2) {
-			refpoint = &cloud->points[i+1];
-			i = i+1;
-		} else if (d2 < d1) {
-			refpoint = &cloud->points[i+2];
-			i = i+2;
-		}
-		
-		cloud_add_point_cpy(graph, refpoint);
-	}
-	
-	/**
-	for (uint i = 0; i < cloud->num_pts; i++) {
-		if (cloud->points[i].y > refpoint->y) {
-			d1 = vector3_distance(refpoint, &cloud->points[i+1]);
-			d2 = vector3_distance(refpoint, &cloud->points[i+2]);
-			
-			if (d1 < d2) {
-				refpoint = &cloud->points[i+1];
-				
-			} else if (d2 < d1) {
-				refpoint = &cloud->points[i+2];
-			}
-			
-			cloud_add_point_cpy(graph, refpoint);
-		}
-	}
-	*/
-	
-	cloud_save_xyz(graph, argv[2]);
-	cloud_free(graph);
+	cloud_free(path);
 	cloud_free(cloud);
+}
+
+int main(int argc, char** argv)
+{
+	if (argc != 3) {
+		util_error("numero incorreto de parametros!");
+		util_error("uso: cloudgraph <nuvem.xyz> <graph.xyz>");
+		exit(1);
+	}
+	
+	super_mask(argv);
 	
 	return 0;
 }

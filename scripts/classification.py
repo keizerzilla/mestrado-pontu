@@ -64,8 +64,8 @@ def classification(name, features, normalization):
 	print()
 	
 if __name__ == "__main__":
-	classification("hututu", "../results/bosphorus_no-outliers/nosetip/hututu-Neutrals.dat", True)
-	classification("hu1980", "../results/bosphorus_no-outliers/nosetip/hu1980-Neutrals.dat", True)
+	classification("hututu", "../results/graphs/nosetip/hututu-graphs.dat", True)
+	classification("hu1980", "../results/graphs/nosetip/hu1980-graphs.dat", True)
 	
 	
 
