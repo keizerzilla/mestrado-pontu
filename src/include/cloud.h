@@ -29,7 +29,7 @@
 #define PCD_COMMENT     "#"
 
 #define PCD_KEYWORDSIZE    10
-#define PCD_PARAMSIZE      80
+#define PCD_PARAMSIZE      118
 
 /**
  * \brief Estrutura que guarda uma nuvem de pontos em memória.
@@ -235,7 +235,7 @@ uint cloud_size(struct cloud* cloud)
 }
 
 /**
- * \brief Carrega uma nuvem a partir de um arquivo PCD
+ * \brief Carrega uma nuvem a partir de um arquivo PCD (incompleto!)
  * \param filename O arquivo onde a nuvem está guardada
  * \return Um estrutura cloud carregada em memória ou NULL caso ocorra erro
  */
@@ -296,6 +296,31 @@ struct cloud* cloud_load_pcd(const char* filename)
  */
 int cloud_save_pcd(struct cloud* cloud, const char* filename)
 {
+    FILE* file = fopen(filename, "w");
+    if (file == NULL) {
+        util_error("%s: erro abrir arquivo %s", __FUNCTION__, filename);
+        return 0;
+    }
+
+    fprintf(file, "VERSION .7\n");
+    fprintf(file, "FIELDS x y z\n");
+    fprintf(file, "SIZE 8 8 8\n");
+    fprintf(file, "TYPE F F F\n");
+    fprintf(file, "COUNT 1 1 1\n");
+    fprintf(file, "WIDTH %d\n", cloud->num_pts);
+    fprintf(file, "HEIGHT 1\n");
+    fprintf(file, "VIEWPOINT 0 0 0 1 0 0 0\n");
+    fprintf(file, "POINTS %d\n", cloud->num_pts);
+    fprintf(file, "DATA ascii\n");
+
+    for (uint i = 0; i < cloud->num_pts; i++) {
+        fprintf(file, "%le %le %le\n", cloud->points[i].x,
+                                       cloud->points[i].y,
+                                       cloud->points[i].z);
+    }
+
+    fclose(file);
+
     return 0;
 }
 
@@ -427,7 +452,7 @@ int cloud_compare(const void* p1, const void* p2)
     struct vector3* dp1 = (struct vector3*)p1;
     struct vector3* dp2 = (struct vector3*)p2;
 
-    return dp1->z - dp2->z;
+    return dp2->z - dp1->z;
 }
 
 /**
@@ -518,6 +543,48 @@ struct cloud* cloud_subcloud(struct cloud* cloud, real cut) {
     }
 
     return sub;
+}
+
+/**
+ * \brief Descobre o ponto mais próximo ao centro
+ * \param cloud A nuvem alvo
+ * \return Endereço do ponto mais próximo
+ */
+struct vector3* cloud_closest_to_center(struct cloud* cloud)
+{
+	struct vector3* center = cloud_get_center(cloud);
+	
+	uint index = 0;
+	real tempd = 0;
+	real d = vector3_distance(center, &cloud->points[0]);
+	for (uint i = 1; i < cloud->num_pts; i++) {
+        tempd = vector3_distance(center, &cloud->points[i]);
+        if (tempd < d) {
+            d = tempd;
+            index = i;
+		}
+    }
+    
+    return &cloud->points[index];
+}
+
+/**
+ * \brief Descobre o ponto com menor coordenada Z
+ * \param cloud A nuvem alvo
+ * \return Endereço do ponto com menor Z
+ */
+struct vector3* cloud_min_z(struct cloud* cloud)
+{
+	uint index = 0;
+	real minz = cloud->points[0].z;
+	for (uint i = 1; i < cloud->num_pts; i++) {
+        if (minz < cloud->points[i].z) {
+            minz = cloud->points[i].z;
+            index = i;
+		}
+    }
+    
+    return &cloud->points[index];
 }
 
 /**

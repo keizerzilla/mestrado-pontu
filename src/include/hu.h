@@ -63,6 +63,7 @@ real hu_central_moment(int p, int q, int r, struct cloud* cloud)
 {
     real moment = 0.0f;
     struct vector3* center = cloud_get_center(cloud);
+    //struct vector3* center = cloud_min_z(cloud);
 
     for (uint i = 0; i < cloud->num_pts; i++)
         moment += pow(cloud->points[i].x - center->x, p)

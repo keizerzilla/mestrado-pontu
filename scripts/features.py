@@ -8,22 +8,9 @@ feats.py
 Artur Rodrigues Rocha Neto
 2018
 
-Funções para extração de momentos e formatação de datasets. Até o momento, o
-padrão de arquivo Bosphorus é um único suportado.
+Funções para extração de momentos. Até o momento, o padrão de arquivo Bosphorus
+é um único suportado.
 """
-
-"""
-Normaliza as extenções dos arquivos de nuvem (HISTÓRICA).
-
-folder -- A pasta aonde os arquivos estão salvas
-"""
-def normalize_extensions(folder):
-	for filename in os.listdir(folder):
-		infilename = os.path.join(folder, filename)
-		if not os.path.isfile(infilename): continue
-		oldbase = os.path.splitext(filename)
-		newname = infilename.replace(".cloud", ".xyz")
-		output = os.rename(infilename, newname)
 
 """
 Executa extração de momentos em uma nuvem e parsing das informações de amostra e 
@@ -67,13 +54,14 @@ def moment_extraction_batch(moment, dataset, output, header):
 
 
 if __name__ == "__main__":
-	datasets = ["../datasets/bosphorus_no-outliers/Neutrals", "../datasets/bosphorus_no-outliers/NonNeutrals"]
-	moments = ["hututu", "hu1980", "zernike"]
-	header = "j1,j2,j3,sample,subject" # ATENCAO PRA ESSE CARINHA AQUI!
+	datasets = ["../datasets/bosphorus_no-outliers/Neutrals"]
+	moments = ["hu1980"]
+	#header = "l1,l2,l3,l4,l5,l6,l7,l8,l9,l10,l11,l12,l13,l14,l15,l16,l17,l18,l19,l20,l21,sample,subject"
+	header = "l1,l2,l3,sample,subject"
 	
 	for data in datasets:
 		for moment in moments:
-			output = "../results/bosphorus_no-outliers/{}-{}.dat".format(moment, os.path.split(data)[1])
+			output = "../results/bosphorus_no-outliers/nosetip/{}-{}.dat".format(moment, os.path.split(data)[1])
 			moment_extraction_batch(moment, data, output, header)
 	
 	

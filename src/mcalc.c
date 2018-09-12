@@ -9,10 +9,6 @@
 
 int main(int argc, char** argv)
 {
-    //extraction_interface(argc, argv);
-
-    const char* fcloud = "/home/artur/github/latin/dump/sample.pcd";
-    cloud_load_pcd(fcloud);
-
+    extraction_interface(argc, argv);
     return 0;
 }
