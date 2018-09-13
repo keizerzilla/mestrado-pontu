@@ -7,12 +7,26 @@
 
 #include "include/cloud.h"
 
-/**
- * Linha nao direta
- */
-void line_mask(char** argv)
+void plane(char** argv)
+{
+	struct cloud* c = cloud_load_xyz(argv[1]);
+	
+	//struct vector3* ref = cloud_min_z(c);
+	struct vector3* ref = vector3_new(-99.714, -54.082, 46.744);
+	struct vector3* dir = vector3_new(0.4127296, -0.09994896, -0.905353215);
+	
+	struct cloud* p = cloud_cut_plane(c, ref, dir);
+	
+	cloud_save_xyz(p, argv[2]);
+	
+	cloud_free(p);
+	cloud_free(c);
+}
+
+void line(char** argv)
 {
 	struct cloud* cloud = cloud_load_xyz(argv[1]);
+	cloud_sort(cloud);
 	
 	struct vector3* ref = cloud_min_z(cloud);
 	struct vector3* dir = vector3_new(1, 1, 0);
@@ -35,17 +49,12 @@ void line_mask(char** argv)
 	cloud_free(cloud);
 }
 
-/**
- * Tentando arrumar a linha pra ficar bem retinha
- */
-void super_mask(char** argv)
+void mask(char** argv)
 {
 	struct cloud* cloud = cloud_load_xyz(argv[1]);
 	cloud_sort(cloud);
 	
-	struct vector3* ref = cloud_min_z(cloud);
-	struct vector3* dir = vector3_new(1, 1, 0);
-	struct cloud* path = cloud_path_on_direction(cloud, ref, dir);
+	struct cloud* path = cloud_binary_mask(cloud);
 	
 	cloud_save_xyz(path, argv[2]);
 	
@@ -61,7 +70,9 @@ int main(int argc, char** argv)
 		exit(1);
 	}
 	
-	super_mask(argv);
+	plane(argv);
+	//line(argv);
+	//mask(argv);
 	
 	return 0;
 }
