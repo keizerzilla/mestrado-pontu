@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "util.h"
 #include "calc.h"
 
 /**
@@ -34,9 +35,11 @@ struct vector3 {
 struct vector3* vector3_new(real x, real y, real z)
 {
     struct vector3* v = malloc(sizeof(struct vector3));
-    if (v == NULL)
+    if (v == NULL) {
+    	util_error("%s: erro alocando memoria vector3", __FUNCTION__);
         return NULL;
-
+	}
+	
     v->x = x;
     v->y = y;
     v->z = z;
@@ -54,6 +57,16 @@ struct vector3* vector3_new(real x, real y, real z)
 struct vector3* vector3_zero()
 {
     return vector3_new(0.0f, 0.0f, 0.0f);
+}
+
+/**
+ * \brief Cria um novo vetor a partir de um outro vetor
+ * \param src O vetor fonte
+ * \return Um ponteiro para um novo vetor
+ */
+struct vector3* vector3_from_vector(struct vector3* src)
+{
+	return vector3_new(src->x, src->y, src->z);
 }
 
 /**

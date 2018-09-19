@@ -14,22 +14,8 @@
 #include <string.h>
 
 #include "vector3.h"
+#include "plane3.h"
 #include "util.h"
-
-#define PCD_VERSION     "VERSION"
-#define PCD_FIELDS      "FIELDS"
-#define PCD_SIZE        "SIZE"
-#define PCD_TYPE        "TYPE"
-#define PCD_COUNT       "COUNT"
-#define PCD_WIDTH       "WIDTH"
-#define PCD_HEIGHT      "HEIGHT"
-#define PCD_VIEWPOINT   "VIEWPOINT"
-#define PCD_POINTS      "POINTS"
-#define PCD_DATA        "DATA"
-#define PCD_COMMENT     "#"
-
-#define PCD_KEYWORDSIZE    10
-#define PCD_PARAMSIZE      118
 
 /**
  * \brief Estrutura que guarda uma nuvem de pontos em memória.
@@ -474,7 +460,7 @@ void cloud_sort(struct cloud* cloud)
  * @param c2 A segunda nuvem
  * @return Uma nuvem com os pontos de c1 e c2
  */
-struct cloud* cloud_add(struct cloud* c1, struct cloud* c2)
+struct cloud* cloud_concat(struct cloud* c1, struct cloud* c2)
 {
     uint size_c1 = cloud_size(c1);
     uint size_c2 = cloud_size(c2);
@@ -560,37 +546,64 @@ struct cloud* cloud_cut_plane(struct cloud* cloud,
                               struct vector3* dir)
 {
     struct cloud* sub = cloud_new(0);
-    real d = -1 * (ref->x*dir->x + ref->y*dir->y + ref->z*dir->z);
-    real quad = vector3_length(dir);
-    
-    real tempd = 0;
-	for (uint i = 0; i < cloud->num_pts; i++) {
-		tempd = dir->x*cloud->points[i].x +
-		        dir->y*cloud->points[i].y +
-		        dir->z*cloud->points[i].z;
-		tempd = (tempd + d) / quad;
-		if (tempd > 0)
+    struct plane3* plane = plane3_new(dir, ref);
+	
+	for (uint i = 0; i < cloud->num_pts; i++)
+		if (plane3_on_direction(plane, &cloud->points[i]))
 			cloud_add_point_cpy(sub, &cloud->points[i]);
-	}
+	
+	plane3_free(plane);
 	
     return sub;
 }
 
 /**
- * \brief Cria caminho de pontos ao longo de uma direção (incompleto!)
+ * \brief Subamostra pontos da nuvem inseridos em um cilindro (incerto)
  * \param cloud A nuvem alvo
- * \param ref O ponto de partida
- * \param dir A direção do caminho
- * \return Uma subnuvem com o caminho
+ * \param ref O ponto de referência
+ * \param dir A direção da altura do cilindro
+ * \param radius O raio do cilindro
+ * \return A subnuvem inserida no cilindro
  */
-struct cloud* cloud_path_on_direction(struct cloud* cloud,
-                                      struct vector3* ref,
-                                      struct vector3* dir)
+struct cloud* cloud_cut_cylinder(struct cloud* cloud,
+                                 struct vector3* ref,
+                                 struct vector3* dir,
+                                 real radius)
 {
-	util_seg("%s: Essa função está incompleta!", __FUNCTION__);
-	util_seg("%s: Resolver implementando distância reta-ponto", __FUNCTION__);
+	util_seg("%s: Essa função não está 100% verificada!", __FUNCTION__);
 	
+	struct cloud* sub = cloud_new(0);
+	real dirl = vector3_length(dir);
+	real dist = 0.0f;
+	
+	for (uint i = 0; i < cloud->num_pts; i++) {
+		struct vector3* dot = vector3_sub(ref, &cloud->points[i]);
+		struct vector3* cross = vector3_cross(dot, dir);
+		
+		dist = vector3_length(cross) / dirl;
+		if (dist <= radius)
+			cloud_add_point_cpy(sub, &cloud->points[i]);
+		
+		vector3_free(dot);
+		vector3_free(cross);
+	}
+	
+	return sub;
+}
+
+/**
+ * \brief Traça caminho ao longo de uma nuvem de pontos
+ * \param cloud A nuvem alvo
+ * \param ref O ponto de referência
+ * \param dir A direção do caminho
+ * \return Subnuvem contendo os pontos formadores do caminho
+ */
+struct cloud* cloud_path(struct cloud* cloud,
+                         struct vector3* ref,
+                         struct vector3* dir)
+{
 	struct cloud* sub = cloud_new(1);
+	
 	return sub;
 }
 
@@ -730,3 +743,4 @@ void cloud_debug(struct cloud* cloud, const char* message, FILE* output)
 }
 
 #endif // CLOUD_H
+

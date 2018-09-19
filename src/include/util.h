@@ -2,7 +2,7 @@
  * \file util.h
  * \author Artur Rodrigues Rocha Neto
  * \date 2018
- * \brief Arquivo com funções utilitárias genéricas.
+ * \brief Arquivo com funções utilitárias e constante gerais.
  */
 
 #ifndef UTIL_H
@@ -29,6 +29,20 @@
 #define ANSI_COLOR_OKBLUE		"\033[94m"
 #define ANSI_COLOR_HEADER		"\033[95m"
 
+#define PCD_VERSION				"VERSION"
+#define PCD_FIELDS				"FIELDS"
+#define PCD_SIZE				"SIZE"
+#define PCD_TYPE				"TYPE"
+#define PCD_COUNT				"COUNT"
+#define PCD_WIDTH				"WIDTH"
+#define PCD_HEIGHT				"HEIGHT"
+#define PCD_VIEWPOINT			"VIEWPOINT"
+#define PCD_POINTS				"POINTS"
+#define PCD_DATA				"DATA"
+#define PCD_COMMENT				"#"
+#define PCD_KEYWORDSIZE			10
+#define PCD_PARAMSIZE			118
+
 /**
  * @brief Mensagem de nível de erro
  * @param msg A mensagem a ser exibida
@@ -44,7 +58,7 @@ void util_error(const char* msg, ...)
 	
 	fprintf(stderr, "%s%s", ANSI_COLOR_BOLD, ANSI_COLOR_FAIL);
     fprintf(stderr, "[ERRO] %s\n", buffer);
-    fprintf(stdout, "%s", ANSI_COLOR_DEFAULT);
+    //fprintf(stdout, "%s", ANSI_COLOR_DEFAULT);
 }
 
 /**
@@ -62,7 +76,7 @@ void util_info(const char* msg, ...)
 	
 	fprintf(stderr, "%s%s", ANSI_COLOR_BOLD, ANSI_COLOR_OKBLUE);
     fprintf(stdout, "[INFO] %s\n", buffer);
-    fprintf(stdout, "%s", ANSI_COLOR_DEFAULT);
+    //fprintf(stdout, "%s", ANSI_COLOR_DEFAULT);
 }
 
 /**
@@ -80,7 +94,7 @@ void util_prompt(const char* msg, ...)
 	
 	fprintf(stderr, "%s%s", ANSI_COLOR_BOLD, ANSI_COLOR_OKGREEN);
     fprintf(stdout, "[!!!!] %s\n", buffer);
-    fprintf(stdout, "%s", ANSI_COLOR_DEFAULT);
+    //fprintf(stdout, "%s", ANSI_COLOR_DEFAULT);
 }
 
 /**
@@ -98,7 +112,7 @@ void util_seg(const char* msg, ...)
 	
 	fprintf(stderr, "%s%s", ANSI_COLOR_BOLD, ANSI_COLOR_MAGENTA);
     fprintf(stdout, "[!!!!] %s\n", buffer);
-    fprintf(stdout, "%s", ANSI_COLOR_DEFAULT);
+    //fprintf(stdout, "%s", ANSI_COLOR_DEFAULT);
 }
 
 #endif
