@@ -15,17 +15,17 @@
  */
 struct plane3 {
 	struct vector3* normal;
-	struct vector3* ref;
+	struct vector3* point;
 	real d;
 };
 
 /**
  * \brief Cria um novo plano
  * \param n O vetor normal ao plano
- * \param r O ponto de referência contido no plano
+ * \param p O ponto de referência contido no plano
  * \return Um plano alocado em memória
  */
-struct plane3* plane3_new(struct vector3* n, struct vector3* r)
+struct plane3* plane3_new(struct vector3* n, struct vector3* p)
 {
 	struct plane3* plane = malloc(sizeof(struct plane3));
 	if (plane == NULL) {
@@ -34,8 +34,8 @@ struct plane3* plane3_new(struct vector3* n, struct vector3* r)
 	}
 	
 	plane->normal = vector3_from_vector(n);
-	plane->ref = vector3_from_vector(r);
-	plane->d = -1* ((n->x * r->x) + (n->y * r->y) + (n->z * r->z));
+	plane->point = vector3_from_vector(p);
+	plane->d = -1* ((n->x * p->x) + (n->y * p->y) + (n->z * p->z));
 	
 	return plane;
 }
@@ -48,7 +48,7 @@ struct plane3* plane3_new(struct vector3* n, struct vector3* r)
  */
 real plane3_distance2point(struct plane3* plane, struct vector3* point)
 {
-	struct vector3* proj = vector3_sub(point, plane->ref);
+	struct vector3* proj = vector3_sub(point, plane->point);
 	real d = vector3_dot(proj, plane->normal) / vector3_length(plane->normal);
 	vector3_free(proj);
 	
@@ -63,7 +63,7 @@ real plane3_distance2point(struct plane3* plane, struct vector3* point)
  */
 uint plane3_on_direction(struct plane3* plane, struct vector3* point)
 {
-	struct vector3* proj = vector3_sub(point, plane->ref);
+	struct vector3* proj = vector3_sub(point, plane->point);
 	real d = vector3_dot(proj, plane->normal);
 	vector3_free(proj);
 	
@@ -77,7 +77,7 @@ uint plane3_on_direction(struct plane3* plane, struct vector3* point)
 void plane3_free(struct plane3* plane)
 {
 	vector3_free(plane->normal);
-	vector3_free(plane->ref);
+	vector3_free(plane->point);
 	free(plane);
 	plane = NULL;
 }

@@ -21,7 +21,7 @@ int main(int argc, char** argv)
 	struct vector3* dir = vector3_new(0, -1, 0);
 	
 	// soh mudar a chamada da funcao abaixo
-	struct cloud* p = cloud_cut_plane(c, ref, dir);
+	struct cloud* p = cloud_binary_mask(c);
 	
 	cloud_save_xyz(c, argv[1]);
 	cloud_save_xyz(p, argv[2]);

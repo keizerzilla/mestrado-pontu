@@ -1,5 +1,5 @@
 # targets de compilacao
-all: mcalc cloudz cloudgraph
+all: mcalc cloudz cloudgraph kdtest
 
 # programa extrator de momentos invariantes
 mcalc: mcalc.c
@@ -12,3 +12,7 @@ cloudz: cloudz.c
 # cria grafo a partir de nuvem
 cloudgraph: cloudgraph.c
 	gcc cloudgraph.c -lm -Wall -o ../bin/cloudgraph
+
+# divisao espacial usando kdtree
+kdtest: kdtest.c
+	gcc kdtest.c -lm -Wall -o ../bin/kdtest

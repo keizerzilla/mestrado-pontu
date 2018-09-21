@@ -18,7 +18,7 @@
 #include "util.h"
 
 /**
- * \brief Estrutura que guarda uma nuvem de pontos em memória.
+ * \brief Estrutura que guarda uma nuvem de pontos em memória
  */
 struct cloud {
     struct vector3* points;
@@ -406,6 +406,7 @@ void cloud_translate_real(struct cloud* cloud, real x, real y, real z)
  */
 void cloud_rotate_x(struct cloud* cloud, real d)
 {
+	util_seg("%s: funcionalidade incorreta", __FUNCTION__);
     for (uint i = 0; i < cloud->num_pts; i++)
         vector3_rotate_x(&cloud->points[i], d);
 }
@@ -417,6 +418,7 @@ void cloud_rotate_x(struct cloud* cloud, real d)
  */
 void cloud_rotate_y(struct cloud* cloud, real d)
 {
+	util_seg("%s: funcionalidade incorreta", __FUNCTION__);
 	for (uint i = 0; i < cloud->num_pts; i++)
         vector3_rotate_y(&cloud->points[i], d);
 }
@@ -428,6 +430,7 @@ void cloud_rotate_y(struct cloud* cloud, real d)
  */
 void cloud_rotate_z(struct cloud* cloud, real d)
 {
+	util_seg("%s: funcionalidade incorreta", __FUNCTION__);
 	for (uint i = 0; i < cloud->num_pts; i++)
         vector3_rotate_z(&cloud->points[i], d);
 }
@@ -537,22 +540,16 @@ struct cloud* cloud_cut_center(struct cloud* cloud, real cut)
 /**
  * \brief Secciona uma nuvem ao longo de uma direção com base em uma referência
  * \param cloud A nuvem alvo
- * \param ref O ponto de referência
- * \param dir A direção do corte: 1 para positiva, -1 para negativa
+ * \param plane O plano de corte
  * \return A subnuvem cortada
  */
-struct cloud* cloud_cut_plane(struct cloud* cloud,
-                              struct vector3* ref,
-                              struct vector3* dir)
+struct cloud* cloud_cut_plane(struct cloud* cloud, struct plane3* plane)
 {
     struct cloud* sub = cloud_new(0);
-    struct plane3* plane = plane3_new(dir, ref);
-	
-	for (uint i = 0; i < cloud->num_pts; i++)
+    
+    for (uint i = 0; i < cloud->num_pts; i++)
 		if (plane3_on_direction(plane, &cloud->points[i]))
 			cloud_add_point_cpy(sub, &cloud->points[i]);
-	
-	plane3_free(plane);
 	
     return sub;
 }
@@ -725,6 +722,17 @@ struct cloud* cloud_binary_mask(struct cloud* cloud)
 	}
 	
 	return mask;
+}
+
+/**
+ * \brief Retorna o ponto mediano de uma nuvem
+ * \param cloud A Nuvem alvo
+ * \return Mediana da nuvem
+ */
+struct vector3* cloud_get_median(struct cloud* cloud)
+{
+	cloud_sort(cloud);
+	return &cloud->points[cloud->num_pts/2];
 }
 
 /**
