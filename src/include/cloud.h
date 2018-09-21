@@ -304,9 +304,9 @@ int cloud_save_pcd(struct cloud* cloud, const char* filename)
     fprintf(file, "DATA ascii\n");
 
     for (uint i = 0; i < cloud->num_pts; i++) {
-        fprintf(file, "%le %le %le\n", cloud->points[i].x,
-                                       cloud->points[i].y,
-                                       cloud->points[i].z);
+        fprintf(file, "%.6f %.6f %.6f\n", cloud->points[i].x,
+                                          cloud->points[i].y,
+                                          cloud->points[i].z);
     }
 
     fclose(file);

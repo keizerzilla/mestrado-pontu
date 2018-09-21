@@ -2,6 +2,7 @@
 
 int main(int argc, char** argv)
 {
+	printf("\n");
 	printf("===============================\n");
 	printf(" KDTREE POINT CLOUD DATA BEGIN \n");
 	printf("===============================\n");
@@ -19,7 +20,7 @@ int main(int argc, char** argv)
 	kdt = kdtree_cloud_partition(cloud, 10);
 	kdtree_kdtree2cloud(kdt, kdcloud);
 	
-	cloud_save_xyz(kdcloud, argv[2]);
+	cloud_save_pcd(kdcloud, argv[2]);
 	cloud_save_xyz(nose, argv[3]);
 	
 	vector3_debug(cloud_min_z(kdcloud), "kdt min z", stdout);
@@ -30,9 +31,7 @@ int main(int argc, char** argv)
 	cloud_free(cloud);
 	kdtree_free(kdt);
 	
-	printf("=============================\n");
-	printf(" KDTREE POINT CLOUD DATA END \n");
-	printf("=============================\n");
+	printf("\n");
 	
 	return 0;
 }
