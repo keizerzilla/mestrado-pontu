@@ -4,13 +4,13 @@ prog=" ../bin/kdtest "
 viewer=" pcl_viewer "
 xyz2pcd=" pcl_xyz2pcd "
 
-cloud_xyz=" ../datasets/dump/bs000_N_N_0.xyz "
-graph_xyz=" ../datasets/dump/graph_bs000_N_N_0.xyz "
-nose_xyz=" ../datasets/dump/nose_bs000_N_N_0.xyz "
+cloud_xyz=" ../datasets/dump/cloud.xyz " # input
+graph_xyz=" ../datasets/dump/graph_cloud.xyz "
+nose_xyz=" ../datasets/dump/nose_cloud.xyz "
 
-cloud_pcd=" ../datasets/dump/bs000_N_N_0.pcd "
-graph_pcd=" ../datasets/dump/graph_bs000_N_N_0.pcd "
-nose_pcd=" ../datasets/dump/nose_bs000_N_N_0.pcd "
+cloud_pcd=" ../datasets/dump/cloud.pcd "
+graph_pcd=" ../datasets/dump/graph_cloud.pcd "
+nose_pcd=" ../datasets/dump/nose_cloud.pcd "
 
 param1=" -ps 1 -fc 0,0,255 "
 param2=" -ps 5 -fc 255,0,0 "

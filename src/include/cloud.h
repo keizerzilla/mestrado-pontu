@@ -277,15 +277,13 @@ struct cloud* cloud_load_pcd(const char* filename)
 }
 
 /**
- * @brief Salva nuvem em arquivo usando formato PCD (incompleto!)
+ * @brief Salva nuvem em arquivo usando formato PCD simples
  * @param cloud A nuvem a ser salva
  * @param filename O arquivo destino
  * @return 1 se tiver dado tudo certo, 0 caso contrário
  */
 int cloud_save_pcd(struct cloud* cloud, const char* filename)
 {
-	util_seg("%s: Essa função está incompleta!", __FUNCTION__);
-	
     FILE* file = fopen(filename, "w");
     if (file == NULL) {
         util_error("%s: erro abrir arquivo %s", __FUNCTION__, filename);

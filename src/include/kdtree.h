@@ -63,7 +63,7 @@ struct kdtree* kdtree_cloud_partition(struct cloud* cloud, uint depth)
 		return NULL;
 	
 	struct vector3* dir = vector3_new((depth%3)==0, (depth%3)==1, (depth%3)==2);
-	struct vector3* center = cloud_get_center(cloud);
+	struct vector3* center = cloud_get_median(cloud);
 	
 	struct kdtree* kdt = kdtree_new(dir, center);
 	if (kdt == NULL)
