@@ -221,62 +221,6 @@ uint cloud_size(struct cloud* cloud)
 }
 
 /**
- * \brief Carrega uma nuvem a partir de um arquivo PCD (incompleto!)
- * \param filename O arquivo onde a nuvem está guardada
- * \return Um estrutura cloud carregada em memória ou NULL caso ocorra erro
- */
-struct cloud* cloud_load_pcd(const char* filename)
-{
-	util_seg("%s: Essa função está incompleta!", __FUNCTION__);
-	
-    FILE* file = fopen(filename, "r");
-    if (file == NULL) {
-        util_error("%s: erro abrir arquivo %s", __FUNCTION__, filename);
-        return NULL;
-    }
-
-    char keyword[PCD_KEYWORDSIZE];
-    char param[PCD_PARAMSIZE];
-    while (!feof(file) && fscanf(file, "%s %[^\t\n]", keyword, param) != EOF) {
-        printf("keyword: %s\n", keyword);
-        printf("param: %s\n", param);
-
-        if (!strcmp(keyword, PCD_COMMENT)) {
-            // asdf
-        } else if (!strcmp(keyword, PCD_VERSION)) {
-            // asdf
-        } else if (!strcmp(keyword, PCD_FIELDS)) {
-            // asdf
-        } else if (!strcmp(keyword, PCD_SIZE)) {
-            // asdf
-        } else if (!strcmp(keyword, PCD_TYPE)) {
-            // asdf
-        } else if (!strcmp(keyword, PCD_COUNT)) {
-            // asdf
-        } else if (!strcmp(keyword, PCD_WIDTH)) {
-            // asdf
-        } else if (!strcmp(keyword, PCD_HEIGHT)) {
-            // asdf
-        } else if (!strcmp(keyword, PCD_VIEWPOINT)) {
-            // asdf
-        } else if (!strcmp(keyword, PCD_POINTS)) {
-            // asdf
-        } else if (!strcmp(keyword, PCD_DATA)) {
-            // asdf
-        } else {
-            util_error("%s: keyword [%s] desconhecido", __FUNCTION__, keyword);
-        }
-
-        memset(keyword, 0, PCD_KEYWORDSIZE);
-        memset(param, 0, PCD_PARAMSIZE);
-    }
-
-    fclose(file);
-
-    return NULL;
-}
-
-/**
  * @brief Salva nuvem em arquivo usando formato PCD simples
  * @param cloud A nuvem a ser salva
  * @param filename O arquivo destino
@@ -565,8 +509,6 @@ struct cloud* cloud_cut_cylinder(struct cloud* cloud,
                                  struct vector3* dir,
                                  real radius)
 {
-	util_seg("%s: Essa função não está 100% verificada!", __FUNCTION__);
-	
 	struct cloud* sub = cloud_new(0);
 	real dirl = vector3_length(dir);
 	real dist = 0.0f;
@@ -587,7 +529,7 @@ struct cloud* cloud_cut_cylinder(struct cloud* cloud,
 }
 
 /**
- * \brief Traça caminho ao longo de uma nuvem de pontos
+ * \brief Traça caminho ao longo de uma nuvem de pontos (em teste!)
  * \param cloud A nuvem alvo
  * \param ref O ponto de referência
  * \param dir A direção do caminho
@@ -597,6 +539,8 @@ struct cloud* cloud_path(struct cloud* cloud,
                          struct vector3* ref,
                          struct vector3* dir)
 {
+	util_seg("%s: em teste", __FUNCTION__);
+	
 	struct cloud* sub = cloud_new(1);
 	
 	return sub;

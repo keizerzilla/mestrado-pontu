@@ -9,23 +9,25 @@
 
 int main(int argc, char** argv)
 {
-	if (argc != 3) {
+	if (argc != 4) {
 		util_error("numero incorreto de parametros!");
-		util_error("uso: cloudgraph <nuvem.xyz> <graph.xyz>");
+		util_error("uso: cloudgraph <nuvem.xyz> <graph.xyz> <cut>");
 		exit(1);
 	}
 	
 	struct cloud* c = cloud_load_xyz(argv[1]);
-	cloud_translate_real(c, 0, 0, 0);
-	struct vector3* ref = cloud_min_z(c);
-	struct vector3* dir = vector3_new(0, -1, 0);
+	struct plane3* p = plane3_new(vector3_new(0, -1, 0), cloud_min_z(c));
+	struct cloud* cut = cloud_new(0);
+	real leafsize = atof(argv[3]);
 	
-	// soh mudar a chamada da funcao abaixo
-	struct cloud* p = cloud_binary_mask(c);
+	for (uint i = 0; i < c->num_pts; i++)
+		if (plane3_distance2point(p, &c->points[i]) <= leafsize)
+			cloud_add_point_cpy(cut, &c->points[i]);
 	
-	cloud_save_xyz(c, argv[1]);
-	cloud_save_xyz(p, argv[2]);
-	cloud_free(p);
+	cloud_save_xyz(cut, argv[2]);
+	
+	cloud_free(cut);
+	plane3_free(p);
 	cloud_free(c);
 	
 	return 0;

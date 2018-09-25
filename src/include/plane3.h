@@ -21,11 +21,11 @@ struct plane3 {
 
 /**
  * \brief Cria um novo plano
- * \param n O vetor normal ao plano
- * \param p O ponto de referência contido no plano
+ * \param normal O vetor normal ao plano
+ * \param point O ponto de referência contido no plano
  * \return Um plano alocado em memória
  */
-struct plane3* plane3_new(struct vector3* n, struct vector3* p)
+struct plane3* plane3_new(struct vector3* normal, struct vector3* point)
 {
 	struct plane3* plane = malloc(sizeof(struct plane3));
 	if (plane == NULL) {
@@ -33,15 +33,29 @@ struct plane3* plane3_new(struct vector3* n, struct vector3* p)
 		return NULL;
 	}
 	
-	plane->normal = vector3_from_vector(n);
-	plane->point = vector3_from_vector(p);
-	plane->d = -1* ((n->x * p->x) + (n->y * p->y) + (n->z * p->z));
+	plane->normal = vector3_from_vector(normal);
+	plane->point = vector3_from_vector(point);
+	plane->d = -1* ((normal->x * point->x) +
+	                (normal->y * point->y) +
+	                (normal->z * point->z));
 	
 	return plane;
 }
 
 /**
- * \brief Cálcula distância absoluta entre um plano e um ponto
+ * \brief Libera a memória alocada para um plano
+ * \param plane O plano a ser liberado
+ */
+void plane3_free(struct plane3* plane)
+{
+	vector3_free(plane->normal);
+	vector3_free(plane->point);
+	free(plane);
+	plane = NULL;
+}
+
+/**
+ * \brief Calcula a distância absoluta entre um plano e um ponto
  * \param plane O plano
  * \param point O ponto
  * \return A distância entre plane e point
@@ -51,7 +65,6 @@ real plane3_distance2point(struct plane3* plane, struct vector3* point)
 	struct vector3* proj = vector3_sub(point, plane->point);
 	real d = vector3_dot(proj, plane->normal) / vector3_length(plane->normal);
 	vector3_free(proj);
-	
 	return fabs(d);
 }
 
@@ -66,20 +79,7 @@ uint plane3_on_direction(struct plane3* plane, struct vector3* point)
 	struct vector3* proj = vector3_sub(point, plane->point);
 	real d = vector3_dot(proj, plane->normal);
 	vector3_free(proj);
-	
 	return (d >= 0.0f) ? 1 : 0;
-}
-
-/**
- * \brief Libera a memória alocada para um plano
- * \param plane O plano a ser liberado
- */
-void plane3_free(struct plane3* plane)
-{
-	vector3_free(plane->normal);
-	vector3_free(plane->point);
-	free(plane);
-	plane = NULL;
 }
 
 #endif // PLANE3_H

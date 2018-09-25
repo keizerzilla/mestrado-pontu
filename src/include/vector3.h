@@ -373,11 +373,11 @@ void vector3_push2(struct vector3* v) {
 }
 
 /**
- * @brief Calcula a distância de Minkowski entre dois vetores
+ * @brief Calcula a distância de Minkowski de ordem m entre dois vetores
  * @param v1 O primeiro vetor
  * @param v2 O segundo vetor
  * @param m A ordem da distância
- * @return A distância de ordem 'm' entre v1 e v2
+ * @return A distância de ordem m entre v1 e v2
  */
 real vector3_minkowski(struct vector3* v1, struct vector3* v2, real m)
 {
