@@ -3,33 +3,108 @@ import sys
 import subprocess
 
 """
-Normaliza as extenções dos arquivos de nuvem (HISTÓRICA).
+dataset.py
+Artur Rodrigues Rocha Neto
+2018
 
-folder -- A pasta aonde os arquivos estão salvas
+Funções de conversão/normalização dos arquivos das bases de dados.
 """
-def cloud2xyz(folder):
-	for filename in os.listdir(folder):
-		infilename = os.path.join(folder, filename)
-		if not os.path.isfile(infilename): continue
-		newname = infilename.replace(".cloud", ".xyz")
-		output = os.rename(infilename, newname)
 
 """
-Converte conjunto de nuvens xyz em formato PCD usando pcl_xyz2pcd
+Normaliza as extenções dos arquivos de nuvem (FUNÇÃO HISTÓRICA).
 
-folder -- A pasta com as nuvens originais
-dest -- A pasta aonde as nuvens convertidas ficarão salvas
+source -- A pasta com os arquivos a serem convertidos
 """
-def xyz2pcd(folder, dest):
-	for cloud in os.listdir(folder):
-		infile = os.path.join(folder, cloud)
-		if not os.path.isfile(infile): continue
-		outfile = os.path.join(dest, cloud.replace(".xyz", ".pcd"))
-		cmd = ["pcl_xyz2pcd", infile, outfile]
+def cloud2xyz(source):
+	for filename in os.listdir(source):
+		inpf = os.path.join(source, filename)
+		
+		if not os.path.isfile(inpf) or not inpf.endswith(".cloud"):
+			continue
+		
+		newname = inpf.replace(".cloud", ".xyz")
+		output = os.rename(inpf, newname)
+		print(outf + " OK")
+
+"""
+Converte conjunto de nuvens .xyz em formato .pcd usando pcl_xyz2pcd
+
+source -- A pasta com os arquivos a serem convertidos
+dest -- Pasta destino das nuvens convertidas
+"""
+def xyz2pcd(source, dest):
+	for cloud in os.listdir(source):
+		inpf = os.path.join(source, cloud)
+		
+		if not os.path.isfile(inpf) or not inpf.endswith(".xyz"):
+			continue
+		
+		outf = os.path.join(dest, cloud.replace(".xyz", ".pcd"))
+		cmd = ["pcl_xyz2pcd", inpf, outf]
 		subprocess.call(cmd)
-		print(outfile + " OK")
+		print(outf + " OK")
+
+"""
+Converte conjunto de nuvens .pcd em formato .xyz usando pcl_pcd2ply + Python
+
+source -- A pasta com os arquivos a serem convertidos
+dest -- Pasta destino das nuvens convertidas
+"""
+def pcd2xyz(source, dest):
+	for cloud in os.listdir(source):
+		inpf = os.path.join(source, cloud)
+		
+		if not os.path.isfile(inpf) or not inpf.endswith(".pcd"):
+			continue
+		
+		outf = os.path.join(dest, cloud.replace(".pcd", ".ply"))
+		cmd = ["pcl_pcd2ply", "-format", "0", "-use_camera", "0", inpf, outf]
+		print(" ".join(cmd))
+		subprocess.call(cmd)
+		
+		data = ""
+		with open(outf, "r") as ply:
+			data = ply.read()
+			data = data[data.find("end_header")+11:]
+		
+		with open(outf, "w") as dump:
+			dump.write(data)
+		
+		os.rename(outf, outf.replace(".ply", ".xyz"))
+		
+		print(outf + " OK")
+
+"""
+Converte conjunto de nuvens .obj em formato .xyz usando pcl_obj2ply + Python
+
+source -- A pasta com os arquivos a serem convertidos
+dest -- Pasta destino das nuvens convertidas
+"""
+def obj2xyz(source, dest):
+	for cloud in os.listdir(source):
+		inpf = os.path.join(source, cloud)
+		
+		if not os.path.isfile(inpf) or not inpf.endswith(".obj"):
+			continue
+		
+		outf = os.path.join(dest, cloud.replace(".obj", ".ply"))
+		cmd = ["pcl_obj2ply", "-format", "0", "-use_camera", "0", inpf, outf]
+		print(" ".join(cmd))
+		subprocess.call(cmd)
+		
+		data = ""
+		with open(outf, "r") as ply:
+			data = ply.read()
+			data = data[data.find("end_header")+11:]
+		
+		with open(outf, "w") as dump:
+			dump.write(data)
+		
+		os.rename(outf, outf.replace(".ply", ".xyz"))
+		
+		print(outf + " OK")
 
 if __name__ == "__main__":
-	folder = "/home/artur/github/latin/datasets/bosphorus_no-outliers/NonNeutrals"
-	dest = "/home/artur/github/latin/datasets/bosphorus_no-outliers/NonNeutrals"
-	xyz2pcd(folder, dest)
+	source = "/home/artur/github/latin/datasets/dump"
+	dest = "/home/artur/github/latin/datasets/dump"
+	pcd2xyz(source, dest)

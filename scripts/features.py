@@ -42,11 +42,9 @@ informações de amostra e classe (padrão Bosphorus).
 moment -- O momento a ser usado
 dataset -- A pasta com as nuvens
 output -- O arquivo de saída aonde os momentos serão salvos
-header -- O cabeçalho do arquivo de saída
 """
-def moment_extraction_batch(moment, dataset, output, header):
+def moment_extraction_batch(moment, dataset, output):
 	with open(output, "w") as dump:
-		dump.write(header+"\n");
 		for cloud in os.listdir(dataset):
 			if cloud.endswith(".xyz"):
 				dump.write(moment_extraction_cloud(moment, dataset+"/"+cloud))
@@ -69,16 +67,11 @@ def extract_graph(dataset, output):
 			print(outfile + " OK")
 
 if __name__ == "__main__":
-	datasets = ["../datasets/graphs"]
-	moments = ["hututu"]
-	header = "l1,l2,l3,l4,l5,l6,l7,l8,l9,l10,l11,l12,l13,l14,l15,l16,l17,l18,l19,l20,l21,sample,subject"
-	#header = "l1,l2,l3,sample,subject"
+	datasets = ["../datasets/bosphorus_no-outliers/NonNeutrals"]
+	moments = ["hututu", "hu1980", "zernike", "legendre", "tchebychev"]
 	
 	for data in datasets:
 		for moment in moments:
-			output = "../results/graphs/nosetip/{}-{}.dat".format(moment, os.path.split(data)[1])
-			moment_extraction_batch(moment, data, output, header)
-	
-	#extract_graph("../datasets/bosphorus_no-outliers/Neutrals", "../datasets/graphs")
-	
+			output = "../results/moments/{}-{}.dat".format(os.path.split(data)[1], moment)
+			moment_extraction_batch(moment, data, output)
 	
