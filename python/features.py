@@ -1,7 +1,7 @@
-import sys
 import os
-import subprocess
+import sys
 import parse
+import subprocess
 
 """
 feats.py
@@ -67,11 +67,12 @@ def extract_graph(dataset, output):
 			print(outfile + " OK")
 
 if __name__ == "__main__":
-	datasets = ["../datasets/bosphorus_no-outliers/NonNeutrals"]
+	datasets = ["../datasets/CLEAN_C80_D225_ICP/neutral",
+	            "../datasets/CLEAN_C80_D225_ICP/nonneutral"]
 	moments = ["hututu", "hu1980", "zernike", "legendre", "tchebychev"]
 	
 	for data in datasets:
 		for moment in moments:
-			output = "../results/moments/{}-{}.dat".format(os.path.split(data)[1], moment)
+			output = "../results/CLEAN_C80_D225_ICP/{}-{}.dat".format(os.path.split(data)[1], moment)
 			moment_extraction_batch(moment, data, output)
 	

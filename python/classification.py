@@ -2,7 +2,10 @@ import time
 import numpy as np
 import pandas as pd
 from sklearn.svm import SVC
+from sklearn.model_selection import LeaveOneOut
 from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import RandomizedSearchCV
 from sklearn.neighbors import KNeighborsClassifier as KNC
 
 """
@@ -28,6 +31,81 @@ Fonte2: http://www.zvetcobiometrics.com/Support/definitions.php
 """
 
 """
+Variáveis globais do script.
+
+ATENÇÃO1: isso só é socialmente aceitável em linguagens de script.
+ATENÇÃO2: eu não quero ver esse comportamento em outro lugar!
+
+--- !!!VOCÊ FOI AVISADO!!! ---
+"""
+
+classifiers = [
+	KNC(p=1, n_neighbors=1),
+	KNC(p=2, n_neighbors=1),
+	SVC(kernel="rbf"),
+	SVC(kernel="poly")]
+
+names = [
+	"KNN_manhattam",
+	"KNN_euclidean",
+	"SVM_radial",
+	"SVM_poly"]
+
+"""-----------------------------------------------------------------------------
+classifiers = [KNC(), SVC()]
+
+names = ["KNC", "SVM"]
+
+grids = [
+	{
+	  "p"           : [1, 2],
+	  "metric"      : ["chebyshev", "minkowski", "manhattan"],
+	  "weights"     : ["uniform", "distance"],
+	  "algorithm"   : ["ball_tree", "kd_tree", "brute"],
+	  "leaf_size"   : [1, 5, 10, 15, 20, 25, 30, 35, 40],
+	  "n_neighbors" : [1, 2, 3]
+	},
+	{
+	  "C"                       : [x for x in range(1, 11)],
+	  "tol"                     : [1e-4, 1e-3, 1e-2, 1e-1, 1e0],
+	  "gamma"                   : [0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875],
+	  "coef0"                   : [0.0, 0.1, 0.2, 0.3, 0.4, 0.5],
+	  "kernel"                  : ["linear", "rbf", "poly", "sigmoid"],
+	  "degree"                  : [2, 3, 4, 5],
+	  "shrinking"               : [True, False],
+	  "probability"             : [True, False],
+	  "decision_function_shape" : ["ovo", "ovr"]
+	}
+]
+-----------------------------------------------------------------------------"""
+
+"""
+Roda os classificadores em estudo para um dado conjunto de treino e teste. Essa
+é a função mais genérica e mais importante desse script.
+
+X_train -- amostras de treino
+y_train -- classes das amostras de treino
+X_test -- amostras de teste
+y_test -- classes das amostras de teste
+"""
+def run_classification(X_train, y_train, X_test, y_test):
+	ans = dict()
+	
+	for name, classifier in zip(names, classifiers):
+		start_time = time.time()
+		clf = classifier
+		clf.fit(X_train, y_train)
+		score = clf.score(X_test, y_test)
+		elapsed_time = round(time.time() - start_time, 4)
+		ans[name] = score
+		
+		score_txt = str(round(score*100, 2))
+		out = "{:<16}{:<8}{:<8}".format(name, score_txt, elapsed_time)
+		print(out)
+	
+	return ans
+
+"""
 Executa classificação RANK-1 usando os 4 classificadores em pesquisa.
 Treino: amostra 0 de cada pose neutra.
 Teste: restante das amostras neutras (amostra diferente de 0).
@@ -36,23 +114,9 @@ no conjunto de dados.
 
 name -- O nome do teste em execução
 features -- O caminho para o dados extraídos das amostras neutras
-stdout -- Se o resultado da classificação deve ser exibido na saída padrão
 """
-def rank1_neutral(name, features, stdout=True):
-	if (stdout):
-		print(name)
-	
-	classifiers = [
-		KNC(p=1, n_neighbors=1),
-		KNC(p=2, n_neighbors=1),
-		SVC(kernel="rbf"),
-		SVC(kernel="poly")]
-
-	names = [
-		"KNN_manhattam",
-		"KNN_euclidean",
-		"SVM_radial",
-		"SVM_poly"]
+def rank1_neutral(name, features):
+	print(name)
 	
 	# neutras: teste e treino
 	df = pd.read_csv(features, header=None)
@@ -73,23 +137,7 @@ def rank1_neutral(name, features, stdout=True):
 	X_test = scaler.transform(X_test)
 	
 	# execucao dos classificadores
-	ans = dict()
-	for clf_name, clf in zip(names, classifiers):
-		start_time = time.time()
-		
-		clf.fit(X_train, y_train)
-		score = clf.score(X_test, y_test)
-		score_txt = str(round(score*100, 2))
-		
-		elapsed_time = round(time.time() - start_time, 4)
-		
-		if (stdout):
-			out = "{:<16}{:<8}{:<8}".format(clf_name, score_txt, elapsed_time)
-			print(out)
-		
-		ans[clf_name] = score
-	
-	return ans
+	return run_classification(X_train, y_train, X_test, y_test)
 
 """
 Executa classificação RANK-1 usando os 4 classificadores em pesquisa.
@@ -101,23 +149,9 @@ no conjunto de dados.
 name -- O nome do teste em execução
 feat_neutral -- O caminho para o dados extraídos das amostras neutras
 feat_nonneutral -- O caminho para os dados extraídos das amostras não-neutras
-stdout -- Se o resultado da classificação deve ser exibido na saída padrão
 """
-def rank1_nonneutral(name, feat_neutral, feat_nonneutral, stdout=True):
-	if (stdout):
-		print(name)
-	
-	classifiers = [
-		KNC(p=1, n_neighbors=1),
-		KNC(p=2, n_neighbors=1),
-		SVC(kernel="rbf"),
-		SVC(kernel="poly")]
-
-	names = [
-		"KNN_manhattam",
-		"KNN_euclidean",
-		"SVM_radial",
-		"SVM_poly"]
+def rank1_nonneutral(name, feat_neutral, feat_nonneutral):
+	print(name)
 	
 	# neutras: conjunto de treino
 	df = pd.read_csv(feat_neutral, header=None)
@@ -143,23 +177,7 @@ def rank1_nonneutral(name, feat_neutral, feat_nonneutral, stdout=True):
 	X_test = scaler.transform(X_test)
 	
 	# execucao dos classificadores
-	ans = dict()
-	for clf_name, clf in zip(names, classifiers):
-		start_time = time.time()
-		
-		clf.fit(X_train, y_train)
-		score = clf.score(X_test, y_test)
-		score_txt = str(round(score*100, 2))
-		
-		elapsed_time = round(time.time() - start_time, 4)
-		
-		if (stdout):
-			out = "{:<16}{:<8}{:<8}".format(clf_name, score_txt, elapsed_time)
-			print(out)
-		
-		ans[clf_name] = score
-	
-	return ans
+	return run_classification(X_train, y_train, X_test, y_test)
 
 """
 Executa classificação ROC-1 usando os 4 classificadores em pesquisa.
@@ -171,23 +189,9 @@ no conjunto de dados.
 name -- O nome do teste em execução
 feat_neutral -- O caminho para o dados extraídos das amostras neutras
 feat_nonneutral -- O caminho para os dados extraídos das amostras não-neutras
-stdout -- Se o resultado da classificação deve ser exibido na saída padrão
 """
-def roc1(name, feat_neutral, feat_nonneutral, stdout=True):
-	if (stdout):
-		print(name)
-	
-	classifiers = [
-		KNC(p=1, n_neighbors=1),
-		KNC(p=2, n_neighbors=1),
-		SVC(kernel="rbf"),
-		SVC(kernel="poly")]
-
-	names = [
-		"KNN_manhattam",
-		"KNN_euclidean",
-		"SVM_radial",
-		"SVM_poly"]
+def roc1(name, feat_neutral, feat_nonneutral):
+	print(name)
 	
 	# neutras: conjunto de treino
 	df = pd.read_csv(feat_neutral, header=None)
@@ -213,44 +217,29 @@ def roc1(name, feat_neutral, feat_nonneutral, stdout=True):
 	X_test = scaler.transform(X_test)
 	
 	# execucao dos classificadores
-	ans = dict()
-	for clf_name, clf in zip(names, classifiers):
-		start_time = time.time()
-		
-		clf.fit(X_train, y_train)
-		score = clf.score(X_test, y_test)
-		score_txt = str(round(score*100, 2))
-		
-		elapsed_time = round(time.time() - start_time, 4)
-		
-		if (stdout):
-			out = "{:<16}{:<8}{:<8}".format(clf_name, score_txt, elapsed_time)
-			print(out)
-		
-		ans[clf_name] = score
-	
-	return ans
+	return run_classification(X_train, y_train, X_test, y_test)
 
-# verification rate
+# ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
-	"""
-	rank1_neutral("hututu", "../results/moments/Neutrals-hututu.dat")
-	rank1_neutral("legendre", "../results/moments/Neutrals-legendre.dat")
-	rank1_neutral("tchebychev", "../results/moments/Neutrals-tchebychev.dat")
-	rank1_neutral("zernike", "../results/moments/Neutrals-zernike.dat")
-	"""
+	print("RANK1-NEUTRAL")
+	rank1_neutral("hu1980", "../results/CLEAN_C80_D225_ICP/neutral-hu1980.dat")
+	rank1_neutral("hututu", "../results/CLEAN_C80_D225_ICP/neutral-hututu.dat")
+	rank1_neutral("legendre", "../results/CLEAN_C80_D225_ICP/neutral-legendre.dat")
+	rank1_neutral("tchebychev", "../results/CLEAN_C80_D225_ICP/neutral-tchebychev.dat")
+	rank1_neutral("zernike", "../results/CLEAN_C80_D225_ICP/neutral-zernike.dat")
+	print()
 	
-	"""
-	rank1_nonneutral("hututu", "../results/moments/Neutrals-hututu.dat", "../results/moments/NonNeutrals-hututu.dat")
-	rank1_nonneutral("legendre", "../results/moments/Neutrals-legendre.dat", "../results/moments/NonNeutrals-legendre.dat")
-	rank1_nonneutral("tchebychev", "../results/moments/Neutrals-tchebychev.dat", "../results/moments/NonNeutrals-tchebychev.dat")
-	rank1_nonneutral("zernike", "../results/moments/Neutrals-zernike.dat", "../results/moments/NonNeutrals-zernike.dat")
-	"""
+	print("RANK1-NONNEUTRAL")
+	rank1_nonneutral("hututu", "../results/CLEAN_C80_D225_ICP/neutral-hututu.dat", "../results/CLEAN_C80_D225_ICP/nonneutral-hututu.dat")
+	rank1_nonneutral("legendre", "../results/CLEAN_C80_D225_ICP/neutral-legendre.dat", "../results/CLEAN_C80_D225_ICP/nonneutral-legendre.dat")
+	rank1_nonneutral("tchebychev", "../results/CLEAN_C80_D225_ICP/neutral-tchebychev.dat", "../results/CLEAN_C80_D225_ICP/nonneutral-tchebychev.dat")
+	rank1_nonneutral("zernike", "../results/CLEAN_C80_D225_ICP/neutral-zernike.dat", "../results/CLEAN_C80_D225_ICP/nonneutral-zernike.dat")
+	print()
 	
-	"""
-	roc1("hututu", "../results/moments/Neutrals-hututu.dat", "../results/moments/NonNeutrals-hututu.dat")
-	roc1("legendre", "../results/moments/Neutrals-legendre.dat", "../results/moments/NonNeutrals-legendre.dat")
-	roc1("tchebychev", "../results/moments/Neutrals-tchebychev.dat", "../results/moments/NonNeutrals-tchebychev.dat")
-	roc1("zernike", "../results/moments/Neutrals-zernike.dat", "../results/moments/NonNeutrals-zernike.dat")
-	"""
+	print("ROC1")
+	roc1("hututu", "../results/CLEAN_C80_D225_ICP/neutral-hututu.dat", "../results/CLEAN_C80_D225_ICP/nonneutral-hututu.dat")
+	roc1("legendre", "../results/CLEAN_C80_D225_ICP/neutral-legendre.dat", "../results/CLEAN_C80_D225_ICP/nonneutral-legendre.dat")
+	roc1("tchebychev", "../results/CLEAN_C80_D225_ICP/neutral-tchebychev.dat", "../results/CLEAN_C80_D225_ICP/nonneutral-tchebychev.dat")
+	roc1("zernike", "../results/CLEAN_C80_D225_ICP/neutral-zernike.dat", "../results/CLEAN_C80_D225_ICP/nonneutral-zernike.dat")
+	print()

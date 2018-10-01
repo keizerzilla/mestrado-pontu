@@ -1,5 +1,6 @@
 import os
 import sys
+import shutil
 import subprocess
 
 """
@@ -104,7 +105,78 @@ def obj2xyz(source, dest):
 		
 		print(outf + " OK")
 
+"""
+Pega nome dos arquivos de uma pasta para melhor separar conjuntos neutral e
+nonneutral no futuro
+
+folder -- Pasta com as nuvens
+output -- arquivo com os nomes das nuvens
+"""
+def bosphorus_filenames(folder, output):
+	with open(output, "w") as dump:
+		for cloud in os.listdir(folder):
+			inpf = os.path.join(folder, cloud)
+			
+			if not os.path.isfile(inpf):
+				continue
+			
+			dump.write(os.path.splitext(cloud)[0] + "\n")
+
+"""
+Agrupa todas as nuvens de um diretório divido por indivíduo em uma pasta só.
+
+source -- Pasta com nuvens divididas por indivíduo
+dest -- Pasta com todas as nuvens juntas
+"""
+def bosphorus_group(source, dest):
+	for path in os.listdir(source):
+		folder = os.path.join(source, path)
+		if os.path.isdir(folder):
+			for cloud in os.listdir(folder):
+				srcf = os.path.join(folder, cloud)
+				dstf = os.path.join(dest, cloud)
+				shutil.copyfile(srcf, dstf)
+
+"""
+Separa os conjuntos neutral, nonneutral e other de um base de arquivos no
+formato bosphorus. Os arquivos contendo os nomes dos arquivos devem estar numa
+pasta chamada 'res/'. Falta testar!
+
+folder -- Pasta com o conjunto completo
+dirneutral -- Pasta que ficarão salvas as nuvens neutras
+dirnonneutral -- Pasta que ficarão salvas as nuvens não-neutras
+dirother -- Pasta que ficarão salvas as nuvens nem neutras nem não-neutras
+"""
+def bosphorus_split(folder, dirneutral, dirnonneutral, dirother):
+	neutrals = []
+	nonneutrals = []
+	
+	with open("res/neutralfiles.txt", "r") as content_neutral:
+		neutrals = content_neutral.read().split()
+	with open("res/nonneutralfiles.txt", "r") as content_nonneutral:
+		nonneutrals = content_nonneutral.read().split()
+	
+	for cloud in os.listdir(folder):
+		inpf = os.path.join(folder, cloud)
+		
+		if not os.path.isfile(inpf):
+			continue
+		
+		temp = os.path.splitext(cloud)[0]
+		if temp in neutrals:
+			shutil.copyfile(inpf, os.path.join(dirneutral, cloud))
+		elif temp in nonneutrals:
+			shutil.copyfile(inpf, os.path.join(dirnonneutral, cloud))
+		else:
+			shutil.copyfile(inpf, os.path.join(dirother, cloud))
+
 if __name__ == "__main__":
-	source = "/home/artur/github/latin/datasets/dump"
-	dest = "/home/artur/github/latin/datasets/dump"
-	pcd2xyz(source, dest)
+	folder = "../datasets/CLEAN_C80_D225_ICP/icp"
+	neutral = "../datasets/CLEAN_C80_D225_ICP/neutral"
+	nonneutral = "../datasets/CLEAN_C80_D225_ICP/nonneutral"
+	other = "../datasets/CLEAN_C80_D225_ICP/other"
+	
+	pcd2xyz(neutral, neutral)
+	pcd2xyz(nonneutral, nonneutral)
+	pcd2xyz(other, other)
+	
