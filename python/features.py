@@ -68,16 +68,12 @@ def extract_graph(dataset, output):
 			print(outfile + " OK")
 
 if __name__ == "__main__":
-	datasets = ["../datasets/bosphorus_tcc/neutral"]
-	moments = ["zernike"]
-	
-	start_time = time.time()
+	datasets = ["../datasets/bosphorus_tcc/neutral",
+	            "../datasets/bosphorus_tcc/nonneutral"]
+	moments = ["hu1980", "hututu", "legendre", "tchebychev", "zernike"]
 	
 	for data in datasets:
 		for moment in moments:
 			output = "../results/bosphorus_tcc/{}-{}.dat".format(os.path.split(data)[1], moment)
 			moment_extraction_batch(moment, data, output)
-	
-	elapsed_time = round(time.time() - start_time, 4)
-	print("FEAT ELAPSED: {}".format(elapsed_time))
 	

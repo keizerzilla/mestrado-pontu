@@ -1,0 +1,66 @@
+RANK1-NEUTRAL
+hututu
+KNN_manhattam   37.11   0.0032  
+KNN_euclidean   38.66   0.003   
+SVM_radial      38.66   0.0197  
+SVM_poly        31.96   0.0185  
+legendre
+KNN_manhattam   55.15   0.0032  
+KNN_euclidean   48.45   0.003   
+SVM_radial      48.45   0.0204  
+SVM_poly        37.11   0.0189  
+tchebychev
+KNN_manhattam   55.67   0.0031  
+KNN_euclidean   51.55   0.003   
+SVM_radial      51.55   0.0199  
+SVM_poly        42.27   0.0181  
+zernike
+KNN_manhattam   10.31   0.0027  
+KNN_euclidean   11.34   0.0026  
+SVM_radial      11.34   0.0191  
+SVM_poly        10.31   0.0181  
+
+RANK1-NONNEUTRAL
+hututu
+KNN_manhattam   26.47   0.0141  
+KNN_euclidean   24.78   0.0129  
+SVM_radial      24.66   0.1184  
+SVM_poly        22.28   0.1107  
+legendre
+KNN_manhattam   44.26   0.0163  
+KNN_euclidean   42.18   0.0156  
+SVM_radial      42.18   0.1217  
+SVM_poly        32.04   0.1095  
+tchebychev
+KNN_manhattam   44.6    0.0163  
+KNN_euclidean   42.57   0.0156  
+SVM_radial      42.57   0.121   
+SVM_poly        31.69   0.1063  
+zernike
+KNN_manhattam   8.53    0.0103  
+KNN_euclidean   9.26    0.0097  
+SVM_radial      9.26    0.1135  
+SVM_poly        8.22    0.1076  
+
+ROC1
+hututu
+KNN_manhattam   30.54   0.0266  
+KNN_euclidean   28.85   0.0229  
+SVM_radial      16.02   0.201   
+SVM_poly        12.72   0.1681  
+legendre
+KNN_manhattam   48.6    0.0442  
+KNN_euclidean   47.25   0.0419  
+SVM_radial      29.58   0.2208  
+SVM_poly        24.05   0.1775  
+tchebychev
+KNN_manhattam   48.6    0.0441  
+KNN_euclidean   48.18   0.041   
+SVM_radial      32.65   0.2214  
+SVM_poly        26.28   0.1827  
+zernike
+KNN_manhattam   9.3     0.0127  
+KNN_euclidean   9.95    0.0122  
+SVM_radial      5.42    0.2019  
+SVM_poly        4.99    0.1665  
+

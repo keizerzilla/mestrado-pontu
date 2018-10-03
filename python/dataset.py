@@ -171,6 +171,5 @@ def bosphorus_split(folder, dirneutral, dirnonneutral, dirother):
 			shutil.copyfile(inpf, os.path.join(dirother, cloud))
 
 if __name__ == "__main__":
-	cloud2xyz("../datasets/bosphorus_tcc/neutral")
-	cloud2xyz("../datasets/bosphorus_tcc/nonneutral")
+	bosphorus_group("../datasets/01_bosphorus", "../datasets/01_bosphorus/all")
 	

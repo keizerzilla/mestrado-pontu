@@ -216,7 +216,6 @@ def roc1(name, feat_neutral, feat_nonneutral):
 
 if __name__ == "__main__":
 	print("RANK1-NEUTRAL")
-	rank1_neutral("hu1980", "../results/bosphorus_tcc/neutral-hu1980.dat")
 	rank1_neutral("hututu", "../results/bosphorus_tcc/neutral-hututu.dat")
 	rank1_neutral("legendre", "../results/bosphorus_tcc/neutral-legendre.dat")
 	rank1_neutral("tchebychev", "../results/bosphorus_tcc/neutral-tchebychev.dat")
