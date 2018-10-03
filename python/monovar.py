@@ -13,7 +13,7 @@ Análise monovariada global dos momentos
 seaborn.set()
 
 # paths e arquivos
-dataset = "../results/CLEAN_C80_D225_ICP/neutral-hututu.dat"
+dataset = "../results/CLEAN_C80_D225_ICP/neutral-zernike.dat"
 figpath = "res/"
 result_file = "res/monovar.dat"
 heatmap_file = "res/correlation_heatmap.png"
@@ -30,8 +30,10 @@ corr = df.drop(["subject"], axis=1).corr()
 annot = corr.round(decimals=1)
 seaborn.heatmap(corr, vmin=-1.0, vmax=1.0, linewidths=0.4, cmap="Purples", annot=annot)
 plt.title("Correlação entre preditores")
+plt.show()
 plt.savefig(heatmap_file, bbox_inches="tight")
 
+"""
 # pairplot
 g = seaborn.PairGrid(df, hue="subject")
 g = g.map_diag(plt.hist, histtype="step", linewidth=4)
@@ -41,7 +43,7 @@ labels = g._legend_data.keys()
 g.fig.legend(handles=handles, labels=labels, loc='upper center', ncol=len(classes))
 g.fig.subplots_adjust(top=0.98, bottom=0.02)
 g.savefig(pairplot_file, bbox_inches="tight")
-
+"""
 """
 # lista de preditores (exclui-se a coluna da classe)
 predictors = list(df.drop(["subject"], axis=1))
