@@ -10,7 +10,9 @@
 -----------------------------------------------------------------------------"""
 
 import random
+import numpy as np
 import pandas as pd
+from sklearn.preprocessing import StandardScaler
 
 class Chromosome():
 	def __init__(self, moment, index, value, sample, subject):
@@ -38,56 +40,52 @@ class Creature():
 
 class Population():
 	def __init__(self, datasets):
+		self.X_train = []
+		self.y_train = []
+		self.X_test = []
+		self.y_test = []
 		self.chromosomes = []
-		self.chromo_training = []
-		self.chromo_testing = []
-		
 		
 		for data in datasets:
-			print("CARREGANDO: {} [{}]".format(data["name"], data["path"]))
+			print("CARREGANDO: [{}]".format(data["name"]))
 			
 			df = pd.read_csv(data["path"], header=None)
-			cs = ["f"+str(x) for x in range(len(df.columns)-2)]
-			cs = cs + ["sample", "subject"]
-			df.columns = cs
+			cols = [data["name"]+str(x) for x in range(len(df.columns)-2)]
+			cols = cols + ["sample", "class"]
+			df.columns = cols
 			
-			for i, row in df.iterrows():
-				for j in range(len(df.columns)-2):
-					c = Chromosome(data["name"], j, row[j], row["sample"], row["subject"])
-					self.chromosomes.append(c)
+			trainset = df.loc[df["sample"] == 0].drop(["sample"], axis=1)
+			X_train = trainset.drop(["class"], axis=1)
+			y_train = trainset[["class"]]
+			
+			testset = df.loc[df["sample"] != 0].drop(["sample"], axis=1)
+			X_test = testset.drop(["class"], axis=1)
+			y_test = testset[["class"]]
+			
+			self.X_train.append(X_train)
+			self.y_train = y_train
+			self.X_test.append(X_test)
+			self.y_test = y_test
 		
-		random.shuffle(self.chromosomes)
-		print("TOTAL DE CROMOSSOMOS: {}".format(len(self.chromosomes)))
-	
-	
-	
+		self.X_train = pd.concat(self.X_train, axis=1)
+		self.X_test = pd.concat(self.X_test, axis=1)
+		
+		scaler = StandardScaler().fit(self.X_train)
+		self.X_train = scaler.transform(self.X_train)
+		self.X_test = scaler.transform(self.X_test)
+		
+		self.y_train = np.ravel(self.y_train)
+		self.y_test = np.ravel(self.y_test)
+		
+
 if __name__ ==  "__main__":
 	legendre = {"name" : "legendre",
-	            "path" : "../results/CLEAN_C80_D225_ICP/neutral-legendre.dat"}
+	            "path" : "../results/05_bosphorus-outlier-densit225-crop80-icp/neutral-legendre.dat"}
 	tchebychev = {"name" : "tchebychev",
-	              "path" : "../results/CLEAN_C80_D225_ICP/neutral-tchebychev.dat"}
+	              "path" : "../results/05_bosphorus-outlier-densit225-crop80-icp/neutral-tchebychev.dat"}
 	datasets = [legendre, tchebychev]
 	
 	population = Population(datasets)
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	
