@@ -23,7 +23,7 @@ struct zsphere {
     struct cloud* cloud;
     struct vector3* center;
     real r;
-    unsigned int norm;
+    uint norm;
 };
 
 /**
@@ -65,20 +65,7 @@ void zsphere_free(struct zsphere* zsphere)
  * \param n O número que ser quer calcular o fatorial
  * \return O fatorial de n
  */
-int zernike_factorial_recursive(int n)
-{
-    if (n >= 1)
-        return n * zernike_factorial_recursive(n - 1);
-    else
-        return 1;
-}
-
-/**
- * \brief Calcula o fatorial de um número inteiro
- * \param n O número que ser quer calcular o fatorial
- * \return O fatorial de n
- */
-int zernike_factorial_loop(int n)
+int zernike_factorial(int n)
 {
     int result = 1;
 
@@ -98,10 +85,10 @@ int zernike_factorial_loop(int n)
  */
 real zernike_core(int n, int m, int s)
 {
-    real num = pow(-1, s) * (zernike_factorial_loop(n - s));
-    real den = zernike_factorial_loop(s) *
-               zernike_factorial_loop(((n + m) / 2) - s) *
-               zernike_factorial_loop(((n - m) / 2) - s);
+    real num = pow(-1, s) * (zernike_factorial(n - s));
+    real den = zernike_factorial(s) *
+               zernike_factorial(((n + m) / 2) - s) *
+               zernike_factorial(((n - m) / 2) - s);
 
     return (num / den);
 }
@@ -245,3 +232,4 @@ struct matrix* zernike_cloud_moments(struct cloud* cloud)
 }
 
 #endif // ZERNIKE_H
+

@@ -291,7 +291,7 @@ void vector3_scale(struct vector3* v, real f)
  */
 void vector3_rotate_x(struct vector3* v, real d)
 {
-    real rad = d * CALC_DEG2RAD;
+	real rad = d * CALC_DEG2RAD;
     real rsin = sin(rad);
     real rcos = cos(rad);
 
@@ -306,7 +306,7 @@ void vector3_rotate_x(struct vector3* v, real d)
  */
 void vector3_rotate_y(struct vector3* v, real d)
 {
-    real rad = d * CALC_DEG2RAD;
+	real rad = d * CALC_DEG2RAD;
     real rsin = sin(rad);
     real rcos = cos(rad);
 

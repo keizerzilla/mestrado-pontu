@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 import parse
 import subprocess
 
@@ -67,12 +68,16 @@ def extract_graph(dataset, output):
 			print(outfile + " OK")
 
 if __name__ == "__main__":
-	datasets = ["../datasets/CLEAN_C80_D225_ICP/neutral",
-	            "../datasets/CLEAN_C80_D225_ICP/nonneutral"]
-	moments = ["hututu", "hu1980", "zernike", "legendre", "tchebychev"]
+	datasets = ["../datasets/bosphorus_tcc/neutral"]
+	moments = ["zernike"]
+	
+	start_time = time.time()
 	
 	for data in datasets:
 		for moment in moments:
-			output = "../results/CLEAN_C80_D225_ICP/{}-{}.dat".format(os.path.split(data)[1], moment)
+			output = "../results/bosphorus_tcc/{}-{}.dat".format(os.path.split(data)[1], moment)
 			moment_extraction_batch(moment, data, output)
+	
+	elapsed_time = round(time.time() - start_time, 4)
+	print("FEAT ELAPSED: {}".format(elapsed_time))
 	

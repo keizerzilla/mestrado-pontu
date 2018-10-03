@@ -10,7 +10,7 @@
 #ifndef LEGENDRE_H
 #define LEGENDRE_H
 
-#define LEGENDRE_ORDER 3
+#define LEGENDRE_ORDER 2
 #define LEGENDRE_MOMENTS 27
 
 #include "cloud.h"
@@ -67,7 +67,8 @@ real legendre_moment(int p, int q, int r, struct cloud* cloud)
     for (uint i = 0; i < cloud->num_pts; i++)
         moment += legendre_poly(p, cloud->points[i].x - center->x) *
                   legendre_poly(q, cloud->points[i].y - center->y) *
-                  legendre_poly(r, cloud->points[i].z - center->z);
+                  legendre_poly(r, cloud->points[i].z - center->z) *
+                  vector3_distance(&cloud->points[i], center);
 
     return norm * moment;
 }
@@ -87,9 +88,9 @@ struct matrix* legendre_cloud_moments(struct cloud* cloud)
     int row = 0;
     int col = 0;
 
-    for (p = 1; p <= LEGENDRE_ORDER; p++) {
-        for (q = 1; q <= LEGENDRE_ORDER; q++) {
-            for (r = 1; r <= LEGENDRE_ORDER; r++) {
+    for (p = 0; p <= LEGENDRE_ORDER; p++) {
+        for (q = 0; q <= LEGENDRE_ORDER; q++) {
+            for (r = 0; r <= LEGENDRE_ORDER; r++) {
                 matrix_set(results, row, col, legendre_moment(p, q, r, cloud));
                 col++;
             }

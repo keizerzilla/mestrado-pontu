@@ -14,7 +14,7 @@
 #include <string.h>
 
 #include "vector3.h"
-#include "plane3.h"
+#include "plane.h"
 #include "util.h"
 
 /**
@@ -485,19 +485,19 @@ struct cloud* cloud_cut_center(struct cloud* cloud, real cut)
  * \param plane O plano de corte
  * \return A subnuvem cortada
  */
-struct cloud* cloud_cut_plane(struct cloud* cloud, struct plane3* plane)
+struct cloud* cloud_cut_plane(struct cloud* cloud, struct plane* plane)
 {
     struct cloud* sub = cloud_new(0);
     
     for (uint i = 0; i < cloud->num_pts; i++)
-		if (plane3_on_direction(plane, &cloud->points[i]))
+		if (plane_on_direction(plane, &cloud->points[i]))
 			cloud_add_point_cpy(sub, &cloud->points[i]);
 	
     return sub;
 }
 
 /**
- * \brief Subamostra pontos da nuvem inseridos em um cilindro (incerto)
+ * \brief Subamostra pontos da nuvem inseridos em um cilindro
  * \param cloud A nuvem alvo
  * \param ref O ponto de referência
  * \param dir A direção da altura do cilindro
@@ -529,19 +529,26 @@ struct cloud* cloud_cut_cylinder(struct cloud* cloud,
 }
 
 /**
- * \brief Traça caminho ao longo de uma nuvem de pontos (em teste!)
+ * \brief Extrái segmento de pontos ao longo da nuvem
  * \param cloud A nuvem alvo
  * \param ref O ponto de referência
- * \param dir A direção do caminho
- * \return Subnuvem contendo os pontos formadores do caminho
+ * \param dir A direção do caminho de segmentação
+ * \param epslon Largura do segmento em mm
+ * \return Subnuvem contendo os pontos formadores do segmento
  */
-struct cloud* cloud_path(struct cloud* cloud,
-                         struct vector3* ref,
-                         struct vector3* dir)
+struct cloud* cloud_segment(struct cloud* cloud,
+                            struct vector3* ref,
+                            struct vector3* dir,
+                            real epslon)
 {
-	util_seg("%s: em teste", __FUNCTION__);
+	struct cloud* sub = cloud_new(0);
+	struct plane* plane = plane_new(dir, ref);
 	
-	struct cloud* sub = cloud_new(1);
+	for (uint i = 0; i < cloud->num_pts; i++)
+		if (plane_distance2point(plane, &cloud->points[i]) <= epslon)
+			cloud_add_point_cpy(sub, &cloud->points[i]);
+	
+	plane_free(plane);
 	
 	return sub;
 }
@@ -664,17 +671,6 @@ struct cloud* cloud_binary_mask(struct cloud* cloud)
 	}
 	
 	return mask;
-}
-
-/**
- * \brief Retorna o ponto mediano de uma nuvem
- * \param cloud A Nuvem alvo
- * \return Mediana da nuvem
- */
-struct vector3* cloud_get_median(struct cloud* cloud)
-{
-	cloud_sort(cloud);
-	return &cloud->points[cloud->num_pts/2];
 }
 
 /**

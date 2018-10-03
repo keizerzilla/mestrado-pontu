@@ -63,7 +63,6 @@ real hu_central_moment(int p, int q, int r, struct cloud* cloud)
 {
     real moment = 0.0f;
     struct vector3* center = cloud_get_center(cloud);
-    //struct vector3* center = cloud_min_z(cloud);
 
     for (uint i = 0; i < cloud->num_pts; i++)
         moment += pow(cloud->points[i].x - center->x, p)
@@ -120,7 +119,7 @@ struct matrix* hu_cloud_moments_sadjadi_hall(struct cloud* cloud)
 }
 
 /**
- * \brief Calcula os momentos invariantes de Hu de uma nuvem (Rocha Neto, 2017)
+ * \brief Calcula os momentos invariantes de Hu segundo (Rocha Neto; 2017)
  * \param cloud A nuvem alvo
  * \return A matriz aonde os momentos serão salvos
  */

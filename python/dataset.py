@@ -25,7 +25,7 @@ def cloud2xyz(source):
 		
 		newname = inpf.replace(".cloud", ".xyz")
 		output = os.rename(inpf, newname)
-		print(outf + " OK")
+		print(filename + " OK")
 
 """
 Converte conjunto de nuvens .xyz em formato .pcd usando pcl_xyz2pcd
@@ -171,12 +171,6 @@ def bosphorus_split(folder, dirneutral, dirnonneutral, dirother):
 			shutil.copyfile(inpf, os.path.join(dirother, cloud))
 
 if __name__ == "__main__":
-	folder = "../datasets/CLEAN_C80_D225_ICP/icp"
-	neutral = "../datasets/CLEAN_C80_D225_ICP/neutral"
-	nonneutral = "../datasets/CLEAN_C80_D225_ICP/nonneutral"
-	other = "../datasets/CLEAN_C80_D225_ICP/other"
-	
-	pcd2xyz(neutral, neutral)
-	pcd2xyz(nonneutral, nonneutral)
-	pcd2xyz(other, other)
+	cloud2xyz("../datasets/bosphorus_tcc/neutral")
+	cloud2xyz("../datasets/bosphorus_tcc/nonneutral")
 	

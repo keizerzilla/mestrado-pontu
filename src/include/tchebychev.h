@@ -13,7 +13,7 @@
 #define TCHEBYCHEV_H
 
 #define TCHEBYCHEV_ORDER 2
-#define TCHEBYCHEV_MOMENTS 36
+#define TCHEBYCHEV_MOMENTS 27
 
 #include "cloud.h"
 #include "matrix.h"
@@ -103,7 +103,7 @@ struct matrix* tchebychev_cloud_moments(struct cloud* cloud)
 
     for (p = 0; p <= TCHEBYCHEV_ORDER; p++) {
         for (q = 0; q <= TCHEBYCHEV_ORDER; q++) {
-            for (r = 0; r <= TCHEBYCHEV_ORDER+1; r++) {
+            for (r = 0; r <= TCHEBYCHEV_ORDER; r++) {
                 matrix_set(results, row, col, tchebychev_moment(p, q, r,
                                                                 n, cloud));
                 col++;

@@ -1,21 +1,28 @@
+/**
+ * \file cloudz.c
+ * \author Artur Rodrigues Rocha Neto
+ * \date 2018
+ * \brief Interface de programa para manipulação de nuvens de pontos
+ */
+
 #include "include/cloud.h"
 #include "include/util.h"
 
-#define INPUT_SIZE 80
-#define COMMAND_SIZE 16
-#define PARAM_SIZE 64
+#define INPUT_SIZE		80
+#define COMMAND_SIZE	16
+#define PARAM_SIZE		64
 
-#define QUIT "quit"
-#define HELP "help"
-#define SORT "sort"
-#define CENTER "center"
-#define SIZE "size"
-#define SAVE "save"
-#define SCALE "scale"
-#define TRANSLATE "translate"
-#define ROTATEX "rotatex"
-#define ROTATEY "rotatey"
-#define ROTATEZ "rotatez"
+#define QUIT			"quit"
+#define HELP			"help"
+#define SORT			"sort"
+#define CENTER			"center"
+#define SIZE			"size"
+#define SAVE			"save"
+#define SCALE			"scale"
+#define TRANSLATE		"translate"
+#define ROTATEX			"rotatex"
+#define ROTATEY			"rotatey"
+#define ROTATEZ			"rotatez"
 
 void greetings()
 {
@@ -210,14 +217,17 @@ void cli(int argc, char** argv, struct cloud* cloud)
 	} else {
 		util_error("comando %s desconhecido!", command);
 	}
+	
+	if (!cloud_save_xyz(cloud, argv[4]))
+		util_error("erro salvando nuven processada");
 }
 
 int main(int argc, char** argv)
 {
 	if (argc < 2) {
-		util_error("numero incorreto de argumentos");
-		util_info("uso: cloudz <arquivo_nuvem> <!comando> <!parametros>");
-		util_info("<comando> e <parametros> sao opcionais");
+		util_error("número incorreto de argumentos!");
+		util_info("uso: cloudz <arquivo_nuvem> <!cmd> <!param> <!out>");
+		util_info("<cmd>, <param> e <out> são opcionais");
 		
 		exit(1);
 	} else if (argc > 2) {

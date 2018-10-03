@@ -5,7 +5,6 @@ from sklearn.svm import SVC
 from sklearn.model_selection import LeaveOneOut
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import GridSearchCV
-from sklearn.model_selection import RandomizedSearchCV
 from sklearn.neighbors import KNeighborsClassifier as KNC
 
 """
@@ -51,11 +50,6 @@ names = [
 	"SVM_radial",
 	"SVM_poly"]
 
-"""-----------------------------------------------------------------------------
-classifiers = [KNC(), SVC()]
-
-names = ["KNC", "SVM"]
-
 grids = [
 	{
 	  "p"           : [1, 2],
@@ -77,7 +71,6 @@ grids = [
 	  "decision_function_shape" : ["ovo", "ovr"]
 	}
 ]
------------------------------------------------------------------------------"""
 
 """
 Roda os classificadores em estudo para um dado conjunto de treino e teste. Essa
@@ -223,23 +216,24 @@ def roc1(name, feat_neutral, feat_nonneutral):
 
 if __name__ == "__main__":
 	print("RANK1-NEUTRAL")
-	rank1_neutral("hu1980", "../results/CLEAN_C80_D225_ICP/neutral-hu1980.dat")
-	rank1_neutral("hututu", "../results/CLEAN_C80_D225_ICP/neutral-hututu.dat")
-	rank1_neutral("legendre", "../results/CLEAN_C80_D225_ICP/neutral-legendre.dat")
-	rank1_neutral("tchebychev", "../results/CLEAN_C80_D225_ICP/neutral-tchebychev.dat")
-	rank1_neutral("zernike", "../results/CLEAN_C80_D225_ICP/neutral-zernike.dat")
+	rank1_neutral("hu1980", "../results/bosphorus_tcc/neutral-hu1980.dat")
+	rank1_neutral("hututu", "../results/bosphorus_tcc/neutral-hututu.dat")
+	rank1_neutral("legendre", "../results/bosphorus_tcc/neutral-legendre.dat")
+	rank1_neutral("tchebychev", "../results/bosphorus_tcc/neutral-tchebychev.dat")
+	rank1_neutral("zernike", "../results/bosphorus_tcc/neutral-zernike.dat")
 	print()
 	
 	print("RANK1-NONNEUTRAL")
-	rank1_nonneutral("hututu", "../results/CLEAN_C80_D225_ICP/neutral-hututu.dat", "../results/CLEAN_C80_D225_ICP/nonneutral-hututu.dat")
-	rank1_nonneutral("legendre", "../results/CLEAN_C80_D225_ICP/neutral-legendre.dat", "../results/CLEAN_C80_D225_ICP/nonneutral-legendre.dat")
-	rank1_nonneutral("tchebychev", "../results/CLEAN_C80_D225_ICP/neutral-tchebychev.dat", "../results/CLEAN_C80_D225_ICP/nonneutral-tchebychev.dat")
-	rank1_nonneutral("zernike", "../results/CLEAN_C80_D225_ICP/neutral-zernike.dat", "../results/CLEAN_C80_D225_ICP/nonneutral-zernike.dat")
+	rank1_nonneutral("hututu", "../results/bosphorus_tcc/neutral-hututu.dat", "../results/bosphorus_tcc/nonneutral-hututu.dat")
+	rank1_nonneutral("legendre", "../results/bosphorus_tcc/neutral-legendre.dat", "../results/bosphorus_tcc/nonneutral-legendre.dat")
+	rank1_nonneutral("tchebychev", "../results/bosphorus_tcc/neutral-tchebychev.dat", "../results/bosphorus_tcc/nonneutral-tchebychev.dat")
+	rank1_nonneutral("zernike", "../results/bosphorus_tcc/neutral-zernike.dat", "../results/bosphorus_tcc/nonneutral-zernike.dat")
 	print()
 	
 	print("ROC1")
-	roc1("hututu", "../results/CLEAN_C80_D225_ICP/neutral-hututu.dat", "../results/CLEAN_C80_D225_ICP/nonneutral-hututu.dat")
-	roc1("legendre", "../results/CLEAN_C80_D225_ICP/neutral-legendre.dat", "../results/CLEAN_C80_D225_ICP/nonneutral-legendre.dat")
-	roc1("tchebychev", "../results/CLEAN_C80_D225_ICP/neutral-tchebychev.dat", "../results/CLEAN_C80_D225_ICP/nonneutral-tchebychev.dat")
-	roc1("zernike", "../results/CLEAN_C80_D225_ICP/neutral-zernike.dat", "../results/CLEAN_C80_D225_ICP/nonneutral-zernike.dat")
+	roc1("hututu", "../results/bosphorus_tcc/neutral-hututu.dat", "../results/bosphorus_tcc/nonneutral-hututu.dat")
+	roc1("legendre", "../results/bosphorus_tcc/neutral-legendre.dat", "../results/bosphorus_tcc/nonneutral-legendre.dat")
+	roc1("tchebychev", "../results/bosphorus_tcc/neutral-tchebychev.dat", "../results/bosphorus_tcc/nonneutral-tchebychev.dat")
+	roc1("zernike", "../results/bosphorus_tcc/neutral-zernike.dat", "../results/bosphorus_tcc/nonneutral-zernike.dat")
 	print()
+	

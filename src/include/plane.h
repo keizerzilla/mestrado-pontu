@@ -1,19 +1,19 @@
 /**
- * \file plane3.h
+ * \file plane.h
  * \author Artur Rodrigues Rocha Neto
  * \date 2018
  * \brief Estrutura de dados que manipula planos em 3 dimenções.
  */
 
-#ifndef PLANE3_H
-#define PLANE3_H
+#ifndef PLANE_H
+#define PLANE_H
 
 #include "vector3.h"
 
 /**
  * \brief Estrutura que guarda plano de 3 dimenções na memória.
  */
-struct plane3 {
+struct plane {
 	struct vector3* normal;
 	struct vector3* point;
 	real d;
@@ -25,11 +25,11 @@ struct plane3 {
  * \param point O ponto de referência contido no plano
  * \return Um plano alocado em memória
  */
-struct plane3* plane3_new(struct vector3* normal, struct vector3* point)
+struct plane* plane_new(struct vector3* normal, struct vector3* point)
 {
-	struct plane3* plane = malloc(sizeof(struct plane3));
+	struct plane* plane = malloc(sizeof(struct plane));
 	if (plane == NULL) {
-		util_error("%s: erro alocando memoria plane3", __FUNCTION__);
+		util_error("%s: erro alocando memoria plane", __FUNCTION__);
 		return NULL;
 	}
 	
@@ -46,7 +46,7 @@ struct plane3* plane3_new(struct vector3* normal, struct vector3* point)
  * \brief Libera a memória alocada para um plano
  * \param plane O plano a ser liberado
  */
-void plane3_free(struct plane3* plane)
+void plane_free(struct plane* plane)
 {
 	vector3_free(plane->normal);
 	vector3_free(plane->point);
@@ -60,7 +60,7 @@ void plane3_free(struct plane3* plane)
  * \param point O ponto
  * \return A distância entre plane e point
  */
-real plane3_distance2point(struct plane3* plane, struct vector3* point)
+real plane_distance2point(struct plane* plane, struct vector3* point)
 {
 	struct vector3* proj = vector3_sub(point, plane->point);
 	real d = vector3_dot(proj, plane->normal) / vector3_length(plane->normal);
@@ -74,7 +74,7 @@ real plane3_distance2point(struct plane3* plane, struct vector3* point)
  * \param point O ponto em questão
  * \return 1 se point estiver na região positiva da normal de plane, 0 c-c
  */
-uint plane3_on_direction(struct plane3* plane, struct vector3* point)
+uint plane_on_direction(struct plane* plane, struct vector3* point)
 {
 	struct vector3* proj = vector3_sub(point, plane->point);
 	real d = vector3_dot(proj, plane->normal);
@@ -82,5 +82,5 @@ uint plane3_on_direction(struct plane3* plane, struct vector3* point)
 	return (d >= 0.0f) ? 1 : 0;
 }
 
-#endif // PLANE3_H
+#endif // PLANE_H
 
