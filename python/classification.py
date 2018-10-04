@@ -212,9 +212,74 @@ def roc1(name, feat_neutral, feat_nonneutral):
 	# execucao dos classificadores
 	return run_classification(X_train, y_train, X_test, y_test)
 
+"""
+Executa classificação RANK-1 usando os 4 classificadores em pesquisa. O conjunto
+de treino e teste é a concatenação de dois momentos.
+Treino: amostra 0 de cada pose neutra.
+Teste: restante das amostras neutras (amostra diferente de 0).
+Uma normalização padrão (centro na médida e escala no desvio padrão) é computada
+no conjunto de dados.
+
+m1 -- Primeiro momento
+m2 -- Segundo momento
+"""
+def rank1_duo(m1, m2):
+	# momento #1
+	
+	df = pd.read_csv(m1, header=None)
+	cs = ["f"+str(x) for x in range(len(df.columns)-2)] + ["sample", "subject"]
+	df.columns = cs
+	
+	trainset = df.loc[df["sample"] == 0].drop(["sample"], axis=1)
+	m1_X_train = trainset.drop(["subject"], axis=1)
+	m1_y_train = trainset[["subject"]]
+	
+	testset = df.loc[df["sample"] != 0].drop(["sample"], axis=1)
+	m1_X_test = testset.drop(["subject"], axis=1)
+	m1_y_test = testset[["subject"]]
+	
+	# momento #2
+	
+	df = pd.read_csv(m2, header=None)
+	cs = ["f"+str(x) for x in range(len(df.columns)-2)] + ["sample", "subject"]
+	df.columns = cs
+	
+	trainset = df.loc[df["sample"] == 0].drop(["sample"], axis=1)
+	m2_X_train = trainset.drop(["subject"], axis=1)
+	m2_y_train = trainset[["subject"]]
+	
+	testset = df.loc[df["sample"] != 0].drop(["sample"], axis=1)
+	m2_X_test = testset.drop(["subject"], axis=1)
+	m2_y_test = testset[["subject"]]
+	
+	# concatena
+	
+	X_train = pd.concat([m1_X_train, m2_X_train], axis=1)
+	X_test = pd.concat([m1_X_test, m2_X_test], axis=1)
+	
+	X_train = np.array(X_train)
+	X_test = np.array(X_test)
+	y_train = np.ravel(m1_y_train) # tanto faz um ou outro
+	y_test = np.ravel(m1_y_test) # tanto faz um ou outro
+	
+	# normaliza
+	
+	scaler = StandardScaler().fit(X_train)
+	X_train = scaler.transform(X_train)
+	X_test = scaler.transform(X_test)
+	
+	# executa classificadores
+	
+	return run_classification(X_train, y_train, X_test, y_test)
+	
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
+	print("RANK1-NEUTRAL_LEGECHEV")
+	rank1_duo("../results/05_bosphorus-outlier-densit225-crop80-icp/neutral-hu1980.dat",
+	          "../results/05_bosphorus-outlier-densit225-crop80-icp/neutral-legendre.dat")
+	
+	"""
 	print("RANK1-NEUTRAL")
 	rank1_neutral("hututu", "../results/bosphorus_tcc/neutral-hututu.dat")
 	rank1_neutral("legendre", "../results/bosphorus_tcc/neutral-legendre.dat")
@@ -235,4 +300,6 @@ if __name__ == "__main__":
 	roc1("tchebychev", "../results/bosphorus_tcc/neutral-tchebychev.dat", "../results/bosphorus_tcc/nonneutral-tchebychev.dat")
 	roc1("zernike", "../results/bosphorus_tcc/neutral-zernike.dat", "../results/bosphorus_tcc/nonneutral-zernike.dat")
 	print()
+	"""
+	
 	
