@@ -49,7 +49,7 @@ def moment_extraction_batch(moment, dataset, output):
 		for cloud in os.listdir(dataset):
 			if cloud.endswith(".xyz"):
 				dump.write(moment_extraction_cloud(moment, dataset+"/"+cloud))
-				print("{} OK".format(cloud))
+				print("[{}] >> {}: OK".format(cloud, moment))
 
 """
 Retira grafo de subamostragem bem louco.
@@ -68,12 +68,33 @@ def extract_graph(dataset, output):
 			print(outfile + " OK")
 
 if __name__ == "__main__":
-	datasets = ["../datasets/bosphorus_tcc/neutral",
-	            "../datasets/bosphorus_tcc/nonneutral"]
-	moments = ["hu1980", "hututu", "legendre", "tchebychev", "zernike"]
+	scenarios = ["bosphorus",
+	             "bosphorus-outlier",
+	             "bosphorus-outlier-densit200-crop60",
+	             "bosphorus-outlier-densit200-crop70",
+	             "bosphorus-outlier-densit200-crop80",
+	             "bosphorus-outlier-densit225",
+	             "bosphorus-outlier-densit225-crop60",
+	             "bosphorus-outlier-densit225-crop70",
+	             "bosphorus-outlier-densit225-crop80",
+	             "bosphorus-outlier-densit225-crop80-icp"]
+	
+	#moments = ["hututu", "legendre", "tchebychev", "zernike"]
+	moments = ["hu1980"]
+	
+	datasets = ["../datasets/" + x + "/neutral" for x in scenarios]
+	datasets += ["../datasets/" + x + "/nonneutral" for x in scenarios]
 	
 	for data in datasets:
+		scenario = data.split("/")[2]
+		folder = "../results/{}".format(scenario)
+		
+		try:
+			os.mkdir(folder)
+		except:
+			pass
+		
 		for moment in moments:
-			output = "../results/bosphorus_tcc/{}-{}.dat".format(os.path.split(data)[1], moment)
-			moment_extraction_batch(moment, data, output)
+			out = folder + "/{}-{}.dat".format(os.path.split(data)[1], moment)
+			moment_extraction_batch(moment, data, out)
 	

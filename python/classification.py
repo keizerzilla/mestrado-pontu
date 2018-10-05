@@ -6,6 +6,7 @@ from sklearn.model_selection import LeaveOneOut
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import GridSearchCV
 from sklearn.neighbors import KNeighborsClassifier as KNC
+from sklearn.neighbors import NearestCentroid as NC
 
 """
 classification.py
@@ -29,24 +30,19 @@ Fonte1: http://scikit-learn.org/stable/modules/model_evaluation.html
 Fonte2: http://www.zvetcobiometrics.com/Support/definitions.php
 """
 
-"""
-Variáveis globais do script.
-
-ATENÇÃO1: isso só é socialmente aceitável em linguagens de script.
-ATENÇÃO2: eu não quero ver esse comportamento em outro lugar!
-
---- !!!VOCÊ FOI AVISADO!!! ---
-"""
-
 classifiers = [
 	KNC(p=1, n_neighbors=1),
 	KNC(p=2, n_neighbors=1),
+	NC(metric="manhattan"),
+	NC(metric="euclidean"),
 	SVC(kernel="rbf"),
 	SVC(kernel="poly")]
 
 names = [
 	"KNN_manhattam",
 	"KNN_euclidean",
+	"DMC_manhattam",
+	"DMC_euclidean",
 	"SVM_radial",
 	"SVM_poly"]
 
@@ -99,7 +95,7 @@ def run_classification(X_train, y_train, X_test, y_test):
 	return ans
 
 """
-Executa classificação RANK-1 usando os 4 classificadores em pesquisa.
+Executa classificação RANK-1 usando os classificadores em pesquisa.
 Treino: amostra 0 de cada pose neutra.
 Teste: restante das amostras neutras (amostra diferente de 0).
 Uma normalização padrão (centro na médida e escala no desvio padrão) é computada
@@ -133,7 +129,7 @@ def rank1_neutral(name, features):
 	return run_classification(X_train, y_train, X_test, y_test)
 
 """
-Executa classificação RANK-1 usando os 4 classificadores em pesquisa.
+Executa classificação RANK-1 usando os classificadores em pesquisa.
 Treino: amostra 0 de cada pose neutra.
 Teste: todas as amostras não-neutras.
 Uma normalização padrão (centro na médida e escala no desvio padrão) é computada
@@ -173,7 +169,7 @@ def rank1_nonneutral(name, feat_neutral, feat_nonneutral):
 	return run_classification(X_train, y_train, X_test, y_test)
 
 """
-Executa classificação ROC-1 usando os 4 classificadores em pesquisa.
+Executa classificação ROC-1 usando os classificadores em pesquisa.
 Treino: todas as amostras neutras.
 Teste: todas as amostras não-neutras.
 Uma normalização padrão (centro na médida e escala no desvio padrão) é computada
@@ -213,7 +209,7 @@ def roc1(name, feat_neutral, feat_nonneutral):
 	return run_classification(X_train, y_train, X_test, y_test)
 
 """
-Executa classificação RANK-1 usando os 4 classificadores em pesquisa. O conjunto
+Executa classificação RANK-1 usando os classificadores em pesquisa. O conjunto
 de treino e teste é a concatenação de dois momentos.
 Treino: amostra 0 de cada pose neutra.
 Teste: restante das amostras neutras (amostra diferente de 0).
@@ -275,31 +271,23 @@ def rank1_duo(m1, m2):
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
-	print("RANK1-NEUTRAL_LEGECHEV")
-	rank1_duo("../results/05_bosphorus-outlier-densit225-crop80-icp/neutral-hu1980.dat",
-	          "../results/05_bosphorus-outlier-densit225-crop80-icp/neutral-legendre.dat")
+	scenarios = ["bosphorus",
+	             "bosphorus-outlier",
+	             "bosphorus-outlier-densit200-crop60",
+	             "bosphorus-outlier-densit200-crop70",
+	             "bosphorus-outlier-densit200-crop80",
+	             "bosphorus-outlier-densit225",
+	             "bosphorus-outlier-densit225-crop60",
+	             "bosphorus-outlier-densit225-crop70",
+	             "bosphorus-outlier-densit225-crop80",
+	             "bosphorus-outlier-densit225-crop80-icp"]
 	
-	"""
-	print("RANK1-NEUTRAL")
-	rank1_neutral("hututu", "../results/bosphorus_tcc/neutral-hututu.dat")
-	rank1_neutral("legendre", "../results/bosphorus_tcc/neutral-legendre.dat")
-	rank1_neutral("tchebychev", "../results/bosphorus_tcc/neutral-tchebychev.dat")
-	rank1_neutral("zernike", "../results/bosphorus_tcc/neutral-zernike.dat")
-	print()
+	moments = ["legendre"]
 	
-	print("RANK1-NONNEUTRAL")
-	rank1_nonneutral("hututu", "../results/bosphorus_tcc/neutral-hututu.dat", "../results/bosphorus_tcc/nonneutral-hututu.dat")
-	rank1_nonneutral("legendre", "../results/bosphorus_tcc/neutral-legendre.dat", "../results/bosphorus_tcc/nonneutral-legendre.dat")
-	rank1_nonneutral("tchebychev", "../results/bosphorus_tcc/neutral-tchebychev.dat", "../results/bosphorus_tcc/nonneutral-tchebychev.dat")
-	rank1_nonneutral("zernike", "../results/bosphorus_tcc/neutral-zernike.dat", "../results/bosphorus_tcc/nonneutral-zernike.dat")
-	print()
+	datasets = ["../results/" + x + "/" for x in scenarios]
 	
-	print("ROC1")
-	roc1("hututu", "../results/bosphorus_tcc/neutral-hututu.dat", "../results/bosphorus_tcc/nonneutral-hututu.dat")
-	roc1("legendre", "../results/bosphorus_tcc/neutral-legendre.dat", "../results/bosphorus_tcc/nonneutral-legendre.dat")
-	roc1("tchebychev", "../results/bosphorus_tcc/neutral-tchebychev.dat", "../results/bosphorus_tcc/nonneutral-tchebychev.dat")
-	roc1("zernike", "../results/bosphorus_tcc/neutral-zernike.dat", "../results/bosphorus_tcc/nonneutral-zernike.dat")
-	print()
-	"""
-	
-	
+	for data in datasets:
+		print(data)
+		for moment in moments:
+			roc1(moment, data + "neutral-{}.dat".format(moment), data + "nonneutral-{}.dat".format(moment))
+		input("ENTER PARA CONTINUAR")

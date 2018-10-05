@@ -1,0 +1,66 @@
+RANK1-01_bosphorus
+hututu
+KNN_manhattam   36.08   0.0035  
+KNN_euclidean   34.02   0.0031  
+SVM_radial      34.02   0.0207  
+SVM_poly        27.84   0.02    
+legendre
+KNN_manhattam   54.64   0.0034  
+KNN_euclidean   48.45   0.0032  
+SVM_radial      48.45   0.0206  
+SVM_poly        37.63   0.019   
+tchebychev
+KNN_manhattam   54.12   0.0033  
+KNN_euclidean   52.06   0.0031  
+SVM_radial      52.06   0.0209  
+SVM_poly        42.27   0.0191  
+zernike
+KNN_manhattam   11.34   0.0029  
+KNN_euclidean   11.34   0.0027  
+SVM_radial      11.34   0.0198  
+SVM_poly        11.34   0.0186  
+
+RANK1-02_bosphorus-outlier
+hututu
+KNN_manhattam   35.57   0.0033  
+KNN_euclidean   33.51   0.0031  
+SVM_radial      33.51   0.0202  
+SVM_poly        28.87   0.019   
+legendre
+KNN_manhattam   55.15   0.0033  
+KNN_euclidean   50.52   0.0032  
+SVM_radial      50.52   0.021   
+SVM_poly        38.14   0.0196  
+tchebychev
+KNN_manhattam   56.19   0.0032  
+KNN_euclidean   51.55   0.0031  
+SVM_radial      51.55   0.0205  
+SVM_poly        42.27   0.0186  
+zernike
+KNN_manhattam   10.82   0.0028  
+KNN_euclidean   11.86   0.0027  
+SVM_radial      11.86   0.0197  
+SVM_poly        11.34   0.0192  
+
+RANK1-03_bosphorus-outlier-densit225
+hututu
+KNN_manhattam   28.87   0.0033  
+KNN_euclidean   27.32   0.003   
+SVM_radial      26.8    0.0202  
+SVM_poly        22.16   0.0192  
+legendre
+KNN_manhattam   48.97   0.0034  
+KNN_euclidean   44.85   0.0031  
+SVM_radial      44.85   0.0207  
+SVM_poly        32.47   0.019   
+tchebychev
+KNN_manhattam   50.0    0.0034  
+KNN_euclidean   49.48   0.0031  
+SVM_radial      49.48   0.0212  
+SVM_poly        35.57   0.0194  
+zernike
+KNN_manhattam   8.76    0.0029  
+KNN_euclidean   9.28    0.0028  
+SVM_radial      9.28    0.0198  
+SVM_poly        8.76    0.0186  
+

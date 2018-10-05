@@ -135,12 +135,13 @@ def bosphorus_group(source, dest):
 			for cloud in os.listdir(folder):
 				srcf = os.path.join(folder, cloud)
 				dstf = os.path.join(dest, cloud)
-				shutil.copyfile(srcf, dstf)
+				shutil.move(srcf, dstf)
+				print("{} OK".format(dstf))
 
 """
 Separa os conjuntos neutral, nonneutral e other de um base de arquivos no
 formato bosphorus. Os arquivos contendo os nomes dos arquivos devem estar numa
-pasta chamada 'res/'. Falta testar!
+pasta chamada 'res/'.
 
 folder -- Pasta com o conjunto completo
 dirneutral -- Pasta que ficarão salvas as nuvens neutras
@@ -164,12 +165,42 @@ def bosphorus_split(folder, dirneutral, dirnonneutral, dirother):
 		
 		temp = os.path.splitext(cloud)[0]
 		if temp in neutrals:
-			shutil.copyfile(inpf, os.path.join(dirneutral, cloud))
+			shutil.move(inpf, os.path.join(dirneutral, cloud))
 		elif temp in nonneutrals:
-			shutil.copyfile(inpf, os.path.join(dirnonneutral, cloud))
+			shutil.move(inpf, os.path.join(dirnonneutral, cloud))
 		else:
-			shutil.copyfile(inpf, os.path.join(dirother, cloud))
+			shutil.move(inpf, os.path.join(dirother, cloud))
+
+"""
+A única função que você precisará na sua vida! Agrupa, divide e converte as
+nuvens de um diretório em formato bosphorus, criando o ambiente completo para
+testes.
+
+folder -- Pasta com o conjunto completo
+"""
+def bosphorus_setup(folder):
+	try:
+		os.mkdir(folder+"/all")
+		os.mkdir(folder+"/neutral")
+		os.mkdir(folder+"/nonneutral")
+		os.mkdir(folder+"/other")
+	except:
+		pass
+	
+	bosphorus_group(folder, folder+"/all")
+	bosphorus_split(folder+"/all",
+	                folder+"/neutral",
+	                folder+"/nonneutral",
+	                folder+"/other")
+	pcd2xyz(folder+"/neutral", folder+"/neutral")
+	pcd2xyz(folder+"/nonneutral", folder+"/nonneutral")
+	
 
 if __name__ == "__main__":
-	bosphorus_group("../datasets/01_bosphorus", "../datasets/01_bosphorus/all")
+	#bosphorus_setup("../datasets/bosphorus-outlier-densit200-crop60")
+	#bosphorus_setup("../datasets/bosphorus-outlier-densit200-crop70")
+	#bosphorus_setup("../datasets/bosphorus-outlier-densit200-crop80")
+	#bosphorus_setup("../datasets/bosphorus-outlier-densit225-crop60")
+	#bosphorus_setup("../datasets/bosphorus-outlier-densit225-crop70")
+	bosphorus_setup("../datasets/bosphorus-outlier-densit225-crop80")
 	
