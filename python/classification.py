@@ -271,6 +271,7 @@ def rank1_duo(m1, m2):
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
+	"""
 	scenarios = ["bosphorus",
 	             "bosphorus-outlier",
 	             "bosphorus-outlier-densit200-crop60",
@@ -281,13 +282,13 @@ if __name__ == "__main__":
 	             "bosphorus-outlier-densit225-crop70",
 	             "bosphorus-outlier-densit225-crop80",
 	             "bosphorus-outlier-densit225-crop80-icp"]
-	
-	moments = ["legendre"]
-	
+	"""
+	scenarios = ["bosphorus-outlier-densit200"]
+	moments = ["hu1980", "hututu", "legendre", "tchebychev", "zernike"]
 	datasets = ["../results/" + x + "/" for x in scenarios]
 	
 	for data in datasets:
 		print(data)
 		for moment in moments:
-			roc1(moment, data + "neutral-{}.dat".format(moment), data + "nonneutral-{}.dat".format(moment))
+			rank1_neutral(moment, data + "neutral-{}.dat".format(moment))
 		input("ENTER PARA CONTINUAR")

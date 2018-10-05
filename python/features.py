@@ -68,8 +68,10 @@ def extract_graph(dataset, output):
 			print(outfile + " OK")
 
 if __name__ == "__main__":
+	"""
 	scenarios = ["bosphorus",
 	             "bosphorus-outlier",
+	             "bosphorus-outlier-densit200",
 	             "bosphorus-outlier-densit200-crop60",
 	             "bosphorus-outlier-densit200-crop70",
 	             "bosphorus-outlier-densit200-crop80",
@@ -78,10 +80,9 @@ if __name__ == "__main__":
 	             "bosphorus-outlier-densit225-crop70",
 	             "bosphorus-outlier-densit225-crop80",
 	             "bosphorus-outlier-densit225-crop80-icp"]
-	
-	#moments = ["hututu", "legendre", "tchebychev", "zernike"]
-	moments = ["hu1980"]
-	
+	"""
+	scenarios = ["bosphorus-outlier-densit200"]
+	moments = ["hu1980", "hututu", "legendre", "tchebychev", "zernike"]
 	datasets = ["../datasets/" + x + "/neutral" for x in scenarios]
 	datasets += ["../datasets/" + x + "/nonneutral" for x in scenarios]
 	
