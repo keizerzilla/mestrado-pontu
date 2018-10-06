@@ -73,7 +73,9 @@ if __name__ == "__main__":
 	             "bosphorus-outlier-densit200-crop80-icp",
 	             "bosphorus-outlier-densit225-crop60-icp",
 	             "bosphorus-outlier-densit225-crop70-icp",
-	             "bosphorus-outlier-densit225-crop80-icp"]
+	             "bosphorus-outlier-densit225-crop80-icp",
+	             "bosphorus-outlier-densit200-nose",
+	             "bosphorus-outlier-densit225-nose"]
 	
 	moments = ["hu1980", "hututu", "legendre", "tchebychev", "zernike"]
 	datasets = ["../datasets/" + x + "/neutral" for x in scenarios]

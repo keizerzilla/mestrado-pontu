@@ -271,8 +271,17 @@ def rank1_duo(m1, m2):
 # ------------------------------------------------------------------------------
 
 if __name__ == "__main__":
-	scenarios = ["bosphorus-outlier-densit225-crop80-icp-OLD",
-	             "bosphorus-outlier-densit225-crop80-icp"]
+	"""
+	scenarios = ["bosphorus-outlier-densit200-crop60-icp",
+	             "bosphorus-outlier-densit200-crop70-icp",
+	             "bosphorus-outlier-densit200-crop80-icp",
+	             "bosphorus-outlier-densit225-crop60-icp",
+	             "bosphorus-outlier-densit225-crop70-icp",
+	             "bosphorus-outlier-densit225-crop80-icp",
+	             "bosphorus-outlier-densit200-nose",
+	             "bosphorus-outlier-densit225-nose"]
+	"""
+	scenarios = ["bosphorus-outlier-densit225-crop80-icp-OLD81"]
 	moments = ["hu1980", "hututu", "legendre", "tchebychev", "zernike"]
 	datasets = ["../results/" + x + "/" for x in scenarios]
 	

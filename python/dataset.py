@@ -203,4 +203,6 @@ if __name__ == "__main__":
 	bosphorus_setup("../datasets/bosphorus-outlier-densit225-crop60-icp")
 	bosphorus_setup("../datasets/bosphorus-outlier-densit225-crop70-icp")
 	bosphorus_setup("../datasets/bosphorus-outlier-densit225-crop80-icp")
+	bosphorus_setup("../datasets/bosphorus-outlier-densit200-nose")
+	bosphorus_setup("../datasets/bosphorus-outlier-densit225-nose")
 	
