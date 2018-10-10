@@ -311,7 +311,7 @@ void vector3_rotate_y(struct vector3* v, real d)
     real rcos = cos(rad);
     
     v->x = (v->x * rcos) + (v->z * rsin);
-    v->z = (-1 * (v->x * rsin)) + (v->z * rcos);
+    v->z = (v->z * rcos) - (v->x * rsin);
 }
 
 /**
@@ -326,7 +326,7 @@ void vector3_rotate_z(struct vector3* v, real d)
     real rcos = cos(rad);
 	
     v->x = (v->x * rcos) - (v->y * rsin);
-    v->y = (-1 * v->x * rsin) + (v->y * rcos);
+    v->y = (v->x * rsin) + (v->y * rcos);
 }
 
 /**
@@ -471,7 +471,6 @@ struct vector3* vector3_normal(struct vector3* a,
 
     return ret;
 }
-
 
 /**
  * \brief Acha a área da superfície de um triângulo

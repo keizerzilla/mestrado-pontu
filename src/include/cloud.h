@@ -289,9 +289,9 @@ struct vector3* cloud_calc_center(struct cloud* cloud)
 struct vector3* cloud_get_center(struct cloud* cloud)
 {
     if (cloud->centroid != NULL)
-        return cloud->centroid;
+        return vector3_from_vector(cloud->centroid);
 
-    return cloud_calc_center(cloud);
+    return vector3_from_vector(cloud_calc_center(cloud));
 }
 
 /**
@@ -373,8 +373,14 @@ void cloud_rotate_y(struct cloud* cloud, real d)
 void cloud_rotate_z(struct cloud* cloud, real d)
 {
 	util_seg("%s: funcionalidade incorreta", __FUNCTION__);
+	
+	struct vector3* oc = cloud_get_center(cloud);
+	cloud_translate_real(cloud, 0, 0, 0);
+	
 	for (uint i = 0; i < cloud->num_pts; i++)
         vector3_rotate_z(&cloud->points[i], d);
+    
+    cloud_translate_vector(cloud, oc);
 }
 
 /**

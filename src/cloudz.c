@@ -26,12 +26,9 @@
 
 void greetings()
 {
-	printf("%s", ANSI_COLOR_OKGREEN);
-	printf("%s", ANSI_COLOR_BOLD);
 	printf("cloudz: Utilitario Manipulador de Nuvens de Pontos\n");
 	printf("Artur Rodrigues Rocha Neto @INTERFACES/UFC - c2018\n");
 	printf("[!!] digite help para ver a lista de comandos [!!]\n\n");
-	printf("%s", ANSI_COLOR_DEFAULT);
 }
 
 void help()
