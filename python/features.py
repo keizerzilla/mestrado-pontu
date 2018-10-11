@@ -77,7 +77,7 @@ if __name__ == "__main__":
 	             "bosphorus-outlier-densit200-nose",
 	             "bosphorus-outlier-densit225-nose"]
 	
-	moments = ["hu1980", "hututu", "legendre", "tchebychev", "zernike"]
+	moments = ["hu1980", "hututu", "legendre", "chebyshev", "zernike"]
 	datasets = ["../datasets/" + x + "/neutral" for x in scenarios]
 	datasets += ["../datasets/" + x + "/nonneutral" for x in scenarios]
 	

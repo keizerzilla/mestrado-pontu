@@ -10,7 +10,7 @@
 #include "hu.h"
 #include "zernike.h"
 #include "legendre.h"
-#include "tchebychev.h"
+#include "chebyshev.h"
 #include "matrix.h"
 #include "cloud.h"
 #include "util.h"
@@ -19,7 +19,7 @@
 #define HU_1980 "hu1980"
 #define ZERNIKE "zernike"
 #define LEGENDRE "legendre"
-#define TCHEBYCHEV "tchebychev"
+#define CHEBYSHEV "chebyshev"
 
 /**
  * @brief Exibe mensagem ao usuário informando como usar o extrator de momentos
@@ -29,7 +29,7 @@ void extraction_help()
     util_error("faltando argumentos!");
     printf("argumentos obrigatorios: [ -m | -c | -o ]\n");
     printf("  -m: momento usado para extracao de atributos\n");
-    printf("      > hututu, hu1980, zernike, legendre ou tchebychev\n");
+    printf("      > hututu, hu1980, zernike, legendre ou chebyshev\n");
     printf("  -c: nuvem de entrada no formato XYZ\n");
     printf("  -o: arquivo aonde os momentos serao salvos\n");
     printf("      > path para arquivo texto ou stdout para saida padrao\n");
@@ -77,8 +77,8 @@ void extraction_interface(int argc, char** argv)
         mfunc = &hu_cloud_moments_sadjadi_hall;
     else if (!strcmp(optm, LEGENDRE))
         mfunc = &legendre_cloud_moments;
-    else if (!strcmp(optm, TCHEBYCHEV))
-        mfunc = &tchebychev_cloud_moments;
+    else if (!strcmp(optm, CHEBYSHEV))
+        mfunc = &chebyshev_cloud_moments;
     else if (!strcmp(optm, ZERNIKE))
         mfunc = &zernike_cloud_moments;
 

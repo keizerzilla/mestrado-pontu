@@ -195,7 +195,7 @@ def bosphorus_setup(folder):
 	pcd2xyz(folder+"/neutral", folder+"/neutral")
 	pcd2xyz(folder+"/nonneutral", folder+"/nonneutral")
 	
-
+	
 if __name__ == "__main__":
 	bosphorus_setup("../datasets/bosphorus-outlier-densit200-crop60-icp")
 	bosphorus_setup("../datasets/bosphorus-outlier-densit200-crop70-icp")

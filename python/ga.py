@@ -81,9 +81,9 @@ class Population():
 if __name__ ==  "__main__":
 	legendre = {"name" : "legendre",
 	            "path" : "../results/05_bosphorus-outlier-densit225-crop80-icp/neutral-legendre.dat"}
-	tchebychev = {"name" : "tchebychev",
-	              "path" : "../results/05_bosphorus-outlier-densit225-crop80-icp/neutral-tchebychev.dat"}
-	datasets = [legendre, tchebychev]
+	chebyshev = {"name" : "chebyshev",
+	              "path" : "../results/05_bosphorus-outlier-densit225-crop80-icp/neutral-chebyshev.dat"}
+	datasets = [legendre, chebyshev]
 	
 	population = Population(datasets)
 	

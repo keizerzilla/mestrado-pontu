@@ -282,7 +282,7 @@ if __name__ == "__main__":
 	             "bosphorus-outlier-densit225-nose"]
 	"""
 	scenarios = ["bosphorus-outlier-densit225-crop80-icp-OLD81"]
-	moments = ["hu1980", "hututu", "legendre", "tchebychev", "zernike"]
+	moments = ["hu1980", "hututu", "legendre", "chebyshev", "zernike"]
 	datasets = ["../results/" + x + "/" for x in scenarios]
 	
 	for data in datasets:
