@@ -1,0 +1,222 @@
+../results/bosphorus-outlier-densit200-crop60-icp/
+hu1980
+KNN_manhattam   24.23   0.0028  
+KNN_euclidean   26.29   0.0024  
+DMC_manhattam   24.23   0.0079  
+DMC_euclidean   26.29   0.0037  
+SVM_radial      26.29   0.0189  
+SVM_poly        22.16   0.0179  
+hututu
+KNN_manhattam   56.7    0.0032  
+KNN_euclidean   54.64   0.0031  
+DMC_manhattam   56.7    0.0089  
+DMC_euclidean   54.64   0.0041  
+SVM_radial      54.64   0.0198  
+SVM_poly        46.39   0.0185  
+legendre
+KNN_manhattam   82.47   0.0035  
+KNN_euclidean   77.84   0.0033  
+DMC_manhattam   82.47   0.0084  
+DMC_euclidean   77.84   0.0041  
+SVM_radial      77.84   0.0203  
+SVM_poly        64.95   0.0188  
+chebyshev
+KNN_manhattam   56.7    0.0031  
+KNN_euclidean   54.64   0.0031  
+DMC_manhattam   56.7    0.008   
+DMC_euclidean   54.64   0.0042  
+SVM_radial      54.64   0.0198  
+SVM_poly        46.39   0.0186  
+zernike
+KNN_manhattam   16.49   0.0028  
+KNN_euclidean   20.1    0.0026  
+DMC_manhattam   16.49   0.008   
+DMC_euclidean   20.1    0.0039  
+SVM_radial      20.1    0.0195  
+SVM_poly        17.01   0.0184  
+
+../results/bosphorus-outlier-densit200-crop70-icp/
+hu1980
+KNN_manhattam   22.68   0.0027  
+KNN_euclidean   25.77   0.0026  
+DMC_manhattam   22.68   0.0079  
+DMC_euclidean   25.77   0.0037  
+SVM_radial      25.77   0.0186  
+SVM_poly        22.68   0.0179  
+hututu
+KNN_manhattam   56.7    0.0032  
+KNN_euclidean   60.82   0.0031  
+DMC_manhattam   56.7    0.0081  
+DMC_euclidean   60.82   0.0042  
+SVM_radial      60.82   0.0199  
+SVM_poly        50.52   0.0185  
+legendre
+KNN_manhattam   82.99   0.0033  
+KNN_euclidean   75.77   0.0031  
+DMC_manhattam   82.99   0.0081  
+DMC_euclidean   75.77   0.0041  
+SVM_radial      75.77   0.0202  
+SVM_poly        68.56   0.0187  
+chebyshev
+KNN_manhattam   56.7    0.0032  
+KNN_euclidean   60.82   0.003   
+DMC_manhattam   56.7    0.008   
+DMC_euclidean   60.82   0.004   
+SVM_radial      60.82   0.0197  
+SVM_poly        50.52   0.0184  
+zernike
+KNN_manhattam   18.56   0.0026  
+KNN_euclidean   21.13   0.0026  
+DMC_manhattam   18.56   0.008   
+DMC_euclidean   21.13   0.0039  
+SVM_radial      21.13   0.0192  
+SVM_poly        14.95   0.0183  
+
+../results/bosphorus-outlier-densit200-crop80-icp/
+hu1980
+KNN_manhattam   24.74   0.0026  
+KNN_euclidean   27.32   0.0025  
+DMC_manhattam   24.74   0.0079  
+DMC_euclidean   27.32   0.0037  
+SVM_radial      27.32   0.0185  
+SVM_poly        22.16   0.0178  
+hututu
+KNN_manhattam   57.73   0.0032  
+KNN_euclidean   57.73   0.003   
+DMC_manhattam   57.73   0.008   
+DMC_euclidean   57.73   0.0041  
+SVM_radial      57.73   0.0204  
+SVM_poly        53.61   0.019   
+legendre
+KNN_manhattam   83.51   0.0033  
+KNN_euclidean   76.29   0.0031  
+DMC_manhattam   83.51   0.0082  
+DMC_euclidean   76.29   0.0041  
+SVM_radial      76.29   0.0202  
+SVM_poly        65.98   0.0187  
+chebyshev
+KNN_manhattam   57.73   0.0032  
+KNN_euclidean   57.73   0.003   
+DMC_manhattam   57.73   0.0081  
+DMC_euclidean   57.73   0.004   
+SVM_radial      57.73   0.0198  
+SVM_poly        53.61   0.0185  
+zernike
+KNN_manhattam   22.16   0.0028  
+KNN_euclidean   24.23   0.0027  
+DMC_manhattam   22.16   0.008   
+DMC_euclidean   24.23   0.0039  
+SVM_radial      24.23   0.0192  
+SVM_poly        19.59   0.0184  
+
+../results/bosphorus-outlier-densit225-crop60-icp/
+hu1980
+KNN_manhattam   22.16   0.0025  
+KNN_euclidean   25.26   0.0024  
+DMC_manhattam   22.16   0.008   
+DMC_euclidean   25.26   0.0037  
+SVM_radial      25.26   0.0186  
+SVM_poly        20.62   0.0177  
+hututu
+KNN_manhattam   57.73   0.0032  
+KNN_euclidean   56.7    0.0029  
+DMC_manhattam   57.73   0.008   
+DMC_euclidean   56.7    0.0041  
+SVM_radial      56.7    0.0198  
+SVM_poly        47.42   0.0184  
+legendre
+KNN_manhattam   83.51   0.0033  
+KNN_euclidean   76.8    0.0031  
+DMC_manhattam   83.51   0.0081  
+DMC_euclidean   76.8    0.0041  
+SVM_radial      76.8    0.0201  
+SVM_poly        64.43   0.0189  
+chebyshev
+KNN_manhattam   57.73   0.0031  
+KNN_euclidean   56.7    0.0029  
+DMC_manhattam   57.73   0.008   
+DMC_euclidean   56.7    0.0042  
+SVM_radial      56.7    0.0198  
+SVM_poly        47.42   0.0184  
+zernike
+KNN_manhattam   14.95   0.0028  
+KNN_euclidean   16.49   0.0027  
+DMC_manhattam   14.95   0.008   
+DMC_euclidean   16.49   0.0039  
+SVM_radial      16.49   0.0194  
+SVM_poly        14.95   0.0185  
+
+../results/bosphorus-outlier-densit225-crop70-icp/
+hu1980
+KNN_manhattam   23.2    0.0026  
+KNN_euclidean   24.23   0.0026  
+DMC_manhattam   23.2    0.0079  
+DMC_euclidean   24.23   0.0037  
+SVM_radial      24.23   0.0186  
+SVM_poly        18.56   0.0178  
+hututu
+KNN_manhattam   54.64   0.0034  
+KNN_euclidean   57.22   0.003   
+DMC_manhattam   54.64   0.0082  
+DMC_euclidean   57.22   0.0042  
+SVM_radial      57.22   0.0201  
+SVM_poly        51.55   0.0184  
+legendre
+KNN_manhattam   81.96   0.0032  
+KNN_euclidean   76.29   0.0031  
+DMC_manhattam   81.96   0.0083  
+DMC_euclidean   76.29   0.0041  
+SVM_radial      76.29   0.0202  
+SVM_poly        63.92   0.0186  
+chebyshev
+KNN_manhattam   54.64   0.0031  
+KNN_euclidean   57.22   0.0029  
+DMC_manhattam   54.64   0.008   
+DMC_euclidean   57.22   0.004   
+SVM_radial      57.22   0.0197  
+SVM_poly        51.55   0.0185  
+zernike
+KNN_manhattam   24.23   0.0028  
+KNN_euclidean   28.35   0.0026  
+DMC_manhattam   24.23   0.008   
+DMC_euclidean   28.35   0.0039  
+SVM_radial      28.35   0.0191  
+SVM_poly        21.65   0.0182  
+
+../results/bosphorus-outlier-densit225-crop80-icp/
+hu1980
+KNN_manhattam   25.77   0.0026  
+KNN_euclidean   28.35   0.0025  
+DMC_manhattam   25.77   0.0079  
+DMC_euclidean   28.35   0.0037  
+SVM_radial      28.35   0.0184  
+SVM_poly        26.29   0.0178  
+hututu
+KNN_manhattam   54.64   0.0031  
+KNN_euclidean   54.64   0.003   
+DMC_manhattam   54.64   0.008   
+DMC_euclidean   54.64   0.0042  
+SVM_radial      54.64   0.0198  
+SVM_poly        50.0    0.0185  
+legendre
+KNN_manhattam   83.51   0.0032  
+KNN_euclidean   76.8    0.0032  
+DMC_manhattam   83.51   0.0081  
+DMC_euclidean   76.8    0.0041  
+SVM_radial      76.8    0.0202  
+SVM_poly        70.1    0.0188  
+chebyshev
+KNN_manhattam   54.64   0.0031  
+KNN_euclidean   54.64   0.003   
+DMC_manhattam   54.64   0.0081  
+DMC_euclidean   54.64   0.0043  
+SVM_radial      54.64   0.0205  
+SVM_poly        50.0    0.0188  
+zernike
+KNN_manhattam   20.1    0.0028  
+KNN_euclidean   20.62   0.0027  
+DMC_manhattam   20.1    0.008   
+DMC_euclidean   20.62   0.004   
+SVM_radial      20.62   0.02    
+SVM_poly        18.56   0.0192  
+
