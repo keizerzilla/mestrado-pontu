@@ -272,23 +272,26 @@ def rank1_duo(m1, m2):
 
 
 if __name__ == "__main__":
-	scenarios = ["bosphorus-outlier-densit225-crop80-icp-OLD81"]
-	moments = ["legendre"]
-	datasets = ["../results/legendre/" + x + "/" for x in scenarios]
-	cols = ["dataset", "legendre"]
+	rank1_neutral("legendre", "../results/legendre/neutral-legendre-yj.dat")
 	
-	df = pd.DataFrame(columns=cols)
+	"""
+	scenarios = ["bosphorus-outlier-densit225-crop80-icp"]
+	moments = ["legendre"]
+	datasets = ["../results/" + x + "/" for x in scenarios]
+	#cols = ["dataset", "legendre"]
+	
+	#df = pd.DataFrame(columns=cols)
 	for i, data in enumerate(datasets):
 		print(data)
-		newdf = pd.DataFrame(columns=cols)
-		newdf.at[i, "dataset"] = data.replace("../results/", "")
+		#newdf = pd.DataFrame(columns=cols)
+		#newdf.at[i, "dataset"] = data.replace("../results/", "")
 		for moment in moments:
 			ans = rank1_neutral(moment, data + "neutral-{}.dat".format(moment))
 			best = max(ans.items(), key=operator.itemgetter(1))
-			newdf.at[i, moment] = round(best[1]*100, 2)
-		df = df.append(newdf)
-	df.to_csv("../results/doc/chebyshev.csv", index=False)
-	
+			#newdf.at[i, moment] = round(best[1]*100, 2)
+		#df = df.append(newdf)
+	#df.to_csv("../results/doc/chebyshev.csv", index=False)
+	"""
 	
 	
 	
