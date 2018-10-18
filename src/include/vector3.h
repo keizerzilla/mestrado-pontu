@@ -103,9 +103,9 @@ struct vector3* vector3_add(struct vector3* a, struct vector3* b)
 }
 
 /**
- * @brief Soma dois vetores modificando um deles permanentemente
- * @param src O vetor a ser modificado (somado)
- * @param inc O vetor que servirá de incremento
+ * \brief Soma dois vetores modificando um deles permanentemente
+ * \param src O vetor a ser modificado (somado)
+ * \param inc O vetor que servirá de incremento
  */
 void vector3_increase(struct vector3* src, struct vector3* inc)
 {
@@ -126,9 +126,9 @@ struct vector3* vector3_sub(struct vector3* a, struct vector3* b)
 }
 
 /**
- * @brief vector3_decrease
- * @param src O vetor a ser modificado (diminuído)
- * @param dec O vetor que servirá de decremento
+ * \brief vector3_decrease
+ * \param src O vetor a ser modificado (diminuído)
+ * \param dec O vetor que servirá de decremento
  */
 void vector3_decrease(struct vector3* src, struct vector3* dec)
 {
@@ -285,9 +285,9 @@ void vector3_scale(struct vector3* v, real f)
 }
 
 /**
- * @brief Rotaciona vetor em torno do eixo x
- * @param v O vetor alvo
- * @param d O ângulo de rotação em graus
+ * \brief Rotaciona vetor em torno do eixo x
+ * \param v O vetor alvo
+ * \param d O ângulo de rotação em graus
  */
 void vector3_rotate_x(struct vector3* v, real d)
 {
@@ -300,9 +300,9 @@ void vector3_rotate_x(struct vector3* v, real d)
 }
 
 /**
- * @brief Rotaciona vetor em torno do eixo y
- * @param v O vetor alvo
- * @param d O ângulo de rotação em graus
+ * \brief Rotaciona vetor em torno do eixo y
+ * \param v O vetor alvo
+ * \param d O ângulo de rotação em graus
  */
 void vector3_rotate_y(struct vector3* v, real d)
 {
@@ -315,9 +315,9 @@ void vector3_rotate_y(struct vector3* v, real d)
 }
 
 /**
- * @brief Rotaciona vetor em torno do eixo z
- * @param v O vetor alvo
- * @param d O ângulo de rotação em graus
+ * \brief Rotaciona vetor em torno do eixo z
+ * \param v O vetor alvo
+ * \param d O ângulo de rotação em graus
  */
 void vector3_rotate_z(struct vector3* v, real d)
 {
@@ -373,15 +373,39 @@ void vector3_push2(struct vector3* v) {
 }
 
 /**
- * @brief Calcula a distância de Minkowski de ordem m entre dois vetores
- * @param v1 O primeiro vetor
- * @param v2 O segundo vetor
- * @param m A ordem da distância
- * @return A distância de ordem m entre v1 e v2
+ * \brief Calcula a distância de Minkowski de ordem m entre dois vetores
+ * \param v1 O primeiro vetor
+ * \param v2 O segundo vetor
+ * \param m A ordem da distância
+ * \return A distância de ordem m entre v1 e v2
  */
 real vector3_minkowski(struct vector3* v1, struct vector3* v2, real m)
 {
     return pow(pow(v1->x - v2->x, m) + pow(v1->y - v2->y, m), 1.0f/m);
+}
+
+/**
+ * \brief Calcula a distância de Chebyshev entre dois vetores
+ * \param v1 O primeiro vetor
+ * \param v2 O segundo vetor
+ * \return A distância de Chebyshev entre v1 e v2
+ */
+real vector3_chebyshev(struct vector3* v1, struct vector3* v2)
+{
+	real fx = fabs(v1->x - v2->x);
+	real fy = fabs(v1->y - v2->y);
+	real fz = fabs(v1->z - v2->z);
+	
+	if (fx > fy)
+		if (fx > fz)
+			return fx;
+		else
+			return fz;
+	else
+		if (fy > fz)
+			return fy;
+		else
+			return fz;
 }
 
 /**

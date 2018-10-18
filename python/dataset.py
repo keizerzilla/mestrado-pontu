@@ -197,10 +197,5 @@ def bosphorus_setup(folder):
 	
 	
 if __name__ == "__main__":
-	bosphorus_setup("../datasets/bosphorus-outlier-densit200-crop60-icp")
-	bosphorus_setup("../datasets/bosphorus-outlier-densit200-crop70-icp")
-	bosphorus_setup("../datasets/bosphorus-outlier-densit200-crop80-icp")
-	bosphorus_setup("../datasets/bosphorus-outlier-densit225-crop60-icp")
-	bosphorus_setup("../datasets/bosphorus-outlier-densit225-crop70-icp")
-	bosphorus_setup("../datasets/bosphorus-outlier-densit225-crop80-icp")
+	bosphorus_setup("../datasets/bosphorus-outlier-densit225-crop80-icp-OLD81")
 	

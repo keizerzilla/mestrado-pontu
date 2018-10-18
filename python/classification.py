@@ -1,4 +1,5 @@
 import time
+import operator
 import numpy as np
 import pandas as pd
 from sklearn.svm import SVC
@@ -267,23 +268,31 @@ def rank1_duo(m1, m2):
 	# executa classificadores
 	
 	return run_classification(X_train, y_train, X_test, y_test)
-	
-# ------------------------------------------------------------------------------
+
+
 
 if __name__ == "__main__":
-	scenarios = ["bosphorus-outlier-densit200-crop60",
-	             "bosphorus-outlier-densit200-crop70",
-	             "bosphorus-outlier-densit200-crop80",
-	             "bosphorus-outlier-densit225-crop60",
-	             "bosphorus-outlier-densit225-crop70",
-	             "bosphorus-outlier-densit225-crop80"]
-	moments = ["hu1980", "hututu", "legendre", "chebyshev", "zernike"]
-	datasets = ["../results/" + x + "/" for x in scenarios]
+	scenarios = ["bosphorus-outlier-densit225-crop80-icp-OLD81"]
+	moments = ["legendre"]
+	datasets = ["../results/legendre/" + x + "/" for x in scenarios]
+	cols = ["dataset", "legendre"]
 	
-	for data in datasets:
+	df = pd.DataFrame(columns=cols)
+	for i, data in enumerate(datasets):
 		print(data)
+		newdf = pd.DataFrame(columns=cols)
+		newdf.at[i, "dataset"] = data.replace("../results/", "")
 		for moment in moments:
-			rank1_neutral(moment, data + "neutral-{}.dat".format(moment))
-		print()
+			ans = rank1_neutral(moment, data + "neutral-{}.dat".format(moment))
+			best = max(ans.items(), key=operator.itemgetter(1))
+			newdf.at[i, moment] = round(best[1]*100, 2)
+		df = df.append(newdf)
+	df.to_csv("../results/doc/chebyshev.csv", index=False)
+	
+	
+	
+	
+	
+	
 	
 	

@@ -648,6 +648,64 @@ struct vector3* cloud_min_z(struct cloud* cloud)
 }
 
 /**
+ * \brief Descobre o ponto com maior coordenada X
+ * \param cloud A nuvem alvo
+ * \return Endereço do ponto com maior X
+ */
+struct vector3* cloud_max_x(struct cloud* cloud)
+{
+	uint index = 0;
+	real max_x = cloud->points[0].x;
+	for (uint i = 1; i < cloud->num_pts; i++) {
+        if (max_x > cloud->points[i].x) {
+            max_x = cloud->points[i].x;
+            index = i;
+		}
+    }
+    
+    return &cloud->points[index];
+}
+
+/**
+ * \brief Descobre o ponto com maior coordenada Y
+ * \param cloud A nuvem alvo
+ * \return Endereço do ponto com maior Y
+ */
+struct vector3* cloud_max_y(struct cloud* cloud)
+{
+	uint index = 0;
+	real max_y = cloud->points[0].y;
+	for (uint i = 1; i < cloud->num_pts; i++) {
+        if (max_y > cloud->points[i].y) {
+            max_y = cloud->points[i].y;
+            index = i;
+		}
+    }
+    
+    return &cloud->points[index];
+}
+
+/**
+
+ * \brief Descobre o ponto com maior coordenada Z
+ * \param cloud A nuvem alvo
+ * \return Endereço do ponto com maior Z
+ */
+struct vector3* cloud_max_z(struct cloud* cloud)
+{
+	uint index = 0;
+	real max_z = cloud->points[0].z;
+	for (uint i = 1; i < cloud->num_pts; i++) {
+        if (max_z > cloud->points[i].z) {
+            max_z = cloud->points[i].z;
+            index = i;
+		}
+    }
+    
+    return &cloud->points[index];
+}
+
+/**
  * \brief Ainda não sei interpretar isso, mas conserva certas curvaturas
  * \param cloud A nuvem alvo
  * \return A máscara da nuvem

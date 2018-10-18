@@ -1,0 +1,17 @@
+dataset,hu1980,hututu,legendre,chebyshev,zernike
+bosphorus/,12.89,36.08,54.64,54.12,11.34
+bosphorus-outlier/,13.4,35.57,55.15,56.19,11.86
+bosphorus-outlier-densit200/,9.79,31.44,51.55,52.06,9.79
+bosphorus-outlier-densit200-crop60/,26.29,55.67,58.25,54.64,14.95
+bosphorus-outlier-densit200-crop70/,23.2,54.64,61.34,56.7,17.53
+bosphorus-outlier-densit200-crop80/,27.84,53.61,59.79,53.09,15.98
+bosphorus-outlier-densit200-crop60-icp/,26.29,56.7,82.47,56.7,20.1
+bosphorus-outlier-densit200-crop70-icp/,25.77,60.82,82.99,60.82,21.13
+bosphorus-outlier-densit200-crop80-icp/,27.32,57.73,83.51,57.73,24.23
+bosphorus-outlier-densit225/,10.31,28.87,48.97,50.0,9.28
+bosphorus-outlier-densit225-crop60/,25.77,51.55,59.28,53.61,13.4
+bosphorus-outlier-densit225-crop70/,25.26,51.03,57.73,53.61,18.56
+bosphorus-outlier-densit225-crop80/,27.84,47.42,56.7,48.97,18.04
+bosphorus-outlier-densit225-crop60-icp/,25.26,57.73,83.51,57.73,16.49
+bosphorus-outlier-densit225-crop70-icp/,24.23,57.22,81.96,57.22,28.35
+bosphorus-outlier-densit225-crop80-icp/,28.35,54.64,83.51,54.64,20.62

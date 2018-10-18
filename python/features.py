@@ -68,20 +68,15 @@ def extract_graph(dataset, output):
 			print(outfile + " OK")
 
 if __name__ == "__main__":
-	scenarios = ["bosphorus-outlier-densit200-crop60-icp",
-	             "bosphorus-outlier-densit200-crop70-icp",
-	             "bosphorus-outlier-densit200-crop80-icp",
-	             "bosphorus-outlier-densit225-crop60-icp",
-	             "bosphorus-outlier-densit225-crop70-icp",
-	             "bosphorus-outlier-densit225-crop80-icp"]
+	scenarios = ["bosphorus-outlier-densit225-crop80-icp-OLD81"]
 	
-	moments = ["hu1980", "hututu", "legendre", "chebyshev", "zernike"]
+	moments = ["legendre"]
 	datasets = ["../datasets/" + x + "/neutral" for x in scenarios]
-	datasets += ["../datasets/" + x + "/nonneutral" for x in scenarios]
+	#datasets += ["../datasets/" + x + "/nonneutral" for x in scenarios]
 	
 	for data in datasets:
 		scenario = data.split("/")[2]
-		folder = "../results/{}".format(scenario)
+		folder = "../results/legendre/{}".format(scenario)
 		
 		try:
 			os.mkdir(folder)
