@@ -30,7 +30,6 @@ def moment_extraction_cloud(moment, cloud):
 	ix = str(parse.parse(parse_fmt, filename)[3])
 	
 	cmd = ["../bin/mcalc", "-m", moment, "-c", cloud, "-o", "stdout"]
-	
 	ret = subprocess.run(cmd, check=True, stdout=subprocess.PIPE).stdout
 	ret = ret.decode("utf-8")[:-2].replace(" ", ",") + ",{},{}\n".format(ix, cl)
 	
@@ -68,20 +67,34 @@ def extract_graph(dataset, output):
 			print(outfile + " OK")
 
 if __name__ == "__main__":
-	scenarios = ["bosphorus-outlier-densit225-crop80-icp-OLD81"]
+	scenarios = ["bosphorus",
+	             "bosphorus-outlier",
+	             "bosphorus-outlier-densit200",
+	             "bosphorus-outlier-densit200-crop60",
+	             "bosphorus-outlier-densit200-crop70",
+	             "bosphorus-outlier-densit200-crop80",
+	             "bosphorus-outlier-densit200-crop60-icp",
+	             "bosphorus-outlier-densit200-crop70-icp",
+	             "bosphorus-outlier-densit200-crop80-icp",
+	             "bosphorus-outlier-densit225",
+	             "bosphorus-outlier-densit225-crop60",
+	             "bosphorus-outlier-densit225-crop70",
+	             "bosphorus-outlier-densit225-crop80",
+	             "bosphorus-outlier-densit225-crop60-icp",
+	             "bosphorus-outlier-densit225-crop70-icp",
+	             "bosphorus-outlier-densit225-crop80-icp"]
 	
-	moments = ["legendre"]
+	moments = ["zernike"]
 	datasets = ["../datasets/" + x + "/neutral" for x in scenarios]
-	#datasets += ["../datasets/" + x + "/nonneutral" for x in scenarios]
 	
 	for data in datasets:
 		scenario = data.split("/")[2]
-		folder = "../results/legendre/{}".format(scenario)
+		folder = "../results/{}".format(scenario)
 		
 		try:
 			os.mkdir(folder)
 		except:
-			pass
+			print("diretorio jah existe...")
 		
 		for moment in moments:
 			out = folder + "/{}-{}.dat".format(os.path.split(data)[1], moment)

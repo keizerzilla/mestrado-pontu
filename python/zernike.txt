@@ -1,0 +1,7 @@
+zernike
+KNN_manhattam   51.03   0.0039  
+KNN_euclidean   46.91   0.0033  
+DMC_manhattam   51.03   0.0102  
+DMC_euclidean   46.91   0.0046  
+SVM_radial      46.39   0.0209  
+SVM_poly        42.78   0.0197  

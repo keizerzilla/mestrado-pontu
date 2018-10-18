@@ -4,7 +4,8 @@
  * \date 2017
  * \brief Arquivo contendo as implementações necessárias para o cálculo dos
  * momentos de Zernike. Os momentos de Zernike mapeam um conjunto de dados no
- * domínio complexo, minimizando redundâncias e sobreposição de informações.
+ * domínio complexo, minimizando redundâncias e sobreposição de informações
+ * (eu nunca estive tão errado...).
  */
 
 #ifndef ZERNIKE_H
@@ -16,51 +17,6 @@
 #include "matrix.h"
 
 /**
- * \brief Estrutura que guarda o subconjunto de uma nuvem delimitada por um raio
- * em torno de um ponto central.
- */
-struct zsphere {
-    struct cloud* cloud;
-    struct vector3* center;
-    real r;
-    uint norm;
-};
-
-/**
- * \brief Aloca espaço para uma nova zsphere
- * \param cloud A nuvem a ser delimitada
- * \param radius O raio da zsphere
- * \return O ponteiro para a zsphere alocada, NULL caso não haja memória
- */
-struct zsphere* zsphere_new(struct cloud* cloud, real radius)
-{
-    struct zsphere* zsphere = malloc(sizeof(struct zsphere));
-
-    if (zsphere == NULL)
-        return NULL;
-
-    zsphere->cloud = cloud;
-    zsphere->center = cloud_get_center(cloud);
-    zsphere->r = radius;
-    zsphere->norm = 0;
-
-    return zsphere;
-}
-
-/**
- * \brief Libera a memória alocada para uma zsphere (nunca usada)
- * \param zsphere A zsphere alvo
- */
-void zsphere_free(struct zsphere* zsphere)
-{
-    cloud_free(zsphere->cloud);
-    vector3_free(zsphere->center);
-    free(zsphere);
-
-    zsphere = NULL;
-}
-
-/**
  * \brief Calcula o fatorial de um número inteiro
  * \param n O número que ser quer calcular o fatorial
  * \return O fatorial de n
@@ -68,40 +24,11 @@ void zsphere_free(struct zsphere* zsphere)
 int zernike_factorial(int n)
 {
     int result = 1;
-
-    int c;
-    for (c = 1; c <= n; c++)
-        result = result * c;
+    
+    for (uint c = 1; c <= n; c++)
+        result *= c;
 
     return result;
-}
-
-/**
- * \brief Calcula o core do polinômio de Zernike
- * \param n A ordem do polinômio
- * \param m A repetição do polinômio
- * \param s O indíce do somatório
- * \return O core de ordem(n,m) e índice(s)
- */
-real zernike_core(int n, int m, int s)
-{
-    real num = pow(-1, s) * (zernike_factorial(n - s));
-    real den = zernike_factorial(s) *
-               zernike_factorial(((n + m) / 2) - s) *
-               zernike_factorial(((n - m) / 2) - s);
-
-    return (num / den);
-}
-
-/**
- * \brief Distância radial entre um ponto e o centro
- * \param zsphere A zsphere alvo
- * \param point O ponto alvo
- * \return A distância radial (normalizada)
- */
-real zernike_radial_distance(struct zsphere* zsphere, struct vector3* point)
-{
-    return vector3_distance(zsphere->center, point) / zsphere->r;
 }
 
 /**
@@ -112,27 +39,30 @@ real zernike_radial_distance(struct zsphere* zsphere, struct vector3* point)
  */
 int zernike_conditions(int n, int m)
 {
-    if(n < m || (n-m)%2)
-        return 0;
-    else
-        return 1;
+	return !(n < m || (n - m) % 2);
 }
 
 /**
- * \brief Calcula um polinômio regular de Zernike
+ * \brief Calcula um polinômio radial de Zernike
  * \param n A ordem do polinômio
  * \param m A repetição
- * \param distance A distância em questão
- * \return O polinômio regular de Zernike de ordem(n) e repetição(m)
+ * \param distance A distância em radial
+ * \return O polinômio radial de Zernike de ordem(n) e repetição(m)
  */
-real zernike_poly(int n, int m, real distance)
+real zernike_radpoly(int n, int m, real distance)
 {
     real radpoly = 0.0f;
-
-    int s = 0;
-    for (s = 0; s <= (n - m) / 2; s++)
-        radpoly += (zernike_core(n, m, s) * pow(distance, n - (2 * s)));
-
+    
+    for (uint s = 0; s <= (n - m) / 2; s++) {
+    	real num = pow(-1, s) * (zernike_factorial(n - s));
+    	
+	    real den = zernike_factorial(s) *
+                   zernike_factorial(((n + m) / 2) - s) *
+                   zernike_factorial(((n - m) / 2) - s);
+        
+        radpoly += (num * pow(distance, n - (2 * s))) / den;
+	}
+	
     return radpoly;
 }
 
@@ -143,64 +73,38 @@ real zernike_poly(int n, int m, real distance)
  */
 real zernike_azimuth(struct vector3* point)
 {
-    return atan2(point->y, point->x);
-}
-
-/**
- * \brief A parte par de um polinômio radial de Zernike
- * \param radpoly O polinômio radial
- * \param m A repeticao do polinomio
- * \param angle O ângulo azimutal do polinômio associado
- * \return A parte par do polinômio complexo
- */
-real zernike_even(real radpoly, int m, real angle)
-{
-    return radpoly * cos(angle*m);
-}
-
-/**
- * \brief zernike_odd A parte impar de um polinômio radial de Zernike
- * \param radpoly O polinômio radial
- * \param m A repeticao do polinomio
- * \param angle O ângulo azimutal do polinômio associado
- * \return A parte ímpar do polinômio complexo
- */
-real zernike_odd(real radpoly, int m, real angle)
-{
-    return radpoly * sin(angle*m);
+    return atan2(point->z, point->y);
 }
 
 /**
  * \brief Calcula um momento de Zernike
  * \param n A ordem do polinômio
  * \param m A repetição do polinômio
- * \param zsphere A zsphere alvo
+ * \param r O raio de atuação
+ * \param cloud A nuvem alvo
  * \return O momento de Zernike de ordem(n) e repetição(m)
  */
-real zernike_moment(int n, int m, struct zsphere* zsphere)
+real zernike_moment(int n, int m, real r, struct cloud* cloud)
 {
-    real moment = 0.0f;
-    real distance = 0.0f;
-    real angle = 0.0f;
-    real even = 0.0f;
-    real odd = 0.0f;
+	struct vector3* center = cloud_get_center(cloud);
+    
+    real dist = 0.0f;
     real poly = 0.0f;
-
-    for (uint i = 0; i < zsphere->cloud->num_pts; i++) {
-        distance = zernike_radial_distance(zsphere, &zsphere->cloud->points[i]);
-
-        if (distance <= 1.0f) {
-            poly = zernike_poly(n, m, distance);
-            angle = zernike_azimuth(&zsphere->cloud->points[i]);
-            even = zernike_even(poly, m, angle);
-            odd = zernike_odd(poly, m, angle);
-            moment += sqrt(pow(even, 2) + pow(odd, 2));
-
-            zsphere->norm += 1;
-        }
+    real angle = 0.0f;
+    real ef = 0.0f;
+    real moment = 0.0f;
+	
+    for (uint i = 0; i < cloud->num_pts; i++) {
+        dist = vector3_distance(center, &cloud->points[i]) / r;
+        poly = zernike_radpoly(n, m, dist);
+        angle = zernike_azimuth(&cloud->points[i]);
+        ef = exp(angle * m);
+        moment += poly * ef;
     }
-
-    return (moment * (n + 1.0f)) / zsphere->norm;
+	
+	vector3_free(center);
+	
+    return (moment * (n + 1.0f)) / CALC_PI;
 }
 
 /**
@@ -211,18 +115,18 @@ real zernike_moment(int n, int m, struct zsphere* zsphere)
  */
 struct matrix* zernike_cloud_moments(struct cloud* cloud)
 {
-    struct matrix* results = matrix_new(1, ZERNIKE_MOMENTS);
-    struct zsphere* zsphere = zsphere_new(cloud, 666.0f);
+	struct matrix* results = matrix_new(1, ZERNIKE_MOMENTS);
+    real r = cloud_max_distance(cloud);
 
     int n = 0;
     int m = 0;
     int row = 0;
     int col = 0;
-
+	
     for (n = 0; n <= 6; n++) {
         for (m = 0; m <= 6; m++) {
             if (zernike_conditions(n, m)) {
-                matrix_set(results, row, col, zernike_moment(n, m, zsphere));
+                matrix_set(results, row, col, zernike_moment(n, m, r, cloud));
                 col++;
             }
         }

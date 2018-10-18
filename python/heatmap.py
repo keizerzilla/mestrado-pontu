@@ -1,6 +1,7 @@
 import os
 import sys
 import seaborn
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -27,12 +28,18 @@ dataset = sys.argv[1]
 df = pd.read_csv(dataset)
 cs = ["f"+str(x) for x in range(len(df.columns)-2)] + ["sample", "subject"]
 df.columns = cs
-df = df.drop(["sample"], axis=1)
+df = df.drop(["sample", "subject"], axis=1)
 
-# matriz de correlacao
-corr = df.drop(["subject"], axis=1).corr()
+# matriz de correlacao e preditores de maior correlacao
+corr = df.corr().abs()
 annot = corr.round(decimals=1)
-seaborn.heatmap(corr, vmin=-1.0, vmax=1.0, cmap="Purples", annot=annot)
+upper = corr.where(np.triu(np.ones(corr.shape), k=1).astype(np.bool))
+to_drop = [column for column in upper.columns if any(upper[column] > 0.9)]
+print("drops sugeridos: " + str(to_drop))
+
+# plot
+seaborn.heatmap(corr, vmin=0, vmax=1.0, cmap="Purples", annot=annot)
 moment = os.path.basename(sys.argv[1]).split(".")[0]
 plt.title("Correlação dos momentos " + moment)
 plt.show()
+

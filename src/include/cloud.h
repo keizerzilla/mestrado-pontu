@@ -342,9 +342,9 @@ void cloud_translate_real(struct cloud* cloud, real x, real y, real z)
 }
 
 /**
- * @brief Rotaciona nuvem em torno do eixo x
- * @param cloud A nuvem a ser rotacionada
- * @param d O ângulo de rotação em graus
+ * \brief Rotaciona nuvem em torno do eixo x
+ * \param cloud A nuvem a ser rotacionada
+ * \param d O ângulo de rotação em graus
  */
 void cloud_rotate_x(struct cloud* cloud, real d)
 {
@@ -354,9 +354,9 @@ void cloud_rotate_x(struct cloud* cloud, real d)
 }
 
 /**
- * @brief Rotaciona nuvem em torno do eixo y
- * @param cloud A nuvem a ser rotacionada
- * @param d O ângulo de rotação em graus
+ * \brief Rotaciona nuvem em torno do eixo y
+ * \param cloud A nuvem a ser rotacionada
+ * \param d O ângulo de rotação em graus
  */
 void cloud_rotate_y(struct cloud* cloud, real d)
 {
@@ -366,21 +366,15 @@ void cloud_rotate_y(struct cloud* cloud, real d)
 }
 
 /**
- * @brief Rotaciona nuvem em torno do eixo z
- * @param cloud A nuvem a ser rotacionada
- * @param d O ângulo de rotação em graus
+ * \brief Rotaciona nuvem em torno do eixo z
+ * \param cloud A nuvem a ser rotacionada
+ * \param d O ângulo de rotação em graus
  */
 void cloud_rotate_z(struct cloud* cloud, real d)
 {
 	util_seg("%s: funcionalidade incorreta", __FUNCTION__);
-	
-	struct vector3* oc = cloud_get_center(cloud);
-	cloud_translate_real(cloud, 0, 0, 0);
-	
 	for (uint i = 0; i < cloud->num_pts; i++)
         vector3_rotate_z(&cloud->points[i], d);
-    
-    cloud_translate_vector(cloud, oc);
 }
 
 /**
@@ -703,6 +697,26 @@ struct vector3* cloud_max_z(struct cloud* cloud)
     }
     
     return &cloud->points[index];
+}
+
+/**
+ * \brief Cálcula a distância entre o centro e o ponto mais distante dele
+ * \param cloud A nuvem alvo
+ * \return A maior distância possível dentro da nuvem
+ */
+real cloud_max_distance(struct cloud* cloud)
+{
+	struct vector3* center = cloud_get_center(cloud);
+	real d = vector3_distance(center, &cloud->points[0]);
+	real temp = 0.0f;
+	
+	for (uint i = 1; i < cloud->num_pts; i++) {
+		temp = vector3_distance(center, &cloud->points[i]);
+		if (temp > d) d = temp;
+	}
+	
+	vector3_free(center);
+	return d;
 }
 
 /**

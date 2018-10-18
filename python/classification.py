@@ -36,8 +36,8 @@ classifiers = [
 	KNC(p=2, n_neighbors=1),
 	NC(metric="manhattan"),
 	NC(metric="euclidean"),
-	SVC(kernel="rbf"),
-	SVC(kernel="poly")]
+	SVC(kernel="rbf", gamma="auto"),
+	SVC(kernel="poly", gamma="auto")]
 
 names = [
 	"KNN_manhattam",
@@ -272,26 +272,30 @@ def rank1_duo(m1, m2):
 
 
 if __name__ == "__main__":
-	rank1_neutral("legendre", "../results/legendre/neutral-legendre-yj.dat")
-	
-	"""
-	scenarios = ["bosphorus-outlier-densit225-crop80-icp"]
-	moments = ["legendre"]
+	scenarios = ["bosphorus",
+	             "bosphorus-outlier",
+	             "bosphorus-outlier-densit200",
+	             "bosphorus-outlier-densit200-crop60",
+	             "bosphorus-outlier-densit200-crop70",
+	             "bosphorus-outlier-densit200-crop80",
+	             "bosphorus-outlier-densit200-crop60-icp",
+	             "bosphorus-outlier-densit200-crop70-icp",
+	             "bosphorus-outlier-densit200-crop80-icp",
+	             "bosphorus-outlier-densit225",
+	             "bosphorus-outlier-densit225-crop60",
+	             "bosphorus-outlier-densit225-crop70",
+	             "bosphorus-outlier-densit225-crop80",
+	             "bosphorus-outlier-densit225-crop60-icp",
+	             "bosphorus-outlier-densit225-crop70-icp",
+	             "bosphorus-outlier-densit225-crop80-icp"]
+	moments = ["zernike"]
 	datasets = ["../results/" + x + "/" for x in scenarios]
-	#cols = ["dataset", "legendre"]
 	
-	#df = pd.DataFrame(columns=cols)
-	for i, data in enumerate(datasets):
+	for data in datasets:
 		print(data)
-		#newdf = pd.DataFrame(columns=cols)
-		#newdf.at[i, "dataset"] = data.replace("../results/", "")
 		for moment in moments:
-			ans = rank1_neutral(moment, data + "neutral-{}.dat".format(moment))
-			best = max(ans.items(), key=operator.itemgetter(1))
-			#newdf.at[i, moment] = round(best[1]*100, 2)
-		#df = df.append(newdf)
-	#df.to_csv("../results/doc/chebyshev.csv", index=False)
-	"""
+			rank1_neutral(moment, data + "neutral-{}.dat".format(moment))
+	
 	
 	
 	

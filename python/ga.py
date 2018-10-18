@@ -78,14 +78,3 @@ class Population():
 		self.y_test = np.ravel(self.y_test)
 		
 
-if __name__ ==  "__main__":
-	legendre = {"name" : "legendre",
-	            "path" : "../results/05_bosphorus-outlier-densit225-crop80-icp/neutral-legendre.dat"}
-	chebyshev = {"name" : "chebyshev",
-	              "path" : "../results/05_bosphorus-outlier-densit225-crop80-icp/neutral-chebyshev.dat"}
-	datasets = [legendre, chebyshev]
-	
-	population = Population(datasets)
-	
-	
-	
