@@ -16,13 +16,27 @@ df.columns = cs
 
 # removendo correlatos
 #del df["f26"] # esse eh bom! 84.97!
+
 corr_matrix = df.drop(["sample", "subject"], axis=1).corr().abs()
 up = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(np.bool))
 to_drop = [column for column in up.columns if any(up[column] > 0.9)]
+print(list(to_drop))
+#ft = df.drop(df.columns[to_drop], axis=1)
 
-exit()
 
+del df["f5"]
+del df["f6"]
+del df["f7"]
+del df["f8"]
+del df["f10"]
+del df["f11"]
+del df["f12"]
+del df["f14"]
+del df["f15"]
+del df["f18"]
+del df["f19"]
 
+"""
 predictors = list(df.drop(["sample", "subject"], axis=1))
 trans = pd.DataFrame(columns=list(df))
 for p in predictors:
@@ -35,4 +49,7 @@ for p in predictors:
 trans.loc[:, "sample"] = df["sample"]
 trans.loc[:, "subject"] = df["subject"]
 trans.to_csv(sys.argv[2], index=False, header=None)
+"""
+
+df.to_csv(sys.argv[2], index=False, header=None)
 
