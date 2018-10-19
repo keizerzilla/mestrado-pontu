@@ -1,5 +1,5 @@
 # targets de compilacao
-all: mcalc cloudz
+all: mcalc cloudz mv
 
 # programa extrator de momentos invariantes
 mcalc: mcalc.c
