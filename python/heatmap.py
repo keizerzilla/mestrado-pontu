@@ -32,10 +32,12 @@ df = df.drop(["sample", "subject"], axis=1)
 
 # matriz de correlacao e preditores de maior correlacao
 corr = df.corr().abs()
-annot = corr.round(decimals=1)
+annot = corr.round(decimals=2)
 upper = corr.where(np.triu(np.ones(corr.shape), k=1).astype(np.bool))
-to_drop = [column for column in upper.columns if any(upper[column] > 0.9)]
+to_drop = [column for column in upper.columns if any(upper[column] >= 0.9)]
+super_corr = [column for column in upper.columns if any(upper[column] >= 0.98)]
 print("drops sugeridos: " + str(to_drop))
+print("super correlacoes: " + str(super_corr))
 
 # plot
 seaborn.heatmap(corr, vmin=0, vmax=1.0, cmap="Purples", annot=annot)
