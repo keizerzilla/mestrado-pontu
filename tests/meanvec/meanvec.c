@@ -16,15 +16,14 @@ int main(int argc, char** argv)
 		exit(1);
 	}
 	
-	// transforma nuvem de leve
-	cloud_translate_real(cloud, 4, 0.5, 4);
-	printf("transladou!\n");
-	
 	// calcula vetores direcao e os salva em subnuvem
 	struct vector3* centroid = cloud_get_center(cloud);
 	struct cloud* sub = cloud_new(0);
 	for (uint i = 0; i < cloud->num_pts; i++)
 		cloud_add_point_cpy(sub, vector3_sub(&cloud->points[i], centroid));
+	
+	vector3_debug(centroid, "centroid nuvem original", stdout);
+	vector3_debug(cloud_get_center(sub), "centroid subnuvem", stdout);
 	
 	// calcula centroid da subnuvem = vetor direcao medio
 	struct vector3* mvec = cloud_get_center(sub);
