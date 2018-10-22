@@ -1,8 +1,3 @@
-import os
-import sys
-import shutil
-import subprocess
-
 """
 dataset.py
 Artur Rodrigues Rocha Neto
@@ -10,6 +5,11 @@ Artur Rodrigues Rocha Neto
 
 Funções de conversão/normalização dos arquivos das bases de dados.
 """
+
+import os
+import sys
+import shutil
+import subprocess
 
 """
 Normaliza as extenções dos arquivos de nuvem (FUNÇÃO HISTÓRICA).

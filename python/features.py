@@ -1,9 +1,3 @@
-import os
-import sys
-import time
-import parse
-import subprocess
-
 """
 feats.py
 Artur Rodrigues Rocha Neto
@@ -13,27 +7,35 @@ Funções para extração de momentos. Até o momento, o padrão de arquivo Bosp
 é um único suportado.
 """
 
+import os
+import sys
+import time
+import parse
+import subprocess
+
 """
 Executa extração de momentos em uma nuvem e parsing das informações de amostra e 
-classe (padrão Bosphorus).
+classe (padrão da base Bosphorus).
 
 moment -- O momento a ser usado
 cloud -- A nuvem alva
+slice_t -- O tipo de fatiamento
 
 return -- um string com os momentos seguidos de amostra e classe (CSV)
 """
-def moment_extraction_cloud(moment, cloud):
+def moment_extraction_cloud(moment, cloud, slice_t):
+	mcalc_exec = "../bin/mcalc"
 	parse_fmt = "bs{:d}_{}_{}_{:w}.xyz"
 	path, filename = os.path.split(cloud)
 	
 	cl = str(parse.parse(parse_fmt, filename)[0])
 	ix = str(parse.parse(parse_fmt, filename)[3])
 	
-	cmd = ["../bin/mcalc", "-m", moment, "-c", cloud, "-o", "stdout"]
-	ret = subprocess.run(cmd, check=True, stdout=subprocess.PIPE).stdout
-	ret = ret.decode("utf-8")[:-2].replace(" ", ",") + ",{},{}\n".format(ix, cl)
+	cmd = [mcalc_exec, "-m", moment, "-c", cloud, "-o", "stdout", "-s", slice_t]
+	ans = subprocess.run(cmd, check=True, stdout=subprocess.PIPE).stdout
+	ans = ans.decode("utf-8")[:-2].replace(" ", ",") + ",{},{}\n".format(ix, cl)
 	
-	return ret
+	return ans
 
 """
 Executa extração de momentos em um conjunto de nuvens, além do parsingo de 
@@ -41,30 +43,17 @@ informações de amostra e classe (padrão Bosphorus).
 
 moment -- O momento a ser usado
 dataset -- A pasta com as nuvens
+slice_t -- O tipo de fatiamento
 output -- O arquivo de saída aonde os momentos serão salvos
 """
-def moment_extraction_batch(moment, dataset, output):
+def moment_extraction_batch(moment, dataset, slice_t, output):
 	with open(output, "w") as dump:
 		for cloud in os.listdir(dataset):
 			if cloud.endswith(".xyz"):
-				dump.write(moment_extraction_cloud(moment, dataset+"/"+cloud))
+				full_path = dataset + "/" + cloud
+				ans = moment_extraction_cloud(moment, full_path, slice_t)
+				dump.write(ans)
 				print("[{}] >> {}: OK".format(cloud, moment))
-
-"""
-Retira grafo de subamostragem bem louco.
-
-dataset -- O conjunto de dados alvo
-output -- Aonde as subnuvens ficarão salvas
-"""
-def extract_graph(dataset, output):
-	for cloud in os.listdir(dataset):
-		if cloud.endswith(".xyz"):
-			infile = os.path.join(dataset, cloud)
-			if not os.path.isfile(infile): continue
-			outfile = os.path.join(output, cloud)
-			cmd = ["../bin/cloudgraph", infile, outfile]
-			subprocess.call(cmd)
-			print(outfile + " OK")
 
 if __name__ == "__main__":
 	scenarios = ["bosphorus",
@@ -94,9 +83,9 @@ if __name__ == "__main__":
 		try:
 			os.mkdir(folder)
 		except:
-			print("diretorio jah existe...")
+			print("OPS! Diretorio jah existe!")
 		
 		for moment in moments:
 			out = folder + "/{}-{}.dat".format(os.path.split(data)[1], moment)
-			moment_extraction_batch(moment, data, out)
+			moment_extraction_batch(moment, data, "w", out)
 	

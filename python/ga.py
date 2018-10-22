@@ -1,13 +1,17 @@
-"""-----------------------------------------------------------------------------
-1. inicializa populacao
-2. calcula fitness
-3. realiza selecao dos mais aptos
-4. computa crossover
-5. mutação
-6. volta para 2.
+"""
+ga.py
+Artur Rodrigues Rocha Neto
+2018
 
->> [[INCOMPLETO]] <<
------------------------------------------------------------------------------"""
+Script gerador de vetores de característica otimizados baseado em algorítmo
+genético. Funcionalidade ainda incompleta e não testada/validada. Passos:
+	1. inicializa populacao
+	2. calcula fitness
+	3. realiza selecao dos mais aptos
+	4. computa crossover
+	5. mutação
+	6. volta para 2.
+"""
 
 import random
 import numpy as np

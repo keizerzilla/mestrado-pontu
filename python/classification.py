@@ -1,14 +1,3 @@
-import time
-import operator
-import numpy as np
-import pandas as pd
-from sklearn.svm import SVC
-from sklearn.model_selection import LeaveOneOut
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import GridSearchCV
-from sklearn.neighbors import KNeighborsClassifier as KNC
-from sklearn.neighbors import NearestCentroid as NC
-
 """
 classification.py
 Artur Rodrigues Rocha Neto
@@ -30,6 +19,17 @@ Os arquivos de dados com as features/atributos deve estar no formato:
 Fonte1: http://scikit-learn.org/stable/modules/model_evaluation.html
 Fonte2: http://www.zvetcobiometrics.com/Support/definitions.php
 """
+
+import time
+import operator
+import numpy as np
+import pandas as pd
+from sklearn.svm import SVC
+from sklearn.model_selection import LeaveOneOut
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import GridSearchCV
+from sklearn.neighbors import KNeighborsClassifier as KNC
+from sklearn.neighbors import NearestCentroid as NC
 
 classifiers = [
 	KNC(p=1, n_neighbors=1),

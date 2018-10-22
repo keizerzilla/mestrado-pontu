@@ -22,19 +22,25 @@
 #define CHEBYSHEV "chebyshev"
 
 /**
- * @brief Exibe mensagem ao usuário informando como usar o extrator de momentos
+ * \brief Exibe mensagem ao usuário informando como usar o extrator de momentos
  */
 void extraction_help()
 {
-    util_error("faltando argumentos!");
-    printf("argumentos obrigatorios: [ -m | -c | -o ]\n");
+	printf("mcalc - calculador de momentos\n");
+	printf("autor - Artur Rodrigues Rocha Neto\n");
+    printf("faltando argumentos! obrigatorios: [ -m | -c | -o | -s ]\n");
     printf("  -m: momento usado para extracao de atributos\n");
     printf("      > hututu, hu1980, zernike, legendre ou chebyshev\n");
     printf("  -c: nuvem de entrada no formato XYZ\n");
+    printf("      > ../data/bunny.xyz, face666.xyz, ~/bs/bs001.xyz, etc.\n");
     printf("  -o: arquivo aonde os momentos serao salvos\n");
     printf("      > path para arquivo texto ou stdout para saida padrao\n");
-    printf("ex1: mcalc -m hu_1980 -i ../data/cloud1.xyz -o hu1.txt\n");
-    printf("ex2: mcalc -m legendre -i ../dataset/bunny.xyz -o stdout\n");
+    printf("  -s: tipo de fatiamento da nuvem ou combinacoes\n");
+    printf("      > w: inteira, f: frontal, s: sagital, t: transverso\n");
+    printf("ex1: mcalc -m hu_1980 -i ../data/cloud1.xyz -o hu1.txt -s w\n");
+    printf("ex2: mcalc -m legendre -i ../dataset/bunny.xyz -o stdout -s s\n");
+    printf("ex3: mcalc -m chebyshev -i armadillo.xyz -o cheby.dat -s fst\n");
+    printf("\n");
 }
 
 /**
@@ -44,58 +50,62 @@ void extraction_help()
  */
 void extraction_interface(int argc, char** argv)
 {
-    char* optm = NULL;
-    char* opti = NULL;
-    char* opto = NULL;
-
+    char* moment = NULL;
+    char* cloud = NULL;
+    char* output = NULL;
+    char* slice = NULL;
+	
     int opt;
-    while ((opt = getopt(argc, argv, "m:c:o:")) != -1) {
+    while ((opt = getopt(argc, argv, "m:c:o:s:")) != -1) {
         switch (opt) {
             case 'm':
-                optm = optarg;
+                moment = optarg;
                 break;
             case 'c':
-                opti = optarg;
+                cloud = optarg;
                 break;
             case 'o':
-                opto = optarg;
+                output = optarg;
                 break;
+            case 's':
+            	slice = optarg;
+            	break;
             default:
                 abort();
         }
     }
-
-    if (optm == NULL || opti == NULL || opto == NULL) {
+	
+    if (moment == NULL || cloud == NULL || output == NULL || slice == NULL) {
         extraction_help();
         exit(1);
     }
-
+	
     struct matrix* (*mfunc)(struct cloud*) = &hu_cloud_moments_artur_tcc;
-    if (!strcmp(optm, HU_TUTU))
+    if (!strcmp(moment, HU_TUTU))
         mfunc = &hu_cloud_moments_artur_tcc;
-    else if(!strcmp(optm, HU_1980))
+    else if(!strcmp(moment, HU_1980))
         mfunc = &hu_cloud_moments_sadjadi_hall;
-    else if (!strcmp(optm, LEGENDRE))
+    else if (!strcmp(moment, LEGENDRE))
         mfunc = &legendre_cloud_moments;
-    else if (!strcmp(optm, CHEBYSHEV))
+    else if (!strcmp(moment, CHEBYSHEV))
         mfunc = &chebyshev_cloud_moments;
-    else if (!strcmp(optm, ZERNIKE))
+    else if (!strcmp(moment, ZERNIKE))
         mfunc = &zernike_cloud_moments;
-
-    struct cloud* cloud = cloud_load_xyz(opti);
-    if (cloud == NULL) {
+	
+    struct cloud* input = cloud_load_xyz(cloud);
+    if (input == NULL) {
         util_seg("abortando");
         exit(1);
     }
-
-    struct matrix* results = (*mfunc)(cloud);
-
-    if (!strcmp(opto, "stdout"))
+	
+    struct matrix* results = (*mfunc)(input);
+	
+    if (!strcmp(output, "stdout"))
         matrix_debug(stdout, results);
     else
-        matrix_save_to_file(results, opto);
-
+        matrix_save_to_file(results, output);
+	
     matrix_free(results);
-    cloud_free(cloud);
+    cloud_free(input);
 }
 

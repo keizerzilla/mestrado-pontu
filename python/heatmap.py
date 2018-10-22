@@ -1,10 +1,3 @@
-import os
-import sys
-import seaborn
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-
 """
 heatmap.py
 Artur Rodrigues Rocha Neto
@@ -13,6 +6,13 @@ Artur Rodrigues Rocha Neto
 Script simples que mostra matriz de correlação dos momentos invariantes em
 formato "mapa de calor" (heatmap).
 """
+
+import os
+import sys
+import seaborn
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
 
 if len(sys.argv) != 2:
 	print("Número incorreto de parâmetros! Uso: heatmap.py <arquivo_feat.dat>")
