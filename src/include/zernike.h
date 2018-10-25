@@ -11,7 +11,8 @@
 #ifndef ZERNIKE_H
 #define ZERNIKE_H
 
-#define ZERNIKE_MOMENTS 16
+#define ZERNIKE_PARAM 12
+#define ZERNIKE_MOMENTS 49
 
 #include "cloud.h"
 #include "matrix.h"
@@ -67,9 +68,9 @@ real zernike_radpoly(int n, int m, real distance)
 }
 
 /**
- * \brief zernike_azimuth Calcula o ângulo azimutal de um vetor (ponto)
+ * \brief zernike_azimuth Calcula o ângulo azimutal
  * \param point O ponto alvo
- * \return O ângulo do vetor no plano(x,y)
+ * \return O ângulo do vetor
  */
 real zernike_azimuth(struct vector3* point)
 {
@@ -98,7 +99,7 @@ real zernike_moment(int n, int m, real r, struct cloud* cloud)
         dist = vector3_distance(center, &cloud->points[i]) / r;
         poly = zernike_radpoly(n, m, dist);
         angle = zernike_azimuth(&cloud->points[i]);
-        ef = exp(angle * m);
+        ef = cos(m*angle);
         moment += poly * ef;
     }
 	
@@ -123,15 +124,15 @@ struct matrix* zernike_cloud_moments(struct cloud* cloud)
     int row = 0;
     int col = 0;
 	
-    for (n = 0; n <= 6; n++) {
-        for (m = 0; m <= 6; m++) {
+    for (n = 0; n <= ZERNIKE_PARAM; n++) {
+        for (m = 0; m <= ZERNIKE_PARAM; m++) {
             if (zernike_conditions(n, m)) {
                 matrix_set(results, row, col, zernike_moment(n, m, r, cloud));
                 col++;
             }
         }
     }
-
+    //printf("%d\n", col);
     return results;
 }
 

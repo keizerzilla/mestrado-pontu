@@ -4,7 +4,7 @@ Artur Rodrigues Rocha Neto
 2018
 
 Funções para extração de momentos. Até o momento, o padrão de arquivo Bosphorus
-é um único suportado.
+é um único suportado. Mudanças futuras: FRGC e EUROCOM
 """
 
 import os
@@ -72,7 +72,6 @@ if __name__ == "__main__":
 	             "bosphorus-outlier-densit225-crop60-icp",
 	             "bosphorus-outlier-densit225-crop70-icp",
 	             "bosphorus-outlier-densit225-crop80-icp"]
-	
 	moments = ["zernike"]
 	datasets = ["../datasets/" + x + "/neutral" for x in scenarios]
 	
