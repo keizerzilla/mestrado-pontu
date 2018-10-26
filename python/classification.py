@@ -84,6 +84,8 @@ X_train -- amostras de treino
 y_train -- classes das amostras de treino
 X_test -- amostras de teste
 y_test -- classes das amostras de teste
+
+return -- Dicionário com taxa de reconhecimento e predições das classificações
 """
 def run_classification(X_train, y_train, X_test, y_test):
 	# normalizacao
@@ -128,12 +130,14 @@ def run_classification(X_train, y_train, X_test, y_test):
 	return ans
 
 """
-Executa classificação RANK-1 usando os classificadores em pesquisa.
-Treino: amostra 0 de cada pose neutra.
-Teste: restante das amostras neutras (amostra diferente de 0).
+Executa classificação RANK-1 usando os classificadores em pesquisa. Treino:
+amostra 0 de cada pose neutra. Teste: restante das amostras neutras
+(amostra diferente de 0).
 
 name -- O nome do teste em execução
 features -- O caminho para o dados extraídos das amostras neutras
+
+return -- Dicionário com taxa de reconhecimento e predições das classificações
 """
 def rank1_neutral(name, features):
 	print(name)
@@ -155,13 +159,14 @@ def rank1_neutral(name, features):
 	return run_classification(X_train, y_train, X_test, y_test)
 
 """
-Executa classificação RANK-1 usando os classificadores em pesquisa.
-Treino: amostra 0 de cada pose neutra.
-Teste: todas as amostras não-neutras.
+Executa classificação RANK-1 usando os classificadores em pesquisa. Treino:
+amostra 0 de cada pose neutra. Teste: todas as amostras não-neutras.
 
 name -- O nome do teste em execução
 feat_neutral -- O caminho para o dados extraídos das amostras neutras
 feat_nonneutral -- O caminho para os dados extraídos das amostras não-neutras
+
+return -- Dicionário com taxa de reconhecimento e predições das classificações
 """
 def rank1_nonneutral(name, feat_neutral, feat_nonneutral):
 	print(name)
@@ -188,13 +193,14 @@ def rank1_nonneutral(name, feat_neutral, feat_nonneutral):
 	return run_classification(X_train, y_train, X_test, y_test)
 
 """
-Executa classificação ROC-1 usando os classificadores em pesquisa.
-Treino: todas as amostras neutras.
-Teste: todas as amostras não-neutras.
+Executa classificação ROC-1 usando os classificadores em pesquisa. Treino: todas
+as amostras neutras. Teste: todas as amostras não-neutras.
 
 name -- O nome do teste em execução
 feat_neutral -- O caminho para o dados extraídos das amostras neutras
 feat_nonneutral -- O caminho para os dados extraídos das amostras não-neutras
+
+return -- Dicionário com taxa de reconhecimento e predições das classificações
 """
 def roc1(name, feat_neutral, feat_nonneutral):
 	print(name)
@@ -222,11 +228,12 @@ def roc1(name, feat_neutral, feat_nonneutral):
 
 """
 Executa classificação RANK-1 usando os classificadores em pesquisa. O conjunto
-de treino e teste é a concatenação de n momentos.
-Treino: amostra 0 de cada pose neutra.
-Teste: restante das amostras neutras (amostra diferente de 0).
+de treino e teste é a concatenação de n momentos. Treino: amostra 0 de cada pose
+neutra. Teste: restante das amostras neutras (amostra diferente de 0).
 
 moments -- Lista de momentos
+
+return -- Dicionário com taxa de reconhecimento e predições das classificações
 """
 def rank1_concat(moments):
 	train_list = []
@@ -261,7 +268,6 @@ def rank1_concat(moments):
 	# executa classificadores
 	return run_classification(X_train, y_train, X_test, y_test)
 
-
 """
 Monta matriz de confusão para um resultado de classificação, plota e calcula
 algumas métricas. Incompleta!!!
@@ -284,26 +290,28 @@ def confusion(y_true, y_pred, classes=[]):
 	plt.show()
 
 if __name__ == "__main__":
-	scenarios = ["bosphorus",
-	             "bosphorus-outlier",
-	             "bosphorus-outlier-densit200",
-	             "bosphorus-outlier-densit200-crop60",
-	             "bosphorus-outlier-densit200-crop70",
-	             "bosphorus-outlier-densit200-crop80",
-	             "bosphorus-outlier-densit200-crop60-icp",
-	             "bosphorus-outlier-densit200-crop70-icp",
-	             "bosphorus-outlier-densit200-crop80-icp",
-	             "bosphorus-outlier-densit225",
-	             "bosphorus-outlier-densit225-crop60",
-	             "bosphorus-outlier-densit225-crop70",
-	             "bosphorus-outlier-densit225-crop80",
-	             "bosphorus-outlier-densit225-crop60-icp",
-	             "bosphorus-outlier-densit225-crop70-icp",
-	             "bosphorus-outlier-densit225-crop80-icp"]
+	scenarios = ["bosphorus-c40",
+	             "bosphorus-c45",
+	             "bosphorus-c50",
+	             "bosphorus-c55",
+	             "bosphorus-c60",
+	             "bosphorus-c65",
+	             "bosphorus-c70",
+	             "bosphorus-c75",
+	             "bosphorus-c80",
+	             "bosphorus-c85",
+	             "bosphorus-c90"]
 	moments = ["zernike", "legendre", "chebyshev", "hututu", "hu1980"]
-	datasets = ["../results/" + x + "/" for x in scenarios]
+	datasets = ["../results/" + x for x in scenarios]
 	
-	legendre = "../results/bosphorus-outlier-densit200-crop80-icp/neutral-legendre.dat"
-	zernike = "../results/bosphorus-outlier-densit200-crop80-icp/neutral-zernike.dat"
-	ans = rank1_concat([legendre, zernike])
+	for data in datasets:
+		print(data)
+		for moment in moments:
+			rank1_neutral(moment, data + "/neutral-{}.dat".format(moment))
+		print("--END--")
+		print()
+	
+	
+	
+	
 	

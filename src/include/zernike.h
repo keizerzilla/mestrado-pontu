@@ -99,7 +99,7 @@ real zernike_moment(int n, int m, real r, struct cloud* cloud)
         dist = vector3_distance(center, &cloud->points[i]) / r;
         poly = zernike_radpoly(n, m, dist);
         angle = zernike_azimuth(&cloud->points[i]);
-        ef = cos(m*angle);
+        ef = cos(m * angle);
         moment += poly * ef;
     }
 	
@@ -132,7 +132,7 @@ struct matrix* zernike_cloud_moments(struct cloud* cloud)
             }
         }
     }
-    //printf("%d\n", col);
+    
     return results;
 }
 

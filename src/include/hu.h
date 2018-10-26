@@ -126,7 +126,7 @@ struct matrix* hu_cloud_moments_hu1980(struct cloud* cloud)
  */
 struct matrix* hu_cloud_moments_hututu(struct cloud* cloud)
 {
-    struct matrix* results = matrix_new(1, HU_MOMENTS);
+	struct matrix* results = matrix_new(1, HU_MOMENTS);
 	struct hu hu_xy;
 	struct hu hu_xz;
 	struct hu hu_yz;

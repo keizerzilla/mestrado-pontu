@@ -194,9 +194,45 @@ def bosphorus_setup(folder):
 	                folder+"/other")
 	pcd2xyz(folder+"/neutral", folder+"/neutral")
 	pcd2xyz(folder+"/nonneutral", folder+"/nonneutral")
-	
-	
+
+"""
+Cria cortes radiais em uma base inteira.
+
+folder -- Pasta contendo as nuvens alvo
+output -- Pasta aonde as nuvens cortadas ficarão salvas
+cut -- Tamanho do corte em milímetros
+"""
+def batch_cut(folder, output, cut):
+	for cloud in os.listdir(folder):
+		inpf = os.path.join(folder, cloud)
+		
+		if not os.path.isfile(inpf) or not inpf.endswith(".xyz"):
+			continue
+		
+		cmd = ["../bin/radialcut", inpf, str(cut), output+"/"+cloud]
+		subprocess.call(cmd)
+		print("{} OK!".format(cloud))
+
 if __name__ == "__main__":
-	path = "../datasets/bosphorus_tcc/nonneutral"
-	xyz2pcd(path, path)
+	for i in range(40, 95, 5):
+		try:
+			os.mkdir("../datasets/bosphorus-c{}".format(i))
+			os.mkdir("../datasets/bosphorus-c{}/neutral".format(i))
+		except:
+			print("OPS! Diretorio jah existe!")
+		
+		output = "../datasets/bosphorus-c{}/neutral".format(i)
+		batch_cut("../datasets/bosphorus/neutral", output, i)
+		
+	"""
+	xyz2pcd("../datasets/bosphorus/neutral", "../datasets/bosphorus/neutral")
+	xyz2pcd("../datasets/bosphorus/nonneutral", "../datasets/bosphorus/nonneutral")
+	"""
+	
+	
+	
+	
+	
+	
+	
 	

@@ -1,5 +1,5 @@
 # targets de compilacao
-all: mcalc cloudz
+all: mcalc cloudz radialcut
 
 # programa extrator de momentos invariantes
 mcalc: mcalc.c
@@ -8,3 +8,7 @@ mcalc: mcalc.c
 # utilitario manipulador de nuvens via linha de comando
 cloudz: cloudz.c
 	gcc cloudz.c -lm -Wall -o ../bin/cloudz
+
+# utilitario que corta a nuvem de formas radiais
+radialcut: radialcut.c
+	gcc radialcut.c -lm -Wall -o ../bin/radialcut

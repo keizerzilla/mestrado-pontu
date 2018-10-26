@@ -294,7 +294,7 @@ void vector3_rotate_x(struct vector3* v, real d)
 	real rad = d * CALC_DEG2RAD;
     real rsin = sin(rad);
     real rcos = cos(rad);
-
+	
     v->y = (v->y * rcos) - (v->z * rsin);
     v->z = (v->y * rsin) + (v->z * rcos);
 }
