@@ -3,8 +3,8 @@
  * \author Artur Rodrigues Rocha Neto
  * \date 2017
  * \brief Arquivo contendo uma implementação simples de matrizes bidimensionais
- * que ajudam no armazenamento de diversos resultados. Alguns funcionalidades
- * foram criadas em função das necessidades do trabalho.
+ * que ajudam no armazenamento de diversos resultados. Algumas funcionalidades
+ * foram criadas em função das necessidades específicas do trabalho.
  */
 
 #ifndef MATRIX_H
@@ -17,7 +17,7 @@
 #include "util.h"
 
 /**
- * \brief Estrutura matrix bidimensional.
+ * \brief Estrutura matriz bidimensional.
  */
 struct matrix {
     uint rows;
@@ -35,16 +35,19 @@ struct matrix* matrix_new(uint rows, uint cols)
 {
     struct matrix* mat = malloc(sizeof(struct matrix));
     if (mat == NULL)
-        return NULL;
+		return NULL;
 
     mat->rows = rows;
     mat->cols = cols;
     mat->data = malloc(rows * cols * sizeof(real));
-
-    for (uint i = 0; i < rows; i++)
+    
+    if (mat->data == NULL)
+		return NULL;
+	
+	for (uint i = 0; i < rows; i++)
         for (uint j = 0; j < cols; j++)
             mat->data[(i * cols) + j] = 0.0f;
-
+	
     return mat;
 }
 
@@ -84,18 +87,47 @@ int matrix_add_row(struct matrix* mat)
 }
 
 /**
- * \brief Seta o valor em uma dada célula de uma matriz
+ * \brief Adiciona uma nova coluna a uma matriz
+ * \param mat A matriz alvo
+ * \return A nova quantidade de colunas da matriz se sucesso, 0 caso-contrário
+ */
+int matrix_add_col(struct matrix* mat)
+{
+	real* new_mat = malloc(mat->rows * (mat->cols + 1) * sizeof(real));
+	if (new_mat == NULL)
+		return 0;
+	
+	for (uint i = 0; i < mat->rows; i++)
+		for (uint j = 0; j < mat->cols + 1; j++)
+			new_mat[(i * (mat->cols + 1)) + j] = 0.0f;
+	
+	for (uint i = 0; i < mat->rows; i++)
+		for (uint j = 0; j < mat->cols; j++)
+			new_mat[(i * (mat->cols + 1)) + j] = mat->data[(i * mat->cols) + j];
+	
+	free(mat->data);
+	mat->data = new_mat;
+	mat->cols++;
+	
+	return mat->cols;
+}
+
+/**
+ * \brief Adiciona um valor em uma posição de uma matriz
  * \param mat A matriz alvo
  * \param i O índice da linha
  * \param j O índice da coluna
  * \param value O valor a ser salvo
+ * \return O endereço do valor adicionado
  */
-void matrix_set(struct matrix* mat, uint i, uint j, real value)
+real* matrix_set(struct matrix* mat, uint i, uint j, real value)
 {
-    if (i >= mat->rows || j >= mat->cols)
-        util_error("%s: index fora de posicao na matriz\n", __FUNCTION__);
-    else
+    if (i >= mat->rows || j >= mat->cols) {
+		return NULL;
+    } else {
         mat->data[(i * mat->cols) + j] = value;
+        return &mat->data[(i * mat->cols) + j];
+	}
 }
 
 /**
@@ -107,12 +139,10 @@ void matrix_set(struct matrix* mat, uint i, uint j, real value)
  */
 real matrix_get(struct matrix* mat, uint i, uint j)
 {
-    if (i >= mat->rows || j >= mat->cols) {
-        util_error("%s: index fora de posicao na matriz\n", __FUNCTION__);
-        return 0;
-    } else {
+    if (i >= mat->rows || j >= mat->cols)
+        return 0.0f;
+    else
         return mat->data[(i * mat->cols) + j];
-    }
 }
 
 /**
@@ -129,11 +159,10 @@ int matrix_save_to_file(struct matrix* mat, const char* filename)
         return 0;
     }
 
-    for (uint rows = 0; rows < mat->rows; rows++) {
-        for (uint cols = 0; cols < mat->cols; cols++) {
-            fprintf(file, "%le", matrix_get(mat, rows, cols));
-
-            if (cols + 1 < mat->cols)
+    for (uint row = 0; row < mat->rows; row++) {
+        for (uint col = 0; col < mat->cols; col++) {
+			fprintf(file, "%le", matrix_get(mat, row, col));
+            if (col + 1 < mat->cols)
                 fprintf(file, "%c", ',');
         }
 
@@ -147,17 +176,18 @@ int matrix_save_to_file(struct matrix* mat, const char* filename)
 
 /**
  * \brief Debuga uma matriz imprimindo todos os seus valores
- * \param output Arquivo aonde a matrix será exibida
  * \param mat A matriz a ser debugada
+ * \param output Arquivo aonde a matrix será exibida
  */
-void matrix_debug(FILE* output, struct matrix* mat)
+void matrix_debug(struct matrix* mat, FILE* output)
 {
-    for (uint i = 0; i < mat->rows; i++) {
+	for (uint i = 0; i < mat->rows; i++) {
         for (uint j = 0; j < mat->cols; j++)
             fprintf(output, "%le ", mat->data[(i * mat->cols) + j]);
-
+        
         fprintf(output, "\n");
     }
 }
 
 #endif // MATRIX_H
+

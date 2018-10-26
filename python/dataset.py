@@ -197,5 +197,6 @@ def bosphorus_setup(folder):
 	
 	
 if __name__ == "__main__":
-	bosphorus_setup("../datasets/bosphorus-outlier-densit225-crop80-icp-OLD81")
+	path = "../datasets/bosphorus_tcc/nonneutral"
+	xyz2pcd(path, path)
 	

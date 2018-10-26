@@ -2,7 +2,7 @@
  * \file calc.h
  * \author Artur Rodrigues Rocha Neto
  * \date 2017
- * \brief Funções matemátias utilitárias e máscaras de tipo de dado.
+ * \brief Funções matemátias utilitárias e máscaras de tipos de dado.
  */
 
 #ifndef CALC_H
@@ -85,3 +85,4 @@ real calc_randr(real max)
 }
 
 #endif // CALC_H
+

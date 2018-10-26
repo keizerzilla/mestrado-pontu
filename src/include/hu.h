@@ -43,6 +43,7 @@ struct hu {
 real hu_regular_moment(int p, int q, int r, struct cloud* cloud)
 {
     real moment = 0.0f;
+    
     for (uint i = 0; i < cloud->num_pts; i++)
         moment += pow(cloud->points[i].x, p)
                 * pow(cloud->points[i].y, q)
@@ -61,9 +62,9 @@ real hu_regular_moment(int p, int q, int r, struct cloud* cloud)
  */
 real hu_central_moment(int p, int q, int r, struct cloud* cloud)
 {
-    real moment = 0.0f;
     struct vector3* center = cloud_get_center(cloud);
-
+	real moment = 0.0f;
+	
     for (uint i = 0; i < cloud->num_pts; i++)
         moment += pow(cloud->points[i].x - center->x, p)
                 * pow(cloud->points[i].y - center->y, q)
@@ -94,7 +95,7 @@ real hu_normalized_moment(int p, int q, int r, struct cloud* cloud)
  * \param cloud A nuvem alvo
  * \return A matriz aonde os momentos serão salvos
  */
-struct matrix* hu_cloud_moments_sadjadi_hall(struct cloud* cloud)
+struct matrix* hu_cloud_moments_hu1980(struct cloud* cloud)
 {
     real hu200 = hu_central_moment(2, 0, 0, cloud);
     real hu020 = hu_central_moment(0, 2, 0, cloud);
@@ -123,10 +124,13 @@ struct matrix* hu_cloud_moments_sadjadi_hall(struct cloud* cloud)
  * \param cloud A nuvem alvo
  * \return A matriz aonde os momentos serão salvos
  */
-struct matrix* hu_cloud_moments_artur_tcc(struct cloud* cloud)
+struct matrix* hu_cloud_moments_hututu(struct cloud* cloud)
 {
     struct matrix* results = matrix_new(1, HU_MOMENTS);
-
+	struct hu hu_xy;
+	struct hu hu_xz;
+	struct hu hu_yz;
+	
     real a;
     real b;
     real c;
@@ -134,9 +138,7 @@ struct matrix* hu_cloud_moments_artur_tcc(struct cloud* cloud)
     real e;
     real f;
     real g;
-
-    struct hu hu_xy;
-
+    
     a = hu_normalized_moment(0, 2, 0, cloud);
     b = hu_normalized_moment(0, 3, 0, cloud);
     c = hu_normalized_moment(1, 1, 0, cloud);
@@ -169,9 +171,7 @@ struct matrix* hu_cloud_moments_artur_tcc(struct cloud* cloud)
     matrix_set(results, 0, 4, hu_xy.i5);
     matrix_set(results, 0, 5, hu_xy.i6);
     matrix_set(results, 0, 6, hu_xy.i7);
-
-    struct hu hu_xz;
-
+	
     a = hu_normalized_moment(0, 0, 2, cloud);
     b = hu_normalized_moment(0, 0, 3, cloud);
     c = hu_normalized_moment(1, 0, 1, cloud);
@@ -204,9 +204,7 @@ struct matrix* hu_cloud_moments_artur_tcc(struct cloud* cloud)
     matrix_set(results, 0, 11, hu_xz.i5);
     matrix_set(results, 0, 12, hu_xz.i6);
     matrix_set(results, 0, 13, hu_xz.i7);
-
-    struct hu hu_yz;
-
+	
     a = hu_normalized_moment(0, 0, 2, cloud);
     b = hu_normalized_moment(0, 0, 3, cloud);
     c = hu_normalized_moment(0, 1, 1, cloud);

@@ -80,11 +80,11 @@ void extraction_interface(int argc, char** argv)
         exit(1);
     }
 	
-    struct matrix* (*mfunc)(struct cloud*) = &hu_cloud_moments_artur_tcc;
+    struct matrix* (*mfunc)(struct cloud*) = &hu_cloud_moments_hututu;
     if (!strcmp(moment, HU_TUTU))
-        mfunc = &hu_cloud_moments_artur_tcc;
+        mfunc = &hu_cloud_moments_hututu;
     else if(!strcmp(moment, HU_1980))
-        mfunc = &hu_cloud_moments_sadjadi_hall;
+        mfunc = &hu_cloud_moments_hu1980;
     else if (!strcmp(moment, LEGENDRE))
         mfunc = &legendre_cloud_moments;
     else if (!strcmp(moment, CHEBYSHEV))
@@ -101,7 +101,7 @@ void extraction_interface(int argc, char** argv)
     struct matrix* results = (*mfunc)(input);
 	
     if (!strcmp(output, "stdout"))
-        matrix_debug(stdout, results);
+        matrix_debug(results, stdout);
     else
         matrix_save_to_file(results, output);
 	

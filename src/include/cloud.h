@@ -221,42 +221,6 @@ uint cloud_size(struct cloud* cloud)
 }
 
 /**
- * @brief Salva nuvem em arquivo usando formato PCD simples
- * @param cloud A nuvem a ser salva
- * @param filename O arquivo destino
- * @return 1 se tiver dado tudo certo, 0 caso contrário
- */
-int cloud_save_pcd(struct cloud* cloud, const char* filename)
-{
-    FILE* file = fopen(filename, "w");
-    if (file == NULL) {
-        util_error("%s: erro abrir arquivo %s", __FUNCTION__, filename);
-        return 0;
-    }
-
-    fprintf(file, "VERSION .7\n");
-    fprintf(file, "FIELDS x y z\n");
-    fprintf(file, "SIZE 8 8 8\n");
-    fprintf(file, "TYPE F F F\n");
-    fprintf(file, "COUNT 1 1 1\n");
-    fprintf(file, "WIDTH %d\n", cloud->num_pts);
-    fprintf(file, "HEIGHT 1\n");
-    fprintf(file, "VIEWPOINT 0 0 0 1 0 0 0\n");
-    fprintf(file, "POINTS %d\n", cloud->num_pts);
-    fprintf(file, "DATA ascii\n");
-
-    for (uint i = 0; i < cloud->num_pts; i++) {
-        fprintf(file, "%.6f %.6f %.6f\n", cloud->points[i].x,
-                                          cloud->points[i].y,
-                                          cloud->points[i].z);
-    }
-
-    fclose(file);
-
-    return 0;
-}
-
-/**
  * \brief Calcula o centro geométrico de uma nuvem de pontos
  * \param cloud A Nuvem alvo
  * \return Um ponto com as coordenadas do centro geométrico da nuvem
@@ -306,9 +270,9 @@ void cloud_scale(struct cloud* cloud, real f)
 }
 
 /**
- * @brief Efetua translação na nuvem a partir de um vetor alvo
- * @param cloud A nuvem a ser transformada
- * @param t O vetor transformação
+ * \brief Efetua translação na nuvem a partir de um vetor alvo
+ * \param cloud A nuvem a ser transformada
+ * \param t O vetor transformação
  */
 void cloud_translate_vector(struct cloud* cloud, struct vector3* dest)
 {
@@ -322,11 +286,11 @@ void cloud_translate_vector(struct cloud* cloud, struct vector3* dest)
 }
 
 /**
- * @brief Efetua translação na nuvem a partir das coordenadas alvo
- * @param cloud A nuvem a ser transformada
- * @param x Coordenada x
- * @param y Coordenada y
- * @param z Coordenada z
+ * \brief Efetua translação na nuvem a partir das coordenadas alvo
+ * \param cloud A nuvem a ser transformada
+ * \param x Coordenada x
+ * \param y Coordenada y
+ * \param z Coordenada z
  */
 void cloud_translate_real(struct cloud* cloud, real x, real y, real z)
 {
@@ -348,7 +312,7 @@ void cloud_translate_real(struct cloud* cloud, real x, real y, real z)
  */
 void cloud_rotate_x(struct cloud* cloud, real d)
 {
-	util_seg("%s: funcionalidade incorreta", __FUNCTION__);
+	util_seg("%s: funcionalidade incompleta", __FUNCTION__);
     for (uint i = 0; i < cloud->num_pts; i++)
         vector3_rotate_x(&cloud->points[i], d);
 }
@@ -360,7 +324,7 @@ void cloud_rotate_x(struct cloud* cloud, real d)
  */
 void cloud_rotate_y(struct cloud* cloud, real d)
 {
-	util_seg("%s: funcionalidade incorreta", __FUNCTION__);
+	util_seg("%s: funcionalidade incompleta", __FUNCTION__);
 	for (uint i = 0; i < cloud->num_pts; i++)
         vector3_rotate_y(&cloud->points[i], d);
 }
@@ -372,7 +336,7 @@ void cloud_rotate_y(struct cloud* cloud, real d)
  */
 void cloud_rotate_z(struct cloud* cloud, real d)
 {
-	util_seg("%s: funcionalidade incorreta", __FUNCTION__);
+	util_seg("%s: funcionalidade incompleta", __FUNCTION__);
 	for (uint i = 0; i < cloud->num_pts; i++)
         vector3_rotate_z(&cloud->points[i], d);
 }
@@ -400,10 +364,10 @@ void cloud_sort(struct cloud* cloud)
 }
 
 /**
- * @brief Concatena ("soma") duas nuvens
- * @param c1 A primeira nuvem
- * @param c2 A segunda nuvem
- * @return Uma nuvem com os pontos de c1 e c2
+ * \brief Concatena ("soma") duas nuvens
+ * \param c1 A primeira nuvem
+ * \param c2 A segunda nuvem
+ * \return Uma nuvem com os pontos de c1 e c2
  */
 struct cloud* cloud_concat(struct cloud* c1, struct cloud* c2)
 {
@@ -754,12 +718,10 @@ struct cloud* cloud_binary_mask(struct cloud* cloud)
 /**
  * \brief Debuga uma nuvem ponto a ponto na saída padrão
  * \param cloud A nuvem a ser debugada
- * \param message Uma mensagem opcional para ser exibida no início do debug
  * \param output O arquivo aonde exibir a mensagem
  */
-void cloud_debug(struct cloud* cloud, const char* message, FILE* output)
+void cloud_debug(struct cloud* cloud, FILE* output)
 {
-    fprintf(output, "cloud: %s\n", message);
     for (uint i = 0; i < cloud->num_pts; i++)
         fprintf(output, "%le %le %le\n", cloud->points[i].x,
                                          cloud->points[i].y,

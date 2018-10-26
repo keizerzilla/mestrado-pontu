@@ -1,2 +1,3 @@
-## diretorio de teste e cenarios diversos...
-códigos em estado super alfa!
+## Diretório de testes e cenários diversos
+Códigos em estado Super Alfa!
+
