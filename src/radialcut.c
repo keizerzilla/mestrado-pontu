@@ -7,6 +7,11 @@
 
 #include "include/cloud.h"
 
+/**
+ * \brief Função principal
+ * \param argc Número de parâmetros passados pela linha de comando
+ * \param argv Parâmetros passados por linha de comando
+ */
 int main(int argc, char** argv)
 {
 	if (argc != 4) {

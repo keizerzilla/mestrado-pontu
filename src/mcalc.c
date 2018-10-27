@@ -28,13 +28,15 @@ void extraction_help()
 {
 	printf("mcalc - calculador de momentos\n");
 	printf("autor - Artur Rodrigues Rocha Neto\n");
-    printf("faltando argumentos! obrigatorios: [ -m | -c | -o | -s ]\n");
+    printf("faltando argumentos! obrigatorios: [ -m | -i | -o | -c ]\n");
     printf("  -m: momento usado para extracao de atributos\n");
     printf("      > hututu, hu1980, zernike, legendre ou chebyshev\n");
     printf("  -i: nuvem de entrada no formato XYZ\n");
     printf("      > ../data/bunny.xyz, face666.xyz, ~/bs/bs001.xyz, etc.\n");
     printf("  -o: arquivo aonde os momentos serao salvos\n");
     printf("      > path para arquivo texto ou stdout para saida padrao\n");
+    printf("  -c: tipo de corte\n");
+    printf("      > w: nuvem inteira, s: sagital, t: transverso, r: radial\n");
     printf("ex1: mcalc -m hu_1980 -i ../data/cloud1.xyz -o hu1.txt\n");
     printf("ex2: mcalc -m legendre -i ../dataset/bunny.xyz -o stdout\n");
     printf("\n");
@@ -50,9 +52,10 @@ void extraction_interface(int argc, char** argv)
     char* moment = NULL;
     char* input = NULL;
     char* output = NULL;
+    char* cut = NULL;
 	
     int opt;
-    while ((opt = getopt(argc, argv, "m:i:o:")) != -1) {
+    while ((opt = getopt(argc, argv, "m:i:o:c:")) != -1) {
         switch (opt) {
             case 'm':
                 moment = optarg;
@@ -63,12 +66,15 @@ void extraction_interface(int argc, char** argv)
             case 'o':
                 output = optarg;
                 break;
+            case 'c':
+                cut = optarg;
+                break;
             default:
                 abort();
         }
     }
 	
-    if (moment == NULL || input == NULL || output == NULL) {
+    if (moment == NULL || input == NULL || output == NULL || cut == NULL) {
         extraction_help();
         exit(1);
     }
@@ -76,7 +82,7 @@ void extraction_interface(int argc, char** argv)
     struct matrix* (*mfunc)(struct cloud*) = &hu_cloud_moments_hututu;
     if (!strcmp(moment, HU_TUTU))
         mfunc = &hu_cloud_moments_hututu;
-    else if(!strcmp(moment, HU_1980))
+    else if (!strcmp(moment, HU_1980))
         mfunc = &hu_cloud_moments_hu1980;
     else if (!strcmp(moment, LEGENDRE))
         mfunc = &legendre_cloud_moments;
@@ -91,7 +97,18 @@ void extraction_interface(int argc, char** argv)
         exit(1);
     }
 	
+	if (!strcmp(cut, "w")) {
+		printf("w\n");
+	} else if (!strcmp(cut, "s")) {
+		printf("s\n");
+	} else if (!strcmp(cut, "t")) {
+		printf("t\n");
+	} else if (!strcmp(cut, "r")) {
+		printf("r\n");
+	}
+	
     struct matrix* results = (*mfunc)(cloud);
+    
     if (!strcmp(output, "stdout"))
         matrix_debug(results, stdout);
     else
@@ -101,10 +118,14 @@ void extraction_interface(int argc, char** argv)
     cloud_free(cloud);
 }
 
+/**
+ * \brief Função principal
+ * \param argc Número de parâmetros passados pela linha de comando
+ * \param argv Parâmetros passados por linha de comando
+ */
 int main(int argc, char** argv)
 {
     extraction_interface(argc, argv);
-    
     return 0;
 }
 

@@ -219,6 +219,11 @@ void cli(int argc, char** argv, struct cloud* cloud)
 		util_error("erro salvando nuven processada");
 }
 
+/**
+ * \brief Função principal
+ * \param argc Número de parâmetros passados pela linha de comando
+ * \param argv Parâmetros passados por linha de comando
+ */
 int main(int argc, char** argv)
 {
 	if (argc < 2) {

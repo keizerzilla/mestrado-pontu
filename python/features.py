@@ -15,7 +15,8 @@ import subprocess
 
 """
 Executa extração de momentos em uma nuvem e parsing das informações de amostra e 
-classe (padrão da base Bosphorus).
+classe (padrão da base Bosphorus). Por enquanto apenas nuvem inteira, depois
+mudar para receber tipo de corte como argumento.
 
 moment -- O momento a ser usado
 cloud -- A nuvem alva
@@ -30,7 +31,7 @@ def moment_extraction_cloud(moment, cloud):
 	cl = str(parse.parse(parse_fmt, filename)[0])
 	ix = str(parse.parse(parse_fmt, filename)[3])
 	
-	cmd = [mcalc_exec, "-m", moment, "-i", cloud, "-o", "stdout"]
+	cmd = [mcalc_exec, "-m", moment, "-i", cloud, "-o", "stdout", "-c", "w"]
 	ans = subprocess.run(cmd, check=True, stdout=subprocess.PIPE).stdout
 	ans = ans.decode("utf-8")[:-2].replace(" ", ",") + ",{},{}\n".format(ix, cl)
 	

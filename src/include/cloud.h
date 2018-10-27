@@ -56,6 +56,15 @@ struct cloud* cloud_new(uint num_pts)
 }
 
 /**
+ * \brief Cria nuvem vazia
+ * \return Uma nuvem com 0 pontos
+ */
+struct cloud* cloud_empty()
+{
+	return cloud_new(0);
+}
+
+/**
  * \brief Libera a memória alocada para uma nuvem
  * \param cloud A nuvem a ser liberada
  */
@@ -458,6 +467,32 @@ struct cloud* cloud_cut_plane(struct cloud* cloud, struct plane* plane)
 			cloud_add_point_cpy(sub, &cloud->points[i]);
 	
     return sub;
+}
+
+/**
+ * \brief Particiona a nuvem em duas a partir de um plano
+ * \param src A nuvem a ser dividida
+ * \param plane O plano de corte
+ * \param par1 A primeira partição (nuvem vazia)
+ * \param par2 A segunda partição (nuvem vazia)
+ * \return 1 se o particionamento ocorrer sem problemas, 0 caso-contrário
+ */
+int cloud_plane_partition(struct cloud* src,
+                          struct plane* plane,
+                          struct cloud* par1,
+                          struct cloud* par2)
+{
+	if (cloud_size(par1) || cloud_size(par2))
+		return 0;
+	
+	for (uint i = 0; i < src->num_pts; i++) {
+		if (plane_on_direction(plane, &src->points[i]))
+			cloud_add_point_cpy(par1, &src->points[i]);
+		else
+			cloud_add_point_cpy(par2, &src->points[i]);
+	}
+	
+	return 1;
 }
 
 /**

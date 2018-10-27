@@ -146,6 +146,64 @@ real matrix_get(struct matrix* mat, uint i, uint j)
 }
 
 /**
+ * \brief Concatena duas matrizes horizontalmente (lado-a-lado)
+ * \param m1 A primeira matriz
+ * \param m2 A segunda matriz
+ * \return A matriz resultante da concatenação horizontal de m1 com m2
+ */
+struct matrix* matrix_concat_hor(struct matrix* m1, struct matrix* m2)
+{
+	if (m1->rows != m2->rows)
+		return NULL;
+	
+	uint ncols = m1->cols + m2->cols;
+	
+	struct matrix* ans = matrix_new(m1->rows, ncols);
+	if (ans == NULL)
+		return NULL;
+	
+	for (uint i = 0; i < m1->rows; i++)
+		for (uint j = 0; j < m1->cols; j++)
+			//matrix_set(ans, i, j, m1->data[(i * (m1->cols + 1)) + j]);
+			matrix_set(ans, i, j, matrix_get(m1, i, j));
+	
+	for (uint i = 0; i < m2->rows; i++)
+		for (uint j = m1->cols; j < ncols; j++)
+			//matrix_set(ans, i, j, m2->data[(i * (m2->cols + 1)) + j - m1->cols]);
+			matrix_set(ans, i, j, matrix_get(m2, i, j - m1->cols));
+	
+	return ans;
+}
+
+/**
+ * \brief Concatena duas matrizes verticalmente (uma em cima da outra)
+ * \param m1 A primeira matriz
+ * \param m2 A segunda matriz
+ * \return A matriz resultante da concatenação vertical de m1 com m2
+ */
+struct matrix* matrix_concat_ver(struct matrix* m1, struct matrix* m2)
+{
+	if (m1->cols != m2->cols)
+		return NULL;
+	
+	uint nrows = m1->rows + m2->rows;
+	
+	struct matrix* ans = matrix_new(nrows, m1->cols);
+	if (ans == NULL)
+		return NULL;
+	
+	for (uint i = 0; i < m1->rows; i++)
+		for (uint j = 0; j < m1->cols; j++)
+			matrix_set(ans, i, j, m1->data[(i * (m1->cols + 1)) + j]);
+	
+	for (uint i = m1->rows; i < nrows; i++)
+		for (uint j = 0; j < m2->cols; j++)
+			matrix_set(ans, i, j, m2->data[((i - m1->rows) * (m2->cols + 1)) + j]);
+	
+	return ans;
+}
+
+/**
  * \brief Salva uma matriz em arquivo
  * \param mat A matriz a ser salva
  * \param filename O caminho para o arquivo destino
