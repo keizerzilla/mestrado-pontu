@@ -326,38 +326,23 @@ def confusion(y_true, y_pred):
 	plt.show()
 
 if __name__ == "__main__":
-	scenarios = ["bosphorus-c40",
-	             "bosphorus-c45",
-	             "bosphorus-c50",
+	scenarios = ["bosphorus-c50",
+	             "bosphorus-c50-ctt",
 	             "bosphorus-c55",
+	             "bosphorus-c55-ctt",
 	             "bosphorus-c60",
+	             "bosphorus-c60-ctt",
 	             "bosphorus-c65",
-	             "bosphorus-c70",
-	             "bosphorus-c75",
-	             "bosphorus-c80",
-	             "bosphorus-c85",
-	             "bosphorus-c90"]
-	moments = ["zernike", "legendre", "chebyshev", "hututu", "hu1980"]
+	             "bosphorus-c65-ctt"]
+	moments = ["zernike", "legendre", "hu1980"]
 	datasets = ["../results/" + x for x in scenarios]
 	
-	zernike = "../results/bosphorus-outlier-densit200-crop80-icp/neutral-zernike.dat"
-	legendre = "../results/bosphorus-outlier-densit200-crop80-icp/neutral-legendre.dat"
-	
-	ans = rank1_concat([zernike, legendre])
-	#ans = rank1_neutral_easy("zernike", zernike)
-	
-	sorted1 = ans["KNN_euclidean"]["y_true"]
-	sorted2 = ans["KNN_euclidean"]["y_pred"]
-	#confusion(ans["KNN_manhattam"]["y_true"], ans["KNN_manhattam"]["y_pred"])
-	
-	"""
 	for data in datasets:
 		print(data)
 		for moment in moments:
 			rank1_neutral(moment, data + "/neutral-{}.dat".format(moment))
 		print("--END--")
 		print()
-	"""
 	
 	
 	

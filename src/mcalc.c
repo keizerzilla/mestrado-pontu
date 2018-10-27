@@ -97,18 +97,61 @@ void extraction_interface(int argc, char** argv)
         exit(1);
     }
 	
+	struct matrix* results = NULL;
 	if (!strcmp(cut, "w")) {
-		printf("w\n");
+		results = (*mfunc)(cloud);
 	} else if (!strcmp(cut, "s")) {
-		printf("s\n");
+		
+		struct cloud* par1 = cloud_empty();
+		struct cloud* par2 = cloud_empty();
+		
+		struct vector3* norm = vector3_new(1, 0, 0);
+		struct vector3* pt = cloud_get_center(cloud);
+		struct plane* plane = plane_new(norm, pt);
+		
+		cloud_plane_partition(cloud, plane, par1, par2);
+		
+		struct matrix* r1 = (*mfunc)(par1);
+		struct matrix* r2 = (*mfunc)(par2);
+		results = matrix_concat_hor(r1, r2);
+		
+		matrix_free(r2);
+		matrix_free(r1);
+		plane_free(plane);
+		vector3_free(pt);
+		vector3_free(norm);
+		cloud_free(par2);
+		cloud_free(par1);
+		
 	} else if (!strcmp(cut, "t")) {
-		printf("t\n");
+	
+		struct cloud* par1 = cloud_empty();
+		struct cloud* par2 = cloud_empty();
+		
+		struct vector3* norm = vector3_new(0, 1, 0);
+		struct vector3* pt = cloud_get_center(cloud);
+		struct plane* plane = plane_new(norm, pt);
+		
+		cloud_plane_partition(cloud, plane, par1, par2);
+		
+		struct matrix* r1 = (*mfunc)(par1);
+		struct matrix* r2 = (*mfunc)(par2);
+		results = matrix_concat_hor(r1, r2);
+		
+		matrix_free(r2);
+		matrix_free(r1);
+		plane_free(plane);
+		vector3_free(pt);
+		vector3_free(norm);
+		cloud_free(par2);
+		cloud_free(par1);
+		
 	} else if (!strcmp(cut, "r")) {
 		printf("r\n");
+	} else {
+		results = (*mfunc)(cloud);
 	}
 	
-    struct matrix* results = (*mfunc)(cloud);
-    
     if (!strcmp(output, "stdout"))
         matrix_debug(results, stdout);
     else

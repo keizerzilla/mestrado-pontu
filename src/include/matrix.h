@@ -164,12 +164,10 @@ struct matrix* matrix_concat_hor(struct matrix* m1, struct matrix* m2)
 	
 	for (uint i = 0; i < m1->rows; i++)
 		for (uint j = 0; j < m1->cols; j++)
-			//matrix_set(ans, i, j, m1->data[(i * (m1->cols + 1)) + j]);
 			matrix_set(ans, i, j, matrix_get(m1, i, j));
 	
 	for (uint i = 0; i < m2->rows; i++)
 		for (uint j = m1->cols; j < ncols; j++)
-			//matrix_set(ans, i, j, m2->data[(i * (m2->cols + 1)) + j - m1->cols]);
 			matrix_set(ans, i, j, matrix_get(m2, i, j - m1->cols));
 	
 	return ans;
@@ -194,11 +192,11 @@ struct matrix* matrix_concat_ver(struct matrix* m1, struct matrix* m2)
 	
 	for (uint i = 0; i < m1->rows; i++)
 		for (uint j = 0; j < m1->cols; j++)
-			matrix_set(ans, i, j, m1->data[(i * (m1->cols + 1)) + j]);
+			matrix_set(ans, i, j, matrix_get(m1, i, j));
 	
 	for (uint i = m1->rows; i < nrows; i++)
 		for (uint j = 0; j < m2->cols; j++)
-			matrix_set(ans, i, j, m2->data[((i - m1->rows) * (m2->cols + 1)) + j]);
+			matrix_set(ans, i, j, matrix_get(m2, i - m1->rows, j);
 	
 	return ans;
 }

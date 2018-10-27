@@ -1,2 +1,4 @@
 bin/
 datasets/
+__pycache__/
+
