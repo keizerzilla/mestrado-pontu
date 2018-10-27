@@ -142,10 +142,43 @@ return -- Dicionário com taxa de reconhecimento e predições das classificaç�
 def rank1_neutral(name, features):
 	print(name)
 	
-	# neutras: teste e treino
 	df = pd.read_csv(features, header=None)
 	cs = ["f"+str(x) for x in range(len(df.columns)-2)] + ["sample", "subject"]
 	df.columns = cs
+	
+	trainset = df.loc[df["sample"] == 0].drop(["sample"], axis=1)
+	X_train = np.array(trainset.drop(["subject"], axis=1))
+	y_train = np.ravel(trainset[["subject"]])
+	
+	testset = df.loc[df["sample"] != 0].drop(["sample"], axis=1)
+	X_test = np.array(testset.drop(["subject"], axis=1))
+	y_test = np.ravel(testset[["subject"]])
+	
+	# execucao dos classificadores
+	return run_classification(X_train, y_train, X_test, y_test)
+
+"""
+Executa classificação RANK-1 usando os classificadores em pesquisa. Classes com
+apenas uma amostra não são usadas! Treino: amostra 0 de cada pose neutra. Teste:
+restante das amostras neutras (amostra diferente de 0).
+
+name -- O nome do teste em execução
+features -- O caminho para o dados extraídos das amostras neutras
+
+return -- Dicionário com taxa de reconhecimento e predições das classificações
+"""
+def rank1_neutral_easy(name, features):
+	print(name)
+	
+	df = pd.read_csv(features, header=None)
+	cs = ["f"+str(x) for x in range(len(df.columns)-2)] + ["sample", "subject"]
+	df.columns = cs
+	
+	# APENAS CLASSES COM MAIS DE UMA AMOSTRA
+	unique, counts = np.unique(df["subject"], return_counts=True)
+	ocurrences = dict(zip(unique, counts))
+	more = [key for key, val in ocurrences.items() if val > 1]
+	df = df[df["subject"].isin(more)]
 	
 	trainset = df.loc[df["sample"] == 0].drop(["sample"], axis=1)
 	X_train = np.array(trainset.drop(["subject"], axis=1))
@@ -236,34 +269,42 @@ moments -- Lista de momentos
 return -- Dicionário com taxa de reconhecimento e predições das classificações
 """
 def rank1_concat(moments):
-	train_list = []
-	test_list = []
-	m_y_train = None
-	m_y_test = None
+	x_train_list = []
+	x_test_list = []
+	y_train_list = []
+	y_test_list = []
 	for m in moments:
 		df = pd.read_csv(m, header=None)
 		cs = ["f"+str(x) for x in range(len(df.columns)-2)]
 		cs = cs + ["sample", "subject"]
 		df.columns = cs
 		
+		"""
+		# APENAS CLASSES COM MAIS DE UMA AMOSTRA
+		unique, counts = np.unique(df["subject"], return_counts=True)
+		ocurrences = dict(zip(unique, counts))
+		more = [key for key, val in ocurrences.items() if val > 1]
+		df = df[df["subject"].isin(more)]
+		"""
+		
 		trainset = df.loc[df["sample"] == 0].drop(["sample"], axis=1)
-		m_X_train = trainset.drop(["subject"], axis=1)
-		m_y_train = trainset[["subject"]]
+		temp_X_train = trainset.drop(["subject"], axis=1)
+		temp_y_train = trainset[["subject"]]
 		
 		testset = df.loc[df["sample"] != 0].drop(["sample"], axis=1)
-		m_X_test = testset.drop(["subject"], axis=1)
-		m_y_test = testset[["subject"]]
+		temp_X_test = testset.drop(["subject"], axis=1)
+		temp_y_test = testset[["subject"]]
 		
-		train_list.append(m_X_train)
-		test_list.append(m_X_test)
+		x_train_list.append(temp_X_train)
+		x_test_list.append(temp_X_test)
+		y_train_list.append(temp_y_train)
+		y_test_list.append(temp_y_test)
 	
-	X_train = pd.concat(train_list, axis=1)
-	X_test = pd.concat(test_list, axis=1)
+	X_train = np.array(pd.concat(x_train_list, axis=1))
+	X_test = np.array(pd.concat(x_test_list, axis=1))
 	
-	X_train = np.array(X_train)
-	X_test = np.array(X_test)
-	y_train = np.ravel(m_y_train) # tanto faz um ou outro
-	y_test = np.ravel(m_y_test) # tanto faz um ou outro
+	y_train = np.ravel(y_train_list[0])
+	y_test = np.ravel(y_test_list[0])
 	
 	# executa classificadores
 	return run_classification(X_train, y_train, X_test, y_test)
@@ -276,14 +317,9 @@ y_true -- Verdade terrestre
 y_pred -- Classes estimadas
 classes -- As classes do problema
 """
-def confusion(y_true, y_pred, classes=[]):
-	conf = confusion_matrix(y_true, y_pred, labels=classes)
+def confusion(y_true, y_pred):
+	conf = confusion_matrix(y_true, y_pred)
 	sn.heatmap(conf, cmap="Purples")
-	
-	tick_marks = np.arange(len(classes))
-	plt.xticks(tick_marks, classes, rotation=90)
-	plt.yticks(tick_marks, classes, rotation=360)
-	
 	plt.ylabel("Verdade terrestre")
 	plt.xlabel("Classes estimadas")
 	plt.tight_layout()
@@ -304,13 +340,24 @@ if __name__ == "__main__":
 	moments = ["zernike", "legendre", "chebyshev", "hututu", "hu1980"]
 	datasets = ["../results/" + x for x in scenarios]
 	
+	zernike = "../results/bosphorus-outlier-densit200-crop80-icp/neutral-zernike.dat"
+	legendre = "../results/bosphorus-outlier-densit200-crop80-icp/neutral-legendre.dat"
+	
+	ans = rank1_concat([zernike, legendre])
+	#ans = rank1_neutral_easy("zernike", zernike)
+	
+	sorted1 = ans["KNN_euclidean"]["y_true"]
+	sorted2 = ans["KNN_euclidean"]["y_pred"]
+	#confusion(ans["KNN_manhattam"]["y_true"], ans["KNN_manhattam"]["y_pred"])
+	
+	"""
 	for data in datasets:
 		print(data)
 		for moment in moments:
 			rank1_neutral(moment, data + "/neutral-{}.dat".format(moment))
 		print("--END--")
 		print()
-	
+	"""
 	
 	
 	
