@@ -325,25 +325,3 @@ def confusion(y_true, y_pred):
 	plt.tight_layout()
 	plt.show()
 
-if __name__ == "__main__":
-	scenarios = ["bosphorus-c50",
-	             "bosphorus-c50-ctt",
-	             "bosphorus-c55",
-	             "bosphorus-c55-ctt",
-	             "bosphorus-c60",
-	             "bosphorus-c60-ctt",
-	             "bosphorus-c65",
-	             "bosphorus-c65-ctt"]
-	moments = ["zernike", "legendre", "hu1980"]
-	datasets = ["../results/" + x for x in scenarios]
-	
-	for data in datasets:
-		print(data)
-		for moment in moments:
-			rank1_neutral(moment, data + "/neutral-{}.dat".format(moment))
-		print("--END--")
-		print()
-	
-	
-	
-	

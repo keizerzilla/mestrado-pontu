@@ -155,7 +155,7 @@ struct matrix* matrix_concat_hor(struct matrix* m1, struct matrix* m2)
 {
 	if (m1->rows != m2->rows)
 		return NULL;
-	
+		
 	uint ncols = m1->cols + m2->cols;
 	
 	struct matrix* ans = matrix_new(m1->rows, ncols);
@@ -196,7 +196,7 @@ struct matrix* matrix_concat_ver(struct matrix* m1, struct matrix* m2)
 	
 	for (uint i = m1->rows; i < nrows; i++)
 		for (uint j = 0; j < m2->cols; j++)
-			matrix_set(ans, i, j, matrix_get(m2, i - m1->rows, j);
+			matrix_set(ans, i, j, matrix_get(m2, i - m1->rows, j));
 	
 	return ans;
 }

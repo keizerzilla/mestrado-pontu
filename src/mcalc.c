@@ -26,20 +26,158 @@
  */
 void extraction_help()
 {
-	printf("mcalc - calculador de momentos\n");
-	printf("autor - Artur Rodrigues Rocha Neto\n");
+	printf("mcalc - Calculador de Momentos 3D\n");
+	printf("autor - Artur Rodrigues Rocha Neto (UFC/LATIN/INTERFACES)\n");
     printf("faltando argumentos! obrigatorios: [ -m | -i | -o | -c ]\n");
-    printf("  -m: momento usado para extracao de atributos\n");
-    printf("      > hututu, hu1980, zernike, legendre ou chebyshev\n");
-    printf("  -i: nuvem de entrada no formato XYZ\n");
-    printf("      > ../data/bunny.xyz, face666.xyz, ~/bs/bs001.xyz, etc.\n");
-    printf("  -o: arquivo aonde os momentos serao salvos\n");
-    printf("      > path para arquivo texto ou stdout para saida padrao\n");
-    printf("  -c: tipo de corte\n");
-    printf("      > w: nuvem inteira, s: sagital, t: transverso, r: radial\n");
-    printf("ex1: mcalc -m hu_1980 -i ../data/cloud1.xyz -o hu1.txt\n");
-    printf("ex2: mcalc -m legendre -i ../dataset/bunny.xyz -o stdout\n");
+    printf(" -m: momento usado para extracao de atributos\n");
+    printf(" [hututu, hu1980, zernike, legendre ou chebyshev]\n");
+    printf(" -i: nuvem de entrada no formato XYZ\n");
+    printf(" [../data/bunny.xyz, face666.xyz, ~/bs/bs001.xyz, etc]\n");
+    printf(" -o: arquivo aonde os momentos serao salvos\n");
+    printf(" [path para arquivo texto ou stdout para saida padrao]\n");
+    printf(" -c: tipo de corte\n");
+    printf(" [w: nenhum, s: sagital, t: transversal, f: frontal, r: radial]\n");
+    printf("ex1: mcalc -m hu_1980 -i ../data/cloud1.xyz -o hu1.txt -c t\n");
+    printf("ex2: mcalc -m legendre -i ../dataset/bunny.xyz -o stdout -c w\n");
     printf("\n");
+}
+
+/**
+ * \brief Extrái momentos usando cortes a partir de planos recursivos
+ * \param cloud A nuvem alvo
+ * \param mfunc A função extratora de momentos
+ * \param O vetor normal ao plano de corte
+ * \return A matrix com os momentos extraídos
+ */
+struct matrix* extraction_plane(struct cloud* cloud,
+                                struct matrix* (*mfunc)(struct cloud*),
+                                struct vector3* norm)
+{
+	struct cloud* par1 = cloud_empty();
+	struct cloud* par2 = cloud_empty();
+	struct vector3* pt = cloud_get_center(cloud);
+	struct plane* plane = plane_new(norm, pt);
+	
+	cloud_plane_partition(cloud, plane, par1, par2);
+	
+	struct cloud* par1_fh = cloud_empty();
+	struct cloud* par2_fh = cloud_empty();
+	struct vector3* pt_fh = cloud_get_center(par1);
+	struct plane* plane_fh = plane_new(norm, pt_fh);
+	
+	cloud_plane_partition(par1, plane_fh, par1_fh, par2_fh);
+	
+	struct matrix* r1 = matrix_concat_hor((*mfunc)(par1_fh), (*mfunc)(par2_fh));
+	
+	plane_free(plane_fh);
+	vector3_free(pt_fh);
+	cloud_free(par2_fh);
+	cloud_free(par1_fh);
+	
+	struct cloud* par1_sh = cloud_empty();
+	struct cloud* par2_sh = cloud_empty();
+	struct vector3* pt_sh = cloud_get_center(par2);
+	struct plane* plane_sh = plane_new(norm, pt_sh);
+	
+	cloud_plane_partition(par2, plane_sh, par1_sh, par2_sh);
+	
+	struct matrix* r2 = matrix_concat_hor((*mfunc)(par1_sh), (*mfunc)(par2_sh));
+	
+	plane_free(plane_sh);
+	vector3_free(pt_sh);
+	cloud_free(par2_sh);
+	cloud_free(par1_sh);
+	
+	struct matrix* ans = matrix_concat_hor(r1, r2);
+	
+	matrix_free(r2);
+	matrix_free(r1);
+	plane_free(plane);
+	vector3_free(pt);
+	vector3_free(norm);
+	cloud_free(par2);
+	cloud_free(par1);
+	
+	return ans;
+}
+
+/**
+ * \brief Extrái momentos usando cortes sagitais
+ * \param cloud A nuvem alvo
+ * \param mfunc A função extratora de momentos
+ * \return A matrix com os momentos extraídos
+ */
+struct matrix* extraction_sagittal(struct cloud* cloud,
+                                   struct matrix* (*mfunc)(struct cloud*))
+{
+	return extraction_plane(cloud, mfunc, vector3_new(1, 0, 0));
+}
+
+/**
+ * \brief Extrái momentos usando cortes transversais
+ * \param cloud A nuvem alvo
+ * \param mfunc A função extratora de momentos
+ * \return A matrix com os momentos extraídos
+ */
+struct matrix* extraction_transversal(struct cloud* cloud,
+                                      struct matrix* (*mfunc)(struct cloud*))
+{
+	return extraction_plane(cloud, mfunc, vector3_new(0, 1, 0));
+}
+
+/**
+ * \brief Extrái momentos usando cortes frontais
+ * \param cloud A nuvem alvo
+ * \param mfunc A função extratora de momentos
+ * \return A matrix com os momentos extraídos
+ */
+struct matrix* extraction_frontal(struct cloud* cloud,
+                                  struct matrix* (*mfunc)(struct cloud*))
+{
+	return extraction_plane(cloud, mfunc, vector3_new(0, 0, 1));
+}
+
+/**
+ * \brief Extrái momentos usando cortes radiais
+ * \param cloud A nuvem alvo
+ * \param mfunc A função extratora de momentos
+ * \return A matrix com os momentos extraídos
+ */
+struct matrix* extraction_radial(struct cloud* cloud,
+                                 struct matrix* (*mfunc)(struct cloud*))
+{
+	real d = 0.0f;
+	struct vector3* center = cloud_get_center(cloud);
+	struct cloud* sub1 = cloud_empty();
+	struct cloud* sub2 = cloud_empty();
+	struct cloud* sub3 = cloud_empty();
+	struct cloud* sub4 = cloud_empty();
+	
+	for (uint i = 0; i < cloud_size(cloud); i++) {
+		d = vector3_distance(center, &cloud->points[i]);
+		
+		if (d <= 20.0f)
+			cloud_add_point_cpy(sub1, &cloud->points[i]);
+		else if (d > 20.0f && d <= 40.0f)
+			cloud_add_point_cpy(sub2, &cloud->points[i]);
+		else if (d > 40.0f && d <= 60.0f)
+			cloud_add_point_cpy(sub3, &cloud->points[i]);
+		else
+			cloud_add_point_cpy(sub4, &cloud->points[i]);
+	}
+	
+	struct matrix* r1 = matrix_concat_hor((*mfunc)(sub1), (*mfunc)(sub2));
+	struct matrix* r2 = matrix_concat_hor((*mfunc)(sub3), (*mfunc)(sub4));
+	struct matrix* ans = matrix_concat_hor(r1, r2);
+	
+	matrix_free(r2);
+	matrix_free(r1);
+	cloud_free(sub3);
+	cloud_free(sub2);
+	cloud_free(sub1);
+	vector3_free(center);
+	
+	return ans;
 }
 
 /**
@@ -90,6 +228,8 @@ void extraction_interface(int argc, char** argv)
         mfunc = &chebyshev_cloud_moments;
     else if (!strcmp(moment, ZERNIKE))
         mfunc = &zernike_cloud_moments;
+    else
+    	mfunc = &hu_cloud_moments_hututu;
 	
     struct cloud* cloud = cloud_load_xyz(input);
     if (input == NULL) {
@@ -98,64 +238,24 @@ void extraction_interface(int argc, char** argv)
     }
 	
 	struct matrix* results = NULL;
-	if (!strcmp(cut, "w")) {
+	if (!strcmp(cut, "w"))
 		results = (*mfunc)(cloud);
-	} else if (!strcmp(cut, "s")) {
-		
-		struct cloud* par1 = cloud_empty();
-		struct cloud* par2 = cloud_empty();
-		
-		struct vector3* norm = vector3_new(1, 0, 0);
-		struct vector3* pt = cloud_get_center(cloud);
-		struct plane* plane = plane_new(norm, pt);
-		
-		cloud_plane_partition(cloud, plane, par1, par2);
-		
-		struct matrix* r1 = (*mfunc)(par1);
-		struct matrix* r2 = (*mfunc)(par2);
-		results = matrix_concat_hor(r1, r2);
-		
-		matrix_free(r2);
-		matrix_free(r1);
-		plane_free(plane);
-		vector3_free(pt);
-		vector3_free(norm);
-		cloud_free(par2);
-		cloud_free(par1);
-		
-	} else if (!strcmp(cut, "t")) {
+	else if (!strcmp(cut, "s"))
+		results = extraction_sagittal(cloud, mfunc);
+	else if (!strcmp(cut, "t"))
+		results = extraction_transversal(cloud, mfunc);
+	else if (!strcmp(cut, "f"))
+		results = extraction_frontal(cloud, mfunc);
+	else if (!strcmp(cut, "r"))
+		results = extraction_radial(cloud, mfunc);
+	else
+		results = (*mfunc)(cloud);
 	
-		struct cloud* par1 = cloud_empty();
-		struct cloud* par2 = cloud_empty();
-		
-		struct vector3* norm = vector3_new(0, 1, 0);
-		struct vector3* pt = cloud_get_center(cloud);
-		struct plane* plane = plane_new(norm, pt);
-		
-		cloud_plane_partition(cloud, plane, par1, par2);
-		
-		struct matrix* r1 = (*mfunc)(par1);
-		struct matrix* r2 = (*mfunc)(par2);
-		results = matrix_concat_hor(r1, r2);
-		
-		matrix_free(r2);
-		matrix_free(r1);
-		plane_free(plane);
-		vector3_free(pt);
-		vector3_free(norm);
-		cloud_free(par2);
-		cloud_free(par1);
-		
-	} else if (!strcmp(cut, "r")) {
-		printf("r\n");
+	if (!strcmp(output, "stdout")) {
+		matrix_debug(results, stdout);
 	} else {
-		results = (*mfunc)(cloud);
+		matrix_save_to_file(results, output);
 	}
-	
-    if (!strcmp(output, "stdout"))
-        matrix_debug(results, stdout);
-    else
-        matrix_save_to_file(results, output);
 	
     matrix_free(results);
     cloud_free(cloud);

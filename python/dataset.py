@@ -213,26 +213,3 @@ def batch_cut(folder, output, cut):
 		subprocess.call(cmd)
 		print("{} OK!".format(cloud))
 
-if __name__ == "__main__":
-	for i in range(40, 95, 5):
-		try:
-			os.mkdir("../datasets/bosphorus-c{}".format(i))
-			os.mkdir("../datasets/bosphorus-c{}/neutral".format(i))
-		except:
-			print("OPS! Diretorio jah existe!")
-		
-		output = "../datasets/bosphorus-c{}/neutral".format(i)
-		batch_cut("../datasets/bosphorus/neutral", output, i)
-		
-	"""
-	xyz2pcd("../datasets/bosphorus/neutral", "../datasets/bosphorus/neutral")
-	xyz2pcd("../datasets/bosphorus/nonneutral", "../datasets/bosphorus/nonneutral")
-	"""
-	
-	
-	
-	
-	
-	
-	
-	

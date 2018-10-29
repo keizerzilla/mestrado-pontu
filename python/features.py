@@ -32,7 +32,7 @@ def moment_extraction_cloud(moment, cloud, cut):
 	cl = str(parse.parse(parse_fmt, filename)[0])
 	ix = str(parse.parse(parse_fmt, filename)[3])
 	
-	cmd = [mcalc_exec, "-m", moment, "-i", cloud, "-o", "stdout", "-c", "cut"]
+	cmd = [mcalc_exec, "-m", moment, "-i", cloud, "-o", "stdout", "-c", cut]
 	ans = subprocess.run(cmd, check=True, stdout=subprocess.PIPE).stdout
 	ans = ans.decode("utf-8")[:-2].replace(" ", ",") + ",{},{}\n".format(ix, cl)
 	
@@ -56,27 +56,3 @@ def moment_extraction_batch(moment, cut, dataset, output):
 				dump.write(ans)
 				print("[{}] >> {}: OK".format(cloud, moment))
 
-if __name__ == "__main__":
-	scenarios = ["bosphorus-c50",
-	             "bosphorus-c55",
-	             "bosphorus-c60",
-	             "bosphorus-c65"]
-	moments = ["zernike", "legendre", "hu1980"]
-	datasets = ["../datasets/" + x + "/neutral" for x in scenarios]
-	cuts = ["s", "t"]
-	
-	for data in datasets:
-		for cut in cuts:
-			scenario = data.split("/")[2]
-			folder = "../results/{}-ct{}".format(scenario, cut)
-			
-			try:
-				os.mkdir(folder)
-			except:
-				print("OPS! Diretorio jah existe!")
-			
-			for moment in moments:
-				out = folder
-				out = out + "/{}-{}.dat".format(os.path.split(data)[1], moment)
-				moment_extraction_batch(moment, cut, data, out)
-	
