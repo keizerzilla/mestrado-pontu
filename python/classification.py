@@ -84,10 +84,11 @@ X_train -- amostras de treino
 y_train -- classes das amostras de treino
 X_test -- amostras de teste
 y_test -- classes das amostras de teste
+verbose -- se o resultado deve ser mostrado ou não na saída padrão
 
 return -- Dicionário com taxa de reconhecimento e predições das classificações
 """
-def run_classification(X_train, y_train, X_test, y_test):
+def run_classification(X_train, y_train, X_test, y_test, verbose=False):
 	# normalizacao
 	scaler = StandardScaler().fit(X_train)
 	X_train = scaler.transform(X_train)
@@ -123,9 +124,10 @@ def run_classification(X_train, y_train, X_test, y_test):
 		result["y_pred"] = clf.predict(X_test)
 		ans[name] = result
 		
-		score_txt = str(round(score*100, 2))
-		out = "{:<16}{:<8}{:<8}".format(name, score_txt, elapsed_time)
-		print(out)
+		if verbose:
+			score_txt = str(round(score*100, 2))
+			out = "{:<16}{:<8}{:<8}".format(name, score_txt, elapsed_time)
+			print(out)
 	
 	return ans
 
@@ -140,7 +142,7 @@ features -- O caminho para o dados extraídos das amostras neutras
 return -- Dicionário com taxa de reconhecimento e predições das classificações
 """
 def rank1_neutral(name, features):
-	print(name)
+	#print(name)
 	
 	df = pd.read_csv(features, header=None)
 	cs = ["f"+str(x) for x in range(len(df.columns)-2)] + ["sample", "subject"]
@@ -279,14 +281,6 @@ def rank1_concat(moments):
 		cs = cs + ["sample", "subject"]
 		df.columns = cs
 		
-		"""
-		# APENAS CLASSES COM MAIS DE UMA AMOSTRA
-		unique, counts = np.unique(df["subject"], return_counts=True)
-		ocurrences = dict(zip(unique, counts))
-		more = [key for key, val in ocurrences.items() if val > 1]
-		df = df[df["subject"].isin(more)]
-		"""
-		
 		trainset = df.loc[df["sample"] == 0].drop(["sample"], axis=1)
 		temp_X_train = trainset.drop(["subject"], axis=1)
 		temp_y_train = trainset[["subject"]]
@@ -317,11 +311,42 @@ y_true -- Verdade terrestre
 y_pred -- Classes estimadas
 classes -- As classes do problema
 """
-def confusion(y_true, y_pred):
-	conf = confusion_matrix(y_true, y_pred)
+def confusion(y_true, y_pred, classes=[]):
+	conf = confusion_matrix(y_true, y_pred, labels=classes)
 	sn.heatmap(conf, cmap="Purples")
+	
+	tick_marks = np.arange(len(classes))
+	plt.xticks(tick_marks, classes, rotation=90)
+	plt.yticks(tick_marks, classes, rotation=360)
+	
+	plt.title("Matriz de Confusão")
 	plt.ylabel("Verdade terrestre")
 	plt.xlabel("Classes estimadas")
 	plt.tight_layout()
 	plt.show()
+
+"""
+Separa a melhor taxa de acerto de uma saída de classificação.
+
+ans -- A resposta de classificação no formato de dicionário
+
+return -- classificador e taxa
+"""
+def max_rate(ans):
+	rates = dict((key, value["recog"]) for key, value in ans.items())
+	lemax = max(rates.items(), key=operator.itemgetter(1))
+	return lemax[0], lemax[1]
+
+"""
+Monta uma matriz com as predições e os reais da maior taxa de acerto de uma
+resposta de classificação.
+
+ans -- A resposta de classificação no formato de dicionário
+"""
+def max_confusion(ans):
+	classifier, rate = max_rate(ans)
+	diff = np.array([ans[classifier]["y_pred"], ans[classifier]["y_true"]]).T
+	for i in range(diff.shape[0]):
+		if diff[i, 0] != diff[i, 1]:
+			print("[{}]: {}".format(i, diff[i,:]))
 

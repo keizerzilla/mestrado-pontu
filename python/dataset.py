@@ -213,3 +213,6 @@ def batch_cut(folder, output, cut):
 		subprocess.call(cmd)
 		print("{} OK!".format(cloud))
 
+"""
+"""
+
