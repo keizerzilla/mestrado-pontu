@@ -348,5 +348,5 @@ def max_confusion(ans):
 	diff = np.array([ans[classifier]["y_pred"], ans[classifier]["y_true"]]).T
 	for i in range(diff.shape[0]):
 		if diff[i, 0] != diff[i, 1]:
-			print("[{}]: {}".format(i, diff[i,:]))
+			print("[{}]:\t{}".format(i, diff[i,:]))
 

@@ -1,5 +1,0 @@
-- conferir se as matrizes de confusao (minha e da jamile) sao iguais
-- conceber um sistema de julgamento que usa o melhor dos dois processos de
-  classificacao (meu e da jamile) para melhorar o reconhecimento
-- conferir os cortes e rodar nas bases pre-processadas
-

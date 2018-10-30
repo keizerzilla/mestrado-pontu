@@ -2,13 +2,13 @@ from dataset import *
 from features import *
 from classification import *
 
-"""
+
 zernike = "../results/frontal/bosphorus-outlier-densit200-crop80-icp/neutral-zernike.dat"
 legendre = "../results/radial/bosphorus-outlier-densit200-crop80-icp/neutral-chebyshev.dat"
 ans = rank1_concat([zernike, legendre]);
 classifier, rate = max_rate(ans)
 print("{} : {}".format(classifier, round(rate*100, 2)))
-"""
+max_confusion(ans)
 
 cuts = {"f" : "frontal",
         "r" : "radial",
