@@ -147,6 +147,12 @@ struct matrix* extraction_radial(struct cloud* cloud,
                                  struct matrix* (*mfunc)(struct cloud*))
 {
 	real d = 0.0f;
+	real maxd = cloud_max_distance(cloud);
+	
+	real slice1 = maxd / 4;
+	real slice2 = slice1 * 2;
+	real slice3 = slice1 * 3;
+	
 	struct vector3* center = cloud_get_center(cloud);
 	struct cloud* sub1 = cloud_empty();
 	struct cloud* sub2 = cloud_empty();
@@ -156,11 +162,11 @@ struct matrix* extraction_radial(struct cloud* cloud,
 	for (uint i = 0; i < cloud_size(cloud); i++) {
 		d = vector3_distance(center, &cloud->points[i]);
 		
-		if (d <= 20.0f)
+		if (d <= slice1)
 			cloud_add_point_cpy(sub1, &cloud->points[i]);
-		else if (d > 20.0f && d <= 40.0f)
+		else if (d > slice1 && d <= slice2)
 			cloud_add_point_cpy(sub2, &cloud->points[i]);
-		else if (d > 40.0f && d <= 60.0f)
+		else if (d > slice2 && d <= slice3)
 			cloud_add_point_cpy(sub3, &cloud->points[i]);
 		else
 			cloud_add_point_cpy(sub4, &cloud->points[i]);
