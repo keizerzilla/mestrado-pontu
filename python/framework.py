@@ -3,9 +3,9 @@ from features import *
 from classification import *
 
 
-zernike = "../results/frontal/bosphorus-outlier-densit200-crop80-icp/neutral-zernike.dat"
-legendre = "../results/radial/bosphorus-outlier-densit200-crop80-icp/neutral-chebyshev.dat"
-ans = rank1_concat([zernike, legendre]);
+m1 = "../results/radial/bosphorus-outlier-densit200-crop80-icp/neutral-legendre.dat"
+m2 = "../results/radial/bosphorus-outlier-densit200-crop80-icp/neutral-chebyshev.dat"
+ans = rank1_concat([m1, m2]);
 classifier, rate = max_rate(ans)
 print("{} : {}".format(classifier, round(rate*100, 2)))
 max_confusion(ans)
