@@ -3,15 +3,6 @@ from features import *
 from classification import *
 from pathlib import Path
 
-
-m1 = "../results/frontal/bosphorus-outlier-densit200-crop80-icp/neutral-legendre.dat"
-m2 = "../results/radial/bosphorus-outlier-densit200-crop80-icp/neutral-chebyshev.dat"
-ans = rank1_concat([m1, m2]);
-classifier, rate = max_rate(ans)
-print("{} : {}".format(classifier, round(rate*100, 2)))
-max_confusion(ans)
-
-"""
 cuts = {"f" : "frontal",
         "r" : "radial",
         "s" : "sagittal",
@@ -92,6 +83,4 @@ for cut, cut_folder in cuts.items():
 		df = df.append(row, ignore_index=True)
 	
 	df.to_csv("../results/{}.csv".format(cut_folder), index=False)
-"""
-
 

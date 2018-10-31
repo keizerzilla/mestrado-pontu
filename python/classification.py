@@ -36,6 +36,7 @@ from sklearn.preprocessing import PowerTransformer
 from sklearn.neighbors import NearestCentroid as NC
 from sklearn.neural_network import MLPClassifier as MLP
 from sklearn.neighbors import KNeighborsClassifier as KNC
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 
 classifiers = [
 	KNC(p=1, n_neighbors=1),
@@ -43,7 +44,9 @@ classifiers = [
 	NC(metric="manhattan"),
 	NC(metric="euclidean"),
 	SVC(kernel="rbf", gamma="auto"),
-	SVC(kernel="poly", gamma="auto")]
+	SVC(kernel="poly", gamma="auto"),
+	MLP(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(220,),activation='tanh', random_state=1),
+	LDA()]
 
 names = [
 	"KNN_manhattam",
@@ -51,7 +54,9 @@ names = [
 	"DMC_manhattam",
 	"DMC_euclidean",
 	"SVM_radial",
-	"SVM_poly"]
+	"SVM_poly",
+	"MLP",
+	"LDA"]
 
 grids = [
 	{
@@ -112,16 +117,25 @@ def run_classification(X_train, y_train, X_test, y_test, verbose=False):
 	ans = dict()
 	for name, classifier in zip(names, classifiers):
 		result = dict()
+		clf = classifier
 		
 		start_time = time.time()
-		clf = classifier
-		clf.fit(X_train, y_train)
-		score = clf.score(X_test, y_test)
-		elapsed_time = round(time.time() - start_time, 4)
+		
+		try:
+			clf.fit(X_train, y_train)
+			score = clf.score(X_test, y_test)
+		except:
+			score = 0
 		
 		result["recog"] = score
 		result["y_true"] = y_test
-		result["y_pred"] = clf.predict(X_test)
+		
+		try:
+			result["y_pred"] = clf.predict(X_test)
+		except:
+			result["y_pred"] = []
+		
+		elapsed_time = round(time.time() - start_time, 4)
 		ans[name] = result
 		
 		if verbose:
@@ -266,7 +280,7 @@ Executa classificação RANK-1 usando os classificadores em pesquisa. O conjunto
 de treino e teste é a concatenação de n momentos. Treino: amostra 0 de cada pose
 neutra. Teste: restante das amostras neutras (amostra diferente de 0).
 
-moments -- Lista de momentos
+moments -- Lista ou tupla de momentos
 
 return -- Dicionário com taxa de reconhecimento e predições das classificações
 """
