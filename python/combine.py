@@ -11,6 +11,16 @@ from dataset import *
 from features import *
 from classification import *
 
+basepath = "../results/"
+slices = ["frontal/", "radial/", "sagittal/", "transversal/", "whole/"]
+config = "bosphorus-outlier-densit200-crop80-icp/"
+moments = ["neutral-hu1980.dat",
+           "neutral-hututu.dat",
+           "neutral-legendre.dat",
+           "neutral-chebyshev.dat",
+           "neutral-zernike.dat"]
+moments = [config + m for m in moments]
+print(moments)
 
 
 class Chromosome():
