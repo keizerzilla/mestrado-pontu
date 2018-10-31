@@ -117,7 +117,8 @@ real zernike_moment(int n, int m, real r, struct cloud* cloud)
 struct matrix* zernike_cloud_moments(struct cloud* cloud)
 {
 	struct matrix* results = matrix_new(1, ZERNIKE_MOMENTS);
-    real r = cloud_max_distance(cloud);
+    //real r = cloud_max_distance(cloud); // quando era uma funcao soh
+    real r = cloud_max_distance_from_center(cloud);
 
     int n = 0;
     int m = 0;

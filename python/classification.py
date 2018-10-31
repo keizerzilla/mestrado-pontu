@@ -345,7 +345,7 @@ ans -- A resposta de classificação no formato de dicionário
 """
 def max_confusion(ans):
 	classifier, rate = max_rate(ans)
-	diff = np.array([ans[classifier]["y_pred"], ans[classifier]["y_true"]]).T
+	diff = np.array([ans[classifier]["y_true"], ans[classifier]["y_pred"]]).T
 	for i in range(diff.shape[0]):
 		if diff[i, 0] != diff[i, 1]:
 			print("[{}]:\t{}".format(i, diff[i,:]))

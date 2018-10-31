@@ -1,22 +1,17 @@
 """
-ga.py
+combine.py
 Artur Rodrigues Rocha Neto
 2018
 
-Script gerador de vetores de característica otimizados baseado em algorítmo
-genético. Funcionalidade ainda incompleta e não testada/validada. Passos:
-	1. inicializa populacao
-	2. calcula fitness
-	3. realiza selecao dos mais aptos
-	4. computa crossover
-	5. mutação
-	6. volta para 2.
+Script gerador de vetores de característica otimizados através da combinação
+de diferentes configurações (cortes, fatiamentos, momentos, etc.)
 """
 
-import random
-import numpy as np
-import pandas as pd
-from sklearn.preprocessing import StandardScaler
+from dataset import *
+from features import *
+from classification import *
+
+
 
 class Chromosome():
 	def __init__(self, moment, index, value, sample, subject):
@@ -80,5 +75,4 @@ class Population():
 		
 		self.y_train = np.ravel(self.y_train)
 		self.y_test = np.ravel(self.y_test)
-		
 

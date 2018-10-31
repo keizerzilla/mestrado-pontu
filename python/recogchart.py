@@ -18,7 +18,7 @@ if len(sys.argv) != 2:
 
 df = pd.read_csv(sys.argv[1])
 config = os.path.basename(sys.argv[1]).replace(".csv", "")
-ax = df.plot()
+ax = df.plot(marker='o')
 tick_marks_x = np.arange(len(df["dataset"]))
 tick_marks_y = range(0, 110, 10)
 plt.xticks(tick_marks_x, df["dataset"], rotation=45)
@@ -29,7 +29,7 @@ plt.grid()
 
 for moment in list(df.drop(["dataset"], axis=1)):
 	for x, y in enumerate(df[moment]):
-		ax.annotate(str(y), (x, y))
+		ax.annotate(str(y), xy=(x, y), xytext=(x-0.2, y+1))
 
 plt.tight_layout()
 print(df)

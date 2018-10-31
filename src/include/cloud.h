@@ -679,7 +679,6 @@ struct vector3* cloud_max_y(struct cloud* cloud)
 }
 
 /**
-
  * \brief Descobre o ponto com maior coordenada Z
  * \param cloud A nuvem alvo
  * \return Endereço do ponto com maior Z
@@ -699,22 +698,38 @@ struct vector3* cloud_max_z(struct cloud* cloud)
 }
 
 /**
- * \brief Cálcula a distância entre o centro e o ponto mais distante dele
+ * \brief Calcula a maior distância entre um ponto qualquer e os pontos da nuvem
  * \param cloud A nuvem alvo
- * \return A maior distância possível dentro da nuvem
+ * \param p O ponto em questão
+ * \return A maior distância possível a partir do ponto da nuvem
  */
-real cloud_max_distance(struct cloud* cloud)
+real cloud_max_distance(struct cloud* cloud, struct vector3* p)
 {
-	struct vector3* center = cloud_get_center(cloud);
-	real d = vector3_distance(center, &cloud->points[0]);
+	real d = vector3_distance(p, &cloud->points[0]);
 	real temp = 0.0f;
 	
 	for (uint i = 1; i < cloud->num_pts; i++) {
-		temp = vector3_distance(center, &cloud->points[i]);
-		if (temp > d) d = temp;
+		temp = vector3_distance(p, &cloud->points[i]);
+		
+		if (temp > d)
+			d = temp;
 	}
 	
+	return d;
+}
+
+/**
+ * \brief Cálcula a distância entre o centro e o ponto mais distante dele
+ * \param cloud A nuvem alvo
+ * \return A maior distância possível a partir do centro da nuvem
+ */
+real cloud_max_distance_from_center(struct cloud* cloud)
+{
+	struct vector3* center = cloud_get_center(cloud);
+	real d = cloud_max_distance(cloud, center);
+	
 	vector3_free(center);
+	
 	return d;
 }
 

@@ -1,15 +1,17 @@
 from dataset import *
 from features import *
 from classification import *
+from pathlib import Path
 
 
-m1 = "../results/radial/bosphorus-outlier-densit200-crop80-icp/neutral-legendre.dat"
+m1 = "../results/frontal/bosphorus-outlier-densit200-crop80-icp/neutral-legendre.dat"
 m2 = "../results/radial/bosphorus-outlier-densit200-crop80-icp/neutral-chebyshev.dat"
 ans = rank1_concat([m1, m2]);
 classifier, rate = max_rate(ans)
 print("{} : {}".format(classifier, round(rate*100, 2)))
 max_confusion(ans)
 
+"""
 cuts = {"f" : "frontal",
         "r" : "radial",
         "s" : "sagittal",
@@ -42,23 +44,25 @@ moments = ["hu1980", "hututu", "legendre", "chebyshev", "zernike"]
 
 datasets = ["../datasets/" + x + "/neutral" for x in scenarios]
 
-"""
-for data in datasets:
-	for cut in cuts:
+
+for cut, cut_folder in cuts.items():
+	for data in datasets:
 		scenario = data.split("/")[2]
-		folder = "../results/{}-cut_{}".format(scenario, cut)
+		folder = "../results/{}/{}/".format(cut_folder, scenario)
+		
 		try:
-			os.mkdir(folder)
+			#os.mkdir(folder)
+			Path(folder).mkdir(parents=True, exist_ok=True)
 		except:
 			print("OPS! Diretorio jah existe!")
 		
 		for moment in moments:
 			out = folder
-			out = out + "/{}-{}.dat".format(os.path.split(data)[1], moment)
+			out = out + "{}-{}.dat".format(os.path.split(data)[1], moment)
 			moment_extraction_batch(moment, cut, data, out)
-"""
 
-"""
+
+
 cols = ["dataset"] + moments
 for cut, cut_folder in cuts.items():
 	df = pd.DataFrame(columns=cols)
@@ -89,6 +93,5 @@ for cut, cut_folder in cuts.items():
 	
 	df.to_csv("../results/{}.csv".format(cut_folder), index=False)
 """
-
 
 
