@@ -10,8 +10,9 @@ de diferentes configurações (cortes, fatiamentos, momentos, etc.)
 from dataset import *
 from features import *
 from classification import *
+from pathlib import Path
 
-def combination(dataset):
+def combination(dataset, n=2):
 	basepath = "../results/"
 	slices = ["frontal/", "radial/", "sagittal/", "transversal/", "whole/"]
 	moments = ["neutral-hu1980.dat",
@@ -23,9 +24,10 @@ def combination(dataset):
 	moments = [dataset + "/" + m for m in moments]
 	products = list(itertools.product(slices, moments))
 	configs = [basepath + p[0] + p[1] for p in products]
-	combos = list(itertools.combinations(configs, 2))
-	settings = [(c[0].split("/")[2], os.path.basename(c[0]), c[1].split("/")[2], os.path.basename(c[1])) for c in combos]
-
+	combos = list(itertools.combinations(configs, n))
+	settings = [[(c[i].split("/")[2], os.path.basename(c[i])) for i in range(n)]
+	            for c in combos]
+	
 	cols = ["setting", "classifier", "rate"]
 	df = pd.DataFrame(columns=cols)
 	
@@ -37,8 +39,14 @@ def combination(dataset):
 		row = {"setting" : setting, "classifier" : classifier, "rate" : rate}
 		df = df.append(row, ignore_index=True)
 		print(result)
-
-	df.to_csv("../results/combination/{}.csv".format(dataset[:-1]), index=False)
+	
+	res_path = "../results/combination{}/".format(n)
+	try:
+		Path(res_path).mkdir(parents=True, exist_ok=True)
+	except:
+		print("OPS! Diretorio jah existe!")
+	
+	df.to_csv(res_path + "{}.csv".format(dataset), index=False)
 
 if __name__ == "__main__":
 	datasets = ["bosphorus",
