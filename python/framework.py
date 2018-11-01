@@ -3,6 +3,8 @@ from features import *
 from classification import *
 from pathlib import Path
 
+face = "nonneutral"
+
 cuts = {"f" : "frontal",
         "r" : "radial",
         "s" : "sagittal",
@@ -33,8 +35,7 @@ scenarios = ["bosphorus",
 
 moments = ["hu1980", "hututu", "legendre", "chebyshev", "zernike"]
 
-datasets = ["../datasets/" + x + "/neutral" for x in scenarios]
-
+datasets = ["../datasets/" + x + "/{}".format(face) for x in scenarios]
 
 for cut, cut_folder in cuts.items():
 	for data in datasets:
@@ -42,18 +43,16 @@ for cut, cut_folder in cuts.items():
 		folder = "../results/{}/{}/".format(cut_folder, scenario)
 		
 		try:
-			#os.mkdir(folder)
 			Path(folder).mkdir(parents=True, exist_ok=True)
 		except:
 			print("OPS! Diretorio jah existe!")
 		
 		for moment in moments:
 			out = folder
-			out = out + "{}-{}.dat".format(os.path.split(data)[1], moment)
+			out = out + "{}-{}.dat".format(face, moment)
 			moment_extraction_batch(moment, cut, data, out)
 
-
-
+"""
 cols = ["dataset"] + moments
 for cut, cut_folder in cuts.items():
 	df = pd.DataFrame(columns=cols)
@@ -72,7 +71,7 @@ for cut, cut_folder in cuts.items():
 		row["dataset"] = dataset
 		
 		for moment in moments:
-			ans = rank1_neutral(moment, folder+"neutral-{}.dat".format(moment))
+			ans = rank1_neutral(moment, folder+"{}-{}.dat".format(face, moment))
 			classifier, rate = max_rate(ans)
 			rounded = round(rate*100, 2)
 			
@@ -83,4 +82,5 @@ for cut, cut_folder in cuts.items():
 		df = df.append(row, ignore_index=True)
 	
 	df.to_csv("../results/{}.csv".format(cut_folder), index=False)
+"""
 

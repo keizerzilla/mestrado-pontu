@@ -147,7 +147,7 @@ struct matrix* extraction_radial(struct cloud* cloud,
                                  struct matrix* (*mfunc)(struct cloud*))
 {
 	real d = 0.0f;
-	real maxd = cloud_max_distance(cloud);
+	real maxd = cloud_max_distance_from_center(cloud);
 	
 	real slice1 = maxd / 4;
 	real slice2 = slice1 * 2;
