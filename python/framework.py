@@ -16,19 +16,9 @@ replace_dict = {"bosphorus" : "bs",
                 "densit" : "d",
                 "crop" : "c"}
 
-scenarios = ["bosphorus",
-			 "bosphorus-outlier",
-			 "bosphorus-outlier-densit200",
-			 "bosphorus-outlier-densit200-crop60",
-			 "bosphorus-outlier-densit200-crop70",
-			 "bosphorus-outlier-densit200-crop80",
-			 "bosphorus-outlier-densit200-crop60-icp",
+scenarios = ["bosphorus-outlier-densit200-crop60-icp",
 	         "bosphorus-outlier-densit200-crop70-icp",
 	         "bosphorus-outlier-densit200-crop80-icp",
-			 "bosphorus-outlier-densit225",
-			 "bosphorus-outlier-densit225-crop60",
-			 "bosphorus-outlier-densit225-crop70",
-			 "bosphorus-outlier-densit225-crop80",
 	         "bosphorus-outlier-densit225-crop60-icp",
 	         "bosphorus-outlier-densit225-crop70-icp",
 	         "bosphorus-outlier-densit225-crop80-icp"]
@@ -37,6 +27,7 @@ moments = ["hu1980", "hututu", "legendre", "chebyshev", "zernike"]
 
 datasets = ["../datasets/" + x + "/{}".format(face) for x in scenarios]
 
+"""
 for cut, cut_folder in cuts.items():
 	for data in datasets:
 		scenario = data.split("/")[2]
@@ -51,8 +42,9 @@ for cut, cut_folder in cuts.items():
 			out = folder
 			out = out + "{}-{}.dat".format(face, moment)
 			moment_extraction_batch(moment, cut, data, out)
-
 """
+
+
 cols = ["dataset"] + moments
 for cut, cut_folder in cuts.items():
 	df = pd.DataFrame(columns=cols)
@@ -71,7 +63,10 @@ for cut, cut_folder in cuts.items():
 		row["dataset"] = dataset
 		
 		for moment in moments:
-			ans = rank1_neutral(moment, folder+"{}-{}.dat".format(face, moment))
+			neutral = folder + "neutral-{}.dat".format(moment)
+			nonneutral = folder + "nonneutral-{}.dat".format(moment)
+			#ans = rank1_neutral(moment, folder+"{}-{}.dat".format(face, moment))
+			ans = rank1_nonneutral(moment, neutral, nonneutral)
 			classifier, rate = max_rate(ans)
 			rounded = round(rate*100, 2)
 			
@@ -81,6 +76,6 @@ for cut, cut_folder in cuts.items():
 		print()
 		df = df.append(row, ignore_index=True)
 	
-	df.to_csv("../results/{}.csv".format(cut_folder), index=False)
-"""
+	#df.to_csv("../results/{}-{}.csv".format(face, cut_folder), index=False)
+
 

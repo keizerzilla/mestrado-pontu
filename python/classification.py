@@ -184,7 +184,7 @@ features -- O caminho para o dados extraídos das amostras neutras
 return -- Dicionário com taxa de reconhecimento e predições das classificações
 """
 def rank1_neutral_easy(name, features):
-	print(name)
+	#print(name)
 	
 	df = pd.read_csv(features, header=None)
 	cs = ["f"+str(x) for x in range(len(df.columns)-2)] + ["sample", "subject"]
@@ -218,7 +218,7 @@ feat_nonneutral -- O caminho para os dados extraídos das amostras não-neutras
 return -- Dicionário com taxa de reconhecimento e predições das classificações
 """
 def rank1_nonneutral(name, feat_neutral, feat_nonneutral):
-	print(name)
+	#print(name)
 	
 	# neutras: conjunto de treino
 	df = pd.read_csv(feat_neutral, header=None)
@@ -252,7 +252,7 @@ feat_nonneutral -- O caminho para os dados extraídos das amostras não-neutras
 return -- Dicionário com taxa de reconhecimento e predições das classificações
 """
 def roc1(name, feat_neutral, feat_nonneutral):
-	print(name)
+	#print(name)
 	
 	# neutras: conjunto de treino
 	df = pd.read_csv(feat_neutral, header=None)

@@ -67,5 +67,5 @@ if __name__ == "__main__":
 	            "bosphorus-outlier-densit225-crop80-icp"]
 	
 	for dataset in datasets:
-		combination(dataset)
+		combination(dataset, 3)
 

@@ -7,6 +7,7 @@ Script simples que mostra gera boxplot das variações de taxa de acerto de uma
 dada combinação de momentos.
 """
 
+import os
 import sys
 import numpy as np
 import pandas as pd
@@ -14,7 +15,7 @@ import seaborn as sn
 import matplotlib.pyplot as plt
 
 if len(sys.argv) != 2:
-	print("Número incorreto de parâmetros! Uso: boxplot.py <arquivo_combo.csv>")
+	print("Número incorreto de parâmetros! Uso: boxplot.py <pasta_combos.csv>")
 	sys.exit()
 
 data_path = sys.argv[1]
@@ -43,13 +44,10 @@ scenarios = ["bosphorus.csv",
 
 scenarios = [data_path + s for s in scenarios]
 
-print(scenarios)
-exit()
-
 xaxes = []
 for data in scenarios:
 	for old, new in replace_dict.items():
-		data = data.replace(old, new)
+		data = os.path.basename(data.replace(old, new))
 	xaxes.append(data)
 xaxes = [""] + xaxes
 
