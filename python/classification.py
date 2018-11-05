@@ -29,9 +29,7 @@ import seaborn as sn
 import matplotlib.pyplot as plt
 from sklearn.svm import SVC
 from sklearn.metrics import confusion_matrix
-from sklearn.model_selection import LeaveOneOut
 from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import GridSearchCV
 from sklearn.preprocessing import PowerTransformer
 from sklearn.neighbors import NearestCentroid as NC
 from sklearn.neural_network import MLPClassifier as MLP
@@ -45,7 +43,8 @@ classifiers = [
 	NC(metric="euclidean"),
 	SVC(kernel="rbf", gamma="auto"),
 	SVC(kernel="poly", gamma="auto"),
-	MLP(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(220,),activation='tanh', random_state=1),
+	MLP(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(220,),
+	    activation='tanh', random_state=1),
 	LDA()]
 
 names = [
@@ -99,13 +98,14 @@ def run_classification(X_train, y_train, X_test, y_test, verbose=False):
 	X_train = scaler.transform(X_train)
 	X_test = scaler.transform(X_test)
 	
-	# remocao de skewness (precisa testar mais)
+	# remocao de skewness
 	new_train = []
 	new_test = []
 	for m_train, m_test in zip(X_train.T, X_test.T):
 		data_train = m_train.reshape(-1, 1)
 		data_test = m_test.reshape(-1, 1)
-		pt = PowerTransformer(method="yeo-johnson", standardize=True)
+		#pt = PowerTransformer(method="yeo-johnson", standardize=True)
+		pt = PowerTransformer(method="yeo-johnson", standardize=False)
 		pt.fit(data_train)
 		new_train.append(np.ravel(pt.transform(data_train)))
 		new_test.append(np.ravel(pt.transform(data_test)))
@@ -150,14 +150,11 @@ Executa classificação RANK-1 usando os classificadores em pesquisa. Treino:
 amostra 0 de cada pose neutra. Teste: restante das amostras neutras
 (amostra diferente de 0).
 
-name -- O nome do teste em execução
 features -- O caminho para o dados extraídos das amostras neutras
 
 return -- Dicionário com taxa de reconhecimento e predições das classificações
 """
-def rank1_neutral(name, features):
-	#print(name)
-	
+def rank1_neutral(features):
 	df = pd.read_csv(features, header=None)
 	cs = ["f"+str(x) for x in range(len(df.columns)-2)] + ["sample", "subject"]
 	df.columns = cs
@@ -178,14 +175,11 @@ Executa classificação RANK-1 usando os classificadores em pesquisa. Classes co
 apenas uma amostra não são usadas! Treino: amostra 0 de cada pose neutra. Teste:
 restante das amostras neutras (amostra diferente de 0).
 
-name -- O nome do teste em execução
 features -- O caminho para o dados extraídos das amostras neutras
 
 return -- Dicionário com taxa de reconhecimento e predições das classificações
 """
-def rank1_neutral_easy(name, features):
-	#print(name)
-	
+def rank1_neutral_easy(features):
 	df = pd.read_csv(features, header=None)
 	cs = ["f"+str(x) for x in range(len(df.columns)-2)] + ["sample", "subject"]
 	df.columns = cs
@@ -211,15 +205,12 @@ def rank1_neutral_easy(name, features):
 Executa classificação RANK-1 usando os classificadores em pesquisa. Treino:
 amostra 0 de cada pose neutra. Teste: todas as amostras não-neutras.
 
-name -- O nome do teste em execução
 feat_neutral -- O caminho para o dados extraídos das amostras neutras
 feat_nonneutral -- O caminho para os dados extraídos das amostras não-neutras
 
 return -- Dicionário com taxa de reconhecimento e predições das classificações
 """
-def rank1_nonneutral(name, feat_neutral, feat_nonneutral):
-	#print(name)
-	
+def rank1_nonneutral(feat_neutral, feat_nonneutral):
 	# neutras: conjunto de treino
 	df = pd.read_csv(feat_neutral, header=None)
 	cs = ["f"+str(x) for x in range(len(df.columns)-2)] + ["sample", "subject"]
@@ -245,15 +236,12 @@ def rank1_nonneutral(name, feat_neutral, feat_nonneutral):
 Executa classificação ROC-1 usando os classificadores em pesquisa. Treino: todas
 as amostras neutras. Teste: todas as amostras não-neutras.
 
-name -- O nome do teste em execução
 feat_neutral -- O caminho para o dados extraídos das amostras neutras
 feat_nonneutral -- O caminho para os dados extraídos das amostras não-neutras
 
 return -- Dicionário com taxa de reconhecimento e predições das classificações
 """
-def roc1(name, feat_neutral, feat_nonneutral):
-	#print(name)
-	
+def roc1(feat_neutral, feat_nonneutral):
 	# neutras: conjunto de treino
 	df = pd.read_csv(feat_neutral, header=None)
 	cs = ["f"+str(x) for x in range(len(df.columns)-2)] + ["sample", "subject"]

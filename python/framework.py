@@ -3,7 +3,7 @@ from features import *
 from classification import *
 from pathlib import Path
 
-face = "nonneutral"
+face = "neutral"
 
 cuts = {"f" : "frontal",
         "r" : "radial",
@@ -16,12 +16,7 @@ replace_dict = {"bosphorus" : "bs",
                 "densit" : "d",
                 "crop" : "c"}
 
-scenarios = ["bosphorus-outlier-densit200-crop60-icp",
-	         "bosphorus-outlier-densit200-crop70-icp",
-	         "bosphorus-outlier-densit200-crop80-icp",
-	         "bosphorus-outlier-densit225-crop60-icp",
-	         "bosphorus-outlier-densit225-crop70-icp",
-	         "bosphorus-outlier-densit225-crop80-icp"]
+scenarios = ["bosphorus-outlier-densit200-crop80-icp"]
 
 moments = ["hu1980", "hututu", "legendre", "chebyshev", "zernike"]
 
@@ -65,8 +60,8 @@ for cut, cut_folder in cuts.items():
 		for moment in moments:
 			neutral = folder + "neutral-{}.dat".format(moment)
 			nonneutral = folder + "nonneutral-{}.dat".format(moment)
-			#ans = rank1_neutral(moment, folder+"{}-{}.dat".format(face, moment))
-			ans = rank1_nonneutral(moment, neutral, nonneutral)
+			ans = rank1_neutral(neutral)
+			#ans = rank1_nonneutral(neutral, nonneutral)
 			classifier, rate = max_rate(ans)
 			rounded = round(rate*100, 2)
 			
