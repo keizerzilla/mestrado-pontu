@@ -441,7 +441,7 @@ struct vector3* cloud_axis_size(struct cloud* cloud)
  */
 struct cloud* cloud_cut_center(struct cloud* cloud, real cut)
 {
-    struct cloud* sub = cloud_new(0);
+    struct cloud* sub = cloud_empty();
     struct vector3* center = cloud_get_center(cloud);
 
     for (uint i = 0; i < cloud->num_pts; i++) {
@@ -460,7 +460,7 @@ struct cloud* cloud_cut_center(struct cloud* cloud, real cut)
  */
 struct cloud* cloud_cut_plane(struct cloud* cloud, struct plane* plane)
 {
-    struct cloud* sub = cloud_new(0);
+    struct cloud* sub = cloud_empty();
     
     for (uint i = 0; i < cloud->num_pts; i++)
 		if (plane_on_direction(plane, &cloud->points[i]))
@@ -508,7 +508,7 @@ struct cloud* cloud_cut_cylinder(struct cloud* cloud,
                                  struct vector3* dir,
                                  real radius)
 {
-	struct cloud* sub = cloud_new(0);
+	struct cloud* sub = cloud_empty();
 	real dirl = vector3_length(dir);
 	real dist = 0.0f;
 	
@@ -540,7 +540,7 @@ struct cloud* cloud_segment(struct cloud* cloud,
                             struct vector3* dir,
                             real epslon)
 {
-	struct cloud* sub = cloud_new(0);
+	struct cloud* sub = cloud_empty();
 	struct plane* plane = plane_new(dir, ref);
 	
 	for (uint i = 0; i < cloud->num_pts; i++)
@@ -742,7 +742,7 @@ struct cloud* cloud_binary_mask(struct cloud* cloud)
 {
 	cloud_sort(cloud);
 	
-	struct cloud* mask = cloud_new(0);
+	struct cloud* mask = cloud_empty();
 	struct vector3* refpoint = cloud_min_z(cloud);
 	cloud_add_point_cpy(mask, refpoint);
 	

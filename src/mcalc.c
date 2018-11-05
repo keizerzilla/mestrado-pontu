@@ -29,17 +29,22 @@ void extraction_help()
 	printf("mcalc - Calculador de Momentos 3D\n");
 	printf("autor - Artur Rodrigues Rocha Neto (UFC/LATIN/INTERFACES)\n");
     printf("faltando argumentos! obrigatorios: [ -m | -i | -o | -c ]\n");
+    
     printf(" -m: momento usado para extracao de atributos\n");
-    printf(" [hututu, hu1980, zernike, legendre ou chebyshev]\n");
+    printf("     hututu, hu1980, zernike, legendre ou chebyshev\n");
+    
     printf(" -i: nuvem de entrada no formato XYZ\n");
-    printf(" [../data/bunny.xyz, face666.xyz, ~/bs/bs001.xyz, etc]\n");
+    printf("     ../data/bunny.xyz, face666.xyz, ~/bs/bs001.xyz, etc\n");
+    
     printf(" -o: arquivo aonde os momentos serao salvos\n");
-    printf(" [path para arquivo texto ou stdout para saida padrao]\n");
+    printf("     path para arquivo texto ou stdout para saida padrao\n");
+    
     printf(" -c: tipo de corte\n");
-    printf(" [w: nenhum, s: sagital, t: transversal, f: frontal, r: radial]\n");
+    printf("     w: nenhum, s: sagital, t: transversal\n");
+    printf("     f: frontal, r: radial, u: parte superior\n");
+    
     printf("ex1: mcalc -m hu_1980 -i ../data/cloud1.xyz -o hu1.txt -c t\n");
-    printf("ex2: mcalc -m legendre -i ../dataset/bunny.xyz -o stdout -c w\n");
-    printf("\n");
+    printf("ex2: mcalc -m legendre -i ../dataset/bunny.xyz -o stdout -c w\n\n");
 }
 
 /**
@@ -187,6 +192,29 @@ struct matrix* extraction_radial(struct cloud* cloud,
 }
 
 /**
+ * \brief Extrái momentos usando a parte superior da nuvem (já alinhada)
+ * \param cloud A nuvem alvo
+ * \param mfunc A função extratora de momentos
+ * \return A matrix com os momentos extraídos
+ */
+struct matrix* extraction_upper(struct cloud* cloud,
+                                struct matrix* (*mfunc)(struct cloud*))
+{
+	struct vector3* dir = vector3_new(0, 1, 0);
+	struct vector3* point = cloud_get_center(cloud);
+	struct plane* plane = plane_new(dir, point);
+	struct cloud* sub = cloud_cut_plane(cloud, plane);
+	struct matrix* ans = (*mfunc)(sub);
+	
+	cloud_free(sub);
+	plane_free(plane);
+	vector3_free(point);
+	vector3_free(dir);
+	
+	return ans;
+}
+
+/**
  * \brief Interface para análise de nuvens de pontos
  * \param argc Número de parâmetros passados pela linha de comando
  * \param argv Parâmetros passados por linha de comando
@@ -254,6 +282,8 @@ void extraction_interface(int argc, char** argv)
 		results = extraction_frontal(cloud, mfunc);
 	else if (!strcmp(cut, "r"))
 		results = extraction_radial(cloud, mfunc);
+	else if (!strcmp(cut, "u"))
+		results = extraction_upper(cloud, mfunc);
 	else
 		results = (*mfunc)(cloud);
 	
