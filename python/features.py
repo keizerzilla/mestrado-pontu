@@ -4,7 +4,7 @@ Artur Rodrigues Rocha Neto
 2018
 
 Funções para extração de momentos. Até o momento, o padrão de arquivo Bosphorus
-é um único suportado. Mudanças futuras: FRGC e EUROCOM
+é um único suportado. Mudanças futuras: FRGC e EURECOM.
 """
 
 import os
@@ -31,14 +31,15 @@ def moment_extraction_cloud(moment, cloud, cut):
 	path, filename = os.path.split(cloud)
 	match = parse.parse(parse_fmt, filename)
 	
-	cl = str(match[0])
+	subject = str(match[0])
 	tp = str(match[1])
 	ex = str(match[2])
-	ix = str(match[3])
+	sample = str(match[3])
 	
 	cmd = [mcalc_exec, "-m", moment, "-i", cloud, "-o", "stdout", "-c", cut]
 	ans = subprocess.run(cmd, stdout=subprocess.PIPE, encoding="utf-8").stdout
-	ans = ans[:-2].replace(" ", ",") + ",{},{}\n".format(ix, cl)
+	ans = ans[:-2].replace(" ", ",")
+	ans = ans + ",{},{}\n".format(sample, subject)
 	
 	return ans
 
@@ -53,7 +54,7 @@ def moment_extraction_batch(moment, cut, dataset, output):
 	:param output: arquivo de saída aonde os momentos serão salvos
 	"""
 	
-	print("[{:<10}]-[{}]".format(moment, dataset))
+	print("[{:<10}]-[{}]-[{}]".format(moment, cut, dataset))
 	i = 0
 	with open(output, "w") as dump:
 		for cloud in os.listdir(dataset):

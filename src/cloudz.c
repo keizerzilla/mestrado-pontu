@@ -142,7 +142,11 @@ int prompt(struct cloud* cloud)
 	char param[PARAM_SIZE];
 	
 	printf("> ");
-	fgets(input, INPUT_SIZE, stdin);
+	if (fgets(input, INPUT_SIZE, stdin) == NULL) {
+		util_error("input error...");
+		exit(1);
+	}
+	
 	if ((strlen(input) > 0) && (input[strlen(input) - 1] == '\n'))
 		input[strlen(input) - 1] = '\0';
 	

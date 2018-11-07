@@ -130,7 +130,6 @@ struct matrix* hu_cloud_moments_hututu(struct cloud* cloud)
 	struct hu hu_xy;
 	struct hu hu_xz;
 	struct hu hu_yz;
-	
     real a;
     real b;
     real c;

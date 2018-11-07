@@ -74,11 +74,10 @@ def run_classification(X_train, y_train, X_test, y_test, verbose=False):
 	# remocao de skewness
 	new_train = []
 	new_test = []
+	pt = PowerTransformer(method="yeo-johnson", standardize=False) # antes True
 	for m_train, m_test in zip(X_train.T, X_test.T):
 		data_train = m_train.reshape(-1, 1)
 		data_test = m_test.reshape(-1, 1)
-		#pt = PowerTransformer(method="yeo-johnson", standardize=True)
-		pt = PowerTransformer(method="yeo-johnson", standardize=False)
 		pt.fit(data_train)
 		new_train.append(np.ravel(pt.transform(data_train)))
 		new_test.append(np.ravel(pt.transform(data_test)))
@@ -326,4 +325,51 @@ def max_confusion(ans):
 	for i in range(diff.shape[0]):
 		if diff[i, 0] != diff[i, 1]:
 			print("[{}]:\t{}".format(i, diff[i,:]))
+
+def combination(dataset, n=2):
+	"""
+	Executa classificações exaustivas para uma lista de combinações de momentos.
+	
+	:param dataset: conjunto de dados base a ser testado
+	:param n: número de elementos por combinação
+	"""
+	
+	basepath = "../results/"
+	
+	slices = ["frontal/",
+	          "radial/",
+	          "sagittal/",
+	          "transversal/",
+	          "whole/",
+	          "upper/"]
+	
+	moments = ["neutral-hu1980.dat",
+		       "neutral-hututu.dat",
+		       "neutral-legendre.dat",
+		       "neutral-chebyshev.dat",
+		       "neutral-zernike.dat"]
+	
+	moments = [dataset + "/" + m for m in moments]
+	products = list(itertools.product(slices, moments))
+	configs = [basepath + p[0] + p[1] for p in products]
+	combos = list(itertools.combinations(configs, n))
+	settings = [[(c[i].split("/")[2], os.path.basename(c[i])) for i in range(n)]
+	            for c in combos]
+	
+	cols = ["setting", "classifier", "rate"]
+	df = pd.DataFrame(columns=cols)
+	
+	for setting, combo in zip(settings, combos):
+		classifier, rate = max_rate(rank1_concat(combo))
+		rate = round(rate*100, 2)
+		setting = str(setting)
+		result = "[{}] [{}] [{}]".format(setting, classifier, rate)
+		row = {"setting" : setting, "classifier" : classifier, "rate" : rate}
+		df = df.append(row, ignore_index=True)
+		print(result)
+	
+	res_path = "../results/combination{}/".format(n)
+	os.makedirs(res_path, exist_ok=True)
+	
+	df.to_csv(res_path + "{}.csv".format(dataset), index=False)
 

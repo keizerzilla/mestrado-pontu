@@ -1,14 +1,15 @@
-# targets de compilacao
-all: mcalc cloudz radialcut
+# configs
+CC = gcc
+COMPILER_FLAGS = -Wall -O3
+LINKER_FLAGS = -lm
+
+# alvos de compilacao
+all: mcalc cloudz
 
 # programa extrator de momentos invariantes
 mcalc: mcalc.c
-	gcc mcalc.c -lm -Wall -o ../bin/mcalc
+	$(CC) mcalc.c $(COMPILER_FLAGS) $(LINKER_FLAGS) -o ../bin/mcalc
 
 # utilitario manipulador de nuvens via linha de comando
 cloudz: cloudz.c
-	gcc cloudz.c -lm -Wall -o ../bin/cloudz
-
-# utilitario que corta a nuvem de formas radiais
-radialcut: radialcut.c
-	gcc radialcut.c -lm -Wall -o ../bin/radialcut
+	$(CC) cloudz.c $(COMPILER_FLAGS) $(LINKER_FLAGS) -o ../bin/cloudz
