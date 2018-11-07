@@ -1,9 +1,9 @@
 from dataset import *
 from features import *
 from classification import *
-from pathlib import Path
+from combination import *
 
-faces = ["neutral", "nonneutral"]
+faces = ["neutral"]
 
 """
 cuts = {"f" : "frontal",
@@ -21,11 +21,11 @@ replace_dict = {"bosphorus" : "bs",
                 "densit" : "d",
                 "crop" : "c"}
 
-scenarios = ["bosphorus-outlier-densit200-crop80-icp"]
+scenarios = ["bosphorus-outlier-densit200-crop70-icp"]
 
-moments = ["hu1980", "hututu", "legendre", "chebyshev", "zernike"]
+moments = ["hu1980", "hututu"]
 
-"""
+start = time.time()
 for face in faces:
 	datasets = ["../datasets/" + x + "/{}".format(face) for x in scenarios]
 	for cut, cut_folder in cuts.items():
@@ -42,9 +42,10 @@ for face in faces:
 				out = folder
 				out = out + "{}-{}.dat".format(face, moment)
 				moment_extraction_batch(moment, cut, data, out)
+end = time.time()
+print(end - start)
+
 """
-
-
 cols = ["dataset"] + moments
 for face in faces:
 	datasets = ["../datasets/" + x + "/{}".format(face) for x in scenarios]
@@ -84,5 +85,27 @@ for face in faces:
 			df = df.append(row, ignore_index=True)
 		
 		#df.to_csv("../results/{}-{}.csv".format(face, cut_folder), index=False)
+"""
 
+"""
+datasets = ["bosphorus",
+		    "bosphorus-outlier",
+		    "bosphorus-outlier-densit200",
+		    "bosphorus-outlier-densit200-crop60",
+		    "bosphorus-outlier-densit200-crop70",
+		    "bosphorus-outlier-densit200-crop80",
+		    "bosphorus-outlier-densit200-crop60-icp",
+            "bosphorus-outlier-densit200-crop70-icp",
+            "bosphorus-outlier-densit200-crop80-icp",
+		    "bosphorus-outlier-densit225",
+		    "bosphorus-outlier-densit225-crop60",
+		    "bosphorus-outlier-densit225-crop70",
+		    "bosphorus-outlier-densit225-crop80",
+            "bosphorus-outlier-densit225-crop60-icp",
+            "bosphorus-outlier-densit225-crop70-icp",
+            "bosphorus-outlier-densit225-crop80-icp"]
 
+for dataset in datasets:
+	combination(dataset, 3)
+
+"""

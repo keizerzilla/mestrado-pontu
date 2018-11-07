@@ -5,19 +5,14 @@ Artur Rodrigues Rocha Neto
 
 Funções para classificação, análise de resultados e pré-processamento.
 Os arquivos de dados com as features/atributos devem estar no formato:
-
 - p+2 colunas, onde p é o número de atributos
 - as duas colunas finais devem ser, respectivamente, amostra e classe
 - os arquivos NÃO DEVEM POSSUIR CABEÇALHO!
 - exemplo:
-	
 	1,2,3,4,5,6,9,7 # seis atributos, amostra 9, classe 7
 	8,4,9,2,0,2,1,2 # seis atributos, amostra 1, classe 2
 	3,9,1,5,0,3,4,9 # seis atributos, amostra 4, classe 9
 	(...)
-	
-Fonte1: http://scikit-learn.org/stable/modules/model_evaluation.html
-Fonte2: http://www.zvetcobiometrics.com/Support/definitions.php
 """
 
 import time
@@ -57,42 +52,20 @@ names = [
 	"MLP",
 	"LDA"]
 
-grids = [
-	{
-	  "p"           : [1, 2],
-	  "metric"      : ["chebyshev", "minkowski", "manhattan"],
-	  "weights"     : ["uniform", "distance"],
-	  "algorithm"   : ["ball_tree", "kd_tree", "brute"],
-	  "leaf_size"   : [1, 5, 10, 15, 20, 25, 30, 35, 40],
-	  "n_neighbors" : [1, 2, 3]
-	},
-	{
-	  "C"                       : [x for x in range(1, 11)],
-	  "tol"                     : [1e-4, 1e-3, 1e-2, 1e-1, 1e0],
-	  "gamma"                   : [0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875],
-	  "coef0"                   : [0.0, 0.1, 0.2, 0.3, 0.4, 0.5],
-	  "kernel"                  : ["linear", "rbf", "poly", "sigmoid"],
-	  "degree"                  : [2, 3, 4, 5],
-	  "shrinking"               : [True, False],
-	  "probability"             : [True, False],
-	  "decision_function_shape" : ["ovo", "ovr"]
-	}
-]
-
-"""
-Roda os classificadores em estudo para um dado conjunto de treino e teste. Essa
-é a função mais genérica e mais importante desse script. Performa normalização e
-remoção de viês.
-
-X_train -- amostras de treino
-y_train -- classes das amostras de treino
-X_test -- amostras de teste
-y_test -- classes das amostras de teste
-verbose -- se o resultado deve ser mostrado ou não na saída padrão
-
-return -- Dicionário com taxa de reconhecimento e predições das classificações
-"""
 def run_classification(X_train, y_train, X_test, y_test, verbose=False):
+	"""
+	Roda os classificadores em estudo para um dado conjunto de treino e teste.
+	Essa é a função mais genérica e mais importante desse script. Performa
+	normalização e remoção de viês.
+
+	:param X_train: amostras de treino
+	:param y_train: classes das amostras de treino
+	:param X_test: amostras de teste
+	:param y_test: classes das amostras de teste
+	:param verbose: se o resultado deve ser mostrado ou não na saída padrão
+	:return: dicionário com taxas de reconhecimento e predições
+	"""
+	
 	# normalizacao
 	scaler = StandardScaler().fit(X_train)
 	X_train = scaler.transform(X_train)
@@ -145,16 +118,16 @@ def run_classification(X_train, y_train, X_test, y_test, verbose=False):
 	
 	return ans
 
-"""
-Executa classificação RANK-1 usando os classificadores em pesquisa. Treino:
-amostra 0 de cada pose neutra. Teste: restante das amostras neutras
-(amostra diferente de 0).
-
-features -- O caminho para o dados extraídos das amostras neutras
-
-return -- Dicionário com taxa de reconhecimento e predições das classificações
-"""
 def rank1_neutral(features):
+	"""
+	Executa classificação RANK-1 usando os classificadores em pesquisa. Treino:
+	amostra 0 de cada pose neutra. Teste: restante das amostras neutras
+	(amostra diferente de 0).
+
+	:param features: caminho para o dados extraídos das amostras neutras
+	:return: dicionário com taxas de reconhecimento e predições
+	"""
+	
 	df = pd.read_csv(features, header=None)
 	cs = ["f"+str(x) for x in range(len(df.columns)-2)] + ["sample", "subject"]
 	df.columns = cs
@@ -170,16 +143,16 @@ def rank1_neutral(features):
 	# execucao dos classificadores
 	return run_classification(X_train, y_train, X_test, y_test)
 
-"""
-Executa classificação RANK-1 usando os classificadores em pesquisa. Classes com
-apenas uma amostra não são usadas! Treino: amostra 0 de cada pose neutra. Teste:
-restante das amostras neutras (amostra diferente de 0).
-
-features -- O caminho para o dados extraídos das amostras neutras
-
-return -- Dicionário com taxa de reconhecimento e predições das classificações
-"""
 def rank1_neutral_easy(features):
+	"""
+	Executa classificação RANK-1 usando os classificadores em pesquisa. Classes
+	com apenas uma amostra não são usadas! Treino: amostra 0 de cada pose
+	neutra. Teste: restante das amostras neutras (amostra diferente de 0).
+
+	:param features: caminho para o dados extraídos das amostras neutras
+	:param return: dicionário com taxas de reconhecimento e predições
+	"""
+	
 	df = pd.read_csv(features, header=None)
 	cs = ["f"+str(x) for x in range(len(df.columns)-2)] + ["sample", "subject"]
 	df.columns = cs
@@ -201,16 +174,16 @@ def rank1_neutral_easy(features):
 	# execucao dos classificadores
 	return run_classification(X_train, y_train, X_test, y_test)
 
-"""
-Executa classificação RANK-1 usando os classificadores em pesquisa. Treino:
-amostra 0 de cada pose neutra. Teste: todas as amostras não-neutras.
-
-feat_neutral -- O caminho para o dados extraídos das amostras neutras
-feat_nonneutral -- O caminho para os dados extraídos das amostras não-neutras
-
-return -- Dicionário com taxa de reconhecimento e predições das classificações
-"""
 def rank1_nonneutral(feat_neutral, feat_nonneutral):
+	"""
+	Executa classificação RANK-1 usando os classificadores em pesquisa. Treino:
+	amostra 0 de cada pose neutra. Teste: todas as amostras não-neutras.
+
+	:param feat_neutral: caminho para os dados das amostras neutras
+	:param feat_nonneutral: caminho para os dados das amostras não-neutras
+	:return: dicionário com taxas de reconhecimento e predições
+	"""
+	
 	# neutras: conjunto de treino
 	df = pd.read_csv(feat_neutral, header=None)
 	cs = ["f"+str(x) for x in range(len(df.columns)-2)] + ["sample", "subject"]
@@ -232,16 +205,16 @@ def rank1_nonneutral(feat_neutral, feat_nonneutral):
 	# execucao dos classificadores
 	return run_classification(X_train, y_train, X_test, y_test)
 
-"""
-Executa classificação ROC-1 usando os classificadores em pesquisa. Treino: todas
-as amostras neutras. Teste: todas as amostras não-neutras.
-
-feat_neutral -- O caminho para o dados extraídos das amostras neutras
-feat_nonneutral -- O caminho para os dados extraídos das amostras não-neutras
-
-return -- Dicionário com taxa de reconhecimento e predições das classificações
-"""
 def roc1(feat_neutral, feat_nonneutral):
+	"""
+	Executa classificação ROC-1 usando os classificadores em pesquisa. Treino:
+	todas as amostras neutras. Teste: todas as amostras não-neutras.
+
+	:param feat_neutral: caminho para os dados das amostras neutras
+	:param feat_nonneutral: O caminho para os dados das amostras não-neutras
+	:return: dicionário com taxas de reconhecimento e predições
+	"""
+	
 	# neutras: conjunto de treino
 	df = pd.read_csv(feat_neutral, header=None)
 	cs = ["f"+str(x) for x in range(len(df.columns)-2)] + ["sample", "subject"]
@@ -263,16 +236,17 @@ def roc1(feat_neutral, feat_nonneutral):
 	# execucao dos classificadores
 	return run_classification(X_train, y_train, X_test, y_test)
 
-"""
-Executa classificação RANK-1 usando os classificadores em pesquisa. O conjunto
-de treino e teste é a concatenação de n momentos. Treino: amostra 0 de cada pose
-neutra. Teste: restante das amostras neutras (amostra diferente de 0).
-
-moments -- Lista ou tupla de momentos
-
-return -- Dicionário com taxa de reconhecimento e predições das classificações
-"""
 def rank1_concat(moments):
+	"""
+	Executa classificação RANK-1 usando os classificadores em pesquisa. O
+	conjunto de treino e teste é a concatenação de n momentos. Treino: amostra 0
+	de cada pose neutra. Teste: restante das amostras neutras (amostra diferente
+	de 0).
+
+	:param moments: lista ou tupla de momentos
+	:return: dicionário com taxas de reconhecimento e predições
+	"""
+	
 	x_train_list = []
 	x_test_list = []
 	y_train_list = []
@@ -305,15 +279,15 @@ def rank1_concat(moments):
 	# executa classificadores
 	return run_classification(X_train, y_train, X_test, y_test)
 
-"""
-Monta matriz de confusão para um resultado de classificação, plota e calcula
-algumas métricas. Incompleta!!!
-
-y_true -- Verdade terrestre
-y_pred -- Classes estimadas
-classes -- As classes do problema
-"""
 def confusion(y_true, y_pred, classes=[]):
+	"""
+	Monta matriz de confusão para um resultado de classificação.
+
+	:param y_true: verdade terrestre
+	:param y_pred: classes estimadas
+	:param classes: As classes do problema
+	"""
+	
 	conf = confusion_matrix(y_true, y_pred, labels=classes)
 	sn.heatmap(conf, cmap="Purples")
 	
@@ -327,25 +301,26 @@ def confusion(y_true, y_pred, classes=[]):
 	plt.tight_layout()
 	plt.show()
 
-"""
-Separa a melhor taxa de acerto de uma saída de classificação.
-
-ans -- A resposta de classificação no formato de dicionário
-
-return -- classificador e taxa
-"""
 def max_rate(ans):
+	"""
+	Separa a melhor taxa de acerto de uma saída de classificação.
+
+	:param ans: resposta de classificação no formato de dicionário
+	:return: classificador e taxa
+	"""
+	
 	rates = dict((key, value["recog"]) for key, value in ans.items())
 	lemax = max(rates.items(), key=operator.itemgetter(1))
 	return lemax[0], lemax[1]
 
-"""
-Monta uma matriz com as predições e os reais da maior taxa de acerto de uma
-resposta de classificação.
-
-ans -- A resposta de classificação no formato de dicionário
-"""
 def max_confusion(ans):
+	"""
+	Monta uma matriz com as predições e os reais da maior taxa de acerto de uma
+	resposta de classificação.
+
+	:param ans: resposta de classificação no formato de dicionário
+	"""
+	
 	classifier, rate = max_rate(ans)
 	diff = np.array([ans[classifier]["y_true"], ans[classifier]["y_pred"]]).T
 	for i in range(diff.shape[0]):

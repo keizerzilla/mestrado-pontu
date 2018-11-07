@@ -11,12 +11,13 @@ import sys
 import shutil
 import subprocess
 
-"""
-Normaliza as extenções dos arquivos de nuvem (FUNÇÃO HISTÓRICA).
-
-source -- A pasta com os arquivos a serem convertidos
-"""
 def cloud2xyz(source):
+	"""
+	Normaliza as extenções dos arquivos de nuvem (FUNÇÃO HISTÓRICA).
+
+	:param source: pasta com os arquivos a serem convertidos
+	"""
+	
 	for filename in os.listdir(source):
 		inpf = os.path.join(source, filename)
 		
@@ -27,13 +28,14 @@ def cloud2xyz(source):
 		output = os.rename(inpf, newname)
 		print(filename + " OK")
 
-"""
-Converte conjunto de nuvens .xyz em formato .pcd usando pcl_xyz2pcd
-
-source -- A pasta com os arquivos a serem convertidos
-dest -- Pasta destino das nuvens convertidas
-"""
 def xyz2pcd(source, dest):
+	"""
+	Converte conjunto de nuvens .xyz em formato .pcd usando pcl_xyz2pcd
+
+	:param source: pasta com os arquivos a serem convertidos
+	:param dest: pasta destino das nuvens convertidas
+	"""
+	
 	for cloud in os.listdir(source):
 		inpf = os.path.join(source, cloud)
 		
@@ -45,13 +47,14 @@ def xyz2pcd(source, dest):
 		subprocess.call(cmd)
 		print(outf + " OK")
 
-"""
-Converte conjunto de nuvens .pcd em formato .xyz usando pcl_pcd2ply + Python
-
-source -- A pasta com os arquivos a serem convertidos
-dest -- Pasta destino das nuvens convertidas
-"""
 def pcd2xyz(source, dest):
+	"""
+	Converte conjunto de nuvens .pcd em formato .xyz usando pcl_pcd2ply
+
+	:param source: pasta com os arquivos a serem convertidos
+	:param dest: pasta destino das nuvens convertidas
+	"""
+	
 	for cloud in os.listdir(source):
 		inpf = os.path.join(source, cloud)
 		
@@ -75,13 +78,14 @@ def pcd2xyz(source, dest):
 		
 		print(outf + " OK")
 
-"""
-Converte conjunto de nuvens .obj em formato .xyz usando pcl_obj2ply + Python
-
-source -- A pasta com os arquivos a serem convertidos
-dest -- Pasta destino das nuvens convertidas
-"""
 def obj2xyz(source, dest):
+	"""
+	Converte conjunto de nuvens .obj em formato .xyz usando pcl_obj2ply
+
+	:param source: pasta com os arquivos a serem convertidos
+	:param dest: pasta destino das nuvens convertidas
+	"""
+	
 	for cloud in os.listdir(source):
 		inpf = os.path.join(source, cloud)
 		
@@ -105,14 +109,15 @@ def obj2xyz(source, dest):
 		
 		print(outf + " OK")
 
-"""
-Pega nome dos arquivos de uma pasta para melhor separar conjuntos neutral e
-nonneutral no futuro
-
-folder -- Pasta com as nuvens
-output -- arquivo com os nomes das nuvens
-"""
 def bosphorus_filenames(folder, output):
+	"""
+	Pega nome dos arquivos de uma pasta para melhor separar conjuntos neutral e
+	nonneutral no futuro
+
+	:param folder: pasta com as nuvens
+	:param output: arquivo com os nomes das nuvens
+	"""
+	
 	with open(output, "w") as dump:
 		for cloud in os.listdir(folder):
 			inpf = os.path.join(folder, cloud)
@@ -122,13 +127,14 @@ def bosphorus_filenames(folder, output):
 			
 			dump.write(os.path.splitext(cloud)[0] + "\n")
 
-"""
-Agrupa todas as nuvens de um diretório divido por indivíduo em uma pasta só.
-
-source -- Pasta com nuvens divididas por indivíduo
-dest -- Pasta com todas as nuvens juntas
-"""
 def bosphorus_group(source, dest):
+	"""
+	Agrupa todas as nuvens de um diretório divido por indivíduo em uma pasta só.
+
+	:param source: pasta com nuvens divididas por indivíduo
+	:param dest: pasta com todas as nuvens juntas
+	"""
+	
 	for path in os.listdir(source):
 		folder = os.path.join(source, path)
 		if os.path.isdir(folder):
@@ -138,17 +144,18 @@ def bosphorus_group(source, dest):
 				shutil.move(srcf, dstf)
 				print("{} OK".format(dstf))
 
-"""
-Separa os conjuntos neutral, nonneutral e other de um base de arquivos no
-formato bosphorus. Os arquivos contendo os nomes dos arquivos devem estar numa
-pasta chamada 'res/'.
-
-folder -- Pasta com o conjunto completo
-dirneutral -- Pasta que ficarão salvas as nuvens neutras
-dirnonneutral -- Pasta que ficarão salvas as nuvens não-neutras
-dirother -- Pasta que ficarão salvas as nuvens nem neutras nem não-neutras
-"""
 def bosphorus_split(folder, dirneutral, dirnonneutral, dirother):
+	"""
+	Separa os conjuntos neutral, nonneutral e other de um base de arquivos no
+	formato bosphorus. Os arquivos contendo os nomes dos arquivos devem estar
+	numa pasta chamada 'res/'.
+
+	:param folder: pasta com o conjunto completo
+	:param dirneutral: pasta que ficarão salvas as nuvens neutras
+	:param dirnonneutral: pasta que ficarão salvas as nuvens não-neutras
+	:param dirother: pasta que ficarão salvas as demais nuvens
+	"""
+	
 	neutrals = []
 	nonneutrals = []
 	
@@ -171,14 +178,15 @@ def bosphorus_split(folder, dirneutral, dirnonneutral, dirother):
 		else:
 			shutil.move(inpf, os.path.join(dirother, cloud))
 
-"""
-A única função que você precisará na sua vida! Agrupa, divide e converte as
-nuvens de um diretório em formato bosphorus, criando o ambiente completo para
-testes.
-
-folder -- Pasta com o conjunto completo
-"""
 def bosphorus_setup(folder):
+	"""
+	A única função que você precisará na sua vida! Agrupa, divide e converte as
+	nuvens de um diretório em formato bosphorus, criando o ambiente completo
+	para testes.
+
+	:param folder: pasta com o conjunto completo
+	"""
+	
 	try:
 		os.mkdir(folder+"/all")
 		os.mkdir(folder+"/neutral")
@@ -195,14 +203,15 @@ def bosphorus_setup(folder):
 	pcd2xyz(folder+"/neutral", folder+"/neutral")
 	pcd2xyz(folder+"/nonneutral", folder+"/nonneutral")
 
-"""
-Cria cortes radiais em uma base inteira.
-
-folder -- Pasta contendo as nuvens alvo
-output -- Pasta aonde as nuvens cortadas ficarão salvas
-cut -- Tamanho do corte em milímetros
-"""
 def batch_cut(folder, output, cut):
+	"""
+	Cria cortes radiais em uma base inteira.
+
+	:param folder: pasta contendo as nuvens alvo
+	:param output: pasta aonde as nuvens cortadas ficarão salvas
+	:param cut: Tamanho do corte em milímetros
+	"""
+	
 	for cloud in os.listdir(folder):
 		inpf = os.path.join(folder, cloud)
 		
@@ -212,7 +221,4 @@ def batch_cut(folder, output, cut):
 		cmd = ["../bin/radialcut", inpf, str(cut), output+"/"+cloud]
 		subprocess.call(cmd)
 		print("{} OK!".format(cloud))
-
-"""
-"""
 
