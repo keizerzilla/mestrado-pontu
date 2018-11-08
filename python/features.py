@@ -54,7 +54,7 @@ def moment_extraction_batch(moment, cut, dataset, output):
 	:param output: arquivo de saída aonde os momentos serão salvos
 	"""
 	
-	print("[{:<10}] - [{}] - [{}]".format(moment, cut, dataset))
+	print("[{:<10}] - [ {} ] - [{}]".format(moment, cut, dataset))
 	i = 0
 	with open(output, "w") as dump:
 		for cloud in os.listdir(dataset):

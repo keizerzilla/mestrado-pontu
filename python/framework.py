@@ -3,16 +3,13 @@ from features import *
 from classification import *
 
 faces = ["neutral", "nonneutral"]
-"""
+
 cuts = {"f" : "frontal",
         "r" : "radial",
         "s" : "sagittal",
         "t" : "transversal",
         "w" : "whole",
         "u" : "upper",
-        "l" : "lower"}
-"""
-cuts = {"u" : "upper",
         "l" : "lower"}
 
 replace_dict = {"bosphorus" : "bs",
@@ -27,7 +24,7 @@ scenarios= ["bosphorus-outlier-densit200-crop60-icp",
             "bosphorus-outlier-densit225-crop70-icp",
             "bosphorus-outlier-densit225-crop80-icp"]
 
-moments = ["hututu", "hu1980", "legendre", "chebyshev", "zernike"]
+moments = ["hututu", "hu1980", "husiq", "legendre", "chebyshev", "zernike"]
 
 for face in faces:
 	datasets = ["../datasets/" + x + "/{}".format(face) for x in scenarios]

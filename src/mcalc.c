@@ -15,11 +15,19 @@
 #include "include/cloud.h"
 #include "include/util.h"
 
-#define HU_TUTU "hututu"
-#define HU_1980 "hu1980"
-#define ZERNIKE "zernike"
-#define LEGENDRE "legendre"
-#define CHEBYSHEV "chebyshev"
+#define HU_TUTU			"hututu"
+#define HU_1980			"hu1980"
+#define HU_SIQ			"husiq"
+#define ZERNIKE			"zernike"
+#define LEGENDRE		"legendre"
+#define CHEBYSHEV		"chebyshev"
+#define CUT_WHOLE		"w"
+#define CUT_SAGITTAL	"s"
+#define CUT_TRANSVERSAL	"t"
+#define CUT_FRONTAL		"f"
+#define CUT_RADIAL		"r"
+#define CUT_UPPER		"u"
+#define CUT_LOWER		"l"
 
 /**
  * \brief Exibe mensagem ao usuário informando como usar o extrator de momentos
@@ -31,7 +39,7 @@ void extraction_help()
     printf("faltando argumentos! obrigatorios: [ -m | -i | -o | -c ]\n");
     
     printf(" -m: momento usado para extracao de atributos\n");
-    printf("     hututu, hu1980, zernike, legendre ou chebyshev\n");
+    printf("     hututu, hu1980, husiq, zernike, legendre ou chebyshev\n");
     
     printf(" -i: nuvem de entrada no formato XYZ\n");
     printf("     ../data/bunny.xyz, face666.xyz, ~/bs/bs001.xyz, etc\n");
@@ -73,12 +81,6 @@ struct matrix* extraction_plane(struct cloud* cloud,
 	cloud_plane_partition(par1, plane_fh, par1_fh, par2_fh);
 	
 	struct matrix* r1 = matrix_concat_hor((*mfunc)(par1_fh), (*mfunc)(par2_fh));
-	
-	plane_free(plane_fh);
-	vector3_free(pt_fh);
-	cloud_free(par2_fh);
-	cloud_free(par1_fh);
-	
 	struct cloud* par1_sh = cloud_empty();
 	struct cloud* par2_sh = cloud_empty();
 	struct vector3* pt_sh = cloud_get_center(par2);
@@ -87,14 +89,16 @@ struct matrix* extraction_plane(struct cloud* cloud,
 	cloud_plane_partition(par2, plane_sh, par1_sh, par2_sh);
 	
 	struct matrix* r2 = matrix_concat_hor((*mfunc)(par1_sh), (*mfunc)(par2_sh));
+	struct matrix* ans = matrix_concat_hor(r1, r2);
 	
+	plane_free(plane_fh);
+	vector3_free(pt_fh);
+	cloud_free(par2_fh);
+	cloud_free(par1_fh);
 	plane_free(plane_sh);
 	vector3_free(pt_sh);
 	cloud_free(par2_sh);
 	cloud_free(par1_sh);
-	
-	struct matrix* ans = matrix_concat_hor(r1, r2);
-	
 	matrix_free(r2);
 	matrix_free(r1);
 	plane_free(plane);
@@ -201,7 +205,6 @@ struct matrix* extraction_upper(struct cloud* cloud,
                                 struct matrix* (*mfunc)(struct cloud*))
 {
 	struct vector3* norm = vector3_new(0, 1, 0);
-	//struct vector3* point = cloud_get_center(cloud);
 	struct vector3* point = cloud_min_z(cloud);
 	struct plane* plane = plane_new(norm, point);
 	struct cloud* sub = cloud_cut_plane(cloud, plane);
@@ -225,7 +228,6 @@ struct matrix* extraction_lower(struct cloud* cloud,
                                 struct matrix* (*mfunc)(struct cloud*))
 {
 	struct vector3* norm = vector3_new(0, -1, 0);
-	//struct vector3* point = cloud_get_center(cloud);
 	struct vector3* point = cloud_min_z(cloud);
 	struct plane* plane = plane_new(norm, point);
 	struct cloud* sub = cloud_cut_plane(cloud, plane);
@@ -281,6 +283,8 @@ void extraction_interface(int argc, char** argv)
         mfunc = &hu_cloud_moments_hututu;
     else if (!strcmp(moment, HU_1980))
         mfunc = &hu_cloud_moments_hu1980;
+    else if (!strcmp(moment, HU_SIQ))
+        mfunc = &hu_cloud_moments_husiq;
     else if (!strcmp(moment, LEGENDRE))
         mfunc = &legendre_cloud_moments;
     else if (!strcmp(moment, CHEBYSHEV))
@@ -297,19 +301,19 @@ void extraction_interface(int argc, char** argv)
     }
 	
 	struct matrix* results = NULL;
-	if (!strcmp(cut, "w"))
+	if (!strcmp(cut, CUT_WHOLE))
 		results = (*mfunc)(cloud);
-	else if (!strcmp(cut, "s"))
+	else if (!strcmp(cut, CUT_SAGITTAL))
 		results = extraction_sagittal(cloud, mfunc);
-	else if (!strcmp(cut, "t"))
+	else if (!strcmp(cut, CUT_TRANSVERSAL))
 		results = extraction_transversal(cloud, mfunc);
-	else if (!strcmp(cut, "f"))
+	else if (!strcmp(cut, CUT_FRONTAL))
 		results = extraction_frontal(cloud, mfunc);
-	else if (!strcmp(cut, "r"))
+	else if (!strcmp(cut, CUT_RADIAL))
 		results = extraction_radial(cloud, mfunc);
-	else if (!strcmp(cut, "u"))
+	else if (!strcmp(cut, CUT_UPPER))
 		results = extraction_upper(cloud, mfunc);
-	else if (!strcmp(cut, "l"))
+	else if (!strcmp(cut, CUT_LOWER))
 		results = extraction_lower(cloud, mfunc);
 	else
 		results = (*mfunc)(cloud);

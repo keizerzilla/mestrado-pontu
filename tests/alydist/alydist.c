@@ -1,4 +1,5 @@
 #include "../../src/include/cloud.h"
+#include "../../src/include/hu.h"
 
 int main(int argc, char** argv)
 {
@@ -15,6 +16,9 @@ int main(int argc, char** argv)
 	struct cloud* sub = cloud_cut_plane(cloud, plane);
 	
 	cloud_save_xyz(sub, argv[2]);
+	
+	real d = hu_regular_moment(0, 0, 0, cloud);
+	printf("%f\n%u\n", d, cloud_size(cloud));
 	
 	cloud_free(sub);
 	plane_free(plane);
