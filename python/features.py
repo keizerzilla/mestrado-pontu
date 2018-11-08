@@ -37,8 +37,8 @@ def moment_extraction_cloud(moment, cloud, cut):
 	sample = str(match[3])
 	
 	cmd = [mcalc_exec, "-m", moment, "-i", cloud, "-o", "stdout", "-c", cut]
-	ans = subprocess.run(cmd, stdout=subprocess.PIPE, encoding="utf-8").stdout
-	ans = ans[:-2].replace(" ", ",")
+	ans = subprocess.run(cmd, stdout=subprocess.PIPE).stdout
+	ans = ans[:-2].decode("utf-8").replace(" ", ",")
 	ans = ans + ",{},{}\n".format(sample, subject)
 	
 	return ans
