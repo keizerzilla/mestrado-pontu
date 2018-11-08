@@ -66,10 +66,20 @@ def run_classification(X_train, y_train, X_test, y_test, verbose=False):
 	:return: dicionário com taxas de reconhecimento e predições
 	"""
 	
+	ans = dict()
+	
 	# normalizacao
-	scaler = StandardScaler().fit(X_train)
-	X_train = scaler.transform(X_train)
-	X_test = scaler.transform(X_test)
+	try:
+		scaler = StandardScaler().fit(X_train)
+		X_train = scaler.transform(X_train)
+		X_test = scaler.transform(X_test)
+	except:
+		result = dict()
+		result["recog"] = 0
+		result["y_true"] = []
+		result["y_pred"] = []
+		ans["ERROR"] = result
+		return ans
 	
 	# remocao de skewness
 	new_train = []
@@ -86,7 +96,6 @@ def run_classification(X_train, y_train, X_test, y_test, verbose=False):
 	X_test = np.array(new_test).T
 	
 	# execucao dos classificadores e registro dos resultados
-	ans = dict()
 	for name, classifier in zip(names, classifiers):
 		result = dict()
 		clf = classifier

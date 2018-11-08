@@ -570,7 +570,7 @@ struct vector3* cloud_closest_point(struct cloud* cloud, struct vector3* p)
 		}
     }
     
-    return &cloud->points[index];
+    return vector3_from_vector(&cloud->points[index]);
 }
 
 /**
@@ -599,7 +599,7 @@ struct vector3* cloud_min_x(struct cloud* cloud)
 		}
     }
     
-    return &cloud->points[index];
+    return vector3_from_vector(&cloud->points[index]);
 }
 
 /**
@@ -618,7 +618,7 @@ struct vector3* cloud_min_y(struct cloud* cloud)
 		}
     }
     
-    return &cloud->points[index];
+    return vector3_from_vector(&cloud->points[index]);
 }
 
 /**
@@ -637,7 +637,7 @@ struct vector3* cloud_min_z(struct cloud* cloud)
 		}
     }
     
-    return &cloud->points[index];
+    return vector3_from_vector(&cloud->points[index]);
 }
 
 /**
@@ -656,7 +656,7 @@ struct vector3* cloud_max_x(struct cloud* cloud)
 		}
     }
     
-    return &cloud->points[index];
+    return vector3_from_vector(&cloud->points[index]);
 }
 
 /**
@@ -675,7 +675,7 @@ struct vector3* cloud_max_y(struct cloud* cloud)
 		}
     }
     
-    return &cloud->points[index];
+    return vector3_from_vector(&cloud->points[index]);
 }
 
 /**
@@ -694,7 +694,7 @@ struct vector3* cloud_max_z(struct cloud* cloud)
 		}
     }
     
-    return &cloud->points[index];
+    return vector3_from_vector(&cloud->points[index]);
 }
 
 /**

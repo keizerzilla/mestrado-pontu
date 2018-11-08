@@ -200,16 +200,17 @@ struct matrix* extraction_radial(struct cloud* cloud,
 struct matrix* extraction_upper(struct cloud* cloud,
                                 struct matrix* (*mfunc)(struct cloud*))
 {
-	struct vector3* dir = vector3_new(0, 1, 0);
-	struct vector3* point = cloud_get_center(cloud);
-	struct plane* plane = plane_new(dir, point);
+	struct vector3* norm = vector3_new(0, 1, 0);
+	//struct vector3* point = cloud_get_center(cloud);
+	struct vector3* point = cloud_min_z(cloud);
+	struct plane* plane = plane_new(norm, point);
 	struct cloud* sub = cloud_cut_plane(cloud, plane);
 	struct matrix* ans = (*mfunc)(sub);
 	
 	cloud_free(sub);
 	plane_free(plane);
 	vector3_free(point);
-	vector3_free(dir);
+	vector3_free(norm);
 	
 	return ans;
 }
@@ -223,16 +224,17 @@ struct matrix* extraction_upper(struct cloud* cloud,
 struct matrix* extraction_lower(struct cloud* cloud,
                                 struct matrix* (*mfunc)(struct cloud*))
 {
-	struct vector3* dir = vector3_new(0, -1, 0);
-	struct vector3* point = cloud_get_center(cloud);
-	struct plane* plane = plane_new(dir, point);
+	struct vector3* norm = vector3_new(0, -1, 0);
+	//struct vector3* point = cloud_get_center(cloud);
+	struct vector3* point = cloud_min_z(cloud);
+	struct plane* plane = plane_new(norm, point);
 	struct cloud* sub = cloud_cut_plane(cloud, plane);
 	struct matrix* ans = (*mfunc)(sub);
 	
 	cloud_free(sub);
 	plane_free(plane);
 	vector3_free(point);
-	vector3_free(dir);
+	vector3_free(norm);
 	
 	return ans;
 }

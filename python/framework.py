@@ -2,14 +2,17 @@ from dataset import *
 from features import *
 from classification import *
 
-faces = ["nonneutral"]
-
+faces = ["neutral", "nonneutral"]
+"""
 cuts = {"f" : "frontal",
         "r" : "radial",
         "s" : "sagittal",
         "t" : "transversal",
         "w" : "whole",
         "u" : "upper",
+        "l" : "lower"}
+"""
+cuts = {"u" : "upper",
         "l" : "lower"}
 
 replace_dict = {"bosphorus" : "bs",
@@ -45,7 +48,7 @@ for face in faces:
 			scenario = data.split("/")[2]
 			folder = "../results/{}/{}/".format(cut_folder, scenario)
 			
-			print(folder)
+			print("[{}] - [{}]".format(cut_folder, folder))
 			
 			dataset = scenario
 			for old, new in replace_dict.items():
