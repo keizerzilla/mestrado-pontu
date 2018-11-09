@@ -24,7 +24,7 @@ scenarios= ["bosphorus-outlier-densit200-crop60-icp",
             "bosphorus-outlier-densit225-crop70-icp",
             "bosphorus-outlier-densit225-crop80-icp"]
 
-moments = ["hututu", "hu1980", "husiq", "legendre", "chebyshev", "zernike"]
+moments = ["husiq", "hututu", "hu1980", "legendre", "chebyshev", "zernike"]
 
 for face in faces:
 	datasets = ["../datasets/" + x + "/{}".format(face) for x in scenarios]
