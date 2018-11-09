@@ -15,6 +15,7 @@ Os arquivos de dados com as features/atributos devem estar no formato:
 	(...)
 """
 
+import os
 import time
 import operator
 import itertools
@@ -151,37 +152,6 @@ def rank1_neutral(features):
 	# execucao dos classificadores
 	return run_classification(X_train, y_train, X_test, y_test)
 
-def rank1_neutral_easy(features):
-	"""
-	Executa classificação RANK-1 usando os classificadores em pesquisa. Classes
-	com apenas uma amostra não são usadas! Treino: amostra 0 de cada pose
-	neutra. Teste: restante das amostras neutras (amostra diferente de 0).
-
-	:param features: caminho para o dados extraídos das amostras neutras
-	:param return: dicionário com taxas de reconhecimento e predições
-	"""
-	
-	df = pd.read_csv(features, header=None)
-	cs = ["f"+str(x) for x in range(len(df.columns)-2)] + ["sample", "subject"]
-	df.columns = cs
-	
-	# APENAS CLASSES COM MAIS DE UMA AMOSTRA
-	unique, counts = np.unique(df["subject"], return_counts=True)
-	ocurrences = dict(zip(unique, counts))
-	more = [key for key, val in ocurrences.items() if val > 1]
-	df = df[df["subject"].isin(more)]
-	
-	trainset = df.loc[df["sample"] == 0].drop(["sample"], axis=1)
-	X_train = np.array(trainset.drop(["subject"], axis=1))
-	y_train = np.ravel(trainset[["subject"]])
-	
-	testset = df.loc[df["sample"] != 0].drop(["sample"], axis=1)
-	X_test = np.array(testset.drop(["subject"], axis=1))
-	y_test = np.ravel(testset[["subject"]])
-	
-	# execucao dos classificadores
-	return run_classification(X_train, y_train, X_test, y_test)
-
 def rank1_nonneutral(feat_neutral, feat_nonneutral):
 	"""
 	Executa classificação RANK-1 usando os classificadores em pesquisa. Treino:
@@ -244,12 +214,12 @@ def roc1(feat_neutral, feat_nonneutral):
 	# execucao dos classificadores
 	return run_classification(X_train, y_train, X_test, y_test)
 
-def rank1_concat(moments):
+def rank1_neutral_concat(moments):
 	"""
-	Executa classificação RANK-1 usando os classificadores em pesquisa. O
-	conjunto de treino e teste é a concatenação de n momentos. Treino: amostra 0
-	de cada pose neutra. Teste: restante das amostras neutras (amostra diferente
-	de 0).
+	Executa classificação RANK-1 neutral usando os classificadores em pesquisa.
+	O conjunto de treino e teste é a concatenação de n momentos. Treino: amostra
+	0 de cada pose neutra. Teste: restante das amostras neutras (amostras
+	diferentes de 0).
 
 	:param moments: lista ou tupla de momentos
 	:return: dicionário com taxas de reconhecimento e predições
@@ -276,6 +246,57 @@ def rank1_concat(moments):
 		x_train_list.append(temp_X_train)
 		x_test_list.append(temp_X_test)
 		y_train_list.append(temp_y_train)
+		y_test_list.append(temp_y_test)
+	
+	X_train = np.array(pd.concat(x_train_list, axis=1))
+	X_test = np.array(pd.concat(x_test_list, axis=1))
+	
+	y_train = np.ravel(y_train_list[0])
+	y_test = np.ravel(y_test_list[0])
+	
+	# executa classificadores
+	return run_classification(X_train, y_train, X_test, y_test)
+
+def rank1_nonneutral_concat(neutral, nonneutral):
+	"""
+	Executa classificação RANK-1 nonneutral usando os classificadores em
+	pesquisa. O conjunto de treino e teste é a concatenação de n momentos.
+	Treino: amostra 0 de cada pose neutra. Teste: restante das amostras neutras
+	(amostras diferentes de 0).
+
+	:param neutral: lista ou tupla de momentos neutrals
+	:param nonneutral: lista ou tupla de momentos nonneutrals
+	:return: dicionário com taxas de reconhecimento e predições
+	"""
+	
+	x_train_list = []
+	y_train_list = []
+	for m in neutral:
+		df = pd.read_csv(m, header=None)
+		cs = ["f"+str(x) for x in range(len(df.columns)-2)]
+		cs = cs + ["sample", "subject"]
+		df.columns = cs
+		
+		trainset = df.loc[df["sample"] == 0].drop(["sample"], axis=1)
+		temp_X_train = trainset.drop(["subject"], axis=1)
+		temp_y_train = trainset[["subject"]]
+		
+		x_train_list.append(temp_X_train)
+		y_train_list.append(temp_y_train)
+	
+	x_test_list = []
+	y_test_list = []
+	for m in nonneutral:
+		df = pd.read_csv(m, header=None)
+		cs = ["f"+str(x) for x in range(len(df.columns)-2)]
+		cs = cs + ["sample", "subject"]
+		df.columns = cs
+		
+		testset = df.drop(["sample"], axis=1)
+		temp_X_test = testset.drop(["subject"], axis=1)
+		temp_y_test = testset[["subject"]]
+		
+		x_test_list.append(temp_X_test)
 		y_test_list.append(temp_y_test)
 	
 	X_train = np.array(pd.concat(x_train_list, axis=1))
@@ -335,14 +356,17 @@ def max_confusion(ans):
 		if diff[i, 0] != diff[i, 1]:
 			print("[{}]:\t{}".format(i, diff[i,:]))
 
-def combination(dataset, n=2):
+def combination_rank1_neutral(dataset, moments, n=2):
 	"""
-	Executa classificações exaustivas para uma lista de combinações de momentos.
+	Executa classificações exaustivas do cenário rank1a para uma lista de
+	combinações de momentos.
 	
 	:param dataset: conjunto de dados base a ser testado
-	:param n: número de elementos por combinação
+	:param moments: lista de momentos a ser usados
+	:param n: número de elementos por combinação (default 2)
 	"""
 	
+	extension = ".dat"
 	basepath = "../results/"
 	
 	slices = ["frontal/",
@@ -350,26 +374,24 @@ def combination(dataset, n=2):
 	          "sagittal/",
 	          "transversal/",
 	          "whole/",
-	          "upper/"]
+	          "upper/",
+	          "lower/"]
 	
-	moments = ["neutral-hu1980.dat",
-		       "neutral-hututu.dat",
-		       "neutral-legendre.dat",
-		       "neutral-chebyshev.dat",
-		       "neutral-zernike.dat"]
-	
-	moments = [dataset + "/" + m for m in moments]
+	moments = [dataset + "/neutral-" + m + extension for m in moments]
 	products = list(itertools.product(slices, moments))
 	configs = [basepath + p[0] + p[1] for p in products]
 	combos = list(itertools.combinations(configs, n))
-	settings = [[(c[i].split("/")[2], os.path.basename(c[i])) for i in range(n)]
-	            for c in combos]
+	settings = [[(c[i].split("/")[2],
+	              os.path.basename(c[i]).split("-")[1].replace(".dat",""))
+	              for i in range(n)]
+	              for c in combos]
 	
 	cols = ["setting", "classifier", "rate"]
 	df = pd.DataFrame(columns=cols)
 	
 	for setting, combo in zip(settings, combos):
-		classifier, rate = max_rate(rank1_concat(combo))
+		ans = rank1_neutral_concat(combo)
+		classifier, rate = max_rate(ans)
 		rate = round(rate*100, 2)
 		setting = str(setting)
 		result = "[{}] [{}] [{}]".format(setting, classifier, rate)
@@ -377,8 +399,63 @@ def combination(dataset, n=2):
 		df = df.append(row, ignore_index=True)
 		print(result)
 	
-	res_path = "../results/combination{}/".format(n)
+	res_path = "{}combination_rank1a_P{}/".format(basepath, n)
 	os.makedirs(res_path, exist_ok=True)
+	df.to_csv(res_path + "{}.csv".format(dataset), index=False)
+
+def combination_rank1_nonneutral(dataset, moments, n=2):
+	"""
+	Executa classificações exaustivas do cenário rank1b para uma lista de
+	combinações de momentos.
 	
+	:param dataset: conjunto de dados base a ser testado
+	:param moments: lista de momentos a ser usados
+	:param n: número de elementos por combinação (default 2)
+	"""
+	
+	extension = ".dat"
+	basepath = "../results/"
+	
+	slices = ["frontal/",
+	          "radial/",
+	          "sagittal/",
+	          "transversal/",
+	          "whole/",
+	          "upper/",
+	          "lower/"]
+	
+	m_neutral = [dataset + "/neutral-" + m + extension for m in moments]
+	m_nonneutral = [dataset + "/nonneutral-" + m + extension for m in moments]
+	
+	prod_neutral = list(itertools.product(slices, m_neutral))
+	prod_nonneutral = list(itertools.product(slices, m_nonneutral))
+	
+	conf_neutral = [basepath + p[0] + p[1] for p in prod_neutral]
+	conf_nonneutral = [basepath + p[0] + p[1] for p in prod_nonneutral]
+	
+	combo_neutral = list(itertools.combinations(conf_neutral, n))
+	combo_nonneutral = list(itertools.combinations(conf_nonneutral, n))
+	
+	settings = [[(c[i].split("/")[2],
+	              os.path.basename(c[i]).split("-")[1].replace(".dat",""))
+	              for i in range(n)]
+	              for c in combo_neutral]
+	
+	cols = ["setting", "classifier", "rate"]
+	df = pd.DataFrame(columns=cols)
+	data_zip = zip(settings, combo_neutral, combo_nonneutral)
+	
+	for setting, neutral, nonneutral in data_zip:
+		ans = rank1_nonneutral_concat(neutral, nonneutral)
+		classifier, rate = max_rate(ans)
+		rate = round(rate*100, 2)
+		setting = str(setting)
+		result = "[{}] [{}] [{}]".format(setting, classifier, rate)
+		row = {"setting" : setting, "classifier" : classifier, "rate" : rate}
+		df = df.append(row, ignore_index=True)
+		print(result)
+	
+	res_path = "{}combination_rank1b_P{}/".format(basepath, n)
+	os.makedirs(res_path, exist_ok=True)
 	df.to_csv(res_path + "{}.csv".format(dataset), index=False)
 
