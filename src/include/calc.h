@@ -29,6 +29,12 @@ typedef double real;
 typedef unsigned int uint;
 
 /**
+ * \var int64
+ * \brief Uma máscara para o tipo de inteiro sinalizado de 64 bits
+ */
+typedef long long int64;
+
+/**
  * \brief Calcula o tamanho quadrático em 3 dimensões
  * \param x Coordenada x
  * \param y Coordenada y
