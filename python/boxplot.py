@@ -25,19 +25,9 @@ replace_dict = {"bosphorus" : "bs",
                 "densit" : "d",
                 "crop" : "c"}
 
-scenarios = ["bosphorus.csv",
-			 "bosphorus-outlier.csv",
-			 "bosphorus-outlier-densit200.csv",
-			 "bosphorus-outlier-densit200-crop60.csv",
-			 "bosphorus-outlier-densit200-crop70.csv",
-			 "bosphorus-outlier-densit200-crop80.csv",
-			 "bosphorus-outlier-densit200-crop60-icp.csv",
+scenarios = ["bosphorus-outlier-densit200-crop60-icp.csv",
 	         "bosphorus-outlier-densit200-crop70-icp.csv",
 	         "bosphorus-outlier-densit200-crop80-icp.csv",
-			 "bosphorus-outlier-densit225.csv",
-			 "bosphorus-outlier-densit225-crop60.csv",
-			 "bosphorus-outlier-densit225-crop70.csv",
-			 "bosphorus-outlier-densit225-crop80.csv",
 	         "bosphorus-outlier-densit225-crop60-icp.csv",
 	         "bosphorus-outlier-densit225-crop70-icp.csv",
 	         "bosphorus-outlier-densit225-crop80-icp.csv"]
@@ -55,9 +45,9 @@ sn.set()
 tick_marks_x = np.arange(len(xaxes))
 boxes = []
 for data in scenarios:
-	print(data)
 	df = pd.read_csv(data)
 	boxes.append(df["rate"])
+	print("[{}] - max: {}".format(os.path.basename(data), df["rate"].max()))
 
 fig, ax = plt.subplots()
 ax.boxplot(boxes)

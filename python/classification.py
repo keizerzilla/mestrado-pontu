@@ -24,6 +24,7 @@ import pandas as pd
 import seaborn as sn
 import matplotlib.pyplot as plt
 from sklearn.svm import SVC
+from sklearn.decomposition import PCA
 from sklearn.metrics import confusion_matrix
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import PowerTransformer
@@ -52,6 +53,23 @@ names = [
 	"SVM_poly",
 	"MLP",
 	"LDA"]
+
+def reduction(X_train, X_test, n=None):
+	"""
+	Executa redução de dimensionalidade no conjunto de dados usando PCA.
+	
+	:param X_train: dados de treinamento
+	:param X_test: dados de teste
+	:param n: número de componentes mantidas
+	:return: dados de treino e teste reduzidos
+	"""
+	
+	red = PCA(n_components=n)
+	red.fit(X_train)
+	X_train = red.transform(X_train)
+	X_test = red.transform(X_test)
+	
+	return X_train, X_test
 
 def run_classification(X_train, y_train, X_test, y_test, verbose=False):
 	"""
@@ -95,6 +113,9 @@ def run_classification(X_train, y_train, X_test, y_test, verbose=False):
 	
 	X_train = np.array(new_train).T
 	X_test = np.array(new_test).T
+	
+	# reducao com PCA
+	#X_train, X_test = reduction(X_train, X_test)
 	
 	# execucao dos classificadores e registro dos resultados
 	for name, classifier in zip(names, classifiers):
