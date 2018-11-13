@@ -1,29 +1,36 @@
 #include "../../src/include/cloud.h"
-#include "../../src/include/hu.h"
 
 int main(int argc, char** argv)
 {
-	if (argc != 3) {
+	if (argc != 4) {
 		printf("faltando argumentos\n");
 		exit(1);
 	}
 	
 	struct cloud* cloud = cloud_load_xyz(argv[1]);
-	//struct vector3* point = cloud_min_z(cloud);
-	struct vector3* point = cloud_get_center(cloud);
-	struct vector3* norm = vector3_new(0, 1, 0);
-	struct plane* plane = plane_new(norm, point);
-	struct cloud* sub = cloud_cut_plane(cloud, plane);
+	cloud_sort(cloud);
 	
-	cloud_save_xyz(sub, argv[2]);
+	struct vector3* start = cloud_min_z(cloud);
+	struct vector3* end = vector3_from_vector(&cloud->points[9180]);
 	
-	real d = hu_regular_moment(0, 0, 0, cloud);
-	printf("%f\n%u\n", d, cloud_size(cloud));
+	struct cloud* endpoints = cloud_empty();
+	cloud_add_point_cpy(endpoints, start);
+	cloud_add_point_cpy(endpoints, end);
+	cloud_save_xyz(endpoints, argv[3]);
 	
-	cloud_free(sub);
-	plane_free(plane);
-	vector3_free(norm);
-	vector3_free(point);
+	struct cloud* slice = cloud_empty();
+	cloud_riemann_segment(cloud, start, end, slice);
+	cloud_save_xyz(slice, argv[2]);
+	
+	real ed = vector3_distance(start, end);
+	printf("EUCLIDEAN DISTANCE:\t%.4f\n", ed);
+	//real rd = cloud_riemann_distance(slice, start, end);
+	//printf("RIEMANN DISTANCE:\t%.4f\n\n", rd);
+	
+	cloud_free(slice);
+	cloud_free(endpoints);
+	vector3_free(end);
+	vector3_free(start);
 	cloud_free(cloud);
 	
 	return 0;

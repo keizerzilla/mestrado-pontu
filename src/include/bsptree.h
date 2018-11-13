@@ -52,7 +52,7 @@ int bsptree_empty(struct bsptree* bsp)
 }
 
 /**
- * \brief Particiona uma nuvem usando bsptree
+ * \brief Particiona uma nuvem usando bsptree (ARRUMAR ORDEM DA RECURSÃO)
  * \param cloud A nuvem a ser particionada
  * \param depth A profundiade do particionamento
  * \return Ponteiro para a a bsptree fruto do particionamento
@@ -119,7 +119,7 @@ void bsptree_free(struct bsptree* bsp)
 void bsptree_debug(struct bsptree* bsp)
 {
 	if (!bsptree_empty(bsp)) {
-		vector3_debug(bsp->plane->point, "bsptree debug", stdout);
+		vector3_debug(bsp->plane->point, stdout);
 		bsptree_debug(bsp->front);
 		bsptree_debug(bsp->back);
 	}

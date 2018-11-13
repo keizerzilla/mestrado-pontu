@@ -1,4 +1,6 @@
 #include "../../src/include/hashtable.h"
+#include "../../src/include/bsptree.h"
+#include "../../src/include/cloud.h"
 
 int main(int argc, char** argv)
 {

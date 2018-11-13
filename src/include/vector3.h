@@ -515,6 +515,23 @@ real vector3_area(struct vector3* a,
 }
 
 /**
+ * \brief Ponto médio entre dois vetores
+ * \param a O primeiro vetor
+ * \param b O segundo vetor
+ * \return Ponto médio entre 'a' e 'b'
+ */
+struct vector3* vector3_average(struct vector3* a, struct vector3* b)
+{
+	struct vector3* avg = vector3_zero();
+	
+	avg->x = (a->x + b->x) / 2;
+	avg->y = (a->y + b->y) / 2;
+	avg->z = (a->z + b->z) / 2;
+	
+	return avg;
+}
+
+/**
  * \brief Debuga um vetor exibindo suas coordenadas
  * \param v O vetor a ser debugado
  * \param output O arquivo aonde exibir a mensagem

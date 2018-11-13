@@ -16,6 +16,7 @@
 #include "vector3.h"
 #include "plane.h"
 #include "util.h"
+#include "hashtable.h"
 
 /**
  * \brief Estrutura que guarda uma nuvem de pontos em memória
@@ -553,24 +554,126 @@ struct cloud* cloud_segment(struct cloud* cloud,
 }
 
 /**
+ * \brief Verifica se um ponto pertence a uma nuvem (funciona, mas meio meh)
+ * \param cloud A nuvem alvo
+ * \param p O ponto sendo buscado
+ * \return 1 se p estiver em cloud, 0 caso-contrário
+ */
+int cloud_has_point(struct cloud* cloud, struct vector3* p)
+{
+	for (uint i = 0; i < cloud_size(cloud); i++)
+		if (vector3_distance(p, &cloud->points[i]) == 0)
+			return 1;
+	
+	return 0;
+}
+
+/**
  * \brief Descobre o ponto da nuvem mais próximo a um ponto arbitrário
  * \param cloud A nuvem alvo
+ * \param point O ponto alvo
  * \return Endereço do ponto mais próximo
  */
-struct vector3* cloud_closest_point(struct cloud* cloud, struct vector3* p)
+struct vector3* cloud_closest_point(struct cloud* cloud, struct vector3* point)
 {
 	uint index = 0;
 	real tempd = 0;
-	real d = vector3_distance(p, &cloud->points[0]);
+	real d = vector3_distance(point, &cloud->points[0]);
 	for (uint i = 1; i < cloud->num_pts; i++) {
-        tempd = vector3_distance(p, &cloud->points[i]);
+        tempd = vector3_distance(point, &cloud->points[i]);
         if (tempd < d) {
             d = tempd;
             index = i;
 		}
     }
     
-    return vector3_from_vector(&cloud->points[index]);
+    //return vector3_from_vector(&cloud->points[index]);
+    return &cloud->points[index];
+}
+
+/**
+ * \brief Descobre o ponto da nuvem mais próximo a um ponto arbitrário (CONSTRU)
+ * \param cloud A nuvem alvo
+ * \return Endereço do ponto mais próximo
+ */
+struct vector3* cloud_closest_point_dir(struct cloud* cloud,
+                                        struct vector3* point,
+                                        struct vector3* dir)
+{
+	struct vector3* temp_point = &cloud->points[0];
+	struct vector3* temp_dir = NULL;
+	real d = vector3_distance(point, &cloud->points[0]);
+	real temp_dist = 0;
+	uint index = 0;
+	
+	for (uint i = 1; i < cloud->num_pts; i++) {
+		temp_point = &cloud->points[i];
+		temp_dir = vector3_sub(temp_point, temp_point);
+		temp_dist = vector3_distance(point, temp_point);
+		
+        if (vector3_dot(temp_dir, dir) >= 0.0f) {
+		    if (temp_dist < d) {
+		        d = temp_dist;
+		        index = i;
+			}
+		}
+		
+    }
+    
+    return &cloud->points[index];
+}
+
+/**
+ * \brief Segmento pseudo-riemanniana
+ * \param cloud A nuvem alvo
+ * \param start Partida
+ * \param end Chegada
+ * \param slice Segmento pseudo-riemanniano
+ */
+void cloud_riemann_segment(struct cloud* cloud,
+                           struct vector3* start,
+                           struct vector3* end,
+                           struct cloud* slice)
+{
+	struct vector3* avg = vector3_average(start, end);
+	struct vector3* close = cloud_closest_point(cloud, avg);
+	vector3_free(avg);
+	
+	if (cloud_has_point(slice, close)) return;
+	
+	cloud_add_point_cpy(slice, close);
+	
+	cloud_riemann_segment(cloud, start, close, slice);
+	cloud_riemann_segment(cloud, end, close, slice);
+}
+
+/**
+ * \brief Distância pseudo-riemanniana (EM CONSTRUCAO)
+ * \param slice A nuvem alvo
+ * \param start Partida
+ * \param end Chegada
+ * \return Distância do segmento començando em start e terminando em end
+ */
+real cloud_riemann_distance(struct cloud* slice,
+                            struct vector3* start,
+                            struct vector3* end)
+{
+	real rd = 0.0f;
+	struct vector3* pivot = start;
+	struct vector3* dir = vector3_sub(end, start);
+	struct vector3* close = cloud_closest_point_dir(slice, start, dir);
+	
+	while (vector3_distance(pivot, end) != 0) {
+		close = cloud_closest_point_dir(slice, pivot, dir);
+		rd += vector3_distance(pivot, close);
+		pivot = close;
+		
+		printf("EITA\t%f\n", rd);
+	}
+	
+	vector3_free(dir);
+	
+	return rd;
 }
 
 /**
