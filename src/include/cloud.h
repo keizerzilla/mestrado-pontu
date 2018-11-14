@@ -661,16 +661,19 @@ void cloud_riemann_segment(struct cloud* cloud,
 }
 
 /**
- * \brief Distância pseudo-riemanniana (EM TESTE)
- * \param slice A nuvem alvo
+ * \brief Distância pseudo-riemanniana
+ * \param cloud A nuvem alvo
  * \param start Partida
  * \param end Chegada
  * \return Distância do segmento començando em start e terminando em end
  */
-real cloud_riemann_distance(struct cloud* slice,
+real cloud_riemann_distance(struct cloud* cloud,
                             struct vector3* start,
                             struct vector3* end)
 {
+	struct cloud* slice = cloud_empty();
+	cloud_riemann_segment(cloud, start, end, slice);
+	
 	cloud_sort_r(slice, start);
 	
 	real riemann = 0.0f;
@@ -681,6 +684,7 @@ real cloud_riemann_distance(struct cloud* slice,
 	}
 	
 	riemann += vector3_distance(&slice->points[cloud_size(slice)-1], end);
+	cloud_free(slice);
 	
 	return riemann;
 }
