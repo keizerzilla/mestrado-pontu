@@ -91,7 +91,7 @@ struct bsptree* bsptree_cloud_partition(struct cloud* cloud, uint depth)
 void bsptree_bsptree2cloud(struct bsptree* bsp, struct cloud* cloud)
 {
 	if (!bsptree_empty(bsp)) {
-		cloud_add_point_cpy(cloud, bsp->plane->point);
+		cloud_add_point(cloud, bsp->plane->point);
 		bsptree_bsptree2cloud(bsp->front, cloud);
 		bsptree_bsptree2cloud(bsp->back, cloud);
 	}

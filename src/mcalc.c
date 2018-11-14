@@ -14,6 +14,8 @@
 #include "include/matrix.h"
 #include "include/cloud.h"
 #include "include/util.h"
+#include "include/bsptree.h"
+#include "include/hashtable.h"
 
 #define HU_TUTU			"hututu"
 #define HU_1980			"hu1980"
@@ -172,13 +174,13 @@ struct matrix* extraction_radial(struct cloud* cloud,
 		d = vector3_distance(center, &cloud->points[i]);
 		
 		if (d <= slice1)
-			cloud_add_point_cpy(sub1, &cloud->points[i]);
+			cloud_add_point(sub1, &cloud->points[i]);
 		else if (d > slice1 && d <= slice2)
-			cloud_add_point_cpy(sub2, &cloud->points[i]);
+			cloud_add_point(sub2, &cloud->points[i]);
 		else if (d > slice2 && d <= slice3)
-			cloud_add_point_cpy(sub3, &cloud->points[i]);
+			cloud_add_point(sub3, &cloud->points[i]);
 		else
-			cloud_add_point_cpy(sub4, &cloud->points[i]);
+			cloud_add_point(sub4, &cloud->points[i]);
 	}
 	
 	struct matrix* r1 = matrix_concat_hor((*mfunc)(sub1), (*mfunc)(sub2));

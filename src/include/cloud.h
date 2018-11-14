@@ -9,6 +9,8 @@
 #ifndef CLOUD_H
 #define CLOUD_H
 
+#define _GNU_SOURCE
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,6 +26,7 @@
 struct cloud {
     struct vector3* points;
     struct vector3* centroid;
+    uint* indexes;
     uint num_pts;
 };
 
@@ -36,7 +39,6 @@ struct cloud {
 struct cloud* cloud_new(uint num_pts)
 {
     struct cloud* cloud = malloc(sizeof(struct cloud));
-
     if (cloud == NULL) {
         util_error("%s: erro alocando memoria cloud", __FUNCTION__);
         return NULL;
@@ -47,9 +49,16 @@ struct cloud* cloud_new(uint num_pts)
         util_error("%s: erro alocando memoria points", __FUNCTION__);
         return NULL;
     }
-
+	
+	cloud->indexes = malloc(num_pts * sizeof(uint));
+	if (cloud->indexes == NULL) {
+		util_error("%s: erro alocando memoria indexes", __FUNCTION__);
+        return NULL;
+	}
+	
     memset(cloud->points, 0, num_pts * sizeof(struct vector3));
-
+	memset(cloud->indexes, 0, num_pts * sizeof(uint));
+	
     cloud->centroid = NULL;
     cloud->num_pts = num_pts;
 
@@ -78,6 +87,8 @@ void cloud_free(struct cloud* cloud)
         cloud->centroid = NULL;
     }
 	
+	free(cloud->indexes);
+	
     free(cloud);
     cloud = NULL;
 }
@@ -91,11 +102,11 @@ void cloud_free(struct cloud* cloud)
  * \param z O valor da coordenada z
  * \return O endereço para o ponto setado
  */
-struct vector3* cloud_set_point(struct cloud* cloud,
-                                uint index,
-                                real x,
-                                real y,
-                                real z)
+static struct vector3* cloud_set_point(struct cloud* cloud,
+                                       uint index,
+                                       real x,
+                                       real y,
+                                       real z)
 {
     if (index >= cloud->num_pts) {
         util_error("%s: indice fora de intervalo", __FUNCTION__);
@@ -103,6 +114,7 @@ struct vector3* cloud_set_point(struct cloud* cloud,
     }
 
     vector3_set(&cloud->points[index], x, y, z);
+    cloud->indexes[index] = index;
 
     return &cloud->points[index];
 }
@@ -114,7 +126,7 @@ struct vector3* cloud_set_point(struct cloud* cloud,
  * \param point O valor das coordenadas a serem setadas
  * \return O endereço para o ponto setado
  */
-struct vector3* cloud_set_point_cpy(struct cloud* cloud,
+struct vector3* cloud_set_vector(struct cloud* cloud,
                                     uint index,
                                     struct vector3* point)
 {
@@ -129,7 +141,7 @@ struct vector3* cloud_set_point_cpy(struct cloud* cloud,
  * \param z A coordenada z do ponto
  * \return O endereço do novo ponto alocado ou NULL se não houver memória
  */
-struct vector3* cloud_add_point(struct cloud* cloud,
+struct vector3* cloud_new_point(struct cloud* cloud,
                                 real x,
                                 real y,
                                 real z)
@@ -138,14 +150,22 @@ struct vector3* cloud_add_point(struct cloud* cloud,
 
     struct vector3* new_points = realloc(cloud->points, new_size);
     if (new_points == NULL) {
-        util_error("%s: erro adicionando novo ponto", __FUNCTION__);
+        util_error("%s: erro adicionando novo ponto [points]", __FUNCTION__);
         return NULL;
     }
-
+	
+	uint* new_indexes = realloc(cloud->indexes, new_size);
+	if (new_indexes == NULL) {
+        util_error("%s: erro adicionando novo ponto [indexes]", __FUNCTION__);
+        return NULL;
+    }
+    
     cloud->points = new_points;
+    cloud->indexes = new_indexes;
     cloud->num_pts++;
 
     vector3_set(&cloud->points[cloud->num_pts - 1], x, y, z);
+    cloud->indexes[cloud->num_pts - 1] = cloud->num_pts - 1;
 
     return &cloud->points[cloud->num_pts - 1];
 }
@@ -156,9 +176,9 @@ struct vector3* cloud_add_point(struct cloud* cloud,
  * \param point O ponto a ser adicionado
  * \return O endereço do novo ponto alocado ou NULL se não houver memória
  */
-struct vector3* cloud_add_point_cpy(struct cloud* cloud, struct vector3* point)
+struct vector3* cloud_add_point(struct cloud* cloud, struct vector3* point)
 {
-    return cloud_add_point(cloud, point->x, point->y, point->z);
+    return cloud_new_point(cloud, point->x, point->y, point->z);
 }
 
 /**
@@ -352,7 +372,7 @@ void cloud_rotate_z(struct cloud* cloud, real d)
 }
 
 /**
- * \brief Função utilitária para a função de ordenação
+ * \brief Função utilitária para a função de ordenação qsort()
  * \param p1 O primeiro ponto para comparação
  * \param p2 O segundo ponto para comparação
  */
@@ -365,12 +385,38 @@ int cloud_compare(const void* p1, const void* p2)
 }
 
 /**
- * \brief Ordena uma cloud em profundidade
+ * \brief Função utilitária para a função de ordenação qsort_r()
+ * \param p1 O primeiro ponto para comparação
+ * \param p2 O segundo ponto para comparação
+ */
+int cloud_compare_r(const void* p1, const void* p2, void* arg)
+{
+    struct vector3* dp1 = (struct vector3*)p1;
+    struct vector3* dp2 = (struct vector3*)p2;
+    struct vector3* pivot = (struct vector3*)arg;
+	real d1 = vector3_distance(dp1, pivot);
+	real d2 = vector3_distance(dp2, pivot);
+	
+    return (int)d1 - (int)d2;
+}
+
+/**
+ * \brief Ordena uma cloud em profundidade usando qsort()
  * \param cloud A cloud alvo
  */
 void cloud_sort(struct cloud* cloud)
 {
     qsort(cloud->points, cloud->num_pts, sizeof(struct vector3), cloud_compare);
+}
+
+/**
+ * \brief Ordena uma cloud em profundidade usando qsort_r()
+ * \param cloud A cloud alvo
+ */
+void cloud_sort_r(struct cloud* cloud, struct vector3* arg)
+{
+    qsort_r(cloud->points, cloud->num_pts, sizeof(struct vector3),
+            cloud_compare_r, arg);
 }
 
 /**
@@ -387,10 +433,10 @@ struct cloud* cloud_concat(struct cloud* c1, struct cloud* c2)
     struct cloud* c3 = cloud_new(size_c1 + size_c2);
 
     for (uint i = 0; i < size_c1; i++)
-        cloud_set_point_cpy(c3, i, &c1->points[i]);
+        cloud_set_vector(c3, i, &c1->points[i]);
 
     for (uint j = 0; j < size_c2; j++)
-        cloud_set_point_cpy(c3, j + size_c1, &c2->points[j]);
+        cloud_set_vector(c3, j + size_c1, &c2->points[j]);
 
     return c3;
 }
@@ -447,7 +493,7 @@ struct cloud* cloud_cut_center(struct cloud* cloud, real cut)
 
     for (uint i = 0; i < cloud->num_pts; i++) {
         if (vector3_distance(center, &cloud->points[i]) <= cut)
-            cloud_add_point_cpy(sub, &cloud->points[i]);
+            cloud_add_point(sub, &cloud->points[i]);
     }
 
     return sub;
@@ -465,7 +511,7 @@ struct cloud* cloud_cut_plane(struct cloud* cloud, struct plane* plane)
     
     for (uint i = 0; i < cloud->num_pts; i++)
 		if (plane_on_direction(plane, &cloud->points[i]))
-			cloud_add_point_cpy(sub, &cloud->points[i]);
+			cloud_add_point(sub, &cloud->points[i]);
 	
     return sub;
 }
@@ -488,9 +534,9 @@ int cloud_plane_partition(struct cloud* src,
 	
 	for (uint i = 0; i < src->num_pts; i++) {
 		if (plane_on_direction(plane, &src->points[i]))
-			cloud_add_point_cpy(par1, &src->points[i]);
+			cloud_add_point(par1, &src->points[i]);
 		else
-			cloud_add_point_cpy(par2, &src->points[i]);
+			cloud_add_point(par2, &src->points[i]);
 	}
 	
 	return 1;
@@ -519,7 +565,7 @@ struct cloud* cloud_cut_cylinder(struct cloud* cloud,
 		
 		dist = vector3_length(cross) / dirl;
 		if (dist <= radius)
-			cloud_add_point_cpy(sub, &cloud->points[i]);
+			cloud_add_point(sub, &cloud->points[i]);
 		
 		vector3_free(dot);
 		vector3_free(cross);
@@ -546,7 +592,7 @@ struct cloud* cloud_segment(struct cloud* cloud,
 	
 	for (uint i = 0; i < cloud->num_pts; i++)
 		if (plane_distance2point(plane, &cloud->points[i]) <= epslon)
-			cloud_add_point_cpy(sub, &cloud->points[i]);
+			cloud_add_point(sub, &cloud->points[i]);
 	
 	plane_free(plane);
 	
@@ -554,7 +600,7 @@ struct cloud* cloud_segment(struct cloud* cloud,
 }
 
 /**
- * \brief Verifica se um ponto pertence a uma nuvem (funciona, mas meio meh)
+ * \brief Verifica se um ponto pertence a uma nuvem (funciona, mas meio meh...)
  * \param cloud A nuvem alvo
  * \param p O ponto sendo buscado
  * \return 1 se p estiver em cloud, 0 caso-contrário
@@ -587,39 +633,6 @@ struct vector3* cloud_closest_point(struct cloud* cloud, struct vector3* point)
 		}
     }
     
-    //return vector3_from_vector(&cloud->points[index]);
-    return &cloud->points[index];
-}
-
-/**
- * \brief Descobre o ponto da nuvem mais próximo a um ponto arbitrário (CONSTRU)
- * \param cloud A nuvem alvo
- * \return Endereço do ponto mais próximo
- */
-struct vector3* cloud_closest_point_dir(struct cloud* cloud,
-                                        struct vector3* point,
-                                        struct vector3* dir)
-{
-	struct vector3* temp_point = &cloud->points[0];
-	struct vector3* temp_dir = NULL;
-	real d = vector3_distance(point, &cloud->points[0]);
-	real temp_dist = 0;
-	uint index = 0;
-	
-	for (uint i = 1; i < cloud->num_pts; i++) {
-		temp_point = &cloud->points[i];
-		temp_dir = vector3_sub(temp_point, temp_point);
-		temp_dist = vector3_distance(point, temp_point);
-		
-        if (vector3_dot(temp_dir, dir) >= 0.0f) {
-		    if (temp_dist < d) {
-		        d = temp_dist;
-		        index = i;
-			}
-		}
-		
-    }
-    
     return &cloud->points[index];
 }
 
@@ -639,16 +652,16 @@ void cloud_riemann_segment(struct cloud* cloud,
 	struct vector3* close = cloud_closest_point(cloud, avg);
 	vector3_free(avg);
 	
-	if (cloud_has_point(slice, close)) return;
+	if (cloud_has_point(slice, close))
+		return;
 	
-	cloud_add_point_cpy(slice, close);
-	
+	cloud_add_point(slice, close);
 	cloud_riemann_segment(cloud, start, close, slice);
 	cloud_riemann_segment(cloud, end, close, slice);
 }
 
 /**
- * \brief Distância pseudo-riemanniana (EM CONSTRUCAO)
+ * \brief Distância pseudo-riemanniana (EM TESTE)
  * \param slice A nuvem alvo
  * \param start Partida
  * \param end Chegada
@@ -658,22 +671,18 @@ real cloud_riemann_distance(struct cloud* slice,
                             struct vector3* start,
                             struct vector3* end)
 {
-	real rd = 0.0f;
-	struct vector3* pivot = start;
-	struct vector3* dir = vector3_sub(end, start);
-	struct vector3* close = cloud_closest_point_dir(slice, start, dir);
+	cloud_sort_r(slice, start);
 	
-	while (vector3_distance(pivot, end) != 0) {
-		close = cloud_closest_point_dir(slice, pivot, dir);
-		rd += vector3_distance(pivot, close);
-		pivot = close;
-		
-		printf("EITA\t%f\n", rd);
+	real riemann = 0.0f;
+	for (uint i = 0; i < cloud_size(slice)-1; i++) {
+		struct vector3* p1 = &slice->points[i];
+		struct vector3* p2 = &slice->points[i+1];
+		riemann += vector3_distance(p1, p2);
 	}
 	
-	vector3_free(dir);
+	riemann += vector3_distance(&slice->points[cloud_size(slice)-1], end);
 	
-	return rd;
+	return riemann;
 }
 
 /**
@@ -847,7 +856,7 @@ struct cloud* cloud_binary_mask(struct cloud* cloud)
 	
 	struct cloud* mask = cloud_empty();
 	struct vector3* refpoint = cloud_min_z(cloud);
-	cloud_add_point_cpy(mask, refpoint);
+	cloud_add_point(mask, refpoint);
 	
 	real d1 = 0;
 	real d2 = 0;
@@ -861,7 +870,7 @@ struct cloud* cloud_binary_mask(struct cloud* cloud)
 			else if (d2 < d1)
 				refpoint = &cloud->points[i + 2];
 			
-			cloud_add_point_cpy(mask, refpoint);
+			cloud_add_point(mask, refpoint);
 		}
 	}
 	
