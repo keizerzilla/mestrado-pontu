@@ -2,7 +2,7 @@ from dataset import *
 from features import *
 from classification import *
 
-faces = ["neutral", "nonneutral"]
+faces = ["neutral"]
 
 cuts = {"f" : "frontal",
         "r" : "radial",
@@ -17,35 +17,35 @@ replace_dict = {"bosphorus" : "bs",
                 "densit" : "d",
                 "crop" : "c"}
 
-scenarios= ["bosphorus-outlier-densit200-crop60-icp",
-			"bosphorus-outlier-densit200-crop70-icp",
-			"bosphorus-outlier-densit200-crop80-icp",
-			"bosphorus-outlier-densit225-crop60-icp",
-			"bosphorus-outlier-densit225-crop70-icp",
-			"bosphorus-outlier-densit225-crop80-icp"]
+scenarios= ["bosphorus-outlier-densit200-crop60",
+			"bosphorus-outlier-densit200-crop70",
+			"bosphorus-outlier-densit200-crop80",
+			"bosphorus-outlier-densit225-crop60",
+			"bosphorus-outlier-densit225-crop70",
+			"bosphorus-outlier-densit225-crop80"]
 
 moments = ["husiq", "hututu", "hu1980", "legendre", "chebyshev", "zernike"]
 
-def go_extraction():
+def go_extraction(rdir):
 	for face in faces:
 		datasets = ["../datasets/" + x + "/{}".format(face) for x in scenarios]
 		for cut, cut_folder in cuts.items():
 			for data in datasets:
 				scenario = data.split("/")[2]
-				folder = "../results/{}/{}/".format(cut_folder, scenario)
+				folder = "../{}/{}/{}/".format(rdir, cut_folder, scenario)
 				os.makedirs(folder, exist_ok=True)
 				for moment in moments:
 					out = folder
 					out = out + "{}-{}.dat".format(face, moment)
 					moment_extraction_batch(moment, cut, data, out)
 
-def go_classification():
+def go_classification(rdir):
 	for face in faces:
 		datasets = ["../datasets/" + x + "/{}".format(face) for x in scenarios]
 		for cut, cut_folder in cuts.items():
 			for data in datasets:
 				scenario = data.split("/")[2]
-				folder = "../results/{}/{}/".format(cut_folder, scenario)
+				folder = "../{}/{}/{}/".format(rdir, cut_folder, scenario)
 				
 				print("[{}] - [{}]".format(cut_folder, folder))
 				
@@ -79,5 +79,5 @@ def go_combination():
 		combination_rank1_neutral(dataset, moments, 3)
 
 if __name__ == "__main__":
-	go_extraction()
+	go_extraction("results")
 	
