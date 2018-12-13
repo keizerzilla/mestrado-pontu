@@ -170,7 +170,7 @@ void vector3_invert(struct vector3* v)
  */
 real vector3_distance(struct vector3* a, struct vector3* b)
 {
-    return calc_length3(a->x - b->x, a->y - b->y, a->z - a->z);
+    return calc_length3(a->x - b->x, a->y - b->y, a->z - b->z);
 }
 
 /**

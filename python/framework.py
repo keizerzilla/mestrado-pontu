@@ -2,7 +2,7 @@ from dataset import *
 from features import *
 from classification import *
 
-faces = ["nonneutral"]
+faces = ["neutral", "nonneutral"]
 
 cuts = {"f" : "frontal",
         "r" : "radial",
@@ -17,7 +17,12 @@ replace_dict = {"bosphorus" : "bs",
                 "densit" : "d",
                 "crop" : "c"}
 
-scenarios= ["bosphorus-outlier-densit200-crop80-icp"]
+scenarios= ["bosphorus-outlier-densit200-crop60-icp",
+			"bosphorus-outlier-densit200-crop70-icp",
+			"bosphorus-outlier-densit200-crop80-icp",
+			"bosphorus-outlier-densit225-crop60-icp",
+			"bosphorus-outlier-densit225-crop70-icp",
+			"bosphorus-outlier-densit225-crop80-icp"]
 
 moments = ["husiq", "hututu", "hu1980", "legendre", "chebyshev", "zernike"]
 
@@ -74,5 +79,5 @@ def go_combination():
 		combination_rank1_neutral(dataset, moments, 3)
 
 if __name__ == "__main__":
-	grid_search()
+	go_extraction()
 	
