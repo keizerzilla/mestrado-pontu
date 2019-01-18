@@ -46,6 +46,7 @@ def go_classification(rdir):
 			for data in datasets:
 				scenario = data.split("/")[2]
 				folder = "../{}/{}/{}/".format(rdir, cut_folder, scenario)
+				os.makedirs(folder, exist_ok=True)
 				
 				print("[{}] - [{}]".format(cut_folder, folder))
 				
@@ -79,5 +80,5 @@ def go_combination():
 		combination_rank1_neutral(dataset, moments, 3)
 
 if __name__ == "__main__":
-	go_extraction("results")
+	go_classification("results")
 	
