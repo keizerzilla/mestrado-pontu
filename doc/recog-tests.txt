@@ -1,0 +1,26 @@
+OBS1: expressões = neutras + emoções
+
+ROC-1
+- treino: todas as neutras
+- teste: todas as expressões
+
+ROC-3
+- treino: amostras aquisitadas num periodo
+- teste: amostras aquisitadas num periodo futuro
+
+RANK-1A
+- treino: apenas neutra 0
+- teste: as neutras restantes
+
+RANK-1B
+- treino: apenas neutra 0
+- teste: todas as emoções
+
+VERIFICATION
+- entrada: amostra mais classe
+- saida: sim ou nao se amostra for da classe apresentada
+
+RECOGNITION
+- entrada: amostra
+- saida: uma das classes possiveis
+

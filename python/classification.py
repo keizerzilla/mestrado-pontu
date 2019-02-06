@@ -33,28 +33,17 @@ from sklearn.neural_network import MLPClassifier as MLP
 from sklearn.neighbors import KNeighborsClassifier as KNC
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 
-classifiers = [
-	KNC(p=1, n_neighbors=1),
-	KNC(p=2, n_neighbors=1),
-	NC(metric="manhattan"),
-	NC(metric="euclidean"),
-	SVC(kernel="rbf", gamma="auto"),
-	SVC(kernel="poly", gamma="auto"),
-	MLP(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(220,),
-	    activation='tanh', random_state=1),
-	LDA()]
+classifiers = {
+	"KNN_manhattam" : KNC(p=1, n_neighbors=1),
+	"KNN_euclidean" : KNC(p=2, n_neighbors=1),
+	"DMC_manhattam" : NC(metric="manhattan"),
+	"DMC_euclidean" : NC(metric="euclidean"),
+	"SVM_radial" : SVC(kernel="rbf", gamma="auto"),
+	"SVM_poly" : SVC(kernel="poly", gamma="auto"),
+	"LDA" : LDA()
+}
 
-names = [
-	"KNN_manhattam",
-	"KNN_euclidean",
-	"DMC_manhattam",
-	"DMC_euclidean",
-	"SVM_radial",
-	"SVM_poly",
-	"MLP",
-	"LDA"]
-
-def reduction(X_train, X_test, n=None):
+def reduction_pca(X_train, X_test, n=None):
 	"""
 	Executa redução de dimensionalidade no conjunto de dados usando PCA.
 	
@@ -97,28 +86,33 @@ def run_classification(X_train, y_train, X_test, y_test, verbose=False):
 		result["recog"] = 0
 		result["y_true"] = []
 		result["y_pred"] = []
-		ans["ERROR"] = result
+		ans["ERROR_NORM"] = result
 		return ans
 	
 	# remocao de skewness
 	new_train = []
 	new_test = []
-	pt = PowerTransformer(method="yeo-johnson", standardize=False) # antes True
-	for m_train, m_test in zip(X_train.T, X_test.T):
-		data_train = m_train.reshape(-1, 1)
-		data_test = m_test.reshape(-1, 1)
-		pt.fit(data_train)
-		new_train.append(np.ravel(pt.transform(data_train)))
-		new_test.append(np.ravel(pt.transform(data_test)))
+	try:
+		pt = PowerTransformer(method="yeo-johnson", standardize=False)
+		for m_train, m_test in zip(X_train.T, X_test.T):
+			data_train = m_train.reshape(-1, 1)
+			data_test = m_test.reshape(-1, 1)
+			pt.fit(data_train)
+			new_train.append(np.ravel(pt.transform(data_train)))
+			new_test.append(np.ravel(pt.transform(data_test)))
+	except:
+		result = dict()
+		result["recog"] = 0
+		result["y_true"] = []
+		result["y_pred"] = []
+		ans["ERROR_SKEW"] = result
+		return ans
 	
 	X_train = np.array(new_train).T
 	X_test = np.array(new_test).T
 	
-	# reducao com PCA
-	#X_train, X_test = reduction(X_train, X_test)
-	
 	# execucao dos classificadores e registro dos resultados
-	for name, classifier in zip(names, classifiers):
+	for name, classifier in classifiers.items():
 		result = dict()
 		clf = classifier
 		
