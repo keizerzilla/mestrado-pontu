@@ -17,14 +17,15 @@ replace_dict = {"bosphorus" : "bs",
                 "densit" : "d",
                 "crop" : "c"}
 
-scenarios= ["bosphorus-outlier-densit200-crop60",
-			"bosphorus-outlier-densit200-crop70",
-			"bosphorus-outlier-densit200-crop80",
-			"bosphorus-outlier-densit225-crop60",
-			"bosphorus-outlier-densit225-crop70",
-			"bosphorus-outlier-densit225-crop80"]
+scenarios= ["bosphorus-outlier-densit200-crop60-icp",
+			"bosphorus-outlier-densit200-crop70-icp",
+			"bosphorus-outlier-densit200-crop80-icp",
+			"bosphorus-outlier-densit225-crop60-icp",
+			"bosphorus-outlier-densit225-crop70-icp",
+			"bosphorus-outlier-densit225-crop80-icp"]
 
-moments = ["husiq", "hututu", "hu1980", "legendre", "chebyshev", "zernike"]
+#moments = ["husiq", "hututu", "hu1980", "legendre", "chebyshev", "zernike"]
+moments = ["lebrengue", "legendre"]
 
 def go_extraction(rdir):
 	for face in faces:
@@ -80,5 +81,6 @@ def go_combination():
 		combination_rank1_neutral(dataset, moments, 3)
 
 if __name__ == "__main__":
+	#go_extraction("results")
 	go_classification("results")
 	

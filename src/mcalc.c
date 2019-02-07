@@ -10,7 +10,9 @@
 #include "include/hu.h"
 #include "include/zernike.h"
 #include "include/legendre.h"
+#include "include/lebrengue.h"
 #include "include/chebyshev.h"
+#include "include/tchebychef.h"
 #include "include/matrix.h"
 #include "include/cloud.h"
 #include "include/util.h"
@@ -23,6 +25,8 @@
 #define ZERNIKE			"zernike"
 #define LEGENDRE		"legendre"
 #define CHEBYSHEV		"chebyshev"
+#define TCHEBYCHEF		"tchebychef"
+#define LEBRENGUE		"lebrengue"
 #define CUT_WHOLE		"w"
 #define CUT_SAGITTAL	"s"
 #define CUT_TRANSVERSAL	"t"
@@ -293,6 +297,10 @@ void extraction_interface(int argc, char** argv)
         mfunc = &chebyshev_cloud_moments;
     else if (!strcmp(moment, ZERNIKE))
         mfunc = &zernike_cloud_moments;
+	else if (!strcmp(moment, TCHEBYCHEF))
+		mfunc = &tchebychef_cloud_moments;
+	else if (!strcmp(moment, LEBRENGUE))
+		mfunc = &lebrengue_cloud_moments;
     else
     	mfunc = &hu_cloud_moments_hututu;
 	
