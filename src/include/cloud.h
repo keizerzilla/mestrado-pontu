@@ -80,6 +80,9 @@ struct cloud* cloud_empty()
  */
 void cloud_free(struct cloud* cloud)
 {
+	if (cloud == NULL)
+		return;
+	
 	free(cloud->points);
 
     if (cloud->centroid != NULL) {
@@ -182,6 +185,16 @@ struct vector3* cloud_add_point(struct cloud* cloud, struct vector3* point)
 }
 
 /**
+ * \brief Conta quantos pontos constituem uma nuvem
+ * \param cloud A nuvem alvo
+ * \return O número de pontos de cloud
+ */
+uint cloud_size(struct cloud* cloud)
+{
+    return cloud->num_pts;
+}
+
+/**
  * \brief Carrega uma nuvem a partir de um arquivo XYZ
  * \param filename O arquivo onde a nuvem está guardada
  * \return Um estrutura cloud carregada em memória ou NULL caso ocorra erro
@@ -216,6 +229,166 @@ struct cloud* cloud_load_xyz(const char* filename)
 }
 
 /**
+ * \brief Carrega uma nuvem a partir de um arquivo CSV
+ * \param filename O arquivo onde a nuvem está guardada
+ * \return Um estrutura cloud carregada em memória ou NULL caso ocorra erro
+ */
+struct cloud* cloud_load_csv(const char* filename)
+{
+    FILE* file = fopen(filename, "r");
+    if (file == NULL) {
+        util_error("%s: erro abrir arquivo %s", __FUNCTION__, filename);
+        return NULL;
+    }
+
+    uint num_pts = 0;
+    while (!feof(file) && (fscanf(file, "%*s,%*s,%*s\n") != EOF))
+        num_pts++;
+	
+    rewind(file);
+
+    struct cloud* cloud = cloud_new(num_pts);
+    real x = 0;
+    real y = 0;
+    real z = 0;
+    uint index = 0;
+    while (!feof(file) && (fscanf(file, "%le,%le,%le\n", &x, &y, &z) != EOF)) {
+        cloud_set_point(cloud, index, x, y, z);
+        index++;
+    }
+
+    fclose(file);
+
+    return cloud;
+}
+
+/**
+ * \brief Carrega uma nuvem em arquivo PLY (x y z sempre primeiras properties!)
+ * \param filename A nuvem a ser carregada
+ * \return A nuvem carregada em memória ou NULL caso algum erro tenha ocorrido
+ */
+struct cloud* cloud_load_ply(const char* filename)
+{
+	uint num_pts = 0;
+	char buffer[80];
+	
+	FILE* file = fopen(filename, "r");
+    if (file == NULL) {
+        util_error("%s: erro abrir arquivo %s", __FUNCTION__, filename);
+        return NULL;
+    }
+	
+	if (fgets(buffer, 80, file)) {
+		if (strcmp(buffer, "ply\n")) {
+			util_error("%s: arquivo ply invalido [%s]", __FUNCTION__, filename);
+			fclose(file);
+			return NULL;
+		}
+	} else {
+		util_error("%s: erro na leitura do arquivo %s", __FUNCTION__, filename);
+		fclose(file);
+		return NULL;
+	}
+	
+	if (fgets(buffer, 80, file)) {
+		if (strcmp(buffer, "format ascii 1.0\n")) {
+			util_error("%s: formato ply invalido [%s]", __FUNCTION__, filename);
+			fclose(file);
+			return NULL;
+		}
+	} else {
+		util_error("%s: erro na leitura do arquivo %s", __FUNCTION__, filename);
+		fclose(file);
+		return NULL;
+	}
+	
+	while (fgets(buffer, 80, file)) {
+		if (!strcmp(buffer, "end_header\n"))
+			break;
+		
+		if (!strncmp(buffer, "element vertex", 14))
+			sscanf(buffer, "element vertex %d\n", &num_pts);
+	}
+	
+	struct cloud* cloud = cloud_new(num_pts);
+	if (cloud == NULL) {
+		util_error("%s: memoria insuficiente para cloud", __FUNCTION__);
+		fclose(file);
+		return NULL;
+	}
+	
+	real x = 0;
+	real y = 0;
+	real z = 0;
+	uint index = 0;
+	for (uint i = 0; i < num_pts; i++) {
+		if (fgets(buffer, 80, file)) {
+			sscanf(buffer, "%le %le %le %*s\n", &x, &y, &z);
+			cloud_set_point(cloud, index, x, y, z);
+			index++;
+		} else {
+			util_error("%s: erro no parse [%s]", __FUNCTION__, filename);
+			break;
+		}
+	}
+	
+	fclose(file);
+	
+	return cloud;
+}
+
+/**
+ * \brief Carrega uma nuvem em arquivo PCD (soment DATA ascii!!!)
+ * \param filename A nuvem a ser carregada
+ * \return A nuvem carregada em memória ou NULL caso algum erro tenha ocorrido
+ */
+struct cloud* cloud_load_pcd(const char* filename)
+{
+	uint num_pts = 0;
+	char buffer[80];
+	
+	FILE* file = fopen(filename, "r");
+    if (file == NULL) {
+        util_error("%s: erro abrir arquivo %s", __FUNCTION__, filename);
+        return NULL;
+    }
+	
+	while (fgets(buffer, 80, file)) {
+		if (!strcmp(buffer, "DATA ascii\n"))
+			break;
+		
+		if (!strncmp(buffer, "POINTS", 6))
+			sscanf(buffer, "POINTS %d\n", &num_pts);
+	}
+	
+	struct cloud* cloud = cloud_new(num_pts);
+	if (cloud == NULL) {
+		util_error("%s: memoria insuficiente para cloud", __FUNCTION__);
+		fclose(file);
+		return NULL;
+	}
+	
+	real x = 0;
+	real y = 0;
+	real z = 0;
+	uint index = 0;
+	for (uint i = 0; i < num_pts; i++) {
+		if (fgets(buffer, 80, file)) {
+			sscanf(buffer, "%le %le %le %*s\n", &x, &y, &z);
+			cloud_set_point(cloud, index, x, y, z);
+			index++;
+		} else {
+			util_error("%s: erro no parse [%s]", __FUNCTION__, filename);
+			break;
+		}
+	}
+	
+	fclose(file);
+	
+	return cloud;
+}
+
+/**
  * \brief Salva uma nuvem em arquivo XYZ
  * \param cloud A nuvem a ser salva
  * \param filename O arquivo destino
@@ -241,13 +414,98 @@ int cloud_save_xyz(struct cloud* cloud, const char* filename)
 }
 
 /**
- * \brief Conta quantos pontos constituem uma nuvem
- * \param cloud A nuvem alvo
- * \return O número de pontos de cloud
+ * \brief Salva uma nuvem em arquivo CSV
+ * \param cloud A nuvem a ser salva
+ * \param filename O arquivo destino
+ * \return 0 se ocorreu algum erro, 1 caso-contrário
  */
-uint cloud_size(struct cloud* cloud)
+int cloud_save_csv(struct cloud* cloud, const char* filename)
 {
-    return cloud->num_pts;
+    FILE* file = fopen(filename, "w");
+    if (file == NULL) {
+        util_error("%s: erro abrir arquivo %s", __FUNCTION__, filename);
+        return 0;
+    }
+
+    for (uint i = 0; i < cloud->num_pts; i++) {
+        fprintf(file, "%le,%le,%le\n", cloud->points[i].x,
+                                       cloud->points[i].y,
+                                       cloud->points[i].z);
+    }
+
+    fclose(file);
+
+    return 1;
+}
+
+/**
+ * \brief Salva uma nuvem em arquivo PLY
+ * \param cloud A nuvem a ser salva
+ * \param filename O arquivo destino
+ * \return 0 se ocorreu algum erro, 1 caso-contrário
+ */
+int cloud_save_ply(struct cloud* cloud, const char* filename)
+{
+    FILE* file = fopen(filename, "w");
+    if (file == NULL) {
+        util_error("%s: erro abrir arquivo %s", __FUNCTION__, filename);
+        return 0;
+    }
+	
+	fprintf(file, "ply\n");
+	fprintf(file, "format ascii 1.0\n");
+	fprintf(file, "comment dumped by artur@interfaces-ufc-br\n");
+	fprintf(file, "element vertex %d\n", cloud_size(cloud));
+	fprintf(file, "property float x\n");
+	fprintf(file, "property float y\n");
+	fprintf(file, "property float z\n");
+	fprintf(file, "end_header\n");
+	
+    for (uint i = 0; i < cloud->num_pts; i++) {
+        fprintf(file, "%le %le %le\n", cloud->points[i].x,
+                                       cloud->points[i].y,
+                                       cloud->points[i].z);
+    }
+
+    fclose(file);
+
+    return 1;
+}
+
+/**
+ * \brief Salva uma nuvem em arquivo PCD (somente DATA ascii!!!)
+ * \param cloud A nuvem a ser salva
+ * \param filename O arquivo destino
+ * \return 0 se ocorreu algum erro, 1 caso-contrário
+ */
+int cloud_save_pcd(struct cloud* cloud, const char* filename)
+{
+    FILE* file = fopen(filename, "w");
+    if (file == NULL) {
+        util_error("%s: erro abrir arquivo %s", __FUNCTION__, filename);
+        return 0;
+    }
+	
+	fprintf(file, "VERSION .7\n");
+	fprintf(file, "FIELDS x y z\n");
+	fprintf(file, "SIZE 4 4 4\n");
+	fprintf(file, "TYPE F F F\n");
+	fprintf(file, "COUNT 1 1 1\n");
+	fprintf(file, "WIDTH %d\n", cloud_size(cloud));
+	fprintf(file, "HEIGHT 1\n");
+	fprintf(file, "VIEWPOINT 0 0 0 1 0 0 0\n");
+	fprintf(file, "POINTS %d\n", cloud_size(cloud));
+	fprintf(file, "DATA ascii\n");
+	
+    for (uint i = 0; i < cloud->num_pts; i++) {
+        fprintf(file, "%le %le %le\n", cloud->points[i].x,
+                                       cloud->points[i].y,
+                                       cloud->points[i].z);
+    }
+
+    fclose(file);
+
+    return 1;
 }
 
 /**
@@ -888,6 +1146,11 @@ struct cloud* cloud_binary_mask(struct cloud* cloud)
  */
 void cloud_debug(struct cloud* cloud, FILE* output)
 {
+	if (cloud == NULL) {
+		fprintf(output, "!!! nuvem vazia !!!\n");
+		return;
+	}
+	
     for (uint i = 0; i < cloud->num_pts; i++)
         fprintf(output, "%le %le %le\n", cloud->points[i].x,
                                          cloud->points[i].y,
