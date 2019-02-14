@@ -195,6 +195,17 @@ uint cloud_size(struct cloud* cloud)
 }
 
 /**
+ * \brief Cria cópia de uma nuvem
+ * \param cloud A nuvem a ser copiada
+ * \return Uma cópia de cloud
+ */
+struct cloud* cloud_copy(struct cloud* cloud)
+{
+	util_error("%s: nao implementada - retornando NULL!", __FUNCTION__);
+	return NULL;
+}
+
+/**
  * \brief Carrega uma nuvem a partir de um arquivo XYZ
  * \param filename O arquivo onde a nuvem está guardada
  * \return Um estrutura cloud carregada em memória ou NULL caso ocorra erro
