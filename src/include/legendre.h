@@ -85,13 +85,12 @@ struct matrix* legendre_cloud_moments(struct cloud* cloud)
     int p = 0;
     int q = 0;
     int r = 0;
-    int row = 0;
     int col = 0;
 
     for (p = 0; p <= LEGENDRE_ORDER; p++) {
         for (q = 0; q <= LEGENDRE_ORDER; q++) {
             for (r = 0; r <= LEGENDRE_ORDER; r++) {
-                matrix_set(results, row, col, legendre_moment(p, q, r, cloud));
+                matrix_set(results, 0, col, legendre_moment(p, q, r, cloud));
                 col++;
             }
         }
