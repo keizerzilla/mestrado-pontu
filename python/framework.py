@@ -2,7 +2,7 @@ from dataset import *
 from features import *
 from classification import *
 
-faces = ["neutral"]
+faces = ["nonneutral"]
 
 cuts = {"f" : "frontal",
         "r" : "radial",
@@ -17,14 +17,14 @@ replace_dict = {"bosphorus" : "bs",
                 "densit" : "d",
                 "crop" : "c"}
 
-scenarios= ["bosphorus-outlier-densit200-crop60",
-			"bosphorus-outlier-densit200-crop70",
-			"bosphorus-outlier-densit200-crop80",
-			"bosphorus-outlier-densit225-crop60",
-			"bosphorus-outlier-densit225-crop70",
-			"bosphorus-outlier-densit225-crop80"]
+scenarios= ["bosphorus-outlier-densit200-crop60-icp",
+			"bosphorus-outlier-densit200-crop70-icp",
+			"bosphorus-outlier-densit200-crop80-icp",
+			"bosphorus-outlier-densit225-crop60-icp",
+			"bosphorus-outlier-densit225-crop70-icp",
+			"bosphorus-outlier-densit225-crop80-icp"]
 
-moments = ["hututu", "hutsiq", "hu1980"]
+moments = ["spheric"]
 
 def go_extraction(rdir):
 	for face in faces:
@@ -72,13 +72,16 @@ def go_classification(rdir):
 def grid_search():
 	print("ok")
 
-def go_combination():
+def go_combination(extractors):
 	for dataset in scenarios:
-		combination_rank1_nonneutral(dataset, moments)
-		combination_rank1_neutral(dataset, moments)
-		combination_rank1_nonneutral(dataset, moments, 3)
-		combination_rank1_neutral(dataset, moments, 3)
+		combination_rank1_neutral(dataset, extractors)
+		combination_rank1_nonneutral(dataset, extractors)
+		#combination_rank1_neutral(dataset, extractors, 3)
+		#combination_rank1_nonneutral(dataset, extractors, 3)
 
 if __name__ == "__main__":
+	extractors = ["spheric", "hututu", "hu1980", "husiq", "zernike", "legendre", "chebyshev"]
 	#go_extraction("results")
-	go_classification("results")
+	#go_classification("results")
+	go_combination(extractors)
+	

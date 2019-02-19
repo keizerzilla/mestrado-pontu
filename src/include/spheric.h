@@ -35,10 +35,11 @@ real spheric_moment(int p, int q, int r, struct cloud* cloud)
         moment += pow(center_x, p)
                 * pow(center_y, q)
                 * pow(center_z, r)
-                * spheric_quad(center_x, center_y, center_z);
+                * spheric_quad(center_x, center_y, center_z)
+                * vector3_distance(&cloud->points[i], center);
 	}
 	
-	return moment;
+	return moment / cloud_max_distance_from_center(cloud);
 }
 
 /**
@@ -85,17 +86,17 @@ real spheric_quadmoment(int p, int q, int r, struct cloud* cloud)
  */
 struct matrix* spheric_cloud_moments(struct cloud* cloud)
 {
-    struct matrix* results = matrix_new(1, 8);
+    struct matrix* results = matrix_new(1, 27);
 
     int p = 0;
     int q = 0;
     int r = 0;
     int col = 0;
 
-    for (p = 0; p <= 1; p++) {
-        for (q = 0; q <= 1; q++) {
-            for (r = 0; r <= 1; r++) {
-                matrix_set(results, 0, col, spheric_quadmoment(p, q, r, cloud));
+    for (p = 0; p <= 2; p++) {
+        for (q = 0; q <= 2; q++) {
+            for (r = 0; r <= 2; r++) {
+                matrix_set(results, 0, col, spheric_moment(p, q, r, cloud));
                 col++;
             }
         }

@@ -16,6 +16,7 @@
 #include "include/util.h"
 #include "include/bsptree.h"
 #include "include/hashtable.h"
+#include "include/spheric.h"
 
 #define HU_TUTU			"hututu"
 #define HU_1980			"hu1980"
@@ -23,6 +24,7 @@
 #define ZERNIKE			"zernike"
 #define LEGENDRE		"legendre"
 #define CHEBYSHEV		"chebyshev"
+#define SPHERIC			"spheric"
 #define CUT_WHOLE		"w"
 #define CUT_SAGITTAL	"s"
 #define CUT_TRANSVERSAL	"t"
@@ -41,7 +43,7 @@ void extraction_help()
     printf("faltando argumentos! obrigatorios: [ -m | -i | -o | -c ]\n");
     
     printf(" -m: momento usado para extracao de atributos\n");
-    printf("     hututu, hu1980, husiq, zernike, legendre ou chebyshev\n");
+    printf("     hututu, hu1980, husiq, zernike, legendre, chebyshev\n");
     
     printf(" -i: nuvem de entrada no formato XYZ\n");
     printf("     ../data/bunny.xyz, face666.xyz, ~/bs/bs001.xyz, etc\n");
@@ -293,6 +295,8 @@ void extraction_interface(int argc, char** argv)
         mfunc = &chebyshev_cloud_moments;
     else if (!strcmp(moment, ZERNIKE))
         mfunc = &zernike_cloud_moments;
+    else if (!strcmp(moment, SPHERIC))
+        mfunc = &spheric_cloud_moments;
     else
     	mfunc = &hu_cloud_moments_hututu;
 	
