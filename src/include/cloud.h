@@ -9,8 +9,6 @@
 #ifndef CLOUD_H
 #define CLOUD_H
 
-#define _GNU_SOURCE
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

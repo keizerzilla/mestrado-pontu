@@ -5,6 +5,8 @@
  * \brief Interface de programa para extração de momentos
  */
 
+#define _GNU_SOURCE
+
 #include <unistd.h>
 
 #include "include/hu.h"

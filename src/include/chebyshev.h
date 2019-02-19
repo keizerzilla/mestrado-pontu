@@ -65,7 +65,7 @@ real chebyshev_norm(int p, int n)
  * \param r A ordem da dimensão z
  * \param n O número de pontos da nuvem
  * \param cloud A nuvem alvo
- * \return O momento de chebyshev de ordem(p,q,r)
+ * \return O momento de chebyshev de ordem p+q+r
  */
 real chebyshev_moment(int p, int q, int r, int n, struct cloud* cloud)
 {

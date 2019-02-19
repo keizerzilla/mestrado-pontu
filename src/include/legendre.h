@@ -56,7 +56,7 @@ real legendre_norm(int p, int q, int r, int num_pts)
  * \param q A ordem da dimensão y
  * \param r A ordem da dimensão z
  * \param cloud A nuvem alvo
- * \return O momento de ordem(p,q,r) da nuvem cloud
+ * \return O momento de ordem p+q+r da nuvem cloud
  */
 real legendre_moment(int p, int q, int r, struct cloud* cloud)
 {
