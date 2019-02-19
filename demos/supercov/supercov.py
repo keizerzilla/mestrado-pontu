@@ -6,8 +6,7 @@ from mpl_toolkits import mplot3d
 import matplotlib.pyplot as plt
 
 clouds = {
-	"raw" : "../../datasets/bosphorus/neutral/bs000_N_N_0.xyz",
-	"regular" : "../../datasets/bosphorus-outlier-densit225/neutral/bs000_N_N_0.xyz",
+	"regular" : "../../datasets/bosphorus-outlier-densit225-crop80/neutral/bs000_N_N_0.xyz",
 	"registred" : "../../datasets/bosphorus-outlier-densit225-crop80-icp/neutral/bs000_N_N_0.xyz"
 }
 

@@ -80,6 +80,5 @@ def go_combination():
 		combination_rank1_neutral(dataset, moments, 3)
 
 if __name__ == "__main__":
-	go_extraction("results")
+	#go_extraction("results")
 	go_classification("results")
-	
