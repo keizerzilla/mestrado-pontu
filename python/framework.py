@@ -2,7 +2,7 @@ from dataset import *
 from features import *
 from classification import *
 
-faces = ["neutral", "nonneutral"]
+faces = ["nonneutral"]
 
 cuts = {"w" : "whole",
         "f" : "frontal",
@@ -96,7 +96,7 @@ def go_combination():
 		#combination_rank1_nonneutral(dataset, moments, 3)
 
 if __name__ == "__main__":
-	go_extraction("results")
-	#go_classification("results")
+	#go_extraction("results")
+	go_classification("results")
 	#go_combination()
 	
