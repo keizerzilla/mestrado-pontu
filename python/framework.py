@@ -4,11 +4,11 @@ from classification import *
 
 faces = ["neutral", "nonneutral"]
 
-cuts = {"f" : "frontal",
-        "r" : "radial",
+cuts = {"w" : "whole",
+        "f" : "frontal",
         "s" : "sagittal",
         "t" : "transversal",
-        "w" : "whole",
+        "r" : "radial",
         "u" : "upper",
         "l" : "lower"}
 
@@ -17,7 +17,17 @@ replace_dict = {"bosphorus" : "bs",
                 "densit" : "d",
                 "crop" : "c"}
 
-scenarios= ["bosphorus-outlier-densit200-crop60-icp",
+scenarios= ["bosphorus",
+            "bosphorus-outlier",
+            "bosphorus-outlier-densit200",
+            "bosphorus-outlier-densit225",
+            "bosphorus-outlier-densit200-crop60",
+			"bosphorus-outlier-densit200-crop70",
+			"bosphorus-outlier-densit200-crop80",
+			"bosphorus-outlier-densit225-crop60",
+			"bosphorus-outlier-densit225-crop70",
+			"bosphorus-outlier-densit225-crop80",
+            "bosphorus-outlier-densit200-crop60-icp",
 			"bosphorus-outlier-densit200-crop70-icp",
 			"bosphorus-outlier-densit200-crop80-icp",
 			"bosphorus-outlier-densit225-crop60-icp",
@@ -87,6 +97,6 @@ def go_combination():
 
 if __name__ == "__main__":
 	go_extraction("results")
-	go_classification("results")
-	go_combination()
+	#go_classification("results")
+	#go_combination()
 	

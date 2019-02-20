@@ -40,25 +40,37 @@
  */
 void extraction_help()
 {
-	printf("mcalc - Calculador de Momentos 3D\n");
-	printf("autor - Artur Rodrigues Rocha Neto (UFC/LATIN/INTERFACES)\n");
+	printf("mcalc: Calculador de Momentos 3D\n");
+	printf("autor: Artur Rodrigues Rocha Neto (UFC/LATIN/INTERFACES)\n");
     printf("faltando argumentos! obrigatorios: [ -m | -i | -o | -c ]\n");
     
     printf(" -m: momento usado para extracao de atributos\n");
-    printf("     hututu, hu1980, husiq, zernike, legendre, chebyshev\n");
+    printf("     > hututu\n");
+    printf("     > husiq\n");
+    printf("     > hu1980\n");
+    printf("     > zernike\n");
+    printf("     > legendre\n");
+    printf("     > chebyshev\n");
+    printf("     > spheric\n");
     
     printf(" -i: nuvem de entrada no formato XYZ\n");
-    printf("     ../data/bunny.xyz, face666.xyz, ~/bs/bs001.xyz, etc\n");
+    printf("     > ../data/bunny.xyz, face666.xyz, ~/bs/bs001.xyz, etc\n");
     
     printf(" -o: arquivo aonde os momentos serao salvos\n");
-    printf("     path para arquivo texto ou stdout para saida padrao\n");
+    printf("     > path para arquivo texto\n");
+    printf("     > stdout para saida padrão (normalmente console)\n");
     
     printf(" -c: tipo de corte\n");
-    printf("     w: toda, s: sagital, t: transversal, f: frontal, r: radial\n");
-    printf("     u: parte superior, l: parte inferior\n");
+    printf("     > w: toda\n");
+    printf("     > s: sagital\n");
+    printf("     > t: transversal\n");
+    printf("     > f: frontal\n");
+    printf("     > r: radial\n");
+    printf("     > u: parte superior\n");
+    printf("     > l: parte inferior\n");
     
-    printf("ex1: mcalc -m hu_1980 -i ../data/cloud1.xyz -o hu1.txt -c t\n");
-    printf("ex2: mcalc -m legendre -i ../dataset/bunny.xyz -o stdout -c w\n\n");
+    printf("EX1: mcalc -m hu_1980 -i ../data/cloud1.xyz -o hu1.txt -c t\n");
+    printf("EX2: mcalc -m legendre -i ../dataset/bunny.xyz -o stdout -c w\n\n");
 }
 
 /**
@@ -162,38 +174,24 @@ struct matrix* extraction_radial(struct cloud* cloud,
                                  struct matrix* (*mfunc)(struct cloud*))
 {
 	real d = 0.0f;
-	real maxd = cloud_max_distance_from_center(cloud);
-	
-	real slice1 = maxd / 4;
-	real slice2 = slice1 * 2;
-	real slice3 = slice1 * 3;
+	//real slice = cloud_max_distance_from_center(cloud) / 2.0f;
+	real slice = cloud_max_distance(cloud, cloud_min_z(cloud)) / 2.0f;
 	
 	struct vector3* center = cloud_get_center(cloud);
 	struct cloud* sub1 = cloud_empty();
 	struct cloud* sub2 = cloud_empty();
-	struct cloud* sub3 = cloud_empty();
-	struct cloud* sub4 = cloud_empty();
 	
 	for (uint i = 0; i < cloud_size(cloud); i++) {
-		d = vector3_distance(center, &cloud->points[i]);
+		d = vector3_distance(&cloud->points[i], center);
 		
-		if (d <= slice1)
+		if (d <= slice)
 			cloud_add_point(sub1, &cloud->points[i]);
-		else if (d > slice1 && d <= slice2)
-			cloud_add_point(sub2, &cloud->points[i]);
-		else if (d > slice2 && d <= slice3)
-			cloud_add_point(sub3, &cloud->points[i]);
 		else
-			cloud_add_point(sub4, &cloud->points[i]);
+			cloud_add_point(sub2, &cloud->points[i]);
 	}
 	
-	struct matrix* r1 = matrix_concat_hor((*mfunc)(sub1), (*mfunc)(sub2));
-	struct matrix* r2 = matrix_concat_hor((*mfunc)(sub3), (*mfunc)(sub4));
-	struct matrix* ans = matrix_concat_hor(r1, r2);
+	struct matrix* ans = matrix_concat_hor((*mfunc)(sub1), (*mfunc)(sub2));
 	
-	matrix_free(r2);
-	matrix_free(r1);
-	cloud_free(sub3);
 	cloud_free(sub2);
 	cloud_free(sub1);
 	vector3_free(center);
