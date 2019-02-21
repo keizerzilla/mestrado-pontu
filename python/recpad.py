@@ -33,7 +33,7 @@ from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis as CQG
 
 warnings.filterwarnings("ignore")
 
-def heatmap(df, title):
+def heatmap(df, title, plot=False):
 	corr = df.corr().abs()
 	annot = corr.round(decimals=2)
 	upper = corr.where(np.triu(np.ones(corr.shape), k=1).astype(np.bool))
@@ -42,9 +42,10 @@ def heatmap(df, title):
 	print("drops sugeridos:\t" + str(to_drop))
 	print("super correlacoes:\t" + str(super_corr))
 	
-	sb.heatmap(corr, vmin=0, vmax=1.0, cmap="inferno", annot=annot)
-	plt.title(title)
-	plt.show()
+	if plot:
+		sb.heatmap(corr, vmin=0, vmax=1.0, cmap="inferno", annot=annot)
+		plt.title(title)
+		plt.show()
 
 def data_stats(df):
 	mean = df.mean()

@@ -11,7 +11,6 @@ import os
 import sys
 import numpy as np
 import pandas as pd
-import seaborn as sn
 import matplotlib.pyplot as plt
 
 if len(sys.argv) != 2:
@@ -25,7 +24,17 @@ replace_dict = {"bosphorus" : "bs",
                 "densit" : "d",
                 "crop" : "c"}
 
-scenarios = ["bosphorus-outlier-densit200-crop60-icp.csv",
+scenarios = ["bosphorus.csv",
+	         "bosphorus-outlier.csv",
+	         "bosphorus-outlier-densit200.csv",
+	         "bosphorus-outlier-densit225.csv",
+             "bosphorus-outlier-densit200-crop60.csv",
+	         "bosphorus-outlier-densit200-crop70.csv",
+	         "bosphorus-outlier-densit200-crop80.csv",
+	         "bosphorus-outlier-densit225-crop60.csv",
+	         "bosphorus-outlier-densit225-crop70.csv",
+	         "bosphorus-outlier-densit225-crop80.csv",
+	         "bosphorus-outlier-densit200-crop60-icp.csv",
 	         "bosphorus-outlier-densit200-crop70-icp.csv",
 	         "bosphorus-outlier-densit200-crop80-icp.csv",
 	         "bosphorus-outlier-densit225-crop60-icp.csv",
@@ -38,10 +47,9 @@ xaxes = []
 for data in scenarios:
 	for old, new in replace_dict.items():
 		data = os.path.basename(data.replace(old, new))
-	xaxes.append(data)
+	xaxes.append(data.replace(".csv", ""))
 xaxes = [""] + xaxes
 
-sn.set()
 tick_marks_x = np.arange(len(xaxes))
 boxes = []
 for data in scenarios:
@@ -49,10 +57,15 @@ for data in scenarios:
 	boxes.append(df["rate"])
 	print("[{}] - max: {}".format(os.path.basename(data), df["rate"].max()))
 
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize=(11, 9))
 ax.boxplot(boxes)
 plt.xticks(tick_marks_x, xaxes, rotation=90)
-plt.title("Variação das taxas de acerto rank1_neutro para diferentes configs")
+plt.yticks(range(0, 110, 10))
+plt.grid()
+combo = data_path.split("/")[2]
+plt.title("Variação das taxas de acerto: combinação " + combo)
 plt.tight_layout()
+plt.savefig("../results/figures/" + combo + ".png")
 plt.show()
+
 

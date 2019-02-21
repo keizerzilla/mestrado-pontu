@@ -17,6 +17,7 @@ Os arquivos de dados com as features/atributos devem estar no formato:
 
 import os
 import time
+import warnings
 import operator
 import itertools
 import numpy as np
@@ -32,6 +33,8 @@ from sklearn.neighbors import NearestCentroid as NC
 from sklearn.neural_network import MLPClassifier as MLP
 from sklearn.neighbors import KNeighborsClassifier as KNC
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+
+warnings.filterwarnings("ignore")
 
 classifiers = {
 	"KNN_manhattam" : KNC(p=1, n_neighbors=1),
@@ -60,7 +63,15 @@ def reduction_pca(X_train, X_test, n=None):
 	
 	return X_train, X_test
 
-def run_classification(X_train, y_train, X_test, y_test, verbose=False):
+def get_correlates(df, threshold=0.90):
+	corr = df.corr().abs()
+	upper = corr.where(np.triu(np.ones(corr.shape), k=1).astype(np.bool))
+	to_drop = [str(c) for c in upper.columns if any(upper[c] >= threshold)]
+	
+	return to_drop
+
+def run_classification(X_train, y_train, X_test, y_test,
+                       pca=False, norm=True, skew=True):
 	"""
 	Roda os classificadores em estudo para um dado conjunto de treino e teste.
 	Essa é a função mais genérica e mais importante desse script. Performa
@@ -70,46 +81,55 @@ def run_classification(X_train, y_train, X_test, y_test, verbose=False):
 	:param y_train: classes das amostras de treino
 	:param X_test: amostras de teste
 	:param y_test: classes das amostras de teste
-	:param verbose: se o resultado deve ser mostrado ou não na saída padrão
+	:param pca: se deve rodar pca no conjunto
+	:param norma: se deve aplicar normalizacao no conjunto
+	:param skew: se deve remover skewness no conjunto
 	:return: dicionário com taxas de reconhecimento e predições
 	"""
 	
 	ans = dict()
 	
+	# PCA
+	if pca:
+		X_train, X_test = reduction_pca(X_train, X_test)
+	
 	# normalizacao
-	try:
-		scaler = StandardScaler().fit(X_train)
-		X_train = scaler.transform(X_train)
-		X_test = scaler.transform(X_test)
-	except:
-		result = dict()
-		result["recog"] = 0
-		result["y_true"] = []
-		result["y_pred"] = []
-		ans["ERROR_NORM"] = result
-		return ans
+	if norm:
+		try:
+			scaler = StandardScaler().fit(X_train)
+			X_train = scaler.transform(X_train)
+			X_test = scaler.transform(X_test)
+		except:
+			result = dict()
+			result["recog"] = 0
+			result["y_true"] = []
+			result["y_pred"] = []
+			ans["ERROR_NORM"] = result
+			return ans
 	
 	# remocao de skewness
-	new_train = []
-	new_test = []
-	try:
-		pt = PowerTransformer(method="yeo-johnson", standardize=False)
-		for m_train, m_test in zip(X_train.T, X_test.T):
-			data_train = m_train.reshape(-1, 1)
-			data_test = m_test.reshape(-1, 1)
-			pt.fit(data_train)
-			new_train.append(np.ravel(pt.transform(data_train)))
-			new_test.append(np.ravel(pt.transform(data_test)))
-	except:
-		result = dict()
-		result["recog"] = 0
-		result["y_true"] = []
-		result["y_pred"] = []
-		ans["ERROR_SKEW"] = result
-		return ans
-	
-	X_train = np.array(new_train).T
-	X_test = np.array(new_test).T
+	if skew:
+		new_train = []
+		new_test = []
+		
+		try:
+			pt = PowerTransformer(method="yeo-johnson", standardize=False)
+			for m_train, m_test in zip(X_train.T, X_test.T):
+				data_train = m_train.reshape(-1, 1)
+				data_test = m_test.reshape(-1, 1)
+				pt.fit(data_train)
+				new_train.append(np.ravel(pt.transform(data_train)))
+				new_test.append(np.ravel(pt.transform(data_test)))
+		except:
+			result = dict()
+			result["recog"] = 0
+			result["y_true"] = []
+			result["y_pred"] = []
+			ans["ERROR_SKEW"] = result
+			return ans
+		
+		X_train = np.array(new_train).T
+		X_test = np.array(new_test).T
 	
 	# execucao dos classificadores e registro dos resultados
 	for name, classifier in classifiers.items():
@@ -134,27 +154,27 @@ def run_classification(X_train, y_train, X_test, y_test, verbose=False):
 		
 		elapsed_time = round(time.time() - start_time, 4)
 		ans[name] = result
-		
-		if verbose:
-			score_txt = str(round(score*100, 2))
-			out = "{:<16}{:<8}{:<8}".format(name, score_txt, elapsed_time)
-			print(out)
 	
 	return ans
 
-def rank1_neutral(features):
+def rank1_neutral(features, corrfilt=False):
 	"""
 	Executa classificação RANK-1 usando os classificadores em pesquisa. Treino:
 	amostra 0 de cada pose neutra. Teste: restante das amostras neutras
 	(amostra diferente de 0).
 
 	:param features: caminho para o dados extraídos das amostras neutras
+	:param corrfilt: se altas correlacoes devem ser descartadas
 	:return: dicionário com taxas de reconhecimento e predições
 	"""
 	
 	df = pd.read_csv(features, header=None)
 	cs = ["f"+str(x) for x in range(len(df.columns)-2)] + ["sample", "subject"]
 	df.columns = cs
+	
+	if corrfilt:
+		to_drop = get_correlates(df.drop(["sample", "subject"], axis=1))
+		df = df.drop(to_drop, axis=1)
 	
 	trainset = df.loc[df["sample"] == 0].drop(["sample"], axis=1)
 	X_train = np.array(trainset.drop(["subject"], axis=1))
@@ -167,13 +187,14 @@ def rank1_neutral(features):
 	# execucao dos classificadores
 	return run_classification(X_train, y_train, X_test, y_test)
 
-def rank1_nonneutral(feat_neutral, feat_nonneutral):
+def rank1_nonneutral(feat_neutral, feat_nonneutral, corrfilt=False):
 	"""
 	Executa classificação RANK-1 usando os classificadores em pesquisa. Treino:
 	amostra 0 de cada pose neutra. Teste: todas as amostras não-neutras.
 
 	:param feat_neutral: caminho para os dados das amostras neutras
 	:param feat_nonneutral: caminho para os dados das amostras não-neutras
+	:param corrfilt: se altas correlacoes devem ser descartadas
 	:return: dicionário com taxas de reconhecimento e predições
 	"""
 	
@@ -181,6 +202,10 @@ def rank1_nonneutral(feat_neutral, feat_nonneutral):
 	df = pd.read_csv(feat_neutral, header=None)
 	cs = ["f"+str(x) for x in range(len(df.columns)-2)] + ["sample", "subject"]
 	df.columns = cs
+	
+	if corrfilt:
+		to_drop = get_correlates(df.drop(["sample", "subject"], axis=1))
+		df = df.drop(to_drop, axis=1)
 	
 	trainset = df.loc[df["sample"] == 0].drop(["sample"], axis=1)
 	X_train = np.array(trainset.drop(["subject"], axis=1))
@@ -198,13 +223,14 @@ def rank1_nonneutral(feat_neutral, feat_nonneutral):
 	# execucao dos classificadores
 	return run_classification(X_train, y_train, X_test, y_test)
 
-def roc1(feat_neutral, feat_nonneutral):
+def roc1(feat_neutral, feat_nonneutral, corrfilt=False):
 	"""
 	Executa classificação ROC-1 usando os classificadores em pesquisa. Treino:
 	todas as amostras neutras. Teste: todas as amostras não-neutras.
 
 	:param feat_neutral: caminho para os dados das amostras neutras
 	:param feat_nonneutral: O caminho para os dados das amostras não-neutras
+	:param corrfilt: se altas correlacoes devem ser descartadas
 	:return: dicionário com taxas de reconhecimento e predições
 	"""
 	
@@ -212,6 +238,10 @@ def roc1(feat_neutral, feat_nonneutral):
 	df = pd.read_csv(feat_neutral, header=None)
 	cs = ["f"+str(x) for x in range(len(df.columns)-2)] + ["sample", "subject"]
 	df.columns = cs
+	
+	if corrfilt:
+		to_drop = get_correlates(df.drop(["sample", "subject"], axis=1))
+		df = df.drop(to_drop, axis=1)
 	
 	trainset = df.drop(["sample"], axis=1)
 	X_train = np.array(trainset.drop(["subject"], axis=1))
@@ -229,7 +259,7 @@ def roc1(feat_neutral, feat_nonneutral):
 	# execucao dos classificadores
 	return run_classification(X_train, y_train, X_test, y_test)
 
-def rank1_neutral_concat(moments):
+def rank1_neutral_concat(moments, corrfilt=False):
 	"""
 	Executa classificação RANK-1 neutral usando os classificadores em pesquisa.
 	O conjunto de treino e teste é a concatenação de n momentos. Treino: amostra
@@ -237,6 +267,7 @@ def rank1_neutral_concat(moments):
 	diferentes de 0).
 
 	:param moments: lista ou tupla de momentos
+	:param corrfilt: se altas correlacoes devem ser descartadas
 	:return: dicionário com taxas de reconhecimento e predições
 	"""
 	
@@ -249,6 +280,10 @@ def rank1_neutral_concat(moments):
 		cs = ["f"+str(x) for x in range(len(df.columns)-2)]
 		cs = cs + ["sample", "subject"]
 		df.columns = cs
+		
+		if corrfilt:
+			to_drop = get_correlates(df.drop(["sample", "subject"], axis=1))
+			df = df.drop(to_drop, axis=1)
 		
 		trainset = df.loc[df["sample"] == 0].drop(["sample"], axis=1)
 		temp_X_train = trainset.drop(["subject"], axis=1)
@@ -272,7 +307,7 @@ def rank1_neutral_concat(moments):
 	# executa classificadores
 	return run_classification(X_train, y_train, X_test, y_test)
 
-def rank1_nonneutral_concat(neutral, nonneutral):
+def rank1_nonneutral_concat(neutral, nonneutral, corrfilt=False):
 	"""
 	Executa classificação RANK-1 nonneutral usando os classificadores em
 	pesquisa. O conjunto de treino e teste é a concatenação de n momentos.
@@ -281,6 +316,7 @@ def rank1_nonneutral_concat(neutral, nonneutral):
 
 	:param neutral: lista ou tupla de momentos neutrals
 	:param nonneutral: lista ou tupla de momentos nonneutrals
+	:param corrfilt: se altas correlacoes devem ser descartadas
 	:return: dicionário com taxas de reconhecimento e predições
 	"""
 	
@@ -291,6 +327,10 @@ def rank1_nonneutral_concat(neutral, nonneutral):
 		cs = ["f"+str(x) for x in range(len(df.columns)-2)]
 		cs = cs + ["sample", "subject"]
 		df.columns = cs
+		
+		if corrfilt:
+			to_drop = get_correlates(df.drop(["sample", "subject"], axis=1))
+			df = df.drop(to_drop, axis=1)
 		
 		trainset = df.loc[df["sample"] == 0].drop(["sample"], axis=1)
 		temp_X_train = trainset.drop(["subject"], axis=1)
@@ -371,7 +411,7 @@ def max_confusion(ans):
 		if diff[i, 0] != diff[i, 1]:
 			print("[{}]:\t{}".format(i, diff[i,:]))
 
-def combination_rank1_neutral(dataset, moments, n=2):
+def combination_rank1_neutral(dataset, moments, n=2, dump="../results/"):
 	"""
 	Executa classificações exaustivas do cenário rank1a para uma lista de
 	combinações de momentos.
@@ -379,6 +419,7 @@ def combination_rank1_neutral(dataset, moments, n=2):
 	:param dataset: conjunto de dados base a ser testado
 	:param moments: lista de momentos a ser usados
 	:param n: número de elementos por combinação (default 2)
+	:param dump: pasta aonde ficarao salvas as combinacoes
 	"""
 	
 	extension = ".dat"
@@ -414,11 +455,11 @@ def combination_rank1_neutral(dataset, moments, n=2):
 		df = df.append(row, ignore_index=True)
 		print(result)
 	
-	res_path = "{}combination_rank1a_P{}/".format(basepath, n)
+	res_path = "{}combination_rank1a_P{}/".format(dump, n)
 	os.makedirs(res_path, exist_ok=True)
 	df.to_csv(res_path + "{}.csv".format(dataset), index=False)
 
-def combination_rank1_nonneutral(dataset, moments, n=2):
+def combination_rank1_nonneutral(dataset, moments, n=2, dump="../results/"):
 	"""
 	Executa classificações exaustivas do cenário rank1b para uma lista de
 	combinações de momentos.
@@ -426,6 +467,7 @@ def combination_rank1_nonneutral(dataset, moments, n=2):
 	:param dataset: conjunto de dados base a ser testado
 	:param moments: lista de momentos a ser usados
 	:param n: número de elementos por combinação (default 2)
+	:param dump: pasta aonde ficarao salvas as combinacoes
 	"""
 	
 	extension = ".dat"
@@ -470,7 +512,7 @@ def combination_rank1_nonneutral(dataset, moments, n=2):
 		df = df.append(row, ignore_index=True)
 		print(result)
 	
-	res_path = "{}combination_rank1b_P{}/".format(basepath, n)
+	res_path = "{}combination_rank1b_P{}/".format(dump, n)
 	os.makedirs(res_path, exist_ok=True)
 	df.to_csv(res_path + "{}.csv".format(dataset), index=False)
 
