@@ -90,13 +90,13 @@ def grid_search():
 
 def go_combination():
 	for dataset in scenarios:
-		combination_rank1_neutral(dataset, moments)
+		#combination_rank1_neutral(dataset, moments)
 		combination_rank1_nonneutral(dataset, moments)
 		#combination_rank1_neutral(dataset, moments, 3)
 		#combination_rank1_nonneutral(dataset, moments, 3)
 
 if __name__ == "__main__":
 	#go_extraction("results")
-	go_classification("results")
-	#go_combination()
+	#go_classification("results")
+	go_combination()
 	
