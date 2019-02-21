@@ -94,6 +94,9 @@ struct matrix* extraction_radial(struct cloud* cloud,
 			cloud_add_point(sub2, &cloud->points[i]);
 	}
 	
+	cloud_save_xyz(sub1, "sub1.xyz");
+	cloud_save_xyz(sub2, "sub2.xyz");
+	
 	struct matrix* ans = matrix_concat_hor((*mfunc)(sub1), (*mfunc)(sub2));
 	
 	cloud_free(sub2);
@@ -155,15 +158,15 @@ struct matrix* extraction_lower(struct cloud* cloud,
 
 int main(int argc, char** argv)
 {
-	struct cloud* raw = cloud_load_xyz("../../datasets/bosphorus-outlier-densit225-crop60/neutral/bs066_N_N_0.xyz");
+	struct cloud* raw = cloud_load_xyz("../../datasets/bosphorus-outlier-densit200-crop80-icp/neutral/bs000_N_N_0.xyz");
 	struct matrix* (*mfunc)(struct cloud*) = &legendre_cloud_moments;
 	
 	//extraction_plane(raw, mfunc, vector3_new(1, 0, 0));
-	//extraction_plane(raw, mfunc, vector3_new(0, 1, 0));
+	extraction_plane(raw, mfunc, vector3_new(0, 1, 0));
 	//extraction_plane(raw, mfunc, vector3_new(0, 0, 1));
 	//matrix_debug(extraction_radial(raw, mfunc), stdout);
-	matrix_debug(extraction_upper(raw, mfunc), stdout);
-	matrix_debug(extraction_lower(raw, mfunc), stdout);
+	//matrix_debug(extraction_upper(raw, mfunc), stdout);
+	//matrix_debug(extraction_lower(raw, mfunc), stdout);
 	
 	cloud_free(raw);
 	

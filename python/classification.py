@@ -34,6 +34,12 @@ from sklearn.neural_network import MLPClassifier as MLP
 from sklearn.neighbors import KNeighborsClassifier as KNC
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 
+from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis as QDA
+from sklearn.naive_bayes import GaussianNB
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.tree import DecisionTreeClassifier
+
 warnings.filterwarnings("ignore")
 
 classifiers = {
@@ -43,7 +49,12 @@ classifiers = {
 	"DMC_euclidean" : NC(metric="euclidean"),
 	"SVM_radial" : SVC(kernel="rbf", gamma="auto"),
 	"SVM_poly" : SVC(kernel="poly", gamma="auto"),
-	"LDA" : LDA()
+	"LDA" : LDA(),
+	"QDA" : QDA(),
+	"GaussianNB" : GaussianNB(),
+	"RandomForest" : RandomForestClassifier(),
+	"AdaBoost" : AdaBoostClassifier(),
+	"DecisionTree" : DecisionTreeClassifier()
 }
 
 def reduction_pca(X_train, X_test, n=None):
@@ -363,6 +374,66 @@ def rank1_nonneutral_concat(neutral, nonneutral, corrfilt=False):
 	# executa classificadores
 	return run_classification(X_train, y_train, X_test, y_test)
 
+############################# [vvv] DANGER [vvv] ###############################
+
+def roc1_concat(neutral, nonneutral, corrfilt=False):
+	"""
+	Executa classificação ROC1 usando os classificadores em pesquisa. O conjunto
+	de treino e teste é a concatenação de n momentos.
+	Treino: todas as amostras neutras. Teste: todas as amostras não-neutras
+	(amostras diferentes de 0).
+
+	:param neutral: lista ou tupla de momentos neutrals
+	:param nonneutral: lista ou tupla de momentos nonneutrals
+	:param corrfilt: se altas correlacoes devem ser descartadas
+	:return: dicionário com taxas de reconhecimento e predições
+	"""
+	
+	x_train_list = []
+	y_train_list = []
+	for m in neutral:
+		df = pd.read_csv(m, header=None)
+		cs = ["f"+str(x) for x in range(len(df.columns)-2)]
+		cs = cs + ["sample", "subject"]
+		df.columns = cs
+		
+		if corrfilt:
+			to_drop = get_correlates(df.drop(["sample", "subject"], axis=1))
+			df = df.drop(to_drop, axis=1)
+		
+		trainset = df.drop(["sample"], axis=1)
+		temp_X_train = trainset.drop(["subject"], axis=1)
+		temp_y_train = trainset[["subject"]]
+		
+		x_train_list.append(temp_X_train)
+		y_train_list.append(temp_y_train)
+	
+	x_test_list = []
+	y_test_list = []
+	for m in nonneutral:
+		df = pd.read_csv(m, header=None)
+		cs = ["f"+str(x) for x in range(len(df.columns)-2)]
+		cs = cs + ["sample", "subject"]
+		df.columns = cs
+		
+		testset = df.drop(["sample"], axis=1)
+		temp_X_test = testset.drop(["subject"], axis=1)
+		temp_y_test = testset[["subject"]]
+		
+		x_test_list.append(temp_X_test)
+		y_test_list.append(temp_y_test)
+	
+	X_train = np.array(pd.concat(x_train_list, axis=1))
+	X_test = np.array(pd.concat(x_test_list, axis=1))
+	
+	y_train = np.ravel(y_train_list[0])
+	y_test = np.ravel(y_test_list[0])
+	
+	# executa classificadores
+	return run_classification(X_train, y_train, X_test, y_test)
+
+############################# [^^^] DANGER [^^^] ###############################
+
 def confusion(y_true, y_pred, classes=[]):
 	"""
 	Monta matriz de confusão para um resultado de classificação.
@@ -513,6 +584,65 @@ def combination_rank1_nonneutral(dataset, moments, n=2, dump="../results/"):
 		print(result)
 	
 	res_path = "{}combination_rank1b_P{}/".format(dump, n)
+	os.makedirs(res_path, exist_ok=True)
+	df.to_csv(res_path + "{}.csv".format(dataset), index=False)
+
+############################# [!!!] DANGER [!!!] ###############################
+
+def combination_roc1(dataset, moments, n=2, dump="../results/"):
+	"""
+	Executa classificações exaustivas do cenário roc1 para uma lista de
+	combinações de momentos.
+	
+	:param dataset: conjunto de dados base a ser testado
+	:param moments: lista de momentos a ser usados
+	:param n: número de elementos por combinação (default 2)
+	:param dump: pasta aonde ficarao salvas as combinacoes
+	"""
+	
+	extension = ".dat"
+	basepath = "../results/"
+	
+	slices = ["frontal/",
+	          "radial/",
+	          "sagittal/",
+	          "transversal/",
+	          "whole/",
+	          "upper/",
+	          "lower/"]
+	
+	m_neutral = [dataset + "/neutral-" + m + extension for m in moments]
+	m_nonneutral = [dataset + "/nonneutral-" + m + extension for m in moments]
+	
+	prod_neutral = list(itertools.product(slices, m_neutral))
+	prod_nonneutral = list(itertools.product(slices, m_nonneutral))
+	
+	conf_neutral = [basepath + p[0] + p[1] for p in prod_neutral]
+	conf_nonneutral = [basepath + p[0] + p[1] for p in prod_nonneutral]
+	
+	combo_neutral = list(itertools.combinations(conf_neutral, n))
+	combo_nonneutral = list(itertools.combinations(conf_nonneutral, n))
+	
+	settings = [[(c[i].split("/")[2],
+	              os.path.basename(c[i]).split("-")[1].replace(".dat",""))
+	              for i in range(n)]
+	              for c in combo_neutral]
+	
+	cols = ["setting", "classifier", "rate"]
+	df = pd.DataFrame(columns=cols)
+	data_zip = zip(settings, combo_neutral, combo_nonneutral)
+	
+	for setting, neutral, nonneutral in data_zip:
+		ans = roc1_concat(neutral, nonneutral)
+		classifier, rate = max_rate(ans)
+		rate = round(rate*100, 2)
+		setting = str(setting)
+		result = "[{}] [{}] [{}]".format(setting, classifier, rate)
+		row = {"setting" : setting, "classifier" : classifier, "rate" : rate}
+		df = df.append(row, ignore_index=True)
+		print(result)
+	
+	res_path = "{}combination_roc1_P{}/".format(dump, n)
 	os.makedirs(res_path, exist_ok=True)
 	df.to_csv(res_path + "{}.csv".format(dataset), index=False)
 
