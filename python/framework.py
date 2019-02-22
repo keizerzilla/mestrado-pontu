@@ -55,13 +55,21 @@ def go_analysis(rdir):
 		datasets = ["../datasets/" + x + "/{}".format(face) for x in scenarios]
 		for cut, cut_folder in cuts.items():
 			for moment in moments:
+				result = pd.DataFrame()
 				for data in datasets:
 					scenario = data.split("/")[2]
 					folder = "../{}/{}/{}/".format(rdir, cut_folder, scenario)
-					out = folder
-					out = out + "{}-{}.dat".format(face, moment)
+					out = folder + "{}-{}.dat".format(face, moment)
 					df = pd.read_csv(out, header=None)
-					print(out)
+					cs = ["f"+str(x) for x in range(len(df.columns)-2)] + ["sample", "subject"]
+					df.columns = cs
+					
+					frames = [result, df]
+					result = pd.concat(frames)
+				
+				combined = data_stats(result)
+				print(explained_var(result))
+				input(moment + ": [ENTER] to continue...")
 
 def go_extraction(rdir):
 	for face in faces:
@@ -76,7 +84,7 @@ def go_extraction(rdir):
 					out = out + "{}-{}.dat".format(face, moment)
 					moment_extraction_batch(moment, cut, data, out)
 
-def go_classification_rank1(rdir, table=False):
+def go_classification_rank1(rdir, table=False, figpath="figures"):
 	for face in faces:
 		datasets = ["../datasets/" + x + "/{}".format(face) for x in scenarios]
 		for cut, cut_folder in cuts.items():
@@ -127,9 +135,9 @@ def go_classification_rank1(rdir, table=False):
 						ax.annotate(str(y), xy=(x, y), xytext=(x-0.2, y+1))
 				
 				plt.tight_layout()
-				plt.savefig("../" + rdir + "/figures/" + filename + ".png")
+				plt.savefig("../" + rdir + "/" + figpath +"/" + filename + ".png")
 
-def go_classification_roc1(rdir, table=False):
+def go_classification_roc1(rdir, table=False, figpath="figures"):
 	for cut, cut_folder in cuts.items():
 		res = pd.DataFrame(columns=moments, index=mini_scenarios)
 		for scenario in scenarios:
@@ -167,18 +175,18 @@ def go_classification_roc1(rdir, table=False):
 					ax.annotate(str(y), xy=(x, y), xytext=(x-0.2, y+1))
 				
 			plt.tight_layout()
-			plt.savefig("../" + rdir + "/figures/" + filename + ".png")
+			plt.savefig("../" + rdir + "/" + figpath +"/" + filename + ".png")
 
 def go_combination():
 	for dataset in scenarios:
-		#combination_rank1_neutral(dataset, moments)
-		combination_roc1(dataset, moments)
+		combination_rank1_neutral(dataset, moments)
+		#combination_roc1(dataset, moments)
 
 if __name__ == "__main__":
 	#go_classification_roc1(rdir="results", table=True)
 	go_combination()
-	
-	
+	#go_analysis("results")
+	#go_classification_rank1("results", table=True, figpath="pca")
 	
 	
 	

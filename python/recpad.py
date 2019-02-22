@@ -48,14 +48,24 @@ def heatmap(df, title, plot=False):
 		plt.show()
 
 def data_stats(df):
-	mean = df.mean()
-	median = df.median()
-	minv = df.min()
-	maxv = df.max()
-	std = df.std()
+	frame = df.drop(["sample", "subject"], axis=1)
+	mean = frame.mean()
+	median = frame.median()
+	minv = frame.min()
+	maxv = frame.max()
+	std = frame.std()
 	
 	result = pd.concat([mean, median, minv, maxv, std], axis=1)
 	result.columns = ["Média", "Mediana", "Min", "Max", "Desvio"]
+	result = result.round(4)
+	
+	return result
+
+def explained_var(df):
+	frame = df.drop(["sample", "subject"], axis=1)
+	pca = PCA()
+	pca.fit(df)
+	result = pca.explained_variance_ratio_ * 100
 	result = result.round(2)
 	
 	return result

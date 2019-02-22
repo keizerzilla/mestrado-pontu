@@ -1,0 +1,17 @@
+bs
+bs-out
+bs-out-d200
+bs-out-d225
+bs-out-d200-c60
+bs-out-d200-c70
+bs-out-d200-c80
+bs-out-d225-c60
+bs-out-d225-c70
+bs-out-d225-c80
+bs-out-d200-c60-icp
+bs-out-d200-c70-icp
+bs-out-d200-c80-icp
+bs-out-d225-c60-icp
+bs-out-d225-c70-icp
+bs-out-d225-c80-icp
+

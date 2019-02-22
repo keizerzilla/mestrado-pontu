@@ -47,14 +47,14 @@ classifiers = {
 	"KNN_euclidean" : KNC(p=2, n_neighbors=1),
 	"DMC_manhattam" : NC(metric="manhattan"),
 	"DMC_euclidean" : NC(metric="euclidean"),
-	"SVM_radial" : SVC(kernel="rbf", gamma="auto"),
-	"SVM_poly" : SVC(kernel="poly", gamma="auto"),
-	"LDA" : LDA(),
-	"QDA" : QDA(),
-	"GaussianNB" : GaussianNB(),
-	"RandomForest" : RandomForestClassifier(),
-	"AdaBoost" : AdaBoostClassifier(),
-	"DecisionTree" : DecisionTreeClassifier()
+	"SVM_radial"    : SVC(kernel="rbf", gamma="auto"),
+	"SVM_poly"      : SVC(kernel="poly", gamma="auto"),
+	"LDA"           : LDA(),
+	"QDA"           : QDA(),
+	"GaussianNB"    : GaussianNB(),
+	"RandomForest"  : RandomForestClassifier(),
+	"AdaBoost"      : AdaBoostClassifier(),
+	"DecisionTree"  : DecisionTreeClassifier()
 }
 
 def reduction_pca(X_train, X_test, n=None):

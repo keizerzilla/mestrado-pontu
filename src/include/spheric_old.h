@@ -1,8 +1,8 @@
 /**
- * \file spheric.h
+ * \file spheric_old.h
  * \author Artur Rodrigues Rocha Neto
  * \date 2019
- * \brief Implementação dos "Momentos Esféricos" (autoria minha???)
+ * \brief Implementação dos "Momentos Esféricos" (autoria minha??? - ANTIGO)
  */
 
 #ifndef SPHERIC_H
@@ -19,25 +19,19 @@
  * \param x A coordenada x
  * \param y A coordenada y
  * \param z A coordenada z
- * \param p A ordem da coordena x
- * \param q A ordem da coordena y
- * \param r A ordem da coordena z
  * \return Real representativo da relação esférica
  */
-real spheric_quad(real x, real y, real z, int p, int q, int r)
+real spheric_quad(real x, real y, real z)
 {
-	return sqrt(pow(x, 2*p) + pow(y, 2*q) + pow(z, 2*r));
+	return (x * x) + (y * y) + (z * z);
 }
 
 /**
  * \brief A norma dos momentos esféricos
- * \param p A ordem da coordena x
- * \param q A ordem da coordena y
- * \param r A ordem da coordena z
  * \param cloud A nuvem alvo
  * \return A distância entre o centróide e o ponto mais distante a ele em cloud
  */
-real spheric_norm(int p, int q, int r, struct cloud* cloud)
+real spheric_norm(struct cloud* cloud)
 {
 	return cloud_max_distance_from_center(cloud);
 }
@@ -66,28 +60,11 @@ real spheric_moment(int p, int q, int r, struct cloud* cloud)
         moment += pow(center_x, p)
                 * pow(center_y, q)
                 * pow(center_z, r)
-                * spheric_quad(center_x, center_y, center_z, p, q, r)
+                * spheric_quad(center_x, center_y, center_z)
                 * vector3_distance(&cloud->points[i], center);
 	}
 	
-	//return moment / spheric_norm(p, q, r, cloud); << quando soh se usava isso
-	return moment; // novo, em conjunto com spheric_normalized_moment
-}
-
-/**
- * \brief Cálculo dos momentos esféricos normalizados
- * \param p A ordem da coordena x
- * \param q A ordem da coordena y
- * \param r A ordem da coordena z
- * \param cloud A nuvem alvo cujos momentos se quer calcular
- * \return O momento esférico normalizado de ordem p+q+r de cloud
- */
-real spheric_normalized(int p, int q, int r, struct cloud* cloud)
-{
-	real central = spheric_moment(p, q, r, cloud);
-	real zero = spheric_moment(0, 0, 0, cloud);
-	
-	return central / zero;
+	return moment / spheric_norm(cloud);
 }
 
 /**
@@ -107,8 +84,7 @@ struct matrix* spheric_cloud_moments(struct cloud* cloud)
     for (p = 0; p <= SPHERIC_ORDER; p++) {
         for (q = 0; q <= SPHERIC_ORDER; q++) {
             for (r = 0; r <= SPHERIC_ORDER; r++) {
-                //matrix_set(results, 0, col, spheric_moment(p, q, r, cloud));
-                matrix_set(results, 0, col, spheric_normalized(p, q, r, cloud));
+                matrix_set(results, 0, col, spheric_moment(p, q, r, cloud));
                 col++;
             }
         }
