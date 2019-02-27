@@ -70,8 +70,7 @@ real spheric_moment(int p, int q, int r, struct cloud* cloud)
                 * vector3_distance(&cloud->points[i], center);
 	}
 	
-	//return moment / spheric_norm(p, q, r, cloud); << quando soh se usava isso
-	return moment; // novo, em conjunto com spheric_normalized_moment
+	return moment;
 }
 
 /**
@@ -87,7 +86,7 @@ real spheric_normalized(int p, int q, int r, struct cloud* cloud)
 	real central = spheric_moment(p, q, r, cloud);
 	real zero = spheric_moment(0, 0, 0, cloud);
 	
-	return central / zero;
+	return central / (cloud_max_distance_from_center(cloud) *zero);
 }
 
 /**
@@ -107,7 +106,6 @@ struct matrix* spheric_cloud_moments(struct cloud* cloud)
     for (p = 0; p <= SPHERIC_ORDER; p++) {
         for (q = 0; q <= SPHERIC_ORDER; q++) {
             for (r = 0; r <= SPHERIC_ORDER; r++) {
-                //matrix_set(results, 0, col, spheric_moment(p, q, r, cloud));
                 matrix_set(results, 0, col, spheric_normalized(p, q, r, cloud));
                 col++;
             }
