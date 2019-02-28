@@ -5,14 +5,17 @@ Artur Rodrigues Rocha Neto
 
 Funções para classificação, análise de resultados e pré-processamento.
 Os arquivos de dados com as features/atributos devem estar no formato:
-- p+2 colunas, onde p é o número de atributos
-- as duas colunas finais devem ser, respectivamente, amostra e classe
+- p+4 colunas, onde p é o número de atributos
+- as quatros colunas finais devem ser, respectivamente:
+  - amostra
+  - classe
+  - tipo de expressao
+  - exepressao
 - os arquivos NÃO DEVEM POSSUIR CABEÇALHO!
-- exemplo:
-	1,2,3,4,5,6,9,7 # seis atributos, amostra 9, classe 7
-	8,4,9,2,0,2,1,2 # seis atributos, amostra 1, classe 2
-	3,9,1,5,0,3,4,9 # seis atributos, amostra 4, classe 9
-	(...)
+- exemplos:
+	1,2,3,4,5,6,9,7,N,N # seis atributos, amostra 9, classe 7, neutra-neutra
+	9,2,0,2,1,2,E,ANGER # quatro atributos, amostra 1, classe 2, expressao-anger
+	3,4,9,LFAU,A22B22   # um atributo, amostra 4, classe 9, actionunit-A22B22
 """
 
 import os
@@ -26,19 +29,28 @@ import seaborn as sn
 import matplotlib.pyplot as plt
 from sklearn.svm import SVC
 from sklearn.decomposition import PCA
+from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import confusion_matrix
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import PowerTransformer
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import NearestCentroid as NC
 from sklearn.neural_network import MLPClassifier as MLP
 from sklearn.neighbors import KNeighborsClassifier as KNC
+from sklearn.model_selection import train_test_split as data_split
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
-
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis as QDA
-from sklearn.naive_bayes import GaussianNB
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.ensemble import AdaBoostClassifier
-from sklearn.tree import DecisionTreeClassifier
+
+expressions = {
+	"ANGER"    : 0,
+	"HAPPY"    : 1,
+	"SURPRISE" : 2,
+	"SADNESS"  : 3,
+	"DISGUST"  : 4,
+	"FEAR"     : 5
+}
 
 warnings.filterwarnings("ignore")
 
@@ -57,32 +69,7 @@ classifiers = {
 	"DecisionTree"  : DecisionTreeClassifier()
 }
 
-def reduction_pca(X_train, X_test, n=None):
-	"""
-	Executa redução de dimensionalidade no conjunto de dados usando PCA.
-	
-	:param X_train: dados de treinamento
-	:param X_test: dados de teste
-	:param n: número de componentes mantidas
-	:return: dados de treino e teste reduzidos
-	"""
-	
-	red = PCA(n_components=n)
-	red.fit(X_train)
-	X_train = red.transform(X_train)
-	X_test = red.transform(X_test)
-	
-	return X_train, X_test
-
-def get_correlates(df, threshold=0.90):
-	corr = df.corr().abs()
-	upper = corr.where(np.triu(np.ones(corr.shape), k=1).astype(np.bool))
-	to_drop = [str(c) for c in upper.columns if any(upper[c] >= threshold)]
-	
-	return to_drop
-
-def run_classification(X_train, y_train, X_test, y_test,
-                       pca=False, norm=True, skew=True):
+def run_classification(X_train, y_train, X_test, y_test, norm=True, skew=True):
 	"""
 	Roda os classificadores em estudo para um dado conjunto de treino e teste.
 	Essa é a função mais genérica e mais importante desse script. Performa
@@ -92,19 +79,13 @@ def run_classification(X_train, y_train, X_test, y_test,
 	:param y_train: classes das amostras de treino
 	:param X_test: amostras de teste
 	:param y_test: classes das amostras de teste
-	:param pca: se deve rodar pca no conjunto
-	:param norma: se deve aplicar normalizacao no conjunto
+	:param norm: se deve aplicar normalizacao no conjunto
 	:param skew: se deve remover skewness no conjunto
 	:return: dicionário com taxas de reconhecimento e predições
 	"""
 	
 	ans = dict()
 	
-	# PCA
-	if pca:
-		X_train, X_test = reduction_pca(X_train, X_test)
-	
-	# normalizacao
 	if norm:
 		try:
 			scaler = StandardScaler().fit(X_train)
@@ -118,7 +99,6 @@ def run_classification(X_train, y_train, X_test, y_test,
 			ans["ERROR_NORM"] = result
 			return ans
 	
-	# remocao de skewness
 	if skew:
 		new_train = []
 		new_test = []
@@ -142,16 +122,13 @@ def run_classification(X_train, y_train, X_test, y_test,
 		X_train = np.array(new_train).T
 		X_test = np.array(new_test).T
 	
-	# execucao dos classificadores e registro dos resultados
 	for name, classifier in classifiers.items():
 		result = dict()
-		clf = classifier
-		
 		start_time = time.time()
 		
 		try:
-			clf.fit(X_train, y_train)
-			score = clf.score(X_test, y_test)
+			classifier.fit(X_train, y_train)
+			score = classifier.score(X_test, y_test)
 		except:
 			score = 0
 		
@@ -159,118 +136,135 @@ def run_classification(X_train, y_train, X_test, y_test,
 		result["y_true"] = y_test
 		
 		try:
-			result["y_pred"] = clf.predict(X_test)
+			result["y_pred"] = classifier.predict(X_test)
 		except:
 			result["y_pred"] = []
 		
-		elapsed_time = round(time.time() - start_time, 4)
+		elapsed_time = str(round(time.time() - start_time, 4))
+		result["time"] = elapsed_time
 		ans[name] = result
 	
 	return ans
 
-def rank1_neutral(features, corrfilt=False):
+def rank1_neutral(features):
 	"""
 	Executa classificação RANK-1 usando os classificadores em pesquisa. Treino:
 	amostra 0 de cada pose neutra. Teste: restante das amostras neutras
 	(amostra diferente de 0).
 
 	:param features: caminho para o dados extraídos das amostras neutras
-	:param corrfilt: se altas correlacoes devem ser descartadas
 	:return: dicionário com taxas de reconhecimento e predições
 	"""
 	
 	df = pd.read_csv(features, header=None)
-	cs = ["f"+str(x) for x in range(len(df.columns)-2)] + ["sample", "subject"]
-	df.columns = cs
+	cols = ["f"+str(x) for x in range(len(df.columns)-4)]
+	cols = cols + ["sample", "subject", "tp", "exp"]
+	df.columns = cols
 	
-	if corrfilt:
-		to_drop = get_correlates(df.drop(["sample", "subject"], axis=1))
-		df = df.drop(to_drop, axis=1)
-	
-	trainset = df.loc[df["sample"] == 0].drop(["sample"], axis=1)
+	trainset = df.loc[df["sample"] == 0].drop(["sample", "tp", "exp"], axis=1)
 	X_train = np.array(trainset.drop(["subject"], axis=1))
 	y_train = np.ravel(trainset[["subject"]])
 	
-	testset = df.loc[df["sample"] != 0].drop(["sample"], axis=1)
+	testset = df.loc[df["sample"] != 0].drop(["sample", "tp", "exp"], axis=1)
 	X_test = np.array(testset.drop(["subject"], axis=1))
 	y_test = np.ravel(testset[["subject"]])
 	
-	# execucao dos classificadores
 	return run_classification(X_train, y_train, X_test, y_test)
 
-def rank1_nonneutral(feat_neutral, feat_nonneutral, corrfilt=False):
+def rank1_nonneutral(feat_neutral, feat_nonneutral):
 	"""
 	Executa classificação RANK-1 usando os classificadores em pesquisa. Treino:
 	amostra 0 de cada pose neutra. Teste: todas as amostras não-neutras.
 
 	:param feat_neutral: caminho para os dados das amostras neutras
 	:param feat_nonneutral: caminho para os dados das amostras não-neutras
-	:param corrfilt: se altas correlacoes devem ser descartadas
 	:return: dicionário com taxas de reconhecimento e predições
 	"""
 	
 	# neutras: conjunto de treino
 	df = pd.read_csv(feat_neutral, header=None)
-	cs = ["f"+str(x) for x in range(len(df.columns)-2)] + ["sample", "subject"]
-	df.columns = cs
+	cols = ["f"+str(x) for x in range(len(df.columns)-4)]
+	cols = cols + ["sample", "subject", "tp", "exp"]
+	df.columns = cols
 	
-	if corrfilt:
-		to_drop = get_correlates(df.drop(["sample", "subject"], axis=1))
-		df = df.drop(to_drop, axis=1)
-	
-	trainset = df.loc[df["sample"] == 0].drop(["sample"], axis=1)
+	trainset = df.loc[df["sample"] == 0].drop(["sample", "tp", "exp"], axis=1)
 	X_train = np.array(trainset.drop(["subject"], axis=1))
 	y_train = np.ravel(trainset[["subject"]])
 	
 	# nao-neutras: conjunto de teste
 	df = pd.read_csv(feat_nonneutral, header=None)
-	cs = ["f"+str(x) for x in range(len(df.columns)-2)] + ["sample", "subject"]
-	df.columns = cs
+	cols = ["f"+str(x) for x in range(len(df.columns)-4)]
+	cols = cols + ["sample", "subject", "tp", "exp"]
+	df.columns = cols
 	
-	testset = df.drop(["sample"], axis=1)
+	testset = df.drop(["sample", "tp", "exp"], axis=1)
 	X_test = np.array(testset.drop(["subject"], axis=1))
 	y_test = np.ravel(testset[["subject"]])
 	
-	# execucao dos classificadores
 	return run_classification(X_train, y_train, X_test, y_test)
 
-def roc1(feat_neutral, feat_nonneutral, corrfilt=False):
+def roc1(feat_neutral, feat_nonneutral):
 	"""
 	Executa classificação ROC-1 usando os classificadores em pesquisa. Treino:
 	todas as amostras neutras. Teste: todas as amostras não-neutras.
 
 	:param feat_neutral: caminho para os dados das amostras neutras
 	:param feat_nonneutral: O caminho para os dados das amostras não-neutras
-	:param corrfilt: se altas correlacoes devem ser descartadas
 	:return: dicionário com taxas de reconhecimento e predições
 	"""
 	
 	# neutras: conjunto de treino
 	df = pd.read_csv(feat_neutral, header=None)
-	cs = ["f"+str(x) for x in range(len(df.columns)-2)] + ["sample", "subject"]
-	df.columns = cs
+	cols = ["f"+str(x) for x in range(len(df.columns)-4)]
+	cols = cols + ["sample", "subject", "tp", "exp"]
+	df.columns = cols
 	
-	if corrfilt:
-		to_drop = get_correlates(df.drop(["sample", "subject"], axis=1))
-		df = df.drop(to_drop, axis=1)
-	
-	trainset = df.drop(["sample"], axis=1)
+	trainset = df.drop(["sample", "tp", "exp"], axis=1)
 	X_train = np.array(trainset.drop(["subject"], axis=1))
 	y_train = np.ravel(trainset[["subject"]])
 	
 	# nao-neutras: conjunto de teste
 	df = pd.read_csv(feat_nonneutral, header=None)
-	cs = ["f"+str(x) for x in range(len(df.columns)-2)] + ["sample", "subject"]
-	df.columns = cs
+	cols = ["f"+str(x) for x in range(len(df.columns)-4)]
+	cols = cols + ["sample", "subject", "tp", "exp"]
+	df.columns = cols
 	
-	testset = df.drop(["sample"], axis=1)
+	testset = df.drop(["sample", "tp", "exp"], axis=1)
 	X_test = np.array(testset.drop(["subject"], axis=1))
 	y_test = np.ravel(testset[["subject"]])
 	
-	# execucao dos classificadores
 	return run_classification(X_train, y_train, X_test, y_test)
 
-def rank1_neutral_concat(moments, corrfilt=False):
+def expression_classification(feat_nonneutral):
+	"""
+	Executa classificação de expressões usando os classificadores em pesquisa.
+	Treino: amostra 0 de cada pose neutra. Teste: todas as amostras não-neutras.
+	
+	:param feat_nonneutral: caminho para os dados das amostras não-neutras
+	:return: dicionário com taxas de reconhecimento e predições
+	"""
+	
+	df = pd.read_csv(feat_nonneutral, header=None)
+	cols = ["f"+str(x) for x in range(len(df.columns)-4)]
+	cols = cols + ["sample", "subject", "tp", "exp"]
+	df.columns = cols
+	
+	df = df.loc[df["tp"] == "E"].drop(["subject", "sample", "tp"], axis=1)
+	df = df.replace({"exp" : expressions})
+	
+	X = np.array(df.drop(["exp"], axis=1))
+	y = np.ravel(df[["exp"]])
+	
+	rounds = 100
+	results = []
+	for i in range(rounds):
+		X_train, X_test, y_train, y_test = data_split(X, y, test_size=0.7)
+		ans = run_classification(X_train, y_train, X_test, y_test)
+		results.append(ans)
+		print(i+1, max_rate(ans))
+	
+
+def rank1_neutral_concat(moments):
 	"""
 	Executa classificação RANK-1 neutral usando os classificadores em pesquisa.
 	O conjunto de treino e teste é a concatenação de n momentos. Treino: amostra
@@ -278,7 +272,6 @@ def rank1_neutral_concat(moments, corrfilt=False):
 	diferentes de 0).
 
 	:param moments: lista ou tupla de momentos
-	:param corrfilt: se altas correlacoes devem ser descartadas
 	:return: dicionário com taxas de reconhecimento e predições
 	"""
 	
@@ -288,19 +281,15 @@ def rank1_neutral_concat(moments, corrfilt=False):
 	y_test_list = []
 	for m in moments:
 		df = pd.read_csv(m, header=None)
-		cs = ["f"+str(x) for x in range(len(df.columns)-2)]
-		cs = cs + ["sample", "subject"]
-		df.columns = cs
+		cols = ["f"+str(x) for x in range(len(df.columns)-4)]
+		cols = cols + ["sample", "subject", "tp", "exp"]
+		df.columns = cols
 		
-		if corrfilt:
-			to_drop = get_correlates(df.drop(["sample", "subject"], axis=1))
-			df = df.drop(to_drop, axis=1)
-		
-		trainset = df.loc[df["sample"] == 0].drop(["sample"], axis=1)
+		trainset = df.loc[df["sample"] == 0].drop(["sample","tp","exp"], axis=1)
 		temp_X_train = trainset.drop(["subject"], axis=1)
 		temp_y_train = trainset[["subject"]]
 		
-		testset = df.loc[df["sample"] != 0].drop(["sample"], axis=1)
+		testset = df.loc[df["sample"] != 0].drop(["sample","tp","exp"], axis=1)
 		temp_X_test = testset.drop(["subject"], axis=1)
 		temp_y_test = testset[["subject"]]
 		
@@ -315,10 +304,9 @@ def rank1_neutral_concat(moments, corrfilt=False):
 	y_train = np.ravel(y_train_list[0])
 	y_test = np.ravel(y_test_list[0])
 	
-	# executa classificadores
 	return run_classification(X_train, y_train, X_test, y_test)
 
-def rank1_nonneutral_concat(neutral, nonneutral, corrfilt=False):
+def rank1_nonneutral_concat(neutral, nonneutral):
 	"""
 	Executa classificação RANK-1 nonneutral usando os classificadores em
 	pesquisa. O conjunto de treino e teste é a concatenação de n momentos.
@@ -327,7 +315,6 @@ def rank1_nonneutral_concat(neutral, nonneutral, corrfilt=False):
 
 	:param neutral: lista ou tupla de momentos neutrals
 	:param nonneutral: lista ou tupla de momentos nonneutrals
-	:param corrfilt: se altas correlacoes devem ser descartadas
 	:return: dicionário com taxas de reconhecimento e predições
 	"""
 	
@@ -335,15 +322,11 @@ def rank1_nonneutral_concat(neutral, nonneutral, corrfilt=False):
 	y_train_list = []
 	for m in neutral:
 		df = pd.read_csv(m, header=None)
-		cs = ["f"+str(x) for x in range(len(df.columns)-2)]
-		cs = cs + ["sample", "subject"]
-		df.columns = cs
+		cols = ["f"+str(x) for x in range(len(df.columns)-4)]
+		cols = cols + ["sample", "subject", "tp", "exp"]
+		df.columns = cols
 		
-		if corrfilt:
-			to_drop = get_correlates(df.drop(["sample", "subject"], axis=1))
-			df = df.drop(to_drop, axis=1)
-		
-		trainset = df.loc[df["sample"] == 0].drop(["sample"], axis=1)
+		trainset = df.loc[df["sample"] == 0].drop(["sample","tp","exp"], axis=1)
 		temp_X_train = trainset.drop(["subject"], axis=1)
 		temp_y_train = trainset[["subject"]]
 		
@@ -354,11 +337,11 @@ def rank1_nonneutral_concat(neutral, nonneutral, corrfilt=False):
 	y_test_list = []
 	for m in nonneutral:
 		df = pd.read_csv(m, header=None)
-		cs = ["f"+str(x) for x in range(len(df.columns)-2)]
-		cs = cs + ["sample", "subject"]
-		df.columns = cs
+		cols = ["f"+str(x) for x in range(len(df.columns)-4)]
+		cols = cols + ["sample", "subject", "tp", "exp"]
+		df.columns = cols
 		
-		testset = df.drop(["sample"], axis=1)
+		testset = df.drop(["sample", "tp", "exp"], axis=1)
 		temp_X_test = testset.drop(["subject"], axis=1)
 		temp_y_test = testset[["subject"]]
 		
@@ -371,12 +354,9 @@ def rank1_nonneutral_concat(neutral, nonneutral, corrfilt=False):
 	y_train = np.ravel(y_train_list[0])
 	y_test = np.ravel(y_test_list[0])
 	
-	# executa classificadores
 	return run_classification(X_train, y_train, X_test, y_test)
 
-############################# [vvv] DANGER [vvv] ###############################
-
-def roc1_concat(neutral, nonneutral, corrfilt=False):
+def roc1_concat(neutral, nonneutral):
 	"""
 	Executa classificação ROC1 usando os classificadores em pesquisa. O conjunto
 	de treino e teste é a concatenação de n momentos.
@@ -385,7 +365,6 @@ def roc1_concat(neutral, nonneutral, corrfilt=False):
 
 	:param neutral: lista ou tupla de momentos neutrals
 	:param nonneutral: lista ou tupla de momentos nonneutrals
-	:param corrfilt: se altas correlacoes devem ser descartadas
 	:return: dicionário com taxas de reconhecimento e predições
 	"""
 	
@@ -393,15 +372,11 @@ def roc1_concat(neutral, nonneutral, corrfilt=False):
 	y_train_list = []
 	for m in neutral:
 		df = pd.read_csv(m, header=None)
-		cs = ["f"+str(x) for x in range(len(df.columns)-2)]
-		cs = cs + ["sample", "subject"]
-		df.columns = cs
+		cols = ["f"+str(x) for x in range(len(df.columns)-4)]
+		cols = cols + ["sample", "subject", "tp", "exp"]
+		df.columns = cols
 		
-		if corrfilt:
-			to_drop = get_correlates(df.drop(["sample", "subject"], axis=1))
-			df = df.drop(to_drop, axis=1)
-		
-		trainset = df.drop(["sample"], axis=1)
+		trainset = df.drop(["sample", "tp", "exp"], axis=1)
 		temp_X_train = trainset.drop(["subject"], axis=1)
 		temp_y_train = trainset[["subject"]]
 		
@@ -412,11 +387,11 @@ def roc1_concat(neutral, nonneutral, corrfilt=False):
 	y_test_list = []
 	for m in nonneutral:
 		df = pd.read_csv(m, header=None)
-		cs = ["f"+str(x) for x in range(len(df.columns)-2)]
-		cs = cs + ["sample", "subject"]
-		df.columns = cs
+		cols = ["f"+str(x) for x in range(len(df.columns)-4)]
+		cols = cols + ["sample", "subject", "tp", "exp"]
+		df.columns = cols
 		
-		testset = df.drop(["sample"], axis=1)
+		testset = df.drop(["sample", "tp", "exp"], axis=1)
 		temp_X_test = testset.drop(["subject"], axis=1)
 		temp_y_test = testset[["subject"]]
 		
@@ -429,10 +404,7 @@ def roc1_concat(neutral, nonneutral, corrfilt=False):
 	y_train = np.ravel(y_train_list[0])
 	y_test = np.ravel(y_test_list[0])
 	
-	# executa classificadores
 	return run_classification(X_train, y_train, X_test, y_test)
-
-############################# [^^^] DANGER [^^^] ###############################
 
 def confusion(y_true, y_pred, classes=[]):
 	"""
@@ -586,8 +558,6 @@ def combination_rank1_nonneutral(dataset, moments, n=2, dump="../results/"):
 	res_path = "{}combination_rank1b_P{}/".format(dump, n)
 	os.makedirs(res_path, exist_ok=True)
 	df.to_csv(res_path + "{}.csv".format(dataset), index=False)
-
-############################# [!!!] DANGER [!!!] ###############################
 
 def combination_roc1(dataset, moments, n=2, dump="../results/"):
 	"""

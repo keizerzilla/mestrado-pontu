@@ -86,7 +86,7 @@ real spheric_normalized(int p, int q, int r, struct cloud* cloud)
 	real central = spheric_moment(p, q, r, cloud);
 	real zero = spheric_moment(0, 0, 0, cloud);
 	
-	return central / (cloud_max_distance_from_center(cloud) *zero);
+	return central / (cloud_max_distance_from_center(cloud) * zero);
 }
 
 /**

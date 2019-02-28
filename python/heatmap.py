@@ -26,9 +26,10 @@ dataset = sys.argv[1]
 
 # carregando dados e limpando coluna sample
 df = pd.read_csv(dataset)
-cs = ["f"+str(x) for x in range(len(df.columns)-2)] + ["sample", "subject"]
+cs = ["f"+str(x) for x in range(len(df.columns)-4)]
+cs = cs + ["sample", "subject", "type", "expression"]
 df.columns = cs
-df = df.drop(["sample", "subject"], axis=1)
+df = df.drop(["sample", "subject", "type", "expression"], axis=1)
 
 # matriz de correlacao e preditores de maior correlacao
 corr = df.corr().abs()

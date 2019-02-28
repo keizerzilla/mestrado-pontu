@@ -1,9 +1,9 @@
-from recpad import *
 from dataset import *
 from features import *
 from classification import *
 
-faces = ["neutral", "nonneutral"]
+faces = ["neutral",
+         "nonneutral"]
 
 cuts = {"w" : "whole",
         "f" : "frontal",
@@ -14,9 +14,9 @@ cuts = {"w" : "whole",
         "l" : "lower"}
 
 replace_dict = {"bosphorus" : "bs",
-                "outlier" : "out",
-                "densit" : "d",
-                "crop" : "c"}
+                "outlier"   : "out",
+                "densit"    : "d",
+                "crop"      : "c"}
 
 scenarios= ["bosphorus",
             "bosphorus-outlier",
@@ -35,13 +35,6 @@ scenarios= ["bosphorus",
 			"bosphorus-outlier-densit225-crop70-icp",
 			"bosphorus-outlier-densit225-crop80-icp"]
 
-mini_scenarios = []
-for s in scenarios:
-	temp = s
-	for old, new in replace_dict.items():
-		temp = temp.replace(old, new)
-	mini_scenarios.append(temp)
-
 moments = ["spheric",
            "hututu",
            "hu1980",
@@ -50,41 +43,34 @@ moments = ["spheric",
            "legendre",
            "chebyshev"]
 
-def go_analysis(rdir):
-	for face in faces:
-		datasets = ["../datasets/" + x + "/{}".format(face) for x in scenarios]
-		for cut, cut_folder in cuts.items():
-			for moment in moments:
-				result = pd.DataFrame()
-				for data in datasets:
-					scenario = data.split("/")[2]
-					folder = "../{}/{}/{}/".format(rdir, cut_folder, scenario)
-					out = folder + "{}-{}.dat".format(face, moment)
-					df = pd.read_csv(out, header=None)
-					cs = ["f"+str(x) for x in range(len(df.columns)-2)] + ["sample", "subject"]
-					df.columns = cs
-					
-					frames = [result, df]
-					result = pd.concat(frames)
-				
-				combined = data_stats(result)
-				print(explained_var(result))
-				input(moment + ": [ENTER] to continue...")
+mini_scenarios = []
+for s in scenarios:
+	temp = s
+	for old, new in replace_dict.items():
+		temp = temp.replace(old, new)
+	mini_scenarios.append(temp)
 
-def go_extraction(rdir):
-	for face in faces:
-		datasets = ["../datasets/" + x + "/{}".format(face) for x in scenarios]
-		for cut, cut_folder in cuts.items():
-			for data in datasets:
-				scenario = data.split("/")[2]
-				folder = "../{}/{}/{}/".format(rdir, cut_folder, scenario)
-				os.makedirs(folder, exist_ok=True)
-				for moment in moments:
-					out = folder
-					out = out + "{}-{}.dat".format(face, moment)
-					moment_extraction_batch(moment, cut, data, out)
+def plot_classification(res, title, rdir, cut_folder):
+	ax = res.plot(marker='o', figsize=(11, 9))
+	tick_marks_x = np.arange(len(mini_scenarios))
+	tick_marks_y = range(0, 110, 10)
+	plt.xticks(tick_marks_x, mini_scenarios, rotation=90)
+	plt.yticks(tick_marks_y)
+	filename = "{} - {}".format(title, cut_folder)
+	plt.title(filename)
+	plt.ylabel("Acerto (%)")
+	plt.grid()
+	
+	for moment in moments:
+		for x, y in enumerate(res[moment]):
+			ax.annotate(str(y), xy=(x, y), xytext=(x-0.2, y+1))
+	
+	plt.tight_layout()
+	figpath = "../" + rdir + "/figures/"
+	os.makedirs(figpath, exist_ok=True)
+	plt.savefig(figpath + filename + ".png")
 
-def go_classification_rank1(rdir, table=False, figpath="figures"):
+def go_classification_rank1(rdir, plot=False):
 	for face in faces:
 		datasets = ["../datasets/" + x + "/{}".format(face) for x in scenarios]
 		for cut, cut_folder in cuts.items():
@@ -119,25 +105,10 @@ def go_classification_rank1(rdir, table=False, figpath="figures"):
 					res.at[dataset, moment] = rate
 					print("{:<11}{:<15}{:<7}".format(moment, classifier, rate))
 			
-			if table:
-				ax = res.plot(marker='o', figsize=(11, 9))
-				tick_marks_x = np.arange(len(mini_scenarios))
-				tick_marks_y = range(0, 110, 10)
-				plt.xticks(tick_marks_x, mini_scenarios, rotation=90)
-				plt.yticks(tick_marks_y)
-				filename = "{} - {}".format(test_name, cut_folder)
-				plt.title(filename)
-				plt.ylabel("Acerto (%)")
-				plt.grid()
-				
-				for moment in moments:
-					for x, y in enumerate(res[moment]):
-						ax.annotate(str(y), xy=(x, y), xytext=(x-0.2, y+1))
-				
-				plt.tight_layout()
-				plt.savefig("../" + rdir + "/" + figpath +"/" + filename + ".png")
+			if plot:
+				plot_classification(res, test_name, rdir, cut_folder)
 
-def go_classification_roc1(rdir, table=False, figpath="figures"):
+def go_classification_roc1(rdir, plot=False):
 	for cut, cut_folder in cuts.items():
 		res = pd.DataFrame(columns=moments, index=mini_scenarios)
 		for scenario in scenarios:
@@ -159,34 +130,18 @@ def go_classification_roc1(rdir, table=False, figpath="figures"):
 				res.at[dataset, moment] = rate
 				print("{:<11}{:<15}{:<7}".format(moment, classifier, rate))
 		
-		if table:
-			ax = res.plot(marker='o', figsize=(11, 9))
-			tick_marks_x = np.arange(len(mini_scenarios))
-			tick_marks_y = range(0, 110, 10)
-			plt.xticks(tick_marks_x, mini_scenarios, rotation=90)
-			plt.yticks(tick_marks_y)
-			filename = "{} - {}".format("Roc1", cut_folder)
-			plt.title(filename)
-			plt.ylabel("Acerto (%)")
-			plt.grid()
-			
-			for moment in moments:
-				for x, y in enumerate(res[moment]):
-					ax.annotate(str(y), xy=(x, y), xytext=(x-0.2, y+1))
-				
-			plt.tight_layout()
-			plt.savefig("../" + rdir + "/" + figpath +"/" + filename + ".png")
+		if plot:
+			plot_classification(res, "ROC1", rdir, cut_folder)
 
 def go_combination():
 	for dataset in scenarios:
 		combination_rank1_neutral(dataset, moments)
-		#combination_roc1(dataset, moments)
+		combination_roc1(dataset, moments)
 
 if __name__ == "__main__":
-	#go_classification_roc1(rdir="results", table=True)
-	go_combination()
-	#go_analysis("results")
-	#go_classification_rank1("results", table=True, figpath="pca")
-	
+	#extractor = MomentExtractor()
+	#extractor.totalExtraction(faces, scenarios, cuts, moments, "demos")
+	go_classification_rank1("expresults", True)
+	go_classification_roc1("expresults", True)
 	
 	

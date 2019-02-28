@@ -7,6 +7,7 @@
 
 #define _GNU_SOURCE
 
+#include <time.h>
 #include <unistd.h>
 
 #include "include/hu.h"
@@ -279,7 +280,7 @@ void extraction_interface(int argc, char** argv)
 	
     if (moment == NULL || input == NULL || output == NULL || cut == NULL) {
         extraction_help();
-        exit(1);
+        return;
     }
 	
     struct matrix* (*mfunc)(struct cloud*) = &hu_cloud_moments_hututu;
@@ -341,7 +342,19 @@ void extraction_interface(int argc, char** argv)
  */
 int main(int argc, char** argv)
 {
+	#ifdef TIMEPROFILE
+	clock_t t;
+	t = clock();
+	#endif
+	
     extraction_interface(argc, argv);
+    
+    #ifdef TIMEPROFILE
+    t = clock() - t;
+    double time_taken = ((double)t)/CLOCKS_PER_SEC;
+    fprintf(stderr, "Took %f seconds...\n", time_taken);
+    #endif
+    
     return 0;
 }
 
