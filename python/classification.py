@@ -261,7 +261,6 @@ def expression_classification(feat_nonneutral):
 		X_train, X_test, y_train, y_test = data_split(X, y, test_size=0.7)
 		ans = run_classification(X_train, y_train, X_test, y_test)
 		results.append(ans)
-		print(i+1, max_rate(ans))
 	
 
 def rank1_neutral_concat(moments):
