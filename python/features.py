@@ -12,13 +12,13 @@ import parse
 import subprocess
 
 class MomentExtractor():
-	def __init__(self):
-		self.mcalc = "../bin/mcalc"
-		self.format = "bs{:d}_{:w}_{:w}_{:d}.xyz"
+	def __init__(self, mcalc="../bin/mcalc", fmt="bs{:d}_{:w}_{:w}_{:d}.xyz"):
+		self.mcalc = mcalc
+		self.fmt = fmt
 	
 	def cloudExtraction(self, moment, cloud, cut):
 		path, filename = os.path.split(cloud)
-		match = parse.parse(self.format, filename)
+		match = parse.parse(self.fmt, filename)
 		
 		subject = str(match[0])
 		tp = str(match[1])
