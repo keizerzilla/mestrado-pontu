@@ -1,6 +1,9 @@
 from naninf import *
 from features import *
 
+# header
+print("j41ls0n_bot")
+
 # captura amostras de erro da planilha de resultados
 data_analysis = pd.read_csv("../results/naninf.csv")
 samples = []
