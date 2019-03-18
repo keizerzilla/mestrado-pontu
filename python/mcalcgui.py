@@ -6,7 +6,7 @@ from tkinter.scrolledtext import *
 # ------------------------------------------------------------------------------
 window = Tk()
 window.title("mcalc")
-#window.geometry("640x480")
+window.geometry("640x480")
 window.resizable(False, False)
 
 # VARIABLES

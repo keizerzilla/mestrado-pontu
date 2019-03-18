@@ -5,7 +5,7 @@ from features import *
 print("j41ls0n_bot")
 
 # captura amostras de erro da planilha de resultados
-data_analysis = pd.read_csv("../results/naninf.csv")
+data_analysis = pd.read_csv("../results/naninf/naninf_data.csv")
 samples = []
 for index, row in data_analysis.iterrows():
 	m = row["moment"]
@@ -22,7 +22,7 @@ print(subprocess.run(cmd, stdout=subprocess.PIPE).stdout.decode("utf-8"))
 me = MomentExtractor()
 for sample in samples:
 	if sample["moment"] == "zernike":
-		#print(sample["moment"], sample["cloud"], sample["cut"])
+		print(sample["moment"], sample["cloud"], sample["cut"])
 		ans = me.cloudExtraction(sample["moment"],sample["cloud"],sample["cut"])
 		print(ans)
 		

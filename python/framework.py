@@ -1,9 +1,9 @@
+import datetime as dt
 from dataset import *
 from features import *
 from classification import *
 
-faces = ["neutral",
-         "nonneutral"]
+faces = ["neutral"]
 
 cuts = {"w" : "whole",
         "f" : "frontal",
@@ -20,20 +20,21 @@ replace_dict = {"bosphorus" : "bs",
 
 scenarios= ["bosphorus",
             "bosphorus-outlier",
+            "bosphorus-outlier-densit100",
             "bosphorus-outlier-densit200",
             "bosphorus-outlier-densit225",
             "bosphorus-outlier-densit200-crop60",
-			"bosphorus-outlier-densit200-crop70",
-			"bosphorus-outlier-densit200-crop80",
-			"bosphorus-outlier-densit225-crop60",
-			"bosphorus-outlier-densit225-crop70",
-			"bosphorus-outlier-densit225-crop80",
+            "bosphorus-outlier-densit200-crop70",
+            "bosphorus-outlier-densit200-crop80",
+            "bosphorus-outlier-densit225-crop60",
+            "bosphorus-outlier-densit225-crop70",
+            "bosphorus-outlier-densit225-crop80",
             "bosphorus-outlier-densit200-crop60-icp",
-			"bosphorus-outlier-densit200-crop70-icp",
-			"bosphorus-outlier-densit200-crop80-icp",
-			"bosphorus-outlier-densit225-crop60-icp",
-			"bosphorus-outlier-densit225-crop70-icp",
-			"bosphorus-outlier-densit225-crop80-icp"]
+            "bosphorus-outlier-densit200-crop70-icp",
+            "bosphorus-outlier-densit200-crop80-icp",
+            "bosphorus-outlier-densit225-crop60-icp",
+            "bosphorus-outlier-densit225-crop70-icp",
+            "bosphorus-outlier-densit225-crop80-icp"]
 
 moments = ["spheric",
            "hututu",
@@ -70,7 +71,7 @@ def plot_classification(res, title, rdir, cut_folder):
 	os.makedirs(figpath, exist_ok=True)
 	plt.savefig(figpath + filename + ".png")
 
-def go_classification_rank1(rdir, plot=False):
+def go_classification_rank1(rdir, dump=False, plot=False):
 	for face in faces:
 		datasets = ["../datasets/" + x + "/{}".format(face) for x in scenarios]
 		for cut, cut_folder in cuts.items():
@@ -105,6 +106,9 @@ def go_classification_rank1(rdir, plot=False):
 					res.at[dataset, moment] = rate
 					print("{:<11}{:<15}{:<7}".format(moment, classifier, rate))
 			
+			if dump:
+				dumpfile = "../"+rdir+"/{}-{}-{}.csv".format(test_name, rdir, cut_folder)
+				res.to_csv(dumpfile)
 			if plot:
 				plot_classification(res, test_name, rdir, cut_folder)
 
@@ -140,8 +144,8 @@ def go_combination():
 
 if __name__ == "__main__":
 	#extractor = MomentExtractor()
-	#extractor.totalExtraction(faces, scenarios, cuts, moments, "demos")
-	go_classification_rank1("expresults", True)
-	go_classification_roc1("expresults", True)
+	#extractor.totalExtraction(faces, scenarios, cuts, moments, "results")
+	go_classification_rank1("results", plot=True)
+	#go_classification_roc1("expresults", True)
 	
 	
