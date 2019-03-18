@@ -3,7 +3,7 @@ from dataset import *
 from features import *
 from classification import *
 
-faces = ["neutral"]
+faces = ["nonneutral"]
 
 cuts = {"w" : "whole",
         "f" : "frontal",
@@ -146,6 +146,6 @@ if __name__ == "__main__":
 	#extractor = MomentExtractor()
 	#extractor.totalExtraction(faces, scenarios, cuts, moments, "results")
 	go_classification_rank1("results", plot=True)
-	#go_classification_roc1("expresults", True)
+	go_classification_roc1("results", plot=True)
 	
 	
