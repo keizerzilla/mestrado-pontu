@@ -7,7 +7,7 @@ Guia rápido para configurar o OpenCV no Ubuntu 16.04 ou superior.
 ### image I/O
 ```apt-get install libtiff5-dev libjpeg-dev libjasper-dev```
 ### video I/O
-```apt-get install libavcodec-dev libavformat-dev libswscale-dev libdc1394-22-dev libxine2-dev libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev libv4l-dev```
+```apt-get install libavcodec-dev libavformat-dev libswscale-dev libdc1394-22-dev libxine2-dev libgstreamer0.10-dev libgstreamer-plugins-base1.0-dev libv4l-dev```
 ### python
 ```apt-get install python3-dev python-numpy```
 ### tbb
