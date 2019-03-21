@@ -1,3 +1,10 @@
+"""
+mcalcgui.py
+Artur Rodrigues Rocha Neto
+2019
+Em construção.
+"""
+
 from tkinter import *
 from tkinter import ttk
 from tkinter.filedialog import askdirectory

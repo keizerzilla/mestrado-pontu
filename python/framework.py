@@ -1,9 +1,12 @@
-import datetime as dt
-from dataset import *
 from features import *
 from classification import *
 
-faces = ["nonneutral"]
+replace_dict = {"bosphorus" : "bs",
+                "outlier"   : "out",
+                "densit"    : "d",
+                "crop"      : "c"}
+
+faces = ["neutral", "nonneutral"]
 
 cuts = {"w" : "whole",
         "f" : "frontal",
@@ -13,16 +16,17 @@ cuts = {"w" : "whole",
         "u" : "upper",
         "l" : "lower"}
 
-replace_dict = {"bosphorus" : "bs",
-                "outlier"   : "out",
-                "densit"    : "d",
-                "crop"      : "c"}
-
 scenarios= ["bosphorus",
             "bosphorus-outlier",
+            "bosphorus-outlier-crop60",
+            "bosphorus-outlier-crop70",
+            "bosphorus-outlier-crop80",
             "bosphorus-outlier-densit100",
             "bosphorus-outlier-densit200",
             "bosphorus-outlier-densit225",
+            "bosphorus-outlier-densit100-crop60",
+            "bosphorus-outlier-densit100-crop70",
+            "bosphorus-outlier-densit100-crop80",
             "bosphorus-outlier-densit200-crop60",
             "bosphorus-outlier-densit200-crop70",
             "bosphorus-outlier-densit200-crop80",
@@ -145,7 +149,10 @@ def go_combination():
 if __name__ == "__main__":
 	#extractor = MomentExtractor()
 	#extractor.totalExtraction(faces, scenarios, cuts, moments, "results")
+	#extractor.batchExtraction("spheric", "../datasets/bosphorus/neutral", "whole", "../results/whole/bosphorus/neutral-spheric.dat")
+	
 	go_classification_rank1("results", plot=True)
 	go_classification_roc1("results", plot=True)
+	
 	
 	

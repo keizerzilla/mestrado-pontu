@@ -47,7 +47,7 @@ real legendre_poly(int n, real x)
  */
 real legendre_norm(int p, int q, int r, int num_pts)
 {
-    return (((3 * p) + 1) * ((3 * q) + 1) * ((3 * r) + 1)) / (1.0f * num_pts);
+    return (((2 * p) + 1) * ((2 * q) + 1) * ((2 * r) + 1)) / (1.0f * num_pts);
 }
 
 /**
@@ -71,6 +71,27 @@ real legendre_moment(int p, int q, int r, struct cloud* cloud)
                   vector3_distance(&cloud->points[i], center);
 
     return norm * moment;
+}
+
+/**
+ * \brief Calcula o momento escalado (???) de Legendre
+ * \param p A ordem da dimensão x
+ * \param q A ordem da dimensão y
+ * \param r A ordem da dimensão z
+ * \param cloud A nuvem alvo
+ * \return O momento escalado (???) p+q+r da nuvem cloud
+ */
+real legendre_psi(int p, int q, int r, struct cloud* cloud)
+{
+	real xi = 0;
+	real psi = legendre_moment(p, q, r, cloud);
+	real zero = legendre_moment(0, 0, 0, cloud);
+	
+	real xord = legendre_moment(p + xi, 0, 0, cloud);
+	real yord = legendre_moment(0, q + xi, 0, cloud);
+	real zord = legendre_moment(0, 0, r + xi, cloud);
+	
+	return (psi * pow(zero, xi + 2)) / (xord * yord * zord);
 }
 
 /**

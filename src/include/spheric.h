@@ -30,19 +30,6 @@ real spheric_quad(real x, real y, real z, int p, int q, int r)
 }
 
 /**
- * \brief A norma dos momentos esféricos
- * \param p A ordem da coordena x
- * \param q A ordem da coordena y
- * \param r A ordem da coordena z
- * \param cloud A nuvem alvo
- * \return A distância entre o centróide e o ponto mais distante a ele em cloud
- */
-real spheric_norm(int p, int q, int r, struct cloud* cloud)
-{
-	return cloud_max_distance_from_center(cloud);
-}
-
-/**
  * \brief Cálculo dos momentos esféricos
  * \param p A ordem da coordena x
  * \param q A ordem da coordena y
@@ -53,6 +40,7 @@ real spheric_norm(int p, int q, int r, struct cloud* cloud)
 real spheric_moment(int p, int q, int r, struct cloud* cloud)
 {
 	struct vector3* center = cloud_get_center(cloud);
+	
 	real moment = 0.0f;
 	real center_x = 0.0f;
 	real center_y = 0.0f;
@@ -66,9 +54,10 @@ real spheric_moment(int p, int q, int r, struct cloud* cloud)
         moment += pow(center_x, p)
                 * pow(center_y, q)
                 * pow(center_z, r)
-                * spheric_quad(center_x, center_y, center_z, p, q, r)
-                * vector3_distance(&cloud->points[i], center);
+                * spheric_quad(center_x, center_y, center_z, p, q, r);
 	}
+	
+	vector3_free(center);
 	
 	return moment;
 }
@@ -81,12 +70,23 @@ real spheric_moment(int p, int q, int r, struct cloud* cloud)
  * \param cloud A nuvem alvo cujos momentos se quer calcular
  * \return O momento esférico normalizado de ordem p+q+r de cloud
  */
-real spheric_normalized(int p, int q, int r, struct cloud* cloud)
+real spheric_psi(int p, int q, int r, struct cloud* cloud)
 {
+	
 	real central = spheric_moment(p, q, r, cloud);
 	real zero = spheric_moment(0, 0, 0, cloud);
-	
 	return central / (cloud_max_distance_from_center(cloud) * zero);
+	
+	/**
+	real psi = spheric_moment(p, q, r, cloud);
+	real zero = spheric_moment(0, 0, 0, cloud);
+	
+	real xord = spheric_moment(p, 0, 0, cloud);
+	real yord = spheric_moment(0, q, 0, cloud);
+	real zord = spheric_moment(0, 0, r, cloud);
+	
+	return (psi * pow(zero, 2)) / (xord * yord * zord);
+	*/
 }
 
 /**
@@ -106,7 +106,7 @@ struct matrix* spheric_cloud_moments(struct cloud* cloud)
     for (p = 0; p <= SPHERIC_ORDER; p++) {
         for (q = 0; q <= SPHERIC_ORDER; q++) {
             for (r = 0; r <= SPHERIC_ORDER; r++) {
-                matrix_set(results, 0, col, spheric_normalized(p, q, r, cloud));
+                matrix_set(results, 0, col, spheric_psi(p, q, r, cloud));
                 col++;
             }
         }

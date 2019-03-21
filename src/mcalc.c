@@ -20,6 +20,7 @@
 #include "include/bsptree.h"
 #include "include/hashtable.h"
 #include "include/spheric.h"
+#include "include/lechong.h"
 
 #define HU_TUTU			"hututu"
 #define HU_1980			"hu1980"
@@ -28,6 +29,8 @@
 #define LEGENDRE		"legendre"
 #define CHEBYSHEV		"chebyshev"
 #define SPHERIC			"spheric"
+#define LECHONG			"lechong"
+
 #define CUT_WHOLE		"w"
 #define CUT_SAGITTAL	"s"
 #define CUT_TRANSVERSAL	"t"
@@ -298,6 +301,8 @@ void extraction_interface(int argc, char** argv)
         mfunc = &zernike_cloud_moments;
     else if (!strcmp(moment, SPHERIC))
         mfunc = &spheric_cloud_moments;
+    else if (!strcmp(moment, LECHONG))
+        mfunc = &lechong_cloud_moments;
     else
     	mfunc = &hu_cloud_moments_hututu;
 	

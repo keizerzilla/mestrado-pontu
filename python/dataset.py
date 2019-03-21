@@ -221,4 +221,4 @@ def batch_cut(folder, output, cut):
 		cmd = ["../bin/radialcut", inpf, str(cut), output+"/"+cloud]
 		subprocess.call(cmd)
 		print("{} OK!".format(cloud))
-
+	
