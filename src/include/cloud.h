@@ -1117,7 +1117,7 @@ real cloud_max_distance_from_center(struct cloud* cloud)
 }
 
 /**
- * \brief Ainda não sei interpretar isso, mas conserva certas curvaturas
+ * \brief Ainda não sei interpretar isso, mas conserva certas curvaturas...
  * \param cloud A nuvem alvo
  * \return A máscara da nuvem
  */
@@ -1146,6 +1146,23 @@ struct cloud* cloud_binary_mask(struct cloud* cloud)
 	}
 	
 	return mask;
+}
+
+/**
+ * \brief (???) Retorna direção média da distribuição de pontos (???)
+ * \param cloud A nuvem alvo
+ * \return Direção média da nuvem cloud
+ */
+struct vector3* cloud_average_direction(struct cloud* cloud)
+{
+	struct vector3* ans = vector3_zero();
+	
+	for (uint i = 0; i < cloud->num_pts; i++)
+		vector3_increase(ans, &cloud->points[i]);
+	
+	vector3_normalize(ans);
+	
+	return ans;
 }
 
 /**

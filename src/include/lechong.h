@@ -129,7 +129,6 @@ real lechong_psi(int p, int q, int r, struct cloud* cloud)
  */
 struct matrix* lechong_cloud_moments(struct cloud* cloud)
 {
-	/**
 	struct matrix* results = matrix_new(1, LECHONG_MOMENTS);
 
     int p = 0;
@@ -147,35 +146,6 @@ struct matrix* lechong_cloud_moments(struct cloud* cloud)
     }
 
     return results;
-    */
-    
-    
-    struct matrix* results = matrix_new(1, 19);
-    
-    matrix_set(results, 0, 0, lechong_psi(1, 0, 0, cloud));
-    matrix_set(results, 0, 1, lechong_psi(0, 1, 0, cloud));
-    matrix_set(results, 0, 2, lechong_psi(0, 0, 1, cloud));
-    
-    matrix_set(results, 0, 3, lechong_psi(2, 0, 0, cloud));
-    matrix_set(results, 0, 4, lechong_psi(0, 2, 0, cloud));
-    matrix_set(results, 0, 5, lechong_psi(0, 0, 2, cloud));
-    matrix_set(results, 0, 6, lechong_psi(1, 1, 0, cloud));
-    matrix_set(results, 0, 7, lechong_psi(1, 0, 1, cloud));
-    matrix_set(results, 0, 8, lechong_psi(0, 1, 1, cloud));
-    
-    matrix_set(results, 0, 9, lechong_psi(3, 0, 0, cloud));
-    matrix_set(results, 0, 10, lechong_psi(0, 3, 0, cloud));
-    matrix_set(results, 0, 11, lechong_psi(0, 0, 3, cloud));
-    matrix_set(results, 0, 12, lechong_psi(1, 2, 0, cloud));
-    matrix_set(results, 0, 13, lechong_psi(1, 0, 2, cloud));
-    matrix_set(results, 0, 14, lechong_psi(2, 1, 0, cloud));
-    matrix_set(results, 0, 15, lechong_psi(2, 0, 1, cloud));
-    matrix_set(results, 0, 16, lechong_psi(0, 1, 2, cloud));
-    matrix_set(results, 0, 17, lechong_psi(0, 2, 1, cloud));
-    matrix_set(results, 0, 18, lechong_psi(1, 1, 1, cloud));
-    
-    return results;
-    
 }
 
 #endif // LECHONG_H

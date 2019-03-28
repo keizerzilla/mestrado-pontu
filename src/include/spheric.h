@@ -76,17 +76,6 @@ real spheric_psi(int p, int q, int r, struct cloud* cloud)
 	real central = spheric_moment(p, q, r, cloud);
 	real zero = spheric_moment(0, 0, 0, cloud);
 	return central / (cloud_max_distance_from_center(cloud) * zero);
-	
-	/**
-	real psi = spheric_moment(p, q, r, cloud);
-	real zero = spheric_moment(0, 0, 0, cloud);
-	
-	real xord = spheric_moment(p, 0, 0, cloud);
-	real yord = spheric_moment(0, q, 0, cloud);
-	real zord = spheric_moment(0, 0, r, cloud);
-	
-	return (psi * pow(zero, 2)) / (xord * yord * zord);
-	*/
 }
 
 /**

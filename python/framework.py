@@ -6,27 +6,16 @@ replace_dict = {"bosphorus" : "bs",
                 "densit"    : "d",
                 "crop"      : "c"}
 
-faces = ["neutral", "nonneutral"]
+faces = ["neutral"]
 
 cuts = {"w" : "whole",
-        "f" : "frontal",
-        "s" : "sagittal",
-        "t" : "transversal",
-        "r" : "radial",
-        "u" : "upper",
-        "l" : "lower"}
+        "7" : "seven",
+        "f" : "frontal"}
 
 scenarios= ["bosphorus",
             "bosphorus-outlier",
-            "bosphorus-outlier-crop60",
-            "bosphorus-outlier-crop70",
-            "bosphorus-outlier-crop80",
-            "bosphorus-outlier-densit100",
             "bosphorus-outlier-densit200",
             "bosphorus-outlier-densit225",
-            "bosphorus-outlier-densit100-crop60",
-            "bosphorus-outlier-densit100-crop70",
-            "bosphorus-outlier-densit100-crop80",
             "bosphorus-outlier-densit200-crop60",
             "bosphorus-outlier-densit200-crop70",
             "bosphorus-outlier-densit200-crop80",
@@ -40,13 +29,7 @@ scenarios= ["bosphorus",
             "bosphorus-outlier-densit225-crop70-icp",
             "bosphorus-outlier-densit225-crop80-icp"]
 
-moments = ["spheric",
-           "hututu",
-           "hu1980",
-           "husiq",
-           "zernike",
-           "legendre",
-           "chebyshev"]
+moments = ["legplane"]
 
 mini_scenarios = []
 for s in scenarios:
@@ -147,12 +130,11 @@ def go_combination():
 		combination_roc1(dataset, moments)
 
 if __name__ == "__main__":
-	#extractor = MomentExtractor()
-	#extractor.totalExtraction(faces, scenarios, cuts, moments, "results")
-	#extractor.batchExtraction("spheric", "../datasets/bosphorus/neutral", "whole", "../results/whole/bosphorus/neutral-spheric.dat")
+	extractor = MomentExtractor()
+	extractor.totalExtraction(faces, scenarios, cuts, moments, "tests")
 	
-	go_classification_rank1("results", plot=True)
-	go_classification_roc1("results", plot=True)
+	go_classification_rank1("tests", plot=True)
+	#go_classification_roc1("results")
 	
 	
 	

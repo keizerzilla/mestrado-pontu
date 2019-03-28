@@ -538,6 +538,11 @@ struct vector3* vector3_average(struct vector3* a, struct vector3* b)
  */
 void vector3_debug(struct vector3* v, FILE* output)
 {
+	if (v == NULL) {
+		fprintf(output, "!!! vetor vazio !!!\n");
+		return;
+	}
+	
     fprintf(output, "%.4f %.4f %.4f\n", v->x, v->y, v->z);
 }
 

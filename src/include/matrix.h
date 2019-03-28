@@ -237,6 +237,11 @@ int matrix_save_to_file(struct matrix* mat, const char* filename)
  */
 void matrix_debug(struct matrix* mat, FILE* output)
 {
+	if (mat == NULL) {
+		fprintf(output, "!!! matriz vazia !!!\n");
+		return;
+	}
+	
 	for (uint i = 0; i < mat->rows; i++) {
         for (uint j = 0; j < mat->cols; j++)
             fprintf(output, "%le ", mat->data[(i * mat->cols) + j]);

@@ -21,6 +21,7 @@
 #include "include/hashtable.h"
 #include "include/spheric.h"
 #include "include/lechong.h"
+#include "include/legplane.h"
 
 #define HU_TUTU			"hututu"
 #define HU_1980			"hu1980"
@@ -30,6 +31,7 @@
 #define CHEBYSHEV		"chebyshev"
 #define SPHERIC			"spheric"
 #define LECHONG			"lechong"
+#define LEGPLANE		"legplane"
 
 #define CUT_WHOLE		"w"
 #define CUT_SAGITTAL	"s"
@@ -38,6 +40,7 @@
 #define CUT_RADIAL		"r"
 #define CUT_UPPER		"u"
 #define CUT_LOWER		"l"
+#define CUT_SEVEN		"7"
 
 /**
  * \brief Exibe mensagem ao usuário informando como usar o extrator de momentos
@@ -72,6 +75,7 @@ void extraction_help()
     printf("     > r: radial\n");
     printf("     > u: parte superior\n");
     printf("     > l: parte inferior\n");
+    printf("     > 7: corte em 7 segmentos\n");
     
     printf("EX1: mcalc -m hu_1980 -i ../data/cloud1.xyz -o hu1.txt -c t\n");
     printf("EX2: mcalc -m legendre -i ../dataset/bunny.xyz -o stdout -c w\n\n");
@@ -250,6 +254,79 @@ struct matrix* extraction_lower(struct cloud* cloud,
 }
 
 /**
+ * \brief Os 7 segmentos iranianos
+ * \param cloud A nuvem alvo
+ * \param mfunc A função extratora de momentos
+ * \return 7 segmentos
+ */
+struct matrix* extraction_7(struct cloud* cloud,
+                            struct matrix* (*mfunc)(struct cloud*))
+{
+	struct vector3* norm_sagit = vector3_new(1, 0, 0); //ok
+	struct vector3* center = cloud_get_center(cloud); //ok
+	struct plane* plane_sagit = plane_new(norm_sagit, center); //ok
+	struct cloud* left = cloud_empty(); //ok
+	struct cloud* right = cloud_empty(); //ok
+	
+	cloud_plane_partition(cloud, plane_sagit, left, right);
+	
+	struct matrix* ans_left = (*mfunc)(left); //ok
+	struct matrix* ans_right = (*mfunc)(right); //ok
+	
+	struct vector3* norm_trans = vector3_new(0, 1, 0); //ok
+	struct cloud* left_1 = cloud_empty(); //ok
+	struct cloud* left_2 = cloud_empty(); //ok
+	struct cloud* right_1 = cloud_empty(); //ok
+	struct cloud* right_2 = cloud_empty(); //ok
+	struct plane* plane_left = plane_new(norm_trans, center); //ok
+	struct plane* plane_right = plane_new(norm_trans, center); //ok
+	
+	cloud_plane_partition(left, plane_left, left_1, left_2);
+	cloud_plane_partition(right, plane_right, right_1, right_2);
+	
+	struct matrix* ans_left_1 = (*mfunc)(left_1); //ok
+	struct matrix* ans_left_2 = (*mfunc)(left_2); //ok
+	struct matrix* ans_right_1 = (*mfunc)(right_1); //ok
+	struct matrix* ans_right_2 = (*mfunc)(right_2); //ok
+	
+	struct matrix* ans_full = (*mfunc)(cloud); //ok
+	struct matrix* halves = matrix_concat_hor(ans_left, ans_right); //ok
+	struct matrix* subleft = matrix_concat_hor(ans_left_1, ans_left_2); //ok
+	struct matrix* subright = matrix_concat_hor(ans_right_1, ans_right_2); //ok
+	struct matrix* subs = matrix_concat_hor(subleft, subright); //ok
+	struct matrix* tris = matrix_concat_hor(ans_full, halves); //ok
+	
+	struct matrix* ret = matrix_concat_hor(subs, tris);
+	
+	vector3_free(norm_sagit);
+	vector3_free(center);
+	plane_free(plane_sagit);
+	cloud_free(left);
+	cloud_free(right);
+	matrix_free(ans_left);
+	matrix_free(ans_right);
+	cloud_free(left_1);
+	cloud_free(left_2);
+	cloud_free(right_1);
+	cloud_free(right_2);
+	matrix_free(ans_left_1);
+	matrix_free(ans_left_2);
+	matrix_free(ans_right_1);
+	matrix_free(ans_right_2);
+	plane_free(plane_right);
+	plane_free(plane_left);
+	vector3_free(norm_trans);
+	matrix_free(ans_full);
+	matrix_free(halves);
+	matrix_free(subleft);
+	matrix_free(subright);
+	matrix_free(subs);
+	matrix_free(tris);
+	
+	return ret;
+}
+
+/**
  * \brief Interface para análise de nuvens de pontos
  * \param argc Número de parâmetros passados pela linha de comando
  * \param argv Parâmetros passados por linha de comando
@@ -303,6 +380,8 @@ void extraction_interface(int argc, char** argv)
         mfunc = &spheric_cloud_moments;
     else if (!strcmp(moment, LECHONG))
         mfunc = &lechong_cloud_moments;
+    else if (!strcmp(moment, LEGPLANE))
+        mfunc = &legplane_cloud_moments;
     else
     	mfunc = &hu_cloud_moments_hututu;
 	
@@ -327,6 +406,8 @@ void extraction_interface(int argc, char** argv)
 		results = extraction_upper(cloud, mfunc);
 	else if (!strcmp(cut, CUT_LOWER))
 		results = extraction_lower(cloud, mfunc);
+	else if (!strcmp(cut, CUT_SEVEN))
+		results = extraction_7(cloud, mfunc);
 	else
 		results = (*mfunc)(cloud);
 	

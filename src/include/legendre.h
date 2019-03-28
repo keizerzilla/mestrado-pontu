@@ -64,12 +64,15 @@ real legendre_moment(int p, int q, int r, struct cloud* cloud)
     real norm = legendre_norm(p, q, r, cloud->num_pts);
     struct vector3* center = cloud_get_center(cloud);
 	
-    for (uint i = 0; i < cloud->num_pts; i++)
+    for (uint i = 0; i < cloud->num_pts; i++) {
         moment += legendre_poly(p, cloud->points[i].x - center->x) *
                   legendre_poly(q, cloud->points[i].y - center->y) *
                   legendre_poly(r, cloud->points[i].z - center->z) *
                   vector3_distance(&cloud->points[i], center);
-
+	}
+	
+	vector3_free(center);
+	
     return norm * moment;
 }
 
