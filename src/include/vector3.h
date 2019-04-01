@@ -409,6 +409,21 @@ real vector3_chebyshev(struct vector3* v1, struct vector3* v2)
 }
 
 /**
+ * \brief Modificação da soma do erro quadrática (MODSSE) como distância
+ * \param v1 O primeiro vetor
+ * \param v2 O segundo vetor
+ * \return A distância MODSSE
+ */
+real vector3_modsse(struct vector3* v1, struct vector3* v2)
+{
+	real d = calc_squared_length3(v1->x - v2->x, v1->y - v2->y, v1->z - v2->z);
+	real n1 = pow(v1->x, 2) + pow(v1->y, 2) + pow(v1->z, 2);
+	real n2 = pow(v2->x, 2) + pow(v2->y, 2) + pow(v2->z, 2);
+	
+	return d / (n1 * n2);
+}
+
+/**
  * \brief Efetua interpolação linear em um vetor
  * \param s O vetor a ser interpolado
  * \param t O vetor alvo/objetivo

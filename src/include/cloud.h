@@ -199,8 +199,17 @@ uint cloud_size(struct cloud* cloud)
  */
 struct cloud* cloud_copy(struct cloud* cloud)
 {
-	util_error("%s: nao implementada - retornando NULL!", __FUNCTION__);
-	return NULL;
+	struct cloud* cpy = cloud_new(cloud_size(cloud));
+	
+	for (uint index = 0; index < cloud->num_pts; index++) {
+        cloud_set_point(cpy,
+                        index,
+                        cloud->points[index].x,
+                        cloud->points[index].y,
+                        cloud->points[index].z);
+    }
+	
+	return cpy;
 }
 
 /**
@@ -867,16 +876,20 @@ struct cloud* cloud_segment(struct cloud* cloud,
 }
 
 /**
- * \brief Verifica se um ponto pertence a uma nuvem (funciona, mas meio meh...)
+ * \brief Verifica se um ponto pertence a uma nuvem
  * \param cloud A nuvem alvo
  * \param p O ponto sendo buscado
  * \return 1 se p estiver em cloud, 0 caso-contrário
  */
 int cloud_has_point(struct cloud* cloud, struct vector3* p)
 {
-	for (uint i = 0; i < cloud_size(cloud); i++)
-		if (vector3_distance(p, &cloud->points[i]) == 0)
+	real d = 0.0f;
+	
+	for (uint i = 0; i < cloud_size(cloud); i++) {
+		d = vector3_distance(p, &cloud->points[i]);
+		if (d <= 0.1f)
 			return 1;
+	}
 	
 	return 0;
 }
@@ -892,6 +905,7 @@ struct vector3* cloud_closest_point(struct cloud* cloud, struct vector3* point)
 	uint index = 0;
 	real tempd = 0;
 	real d = vector3_distance(point, &cloud->points[0]);
+	
 	for (uint i = 1; i < cloud->num_pts; i++) {
         tempd = vector3_distance(point, &cloud->points[i]);
         if (tempd < d) {
@@ -904,46 +918,47 @@ struct vector3* cloud_closest_point(struct cloud* cloud, struct vector3* point)
 }
 
 /**
- * \brief Segmento pseudo-riemanniana
+ * \brief Segmento pseudo-riemanniana (dependência com GNU_SOURCE_)
  * \param cloud A nuvem alvo
  * \param start Partida
  * \param end Chegada
  * \param slice Segmento pseudo-riemanniano
  */
-void cloud_riemann_segment(struct cloud* cloud,
-                           struct vector3* start,
-                           struct vector3* end,
-                           struct cloud* slice)
+void cloud_sudo_riemann_segment(struct cloud* cloud,
+                                struct vector3* start,
+                                struct vector3* end,
+                                struct cloud* slice)
 {
 	struct vector3* avg = vector3_average(start, end);
 	struct vector3* close = cloud_closest_point(cloud, avg);
+	
 	vector3_free(avg);
 	
 	if (cloud_has_point(slice, close))
 		return;
 	
 	cloud_add_point(slice, close);
-	cloud_riemann_segment(cloud, start, close, slice);
-	cloud_riemann_segment(cloud, end, close, slice);
+	cloud_sudo_riemann_segment(cloud, start, close, slice);
+	cloud_sudo_riemann_segment(cloud, end, close, slice);
 }
 
 /**
- * \brief Distância pseudo-riemanniana
+ * \brief Distância pseudo-riemanniana (dependência com GNU_SOURCE_)
  * \param cloud A nuvem alvo
  * \param start Partida
  * \param end Chegada
  * \return Distância do segmento començando em start e terminando em end
  */
-real cloud_riemann_distance(struct cloud* cloud,
-                            struct vector3* start,
-                            struct vector3* end)
+real cloud_sudo_riemann_distance(struct cloud* cloud,
+                                 struct vector3* start,
+                                 struct vector3* end)
 {
+	real riemann = 0.0f;
 	struct cloud* slice = cloud_empty();
-	cloud_riemann_segment(cloud, start, end, slice);
 	
+	cloud_sudo_riemann_segment(cloud, start, end, slice);
 	cloud_sort_r(slice, start);
 	
-	real riemann = 0.0f;
 	for (uint i = 0; i < cloud_size(slice)-1; i++) {
 		struct vector3* p1 = &slice->points[i];
 		struct vector3* p2 = &slice->points[i+1];

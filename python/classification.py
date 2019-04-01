@@ -86,6 +86,13 @@ def run_classification(X_train, y_train, X_test, y_test, norm=True, skew=True):
 	
 	ans = dict()
 	
+	X_train[X_train == np.inf] = 0
+	X_train[X_train == -np.inf] = 0
+	X_train[X_train == np.nan] = 0
+	X_test[X_test == np.inf] = 0
+	X_test[X_test == -np.inf] = 0
+	X_test[X_test == np.nan] = 0
+	
 	if norm:
 		try:
 			scaler = StandardScaler().fit(X_train)
@@ -160,6 +167,13 @@ def rank1_neutral(features):
 	cols = ["f"+str(x) for x in range(len(df.columns)-4)]
 	cols = cols + ["sample", "subject", "tp", "exp"]
 	df.columns = cols
+	
+	""" REMOCAO DE ALTAS CORRELACOES - INUTIL (por enquanto...)
+	corr = df.drop(["sample", "subject", "tp", "exp"], axis=1).corr().abs()
+	upper = corr.where(np.triu(np.ones(corr.shape), k=1).astype(np.bool))
+	to_drop = [column for column in upper.columns if any(upper[column] >= 0.9)]
+	df = df.drop(to_drop, axis=1)
+	"""
 	
 	trainset = df.loc[df["sample"] == 0].drop(["sample", "tp", "exp"], axis=1)
 	X_train = np.array(trainset.drop(["subject"], axis=1))
@@ -453,7 +467,7 @@ def max_confusion(ans):
 		if diff[i, 0] != diff[i, 1]:
 			print("[{}]:\t{}".format(i, diff[i,:]))
 
-def combination_rank1_neutral(dataset, moments, n=2, dump="../results/"):
+def combination_rank1_neutral(dataset, moments, cuts, n=2, dump="../results/"):
 	"""
 	Executa classificações exaustivas do cenário rank1a para uma lista de
 	combinações de momentos.
@@ -465,15 +479,8 @@ def combination_rank1_neutral(dataset, moments, n=2, dump="../results/"):
 	"""
 	
 	extension = ".dat"
-	basepath = "../results/"
-	
-	slices = ["frontal/",
-	          "radial/",
-	          "sagittal/",
-	          "transversal/",
-	          "whole/",
-	          "upper/",
-	          "lower/"]
+	basepath = dump
+	slices = [v+"/" for k, v in cuts.items()]
 	
 	moments = [dataset + "/neutral-" + m + extension for m in moments]
 	products = list(itertools.product(slices, moments))
@@ -483,6 +490,8 @@ def combination_rank1_neutral(dataset, moments, n=2, dump="../results/"):
 	              os.path.basename(c[i]).split("-")[1].replace(".dat",""))
 	              for i in range(n)]
 	              for c in combos]
+	
+	print("total de combinacoes:", len(settings))
 	
 	cols = ["setting", "classifier", "rate"]
 	df = pd.DataFrame(columns=cols)
@@ -501,7 +510,7 @@ def combination_rank1_neutral(dataset, moments, n=2, dump="../results/"):
 	os.makedirs(res_path, exist_ok=True)
 	df.to_csv(res_path + "{}.csv".format(dataset), index=False)
 
-def combination_rank1_nonneutral(dataset, moments, n=2, dump="../results/"):
+def combination_rank1_nonneutral(dataset, moments, cuts, n=2, dump="../results/"):
 	"""
 	Executa classificações exaustivas do cenário rank1b para uma lista de
 	combinações de momentos.
@@ -513,15 +522,8 @@ def combination_rank1_nonneutral(dataset, moments, n=2, dump="../results/"):
 	"""
 	
 	extension = ".dat"
-	basepath = "../results/"
-	
-	slices = ["frontal/",
-	          "radial/",
-	          "sagittal/",
-	          "transversal/",
-	          "whole/",
-	          "upper/",
-	          "lower/"]
+	basepath = dump
+	slices = [v+"/" for k, v in cuts.items()]
 	
 	m_neutral = [dataset + "/neutral-" + m + extension for m in moments]
 	m_nonneutral = [dataset + "/nonneutral-" + m + extension for m in moments]
@@ -539,6 +541,8 @@ def combination_rank1_nonneutral(dataset, moments, n=2, dump="../results/"):
 	              os.path.basename(c[i]).split("-")[1].replace(".dat",""))
 	              for i in range(n)]
 	              for c in combo_neutral]
+	
+	print("total de combinacoes:", len(settings))
 	
 	cols = ["setting", "classifier", "rate"]
 	df = pd.DataFrame(columns=cols)
@@ -558,7 +562,7 @@ def combination_rank1_nonneutral(dataset, moments, n=2, dump="../results/"):
 	os.makedirs(res_path, exist_ok=True)
 	df.to_csv(res_path + "{}.csv".format(dataset), index=False)
 
-def combination_roc1(dataset, moments, n=2, dump="../results/"):
+def combination_roc1(dataset, moments, cuts, n=2, dump="../results/"):
 	"""
 	Executa classificações exaustivas do cenário roc1 para uma lista de
 	combinações de momentos.
@@ -570,15 +574,8 @@ def combination_roc1(dataset, moments, n=2, dump="../results/"):
 	"""
 	
 	extension = ".dat"
-	basepath = "../results/"
-	
-	slices = ["frontal/",
-	          "radial/",
-	          "sagittal/",
-	          "transversal/",
-	          "whole/",
-	          "upper/",
-	          "lower/"]
+	basepath = dump
+	slices = [v+"/" for k, v in cuts.items()]
 	
 	m_neutral = [dataset + "/neutral-" + m + extension for m in moments]
 	m_nonneutral = [dataset + "/nonneutral-" + m + extension for m in moments]
@@ -596,6 +593,8 @@ def combination_roc1(dataset, moments, n=2, dump="../results/"):
 	              os.path.basename(c[i]).split("-")[1].replace(".dat",""))
 	              for i in range(n)]
 	              for c in combo_neutral]
+	
+	print("total de combinacoes:", len(settings))
 	
 	cols = ["setting", "classifier", "rate"]
 	df = pd.DataFrame(columns=cols)

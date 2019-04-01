@@ -70,9 +70,8 @@ real spheric_moment(int p, int q, int r, struct cloud* cloud)
  * \param cloud A nuvem alvo cujos momentos se quer calcular
  * \return O momento esférico normalizado de ordem p+q+r de cloud
  */
-real spheric_psi(int p, int q, int r, struct cloud* cloud)
+real spheric_norm(int p, int q, int r, struct cloud* cloud)
 {
-	
 	real central = spheric_moment(p, q, r, cloud);
 	real zero = spheric_moment(0, 0, 0, cloud);
 	return central / (cloud_max_distance_from_center(cloud) * zero);
@@ -95,7 +94,7 @@ struct matrix* spheric_cloud_moments(struct cloud* cloud)
     for (p = 0; p <= SPHERIC_ORDER; p++) {
         for (q = 0; q <= SPHERIC_ORDER; q++) {
             for (r = 0; r <= SPHERIC_ORDER; r++) {
-                matrix_set(results, 0, col, spheric_psi(p, q, r, cloud));
+                matrix_set(results, 0, col, spheric_norm(p, q, r, cloud));
                 col++;
             }
         }

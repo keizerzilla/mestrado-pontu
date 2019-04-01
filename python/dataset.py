@@ -8,8 +8,16 @@ Funções de conversão/normalização dos arquivos das bases de dados.
 
 import os
 import sys
+import parse
 import shutil
 import subprocess
+
+def isInt(s):
+	try: 
+		int(s)
+		return True
+	except ValueError:
+		return False
 
 def cloud2xyz(source):
 	"""
@@ -93,7 +101,7 @@ def obj2xyz(source, dest):
 			continue
 		
 		outf = os.path.join(dest, cloud.replace(".obj", ".ply"))
-		cmd = ["pcl_obj2ply", "-format", "0", "-use_camera", "0", inpf, outf]
+		cmd = ["pcl_obj2ply", "-format", "1", "-use_camera", "0", inpf, outf]
 		print(" ".join(cmd))
 		subprocess.call(cmd)
 		
@@ -203,22 +211,66 @@ def bosphorus_setup(folder):
 	pcd2xyz(folder+"/neutral", folder+"/neutral")
 	pcd2xyz(folder+"/nonneutral", folder+"/nonneutral")
 
-def batch_cut(folder, output, cut):
-	"""
-	Cria cortes radiais em uma base inteira.
-
-	:param folder: pasta contendo as nuvens alvo
-	:param output: pasta aonde as nuvens cortadas ficarão salvas
-	:param cut: Tamanho do corte em milímetros
-	"""
+def eurecom_setup(folder):
+	os.makedirs(folder + "/all", exist_ok=True)
+	os.makedirs(folder + "/neutral", exist_ok=True)
+	os.makedirs(folder + "/nonneutral", exist_ok=True)
+	os.makedirs(folder + "/other", exist_ok=True)
 	
-	for cloud in os.listdir(folder):
-		inpf = os.path.join(folder, cloud)
+	fmt = "depth_{:d}_s{:d}_{:w}.xyz"
+	
+	for d in os.listdir(folder):
+		if isInt(d):
+			subject = int(d)
+			s1 = folder + "/" + d + "/s1/3DObj"
+			s2 = folder + "/" + d + "/s2/3DObj"
+			
+			for d1 in os.listdir(s1):
+				srcf = os.path.join(s1, d1)
+				dstf = os.path.join(folder + "/all", d1)
+				shutil.move(srcf, dstf)
+			
+			for d2 in os.listdir(s2):
+				srcf = os.path.join(s2, d2)
+				dstf = os.path.join(folder + "/all", d2)
+				shutil.move(srcf, dstf)
+	
+	#obj2xyz(folder+"/all", folder+"/all") // ajeitar a quarta coluna bizarra
+	
+	for f in os.listdir(folder + "/all"):
+		match = parse.parse(fmt, f)
+		subject = str(match[0])
+		sample = int(match[1]-1)
+		tp = str(match[2])
 		
-		if not os.path.isfile(inpf) or not inpf.endswith(".xyz"):
-			continue
+		bs_type = "N_N"
+		if tp == "Neutral":
+			bs_type = "N_N"
+		elif tp == "Smile":
+			bs_type = "E_SMILE"
+		elif "Occlusion" in tp:
+			bs_type = "O_" + tp.replace("Occlusion", "").upper()
+		elif tp == "LightOn":
+			bs_type = "N_N"
+			sample = sample + 1
+		elif tp == "LeftProfile":
+			bs_type = "YR_L90"
+		elif tp == "RightProfile":
+			bs_type = "YR_R90"
+		elif tp == "OpenMouth":
+			bs_type = "LFAU_MOUTH"
 		
-		cmd = ["../bin/radialcut", inpf, str(cut), output+"/"+cloud]
-		subprocess.call(cmd)
-		print("{} OK!".format(cloud))
+		new_name = "bs{:03d}_{}_{}.xyz".format(int(subject), bs_type, sample)
+		
+		print(f, " =>> ", new_name)
+		
+	
+if __name__ == "__main__":
+	eurecom_setup("../datasets/EURECOM")
+	
+	
+	
+	
+	
+	
 	

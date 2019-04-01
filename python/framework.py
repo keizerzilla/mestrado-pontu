@@ -8,28 +8,11 @@ replace_dict = {"bosphorus" : "bs",
 
 faces = ["neutral"]
 
-cuts = {"w" : "whole",
-        "7" : "seven",
-        "f" : "frontal"}
+cuts = {"s" : "sagittal"}
 
-scenarios= ["bosphorus",
-            "bosphorus-outlier",
-            "bosphorus-outlier-densit200",
-            "bosphorus-outlier-densit225",
-            "bosphorus-outlier-densit200-crop60",
-            "bosphorus-outlier-densit200-crop70",
-            "bosphorus-outlier-densit200-crop80",
-            "bosphorus-outlier-densit225-crop60",
-            "bosphorus-outlier-densit225-crop70",
-            "bosphorus-outlier-densit225-crop80",
-            "bosphorus-outlier-densit200-crop60-icp",
-            "bosphorus-outlier-densit200-crop70-icp",
-            "bosphorus-outlier-densit200-crop80-icp",
-            "bosphorus-outlier-densit225-crop60-icp",
-            "bosphorus-outlier-densit225-crop70-icp",
-            "bosphorus-outlier-densit225-crop80-icp"]
+scenarios= ["bosphorus-outlier-densit200-crop80-icp"]
 
-moments = ["legplane"]
+moments = ["spheric"]
 
 mini_scenarios = []
 for s in scenarios:
@@ -126,15 +109,91 @@ def go_classification_roc1(rdir, plot=False):
 
 def go_combination():
 	for dataset in scenarios:
-		combination_rank1_neutral(dataset, moments)
-		combination_roc1(dataset, moments)
+		combination_rank1_neutral(dataset, moments, cuts, dump="../tutu/", n=3)
+		combination_rank1_nonneutral(dataset, moments, cuts, dump="../tutu/", n=3)
+		combination_roc1(dataset, moments, cuts, dump="../tutu/", n=3)
 
 if __name__ == "__main__":
 	extractor = MomentExtractor()
-	extractor.totalExtraction(faces, scenarios, cuts, moments, "tests")
+	extractor.totalExtraction(faces, scenarios, cuts, moments, "tutu")
+	go_classification_rank1("tutu")
+	#go_classification_roc1("tutu")
 	
-	go_classification_rank1("tests", plot=True)
-	#go_classification_roc1("results")
+	#go_combination()
 	
+	"""
+	frontal_neutral = "../tutu/frontal/bosphorus-outlier-densit200-crop80-icp/neutral-spheric.dat"
+	sagittal_neutral = "../tutu/sagittal/bosphorus-outlier-densit200-crop80-icp/neutral-spheric.dat"
+	transversal_neutral = "../tutu/transversal/bosphorus-outlier-densit200-crop80-icp/neutral-spheric.dat"
 	
+	frontal_nonneutral = "../tutu/frontal/bosphorus-outlier-densit200-crop80-icp/nonneutral-spheric.dat"
+	sagittal_nonneutral = "../tutu/sagittal/bosphorus-outlier-densit200-crop80-icp/nonneutral-spheric.dat"
+	transversal_nonneutral = "../tutu/transversal/bosphorus-outlier-densit200-crop80-icp/nonneutral-spheric.dat"
+	
+	# NEUTRAL
+	
+	ans = rank1_neutral_concat([frontal_neutral, sagittal_neutral, transversal_neutral])
+	classifier, rate = max_rate(ans)
+	rate = round(rate*100, 2)
+	print("NEUTRAL - FST:\t\t{}\t{}".format(classifier, rate))
+	
+	ans = rank1_neutral_concat([frontal_neutral, sagittal_neutral])
+	classifier, rate = max_rate(ans)
+	rate = round(rate*100, 2)
+	print("NEUTRAL - FS:\t\t{}\t{}".format(classifier, rate))
+	
+	ans = rank1_neutral_concat([frontal_neutral, transversal_neutral])
+	classifier, rate = max_rate(ans)
+	rate = round(rate*100, 2)
+	print("NEUTRAL - FT:\t\t{}\t{}".format(classifier, rate))
+	
+	ans = rank1_neutral_concat([sagittal_neutral, transversal_neutral])
+	classifier, rate = max_rate(ans)
+	rate = round(rate*100, 2)
+	print("NEUTRAL - ST:\t\t{}\t{}".format(classifier, rate))
+	
+	# NONNEUTRAL
+	
+	ans = rank1_nonneutral_concat([frontal_neutral, sagittal_neutral, transversal_neutral], [frontal_nonneutral, sagittal_nonneutral, transversal_nonneutral])
+	classifier, rate = max_rate(ans)
+	rate = round(rate*100, 2)
+	print("NONNEUTRAL - FST:\t{}\t{}".format(classifier, rate))
+	
+	ans = rank1_nonneutral_concat([frontal_neutral, sagittal_neutral], [frontal_nonneutral, sagittal_nonneutral])
+	classifier, rate = max_rate(ans)
+	rate = round(rate*100, 2)
+	print("NONNEUTRAL - FS:\t{}\t{}".format(classifier, rate))
+	
+	ans = rank1_nonneutral_concat([frontal_neutral, transversal_neutral], [frontal_nonneutral, transversal_nonneutral])
+	classifier, rate = max_rate(ans)
+	rate = round(rate*100, 2)
+	print("NONNEUTRAL - FT:\t{}\t{}".format(classifier, rate))
+	
+	ans = rank1_nonneutral_concat([sagittal_neutral, transversal_neutral], [sagittal_nonneutral, transversal_nonneutral])
+	classifier, rate = max_rate(ans)
+	rate = round(rate*100, 2)
+	print("NONNEUTRAL - ST:\t{}\t{}".format(classifier, rate))
+	
+	# ROC1
+	
+	ans = roc1_concat([frontal_neutral, sagittal_neutral, transversal_neutral], [frontal_nonneutral, sagittal_nonneutral, transversal_nonneutral])
+	classifier, rate = max_rate(ans)
+	rate = round(rate*100, 2)
+	print("ROC1 - FST:\t\t{}\t{}".format(classifier, rate))
+	
+	ans = roc1_concat([frontal_neutral, sagittal_neutral], [frontal_nonneutral, sagittal_nonneutral])
+	classifier, rate = max_rate(ans)
+	rate = round(rate*100, 2)
+	print("ROC1 - FS:\t\t{}\t{}".format(classifier, rate))
+	
+	ans = roc1_concat([frontal_neutral, transversal_neutral], [frontal_nonneutral, transversal_nonneutral])
+	classifier, rate = max_rate(ans)
+	rate = round(rate*100, 2)
+	print("ROC1 - FT:\t\t{}\t{}".format(classifier, rate))
+	
+	ans = roc1_concat([sagittal_neutral, transversal_neutral], [sagittal_nonneutral, transversal_nonneutral])
+	classifier, rate = max_rate(ans)
+	rate = round(rate*100, 2)
+	print("ROC1 - ST:\t\t{}\t{}".format(classifier, rate))
+	"""
 	

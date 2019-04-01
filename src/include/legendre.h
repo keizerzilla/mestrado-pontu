@@ -77,27 +77,6 @@ real legendre_moment(int p, int q, int r, struct cloud* cloud)
 }
 
 /**
- * \brief Calcula o momento escalado (???) de Legendre
- * \param p A ordem da dimensão x
- * \param q A ordem da dimensão y
- * \param r A ordem da dimensão z
- * \param cloud A nuvem alvo
- * \return O momento escalado (???) p+q+r da nuvem cloud
- */
-real legendre_psi(int p, int q, int r, struct cloud* cloud)
-{
-	real xi = 0;
-	real psi = legendre_moment(p, q, r, cloud);
-	real zero = legendre_moment(0, 0, 0, cloud);
-	
-	real xord = legendre_moment(p + xi, 0, 0, cloud);
-	real yord = legendre_moment(0, q + xi, 0, cloud);
-	real zord = legendre_moment(0, 0, r + xi, cloud);
-	
-	return (psi * pow(zero, xi + 2)) / (xord * yord * zord);
-}
-
-/**
  * \brief Calcula os momentos de Legendre de uma nuvem
  * \param cloud A nuvem alvo
  * \return A matrix aonde os resultados serão salvos

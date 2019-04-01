@@ -1,6 +1,6 @@
 # configs
 CC = gcc
-COMPILER_FLAGS = -Wall -O3
+COMPILER_FLAGS = -Wall
 LINKER_FLAGS = -lm
 
 # alvos de compilacao
@@ -13,3 +13,4 @@ mcalc: mcalc.c
 # utilitario manipulador de nuvens via linha de comando
 cloudz: cloudz.c
 	$(CC) cloudz.c $(COMPILER_FLAGS) $(LINKER_FLAGS) $(CFLAGS) -o ../bin/cloudz
+

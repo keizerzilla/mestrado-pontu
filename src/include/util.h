@@ -56,7 +56,6 @@ void util_error(const char* msg, ...)
     vsprintf(buffer, msg, arglist);
     va_end(arglist);
 	
-	//fprintf(stderr, "%s%s", ANSI_COLOR_BOLD, ANSI_COLOR_FAIL);
     fprintf(stderr, "[ERRO] %s\n", buffer);
 }
 
@@ -73,7 +72,6 @@ void util_info(const char* msg, ...)
     vsprintf(buffer, msg, arglist);
     va_end(arglist);
 	
-	//fprintf(stderr, "%s%s", ANSI_COLOR_BOLD, ANSI_COLOR_OKBLUE);
     fprintf(stdout, "[INFO] %s\n", buffer);
 }
 
@@ -90,7 +88,6 @@ void util_prompt(const char* msg, ...)
     vsprintf(buffer, msg, arglist);
     va_end(arglist);
 	
-	//fprintf(stderr, "%s%s", ANSI_COLOR_BOLD, ANSI_COLOR_OKGREEN);
     fprintf(stdout, "[!!!!] %s\n", buffer);
 }
 
@@ -107,7 +104,6 @@ void util_seg(const char* msg, ...)
     vsprintf(buffer, msg, arglist);
     va_end(arglist);
 	
-	//fprintf(stderr, "%s%s", ANSI_COLOR_BOLD, ANSI_COLOR_MAGENTA);
     fprintf(stdout, "[!!!!] %s\n", buffer);
 }
 

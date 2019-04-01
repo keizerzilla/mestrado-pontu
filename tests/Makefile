@@ -1,11 +1,11 @@
 # configs
 CC = gcc
-COMPILER_FLAGS = -Wall -O3
+COMPILER_FLAGS = -Wall
 LINKER_FLAGS = -lm
 
 # alvos de compilacao
-all: testlechong
+all: testing
 
-testlechong: testlechong.c
-	$(CC) testlechong.c $(COMPILER_FLAGS) $(LINKER_FLAGS) $(CFLAGS) -o lechong
+testing: testing.c
+	$(CC) testing.c $(COMPILER_FLAGS) $(LINKER_FLAGS) $(CFLAGS) -o testing
 
