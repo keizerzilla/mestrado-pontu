@@ -13,24 +13,13 @@
 #ifndef HU_H
 #define HU_H
 
+#define HU_SUPERSET_ORDER 2
+#define HU_SUPERSET_MOMENTS 27
 #define HU_MOMENTS 21
 
 #include "cloud.h"
 #include "matrix.h"
 
-/**
- * \brief Estrutura responsavel por armazenar os momentos de Hu para uma dada
- * nuvem de pontos.
- */
-struct hu {
-    real i1;
-    real i2;
-    real i3;
-    real i4;
-    real i5;
-    real i6;
-    real i7;
-};
 
 /**
  * \brief Calcula o momento regular de Hu 3D
@@ -38,7 +27,7 @@ struct hu {
  * \param q A ordem da dimensão y
  * \param r A ordem da dimensão z
  * \param cloud A nuvem alvo
- * \return O momento regular(p,q,r) da nuvem cloud
+ * \return O momento regular p+q+r da nuvem cloud
  */
 real hu_regular_moment(int p, int q, int r, struct cloud* cloud)
 {
@@ -58,7 +47,7 @@ real hu_regular_moment(int p, int q, int r, struct cloud* cloud)
  * \param q A ordem da dimensão y
  * \param r A ordem da dimensão z
  * \param cloud A nuvem alvo
- * \return O momento central(p,q,r) da nuvem cloud
+ * \return O momento central p+q+r da nuvem cloud
  */
 real hu_central_moment(int p, int q, int r, struct cloud* cloud)
 {
@@ -80,7 +69,7 @@ real hu_central_moment(int p, int q, int r, struct cloud* cloud)
  * \param q A ordem da dimensão y
  * \param r A ordem da dimensão z
  * \param cloud A nuvem alvo
- * \return O momento normalizado(p,q,r) da nuvem cloud
+ * \return O momento normalizado p+q+r da nuvem cloud
  */
 real hu_normalized_moment(int p, int q, int r, struct cloud* cloud)
 {
@@ -88,6 +77,45 @@ real hu_normalized_moment(int p, int q, int r, struct cloud* cloud)
     real zero = hu_central_moment(0, 0, 0, cloud);
     
     return central / (pow(zero, ((p + q + r)/3) + 1));
+}
+
+/**
+ * \brief Calcula o momento normalizado refinado segundo (Guo, 1993) de Hu 3D
+ * \param p A ordem da dimensão x
+ * \param q A ordem da dimensão y
+ * \param r A ordem da dimensão z
+ * \param cloud A nuvem alvo
+ * \return O momento normalizado p+q+r por Guo da nuvem cloud
+ */
+real hu_refined_moment(int p, int q, int r, struct cloud* cloud)
+{
+    return hu_central_moment(p, q, r, cloud) / (1.0f * cloud_size(cloud));
+}
+
+/**
+ * \brief Calcula momentos normalizados por ordem (superset de testes)
+ * \param cloud A nuvem alvo
+ * \return A matriz aonde os momentos serão salvos
+ */
+struct matrix* hu_superset(struct cloud* cloud)
+{
+	struct matrix* results = matrix_new(1, HU_SUPERSET_MOMENTS);
+	
+	int p = 0;
+    int q = 0;
+    int r = 0;
+    int col = 0;
+
+    for (p = 0; p <= HU_SUPERSET_ORDER; p++) {
+        for (q = 0; q <= HU_SUPERSET_ORDER; q++) {
+            for (r = 0; r <= HU_SUPERSET_ORDER; r++) {
+                matrix_set(results, 0, col, hu_normalized_moment(p,q,r,cloud));
+                col++;
+            }
+        }
+    }
+	
+	return results;
 }
 
 /**
@@ -99,12 +127,12 @@ struct matrix* hu_cloud_moments_hu1980(struct cloud* cloud)
 {
 	struct matrix* results = matrix_new(1, 3);
 	
-    real hu200 = hu_normalized_moment(2, 0, 0, cloud);
-    real hu020 = hu_normalized_moment(0, 2, 0, cloud);
-    real hu002 = hu_normalized_moment(0, 0, 2, cloud);
-    real hu110 = hu_normalized_moment(1, 1, 0, cloud);
-    real hu101 = hu_normalized_moment(1, 0, 1, cloud);
-    real hu011 = hu_normalized_moment(0, 1, 1, cloud);
+    real hu200 = hu_refined_moment(2, 0, 0, cloud);
+    real hu020 = hu_refined_moment(0, 2, 0, cloud);
+    real hu002 = hu_refined_moment(0, 0, 2, cloud);
+    real hu110 = hu_refined_moment(1, 1, 0, cloud);
+    real hu101 = hu_refined_moment(1, 0, 1, cloud);
+    real hu011 = hu_refined_moment(0, 1, 1, cloud);
 
     real j1 = hu200 + hu020 + hu002;
     real j2 = hu200*hu020 + hu200*hu002 + hu020*hu002 -
@@ -270,9 +298,13 @@ struct matrix* hu_cloud_moments_husiq(struct cloud* cloud)
 struct matrix* hu_cloud_moments_hututu(struct cloud* cloud)
 {
 	struct matrix* results = matrix_new(1, HU_MOMENTS);
-	struct hu hu_xy;
-	struct hu hu_xz;
-	struct hu hu_yz;
+	real i1;
+    real i2;
+    real i3;
+    real i4;
+    real i5;
+    real i6;
+    real i7;
     real a;
     real b;
     real c;
@@ -289,30 +321,30 @@ struct matrix* hu_cloud_moments_hututu(struct cloud* cloud)
     f = hu_normalized_moment(2, 1, 0, cloud);
     g = hu_normalized_moment(3, 0, 0, cloud);
 
-    hu_xy.i1 = e + a;
+    i1 = e + a;
 
-    hu_xy.i2 = pow((e - a), 2) + 4*pow(c, 2);
+    i2 = pow((e - a), 2) + 4*pow(c, 2);
 
-    hu_xy.i3 = pow((g - 3*d), 2) + pow((3*f - b), 2);
+    i3 = pow((g - 3*d), 2) + pow((3*f - b), 2);
 
-    hu_xy.i4 = pow((g + d), 2) + pow((f + b), 2);
+    i4 = pow((g + d), 2) + pow((f + b), 2);
 
-    hu_xy.i5 = (g - 3*d)*(g + d)*(pow((g + d), 2) - 3*pow((f + b), 2)) +
+    i5 = (g - 3*d)*(g + d)*(pow((g + d), 2) - 3*pow((f + b), 2)) +
                (3*f - b)*(f + b)*(3*pow((g + d), 2) - pow((f + b), 2));
 
-    hu_xy.i6 = (e - a)*(pow((g + d), 2) - pow((f + b), 2)) +
+    i6 = (e - a)*(pow((g + d), 2) - pow((f + b), 2)) +
                4*c*(g + d) * (f + b);
 
-    hu_xy.i7 = (3*f - b)*(f + b)*(3*pow((g + d), 2) - pow((f + b), 2)) -
+    i7 = (3*f - b)*(f + b)*(3*pow((g + d), 2) - pow((f + b), 2)) -
                (g - 3*d)*(f + b)*(3*pow((g + d), 2) - pow((f + b), 2));
 
-    matrix_set(results, 0, 0, hu_xy.i1);
-    matrix_set(results, 0, 1, hu_xy.i2);
-    matrix_set(results, 0, 2, hu_xy.i3);
-    matrix_set(results, 0, 3, hu_xy.i4);
-    matrix_set(results, 0, 4, hu_xy.i5);
-    matrix_set(results, 0, 5, hu_xy.i6);
-    matrix_set(results, 0, 6, hu_xy.i7);
+    matrix_set(results, 0, 0, i1);
+    matrix_set(results, 0, 1, i2);
+    matrix_set(results, 0, 2, i3);
+    matrix_set(results, 0, 3, i4);
+    matrix_set(results, 0, 4, i5);
+    matrix_set(results, 0, 5, i6);
+    matrix_set(results, 0, 6, i7);
 	
     a = hu_normalized_moment(0, 0, 2, cloud);
     b = hu_normalized_moment(0, 0, 3, cloud);
@@ -322,30 +354,30 @@ struct matrix* hu_cloud_moments_hututu(struct cloud* cloud)
     f = hu_normalized_moment(2, 0, 1, cloud);
     g = hu_normalized_moment(3, 0, 0, cloud);
 
-    hu_xz.i1 = e + a;
+    i1 = e + a;
 
-    hu_xz.i2 = pow((e - a), 2) + 4*pow(c, 2);
+    i2 = pow((e - a), 2) + 4*pow(c, 2);
 
-    hu_xz.i3 = pow((g - 3*d), 2) + pow((3*f - b), 2);
+    i3 = pow((g - 3*d), 2) + pow((3*f - b), 2);
 
-    hu_xz.i4 = pow((g + d), 2) + pow((f + b), 2);
+    i4 = pow((g + d), 2) + pow((f + b), 2);
 
-    hu_xz.i5 = (g - 3*d)*(g + d)*(pow((g + d), 2) - 3*pow((f + b), 2)) +
+    i5 = (g - 3*d)*(g + d)*(pow((g + d), 2) - 3*pow((f + b), 2)) +
                (3*f - b)*(f + b)*(3*pow((g + d), 2) - pow((f + b), 2));
 
-    hu_xz.i6 = (e - a)*(pow((g + d), 2) - pow((f + b), 2)) +
+    i6 = (e - a)*(pow((g + d), 2) - pow((f + b), 2)) +
                4*c*(g + d) * (f + b);
 
-    hu_xz.i7 = (3*f - b)*(f + b)*(3*pow((g + d), 2) - pow((f + b), 2)) -
+    i7 = (3*f - b)*(f + b)*(3*pow((g + d), 2) - pow((f + b), 2)) -
                (g - 3*d)*(f + b)*(3*pow((g + d), 2) - pow((f + b), 2));
 
-    matrix_set(results, 0, 7, hu_xz.i1);
-    matrix_set(results, 0, 8, hu_xz.i2);
-    matrix_set(results, 0, 9, hu_xz.i3);
-    matrix_set(results, 0, 10, hu_xz.i4);
-    matrix_set(results, 0, 11, hu_xz.i5);
-    matrix_set(results, 0, 12, hu_xz.i6);
-    matrix_set(results, 0, 13, hu_xz.i7);
+    matrix_set(results, 0, 7, i1);
+    matrix_set(results, 0, 8, i2);
+    matrix_set(results, 0, 9, i3);
+    matrix_set(results, 0, 10, i4);
+    matrix_set(results, 0, 11, i5);
+    matrix_set(results, 0, 12, i6);
+    matrix_set(results, 0, 13, i7);
 	
     a = hu_normalized_moment(0, 0, 2, cloud);
     b = hu_normalized_moment(0, 0, 3, cloud);
@@ -355,30 +387,30 @@ struct matrix* hu_cloud_moments_hututu(struct cloud* cloud)
     f = hu_normalized_moment(0, 2, 1, cloud);
     g = hu_normalized_moment(0, 3, 0, cloud);
 
-    hu_yz.i1 = e + a;
+    i1 = e + a;
 
-    hu_yz.i2 = pow((e - a), 2) + 4*pow(c, 2);
+    i2 = pow((e - a), 2) + 4*pow(c, 2);
 
-    hu_yz.i3 = pow((g - 3*d), 2) + pow((3*f - b), 2);
+    i3 = pow((g - 3*d), 2) + pow((3*f - b), 2);
 
-    hu_yz.i4 = pow((g + d), 2) + pow((f + b), 2);
+    i4 = pow((g + d), 2) + pow((f + b), 2);
 
-    hu_yz.i5 = (g - 3*d)*(g + d)*(pow((g + d), 2) - 3*pow((f + b), 2)) +
+    i5 = (g - 3*d)*(g + d)*(pow((g + d), 2) - 3*pow((f + b), 2)) +
                (3*f - b)*(f + b)*(3*pow((g + d), 2) - pow((f + b), 2));
 
-    hu_yz.i6 = (e - a)*(pow((g + d), 2) - pow((f + b), 2)) +
+    i6 = (e - a)*(pow((g + d), 2) - pow((f + b), 2)) +
                4*c*(g + d) * (f + b);
 
-    hu_yz.i7 = (3*f - b)*(f + b)*(3*pow((g + d), 2) - pow((f + b), 2)) -
+    i7 = (3*f - b)*(f + b)*(3*pow((g + d), 2) - pow((f + b), 2)) -
                (g - 3*d)*(f + b)*(3*pow((g + d), 2) - pow((f + b), 2));
 
-    matrix_set(results, 0, 14, hu_yz.i1);
-    matrix_set(results, 0, 15, hu_yz.i2);
-    matrix_set(results, 0, 16, hu_yz.i3);
-    matrix_set(results, 0, 17, hu_yz.i4);
-    matrix_set(results, 0, 18, hu_yz.i5);
-    matrix_set(results, 0, 19, hu_yz.i6);
-    matrix_set(results, 0, 20, hu_yz.i7);
+    matrix_set(results, 0, 14, i1);
+    matrix_set(results, 0, 15, i2);
+    matrix_set(results, 0, 16, i3);
+    matrix_set(results, 0, 17, i4);
+    matrix_set(results, 0, 18, i5);
+    matrix_set(results, 0, 19, i6);
+    matrix_set(results, 0, 20, i7);
 
     return results;
 }

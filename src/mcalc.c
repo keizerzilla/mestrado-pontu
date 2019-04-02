@@ -21,14 +21,17 @@
 #include "include/bsptree.h"
 #include "include/hashtable.h"
 #include "include/spheric.h"
+#include "include/golden.h"
 
 #define HU_TUTU			"hututu"
 #define HU_1980			"hu1980"
 #define HU_SIQ			"husiq"
+#define HU_SUPERSET		"husuperset"
 #define ZERNIKE			"zernike"
 #define LEGENDRE		"legendre"
 #define CHEBYSHEV		"chebyshev"
 #define SPHERIC			"spheric"
+#define GOLDEN			"golden"
 
 #define CUT_WHOLE		"w"
 #define CUT_SAGITTAL	"s"
@@ -55,10 +58,12 @@ void extraction_help()
     printf("     > hututu\n");
     printf("     > husiq\n");
     printf("     > hu1980\n");
+    printf("     > husuperset\n");
     printf("     > zernike\n");
     printf("     > legendre\n");
     printf("     > chebyshev\n");
     printf("     > spheric\n");
+    printf("     > golden\n");
     
     printf(" -i: nuvem de entrada no formato XYZ\n");
     printf("     > ../data/bunny.xyz, face666.xyz, ~/bs/bs001.xyz, etc\n");
@@ -128,6 +133,8 @@ void extraction_interface(int argc, char** argv)
         mfunc = &hu_cloud_moments_hu1980;
     else if (!strcmp(moment, HU_SIQ))
         mfunc = &hu_cloud_moments_husiq;
+    else if (!strcmp(moment, HU_SUPERSET))
+        mfunc = &hu_superset;
     else if (!strcmp(moment, LEGENDRE))
         mfunc = &legendre_cloud_moments;
     else if (!strcmp(moment, CHEBYSHEV))
@@ -136,6 +143,8 @@ void extraction_interface(int argc, char** argv)
         mfunc = &zernike_cloud_moments;
     else if (!strcmp(moment, SPHERIC))
         mfunc = &spheric_cloud_moments;
+    else if (!strcmp(moment, GOLDEN))
+        mfunc = &golden_cloud_moments;
     else
     	mfunc = &hu_cloud_moments_hututu;
 	
