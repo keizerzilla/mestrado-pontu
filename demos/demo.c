@@ -16,20 +16,17 @@ real refined_moment(int p,
 	/**
 	real central = (*mfunc)(p, q, r, cloud);
 	real zero = (*mfunc)(0, 0, 0, cloud);
-	real x = (*mfunc)(p, 0, 0, cloud);
-	real y = (*mfunc)(0, q, 0, cloud);
-	real z = (*mfunc)(0, 0, r, cloud);
 	
-	return (central * pow(zero, 2)) / (x * y * z); // t+s
-	**/
+	return central / pow(zero, 3);
+	*/
 	
-	real central = (*mfunc)(p, q, r, cloud);
-	real zero = (*mfunc)(0, 0, 0, cloud);
+	real central = hu_central_moment(p, q, r, cloud);
+	real zero = hu_central_moment(0, 0, 0, cloud);
+	real x = hu_central_moment(p, 0, 0, cloud);
+	real y = hu_central_moment(0, q, 0, cloud);
+	real z = hu_central_moment(0, 0, r, cloud);
 	
-	return central / pow(zero, 3); // t+s+r
-	
-	//real norm = 1.0f;
-    //return (*mfunc)(p, q, r, cloud) / norm; // t+r
+	return (central * x * y * z) / (pow(zero, 4)); // t+s
 }
 
 struct matrix* invariant_moments(struct cloud* cloud,
@@ -68,7 +65,7 @@ int main()
 	
 	for (int i = 0; i < 4; i++) {
 		struct cloud* cloud = cloud_load_xyz(clouds[i]);
-		struct matrix* ans = invariant_moments(cloud, golden_moment);
+		struct matrix* ans = invariant_moments(cloud, legendre_moment);
 		//struct matrix* ans = chebyshev_invariant_moments(cloud);
 		//struct matrix* ans = legendre_invariant_moments(cloud);
 		//struct vector3* avg = cloud_average_direction(cloud);

@@ -63,7 +63,8 @@ real golden_moment(int p, int q, int r, struct cloud* cloud)
 	
 	vector3_free(center);
 	
-	return moment / (1.0f * cloud_size(cloud));
+	//return moment / (1.0f * cloud_size(cloud)); // original
+	return moment;
 }
 
 /**

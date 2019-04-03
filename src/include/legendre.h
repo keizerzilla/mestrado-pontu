@@ -73,7 +73,8 @@ real legendre_moment(int p, int q, int r, struct cloud* cloud)
 	
 	vector3_free(center);
 	
-    return norm * moment;
+    //return norm * moment; // original
+    return moment;
 }
 
 /**
