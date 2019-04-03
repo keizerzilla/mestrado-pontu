@@ -8,24 +8,15 @@ replace_dict = {"bosphorus" : "bs",
 
 faces = ["neutral"]
 
-#cuts = {"w" : "whole", "f" : "frontal", "s" : "sagittal", "t" : "transversal"}
-cuts = {"w" : "whole"}
+cuts = {"w" : "whole", "f" : "frontal", "s" : "sagittal", "t" : "transversal"}
 
 scenarios= ["bosphorus",
             "bosphorus-outlier",
             "bosphorus-outlier-densit200",
             "bosphorus-outlier-densit225",
-            "bosphorus-outlier-densit200-crop60",
-            "bosphorus-outlier-densit200-crop70",
             "bosphorus-outlier-densit200-crop80",
-            "bosphorus-outlier-densit225-crop60",
-            "bosphorus-outlier-densit225-crop70",
             "bosphorus-outlier-densit225-crop80",
-            "bosphorus-outlier-densit200-crop60-icp",
-            "bosphorus-outlier-densit200-crop70-icp",
             "bosphorus-outlier-densit200-crop80-icp",
-            "bosphorus-outlier-densit225-crop60-icp",
-            "bosphorus-outlier-densit225-crop70-icp",
             "bosphorus-outlier-densit225-crop80-icp"]
 
 moments = ["hu1980"]

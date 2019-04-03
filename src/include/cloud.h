@@ -661,38 +661,12 @@ int cloud_compare(const void* p1, const void* p2)
 }
 
 /**
- * \brief Função utilitária para a função de ordenação qsort_r()
- * \param p1 O primeiro ponto para comparação
- * \param p2 O segundo ponto para comparação
- */
-int cloud_compare_r(const void* p1, const void* p2, void* arg)
-{
-    struct vector3* dp1 = (struct vector3*)p1;
-    struct vector3* dp2 = (struct vector3*)p2;
-    struct vector3* pivot = (struct vector3*)arg;
-	real d1 = vector3_distance(dp1, pivot);
-	real d2 = vector3_distance(dp2, pivot);
-	
-    return (int)d1 - (int)d2;
-}
-
-/**
  * \brief Ordena uma cloud em profundidade usando qsort()
  * \param cloud A cloud alvo
  */
 void cloud_sort(struct cloud* cloud)
 {
     qsort(cloud->points, cloud->num_pts, sizeof(struct vector3), cloud_compare);
-}
-
-/**
- * \brief Ordena uma cloud em profundidade usando qsort_r()
- * \param cloud A cloud alvo
- */
-void cloud_sort_r(struct cloud* cloud, struct vector3* arg)
-{
-    qsort_r(cloud->points, cloud->num_pts, sizeof(struct vector3),
-            cloud_compare_r, arg);
 }
 
 /**
@@ -918,60 +892,6 @@ struct vector3* cloud_closest_point(struct cloud* cloud, struct vector3* point)
 }
 
 /**
- * \brief Segmento pseudo-riemanniana (dependência com GNU_SOURCE_)
- * \param cloud A nuvem alvo
- * \param start Partida
- * \param end Chegada
- * \param slice Segmento pseudo-riemanniano
- */
-void cloud_sudo_riemann_segment(struct cloud* cloud,
-                                struct vector3* start,
-                                struct vector3* end,
-                                struct cloud* slice)
-{
-	struct vector3* avg = vector3_average(start, end);
-	struct vector3* close = cloud_closest_point(cloud, avg);
-	
-	vector3_free(avg);
-	
-	if (cloud_has_point(slice, close))
-		return;
-	
-	cloud_add_point(slice, close);
-	cloud_sudo_riemann_segment(cloud, start, close, slice);
-	cloud_sudo_riemann_segment(cloud, end, close, slice);
-}
-
-/**
- * \brief Distância pseudo-riemanniana (dependência com GNU_SOURCE_)
- * \param cloud A nuvem alvo
- * \param start Partida
- * \param end Chegada
- * \return Distância do segmento començando em start e terminando em end
- */
-real cloud_sudo_riemann_distance(struct cloud* cloud,
-                                 struct vector3* start,
-                                 struct vector3* end)
-{
-	real riemann = 0.0f;
-	struct cloud* slice = cloud_empty();
-	
-	cloud_sudo_riemann_segment(cloud, start, end, slice);
-	cloud_sort_r(slice, start);
-	
-	for (uint i = 0; i < cloud_size(slice)-1; i++) {
-		struct vector3* p1 = &slice->points[i];
-		struct vector3* p2 = &slice->points[i+1];
-		riemann += vector3_distance(p1, p2);
-	}
-	
-	riemann += vector3_distance(&slice->points[cloud_size(slice)-1], end);
-	cloud_free(slice);
-	
-	return riemann;
-}
-
-/**
  * \brief Descobre o ponto da nuvem mais próximo ao seu centro de massa
  * \param cloud A nuvem alvo
  * \return Endereço do ponto mais próximo
@@ -1129,38 +1049,6 @@ real cloud_max_distance_from_center(struct cloud* cloud)
 	vector3_free(center);
 	
 	return d;
-}
-
-/**
- * \brief Ainda não sei interpretar isso, mas conserva certas curvaturas...
- * \param cloud A nuvem alvo
- * \return A máscara da nuvem
- */
-struct cloud* cloud_binary_mask(struct cloud* cloud)
-{
-	cloud_sort(cloud);
-	
-	struct cloud* mask = cloud_empty();
-	struct vector3* refpoint = cloud_min_z(cloud);
-	cloud_add_point(mask, refpoint);
-	
-	real d1 = 0;
-	real d2 = 0;
-	for (uint i = 0; i < cloud->num_pts; i++) {
-		if (cloud->points[i].y > refpoint->y) {
-			d1 = vector3_distance(refpoint, &cloud->points[i+1]);
-			d2 = vector3_distance(refpoint, &cloud->points[i+2]);
-			
-			if (d1 < d2)
-				refpoint = &cloud->points[i + 1];
-			else if (d2 < d1)
-				refpoint = &cloud->points[i + 2];
-			
-			cloud_add_point(mask, refpoint);
-		}
-	}
-	
-	return mask;
 }
 
 /**

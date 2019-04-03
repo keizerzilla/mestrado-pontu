@@ -67,30 +67,27 @@ real golden_moment(int p, int q, int r, struct cloud* cloud)
 }
 
 /**
- * \brief Cálculo completo dos momentos golden de uma nuvem de pontos
+ * \brief Cálculo completo dos momentos esféricos de uma nuvem de pontos
  * \param cloud A nuvem alvo
  * \return Matriz contendo os momentos calculados
  */
-struct matrix* golden_invariant_moments(struct cloud* cloud)
+struct matrix* golden_cloud_moments(struct cloud* cloud)
 {
-	struct matrix* results = matrix_new(1, 3);
-	
-    real g200 = golden_moment(2, 0, 0, cloud);
-    real g020 = golden_moment(0, 2, 0, cloud);
-    real g002 = golden_moment(0, 0, 2, cloud);
-    real g110 = golden_moment(1, 1, 0, cloud);
-    real g101 = golden_moment(1, 0, 1, cloud);
-    real g011 = golden_moment(0, 1, 1, cloud);
+    struct matrix* results = matrix_new(1, GOLDEN_MOMENTS);
 
-    real j1 = g200 + g020 + g002;
-    real j2 = g200*g020 + g200*g002 + g020*g002 -
-              g110*g110 - g101*g101 - g011*g011;
-    real j3 = g200*g020*g002 + 2*g110*g101*g011 -
-              g002*g110*g110 - g020*g101*g101 - g200*g011*g011;
-	
-    matrix_set(results, 0, 0, j1);
-    matrix_set(results, 0, 1, j2);
-    matrix_set(results, 0, 2, j3);
+    int p = 0;
+    int q = 0;
+    int r = 0;
+    int col = 0;
+
+    for (p = 0; p <= GOLDEN_ORDER; p++) {
+        for (q = 0; q <= GOLDEN_ORDER; q++) {
+            for (r = 0; r <= GOLDEN_ORDER; r++) {
+                matrix_set(results, 0, col, golden_moment(p, q, r, cloud));
+                col++;
+            }
+        }
+    }
 
     return results;
 }

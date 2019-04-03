@@ -63,24 +63,28 @@ real chebyshev_norm(int p, int n)
  * \param p A ordem da dimensão x
  * \param q A ordem da dimensão y
  * \param r A ordem da dimensão z
- * \param n O número de pontos da nuvem
  * \param cloud A nuvem alvo
  * \return O momento de chebyshev de ordem p+q+r
  */
-real chebyshev_moment(int p, int q, int r, int n, struct cloud* cloud)
+real chebyshev_moment(int p, int q, int r, struct cloud* cloud)
 {
+	int n = cloud_size(cloud);
     real moment = 0.0f;
     real norm = chebyshev_norm(p, n) *
                 chebyshev_norm(q, n) *
                 chebyshev_norm(r, n);
+                
     struct vector3* center = cloud_get_center(cloud);
 
-    for (uint i = 0; i < cloud->num_pts; i++)
+    for (uint i = 0; i < cloud->num_pts; i++) {
         moment += chebyshev_poly(p, n, cloud->points[i].x - center->x) *
                   chebyshev_poly(q, n, cloud->points[i].y - center->y) *
                   chebyshev_poly(r, n, cloud->points[i].z - center->z) *
                   vector3_distance(&cloud->points[i], center);
-
+	}
+	
+	vector3_free(center);
+	
     return moment / norm;
 }
 
@@ -97,15 +101,12 @@ struct matrix* chebyshev_cloud_moments(struct cloud* cloud)
     int p = 0;
     int q = 0;
     int r = 0;
-    int row = 0;
     int col = 0;
-    int n = cloud_size(cloud);
 
     for (p = 0; p <= CHEBYSHEV_ORDER; p++) {
         for (q = 0; q <= CHEBYSHEV_ORDER; q++) {
             for (r = 0; r <= CHEBYSHEV_ORDER; r++) {
-                matrix_set(results, row, col, chebyshev_moment(p, q, r,
-                                                               n, cloud));
+                matrix_set(results, 0, col, chebyshev_moment(p, q, r, cloud));
                 col++;
             }
         }
@@ -113,37 +114,6 @@ struct matrix* chebyshev_cloud_moments(struct cloud* cloud)
 
     return results;
 }
-
-/**
- * \brief Cálculo completo dos momentos de chebyshev invariantes de uma nuvem
- * \param cloud A nuvem alvo
- * \return Matriz contendo os momentos calculados
- */
-struct matrix* chebyshev_invariant_moments(struct cloud* cloud)
-{
-    struct matrix* results = matrix_new(1, 3);
-    int n = cloud_size(cloud);
-	
-    real g200 = chebyshev_moment(2, 0, 0, n, cloud);
-    real g020 = chebyshev_moment(0, 2, 0, n, cloud);
-    real g002 = chebyshev_moment(0, 0, 2, n, cloud);
-    real g110 = chebyshev_moment(1, 1, 0, n, cloud);
-    real g101 = chebyshev_moment(1, 0, 1, n, cloud);
-    real g011 = chebyshev_moment(0, 1, 1, n, cloud);
-
-    real j1 = g200 + g020 + g002;
-    real j2 = g200*g020 + g200*g002 + g020*g002 -
-              g110*g110 - g101*g101 - g011*g011;
-    real j3 = g200*g020*g002 + 2*g110*g101*g011 -
-              g002*g110*g110 - g020*g101*g101 - g200*g011*g011;
-	
-    matrix_set(results, 0, 0, j1);
-    matrix_set(results, 0, 1, j2);
-    matrix_set(results, 0, 2, j3);
-
-    return results;
-}
-
 
 #endif // CHEBYSHEV_H
 

@@ -46,22 +46,6 @@ struct matrix* extraction_plane(struct cloud* cloud,
 }
 
 /**
- * \brief Extrái momentos usando segmentação binária (????)
- * \param cloud A nuvem alvo
- * \param mfunc A função extratora de momentos
- * \param O vetor normal ao plano de corte
- * \return A matrix com os momentos extraídos
- */
-struct matrix* extraction_binary(struct cloud* cloud,
-                                 struct matrix* (*mfunc)(struct cloud*))
-{
-	struct cloud* mask = cloud_binary_mask(cloud);
-	struct matrix* ans = (*mfunc)(mask);
-	
-	return ans;
-}
-
-/**
  * \brief Extrái momentos usando cortes a partir de planos recursivos
  * \param cloud A nuvem alvo
  * \param mfunc A função extratora de momentos

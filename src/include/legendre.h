@@ -102,34 +102,5 @@ struct matrix* legendre_cloud_moments(struct cloud* cloud)
     return results;
 }
 
-/**
- * \brief Cálculo completo dos momentos de legendre invariantes de uma nuvem
- * \param cloud A nuvem alvo
- * \return Matriz contendo os momentos calculados
- */
-struct matrix* legendre_invariant_moments(struct cloud* cloud)
-{
-    struct matrix* results = matrix_new(1, 3);
-	
-    real g200 = legendre_moment(2, 0, 0, cloud);
-    real g020 = legendre_moment(0, 2, 0, cloud);
-    real g002 = legendre_moment(0, 0, 2, cloud);
-    real g110 = legendre_moment(1, 1, 0, cloud);
-    real g101 = legendre_moment(1, 0, 1, cloud);
-    real g011 = legendre_moment(0, 1, 1, cloud);
-
-    real j1 = g200 + g020 + g002;
-    real j2 = g200*g020 + g200*g002 + g020*g002 -
-              g110*g110 - g101*g101 - g011*g011;
-    real j3 = g200*g020*g002 + 2*g110*g101*g011 -
-              g002*g110*g110 - g020*g101*g101 - g200*g011*g011;
-	
-    matrix_set(results, 0, 0, j1);
-    matrix_set(results, 0, 1, j2);
-    matrix_set(results, 0, 2, j3);
-
-    return results;
-}
-
 #endif // LEGENDRE_H
 

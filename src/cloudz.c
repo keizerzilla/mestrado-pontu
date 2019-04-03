@@ -5,8 +5,6 @@
  * \brief Interface de programa para manipulação de nuvens de pontos
  */
 
-#define _GNU_SOURCE
-
 #include "include/cloud.h"
 #include "include/util.h"
 

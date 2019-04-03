@@ -5,11 +5,8 @@
  * \brief Interface de programa para extração de momentos
  */
 
-#define _GNU_SOURCE
-
 #include <time.h>
 #include <unistd.h>
-
 #include "include/extraction.h"
 #include "include/hu.h"
 #include "include/zernike.h"
@@ -23,10 +20,9 @@
 #include "include/spheric.h"
 #include "include/golden.h"
 
-#define HU_TUTU			"hututu"
-#define HU_1980			"hu1980"
-#define HU_SIQ			"husiq"
-#define HU_SUPERSET		"husuperset"
+#define HUTUTU			"hututu"
+#define HU1980			"hu1980"
+#define HUSIQ			"husiq"
 #define ZERNIKE			"zernike"
 #define LEGENDRE		"legendre"
 #define CHEBYSHEV		"chebyshev"
@@ -43,7 +39,6 @@
 #define CUT_7			"7"
 #define CUT_6			"6"
 #define CUT_4			"4"
-#define CUT_BINARY		"b"
 
 /**
  * \brief Exibe mensagem ao usuário informando como usar o extrator de momentos
@@ -82,20 +77,19 @@ void extraction_help()
     printf("     > 7: corte em 7 segmentos\n");
     printf("     > 6: corte em 6 segmentos\n");
     printf("     > 4: corte em 4 segmentos\n");
-    printf("     > b: corte usando mascara binaria\n");
     
     printf("EX1: mcalc -m hu_1980 -i ../data/cloud1.xyz -o hu1.txt -c t\n");
     printf("EX2: mcalc -m legendre -i ../dataset/bunny.xyz -o stdout -c w\n\n");
 }
 
 /**
- * \brief Interface para análise de nuvens de pontos
+ * \brief Função principal: lê parâmetros de linha de comando e efetua extração
  * \param argc Número de parâmetros passados pela linha de comando
  * \param argv Parâmetros passados por linha de comando
  */
-void extraction_interface(int argc, char** argv)
+int main(int argc, char** argv)
 {
-    char* moment = NULL;
+	char* moment = NULL;
     char* input = NULL;
     char* output = NULL;
     char* cut = NULL;
@@ -122,26 +116,26 @@ void extraction_interface(int argc, char** argv)
 	
     if (moment == NULL || input == NULL || output == NULL || cut == NULL) {
         extraction_help();
-        return;
+        return 1;
     }
 	
     struct matrix* (*mfunc)(struct cloud*) = &hu_cloud_moments_hututu;
-    if (!strcmp(moment, HU_TUTU))
+    if (!strcmp(moment, HUTUTU))
         mfunc = &hu_cloud_moments_hututu;
-    else if (!strcmp(moment, HU_1980))
+    else if (!strcmp(moment, HU1980))
         mfunc = &hu_cloud_moments_hu1980;
-    else if (!strcmp(moment, HU_SIQ))
+    else if (!strcmp(moment, HUSIQ))
         mfunc = &hu_cloud_moments_husiq;
     else if (!strcmp(moment, LEGENDRE))
-        mfunc = &legendre_invariant_moments;
+        mfunc = &legendre_cloud_moments;
     else if (!strcmp(moment, CHEBYSHEV))
-        mfunc = &chebyshev_invariant_moments;
+        mfunc = &chebyshev_cloud_moments;
     else if (!strcmp(moment, ZERNIKE))
         mfunc = &zernike_cloud_moments;
     else if (!strcmp(moment, SPHERIC))
-        mfunc = &spheric_invariant_moments;
+        mfunc = &spheric_cloud_moments;
     else if (!strcmp(moment, GOLDEN))
-        mfunc = &golden_invariant_moments;
+        mfunc = &golden_cloud_moments;
     else
     	mfunc = &hu_cloud_moments_hututu;
 	
@@ -172,8 +166,6 @@ void extraction_interface(int argc, char** argv)
 		results = extraction_6(cloud, mfunc);
 	else if (!strcmp(cut, CUT_4))
 		results = extraction_4(cloud, mfunc);
-	else if (!strcmp(cut, CUT_BINARY))
-		results = extraction_binary(cloud, mfunc);
 	else
 		results = (*mfunc)(cloud);
 	
@@ -185,27 +177,6 @@ void extraction_interface(int argc, char** argv)
 	
     matrix_free(results);
     cloud_free(cloud);
-}
-
-/**
- * \brief Função principal
- * \param argc Número de parâmetros passados pela linha de comando
- * \param argv Parâmetros passados por linha de comando
- */
-int main(int argc, char** argv)
-{
-	#ifdef TIMEPROFILE
-	clock_t t;
-	t = clock();
-	#endif
-	
-    extraction_interface(argc, argv);
-    
-    #ifdef TIMEPROFILE
-    t = clock() - t;
-    double time_taken = ((double)t)/CLOCKS_PER_SEC;
-    fprintf(stderr, "Took %f seconds...\n", time_taken);
-    #endif
     
     return 0;
 }
