@@ -71,29 +71,9 @@ real golden_moment(int p, int q, int r, struct cloud* cloud)
  * \param cloud A nuvem alvo
  * \return Matriz contendo os momentos calculados
  */
-struct matrix* golden_cloud_moments(struct cloud* cloud)
+struct matrix* golden_invariant_moments(struct cloud* cloud)
 {
-	/**
-    struct matrix* results = matrix_new(1, GOLDEN_MOMENTS);
-
-    int p = 0;
-    int q = 0;
-    int r = 0;
-    int col = 0;
-
-    for (p = 0; p <= GOLDEN_ORDER; p++) {
-        for (q = 0; q <= GOLDEN_ORDER; q++) {
-            for (r = 0; r <= GOLDEN_ORDER; r++) {
-                matrix_set(results, 0, col, golden_moment(p, q, r, cloud));
-                col++;
-            }
-        }
-    }
-
-    return results;
-    */
-    
-    struct matrix* results = matrix_new(1, 3);
+	struct matrix* results = matrix_new(1, 3);
 	
     real g200 = golden_moment(2, 0, 0, cloud);
     real g020 = golden_moment(0, 2, 0, cloud);

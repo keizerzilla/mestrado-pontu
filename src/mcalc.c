@@ -58,7 +58,6 @@ void extraction_help()
     printf("     > hututu\n");
     printf("     > husiq\n");
     printf("     > hu1980\n");
-    printf("     > husuperset\n");
     printf("     > zernike\n");
     printf("     > legendre\n");
     printf("     > chebyshev\n");
@@ -133,18 +132,16 @@ void extraction_interface(int argc, char** argv)
         mfunc = &hu_cloud_moments_hu1980;
     else if (!strcmp(moment, HU_SIQ))
         mfunc = &hu_cloud_moments_husiq;
-    else if (!strcmp(moment, HU_SUPERSET))
-        mfunc = &hu_superset;
     else if (!strcmp(moment, LEGENDRE))
-        mfunc = &legendre_cloud_moments;
+        mfunc = &legendre_invariant_moments;
     else if (!strcmp(moment, CHEBYSHEV))
-        mfunc = &chebyshev_cloud_moments;
+        mfunc = &chebyshev_invariant_moments;
     else if (!strcmp(moment, ZERNIKE))
         mfunc = &zernike_cloud_moments;
     else if (!strcmp(moment, SPHERIC))
-        mfunc = &spheric_cloud_moments;
+        mfunc = &spheric_invariant_moments;
     else if (!strcmp(moment, GOLDEN))
-        mfunc = &golden_cloud_moments;
+        mfunc = &golden_invariant_moments;
     else
     	mfunc = &hu_cloud_moments_hututu;
 	

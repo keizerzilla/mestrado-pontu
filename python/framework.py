@@ -8,15 +8,27 @@ replace_dict = {"bosphorus" : "bs",
 
 faces = ["neutral"]
 
-cuts = {"w" : "whole", "f" : "frontal", "s" : "sagittal", "t" : "transversal"}
-#cuts = {"w" : "whole"}
+#cuts = {"w" : "whole", "f" : "frontal", "s" : "sagittal", "t" : "transversal"}
+cuts = {"w" : "whole"}
 
-scenarios= ["bosphorus-outlier",
+scenarios= ["bosphorus",
+            "bosphorus-outlier",
             "bosphorus-outlier-densit200",
+            "bosphorus-outlier-densit225",
+            "bosphorus-outlier-densit200-crop60",
+            "bosphorus-outlier-densit200-crop70",
             "bosphorus-outlier-densit200-crop80",
-            "bosphorus-outlier-densit200-crop80-icp"]
+            "bosphorus-outlier-densit225-crop60",
+            "bosphorus-outlier-densit225-crop70",
+            "bosphorus-outlier-densit225-crop80",
+            "bosphorus-outlier-densit200-crop60-icp",
+            "bosphorus-outlier-densit200-crop70-icp",
+            "bosphorus-outlier-densit200-crop80-icp",
+            "bosphorus-outlier-densit225-crop60-icp",
+            "bosphorus-outlier-densit225-crop70-icp",
+            "bosphorus-outlier-densit225-crop80-icp"]
 
-moments = ["golden"]
+moments = ["hu1980"]
 
 mini_scenarios = []
 for s in scenarios:
@@ -81,8 +93,8 @@ def go_classification_rank1(rdir, dump=False, plot=False):
 					print("{:<11}{:<15}{:<7}".format(moment, classifier, rate))
 			
 			if dump:
-				dumpfile = "../"+rdir+"/{}-{}-{}.csv".format(test_name, rdir, cut_folder)
-				res.to_csv(dumpfile)
+				d = "../"+rdir+"/{}-{}-{}.csv".format(test_name, rdir, cut_folder)
+				res.to_csv(d)
 			if plot:
 				plot_classification(res, test_name, rdir, cut_folder)
 
@@ -120,6 +132,6 @@ def go_combination():
 if __name__ == "__main__":
 	extractor = MomentExtractor()
 	extractor.totalExtraction(faces, scenarios, cuts, moments, "tutu")
-	go_classification_rank1("tutu")
+	go_classification_rank1("tutu", plot=True)
 	
 	

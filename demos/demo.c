@@ -3,6 +3,9 @@
 #include "../src/include/hu.h"
 #include "../src/include/golden.h"
 #include "../src/include/matrix.h"
+#include "../src/include/spheric.h"
+#include "../src/include/legendre.h"
+#include "../src/include/chebyshev.h"
 
 int main()
 {
@@ -14,7 +17,8 @@ int main()
 	for (int i = 0; i < 4; i++) {
 		struct cloud* cloud = cloud_load_xyz(clouds[i]);
 		struct matrix* ans = hu_cloud_moments_hu1980(cloud);
-		//struct matrix* ans = golden_cloud_moments(cloud);
+		//struct matrix* ans = chebyshev_invariant_moments(cloud);
+		//struct matrix* ans = legendre_invariant_moments(cloud);
 		
 		printf("%s\n", clouds[i]);
 		matrix_debug(ans, stdout);

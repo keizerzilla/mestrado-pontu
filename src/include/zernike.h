@@ -121,13 +121,12 @@ struct matrix* zernike_cloud_moments(struct cloud* cloud)
 
     int n = 0;
     int m = 0;
-    int row = 0;
     int col = 0;
 	
     for (n = 0; n <= ZERNIKE_PARAM; n++) {
         for (m = 0; m <= ZERNIKE_PARAM; m++) {
             if (zernike_conditions(n, m)) {
-                matrix_set(results, row, col, zernike_moment(n, m, r, cloud));
+                matrix_set(results, 0, col, zernike_moment(n, m, r, cloud));
                 col++;
             }
         }

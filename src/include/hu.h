@@ -54,12 +54,15 @@ real hu_central_moment(int p, int q, int r, struct cloud* cloud)
     struct vector3* center = cloud_get_center(cloud);
 	real moment = 0.0f;
 	
-    for (uint i = 0; i < cloud->num_pts; i++)
+    for (uint i = 0; i < cloud->num_pts; i++) {
         moment += pow(cloud->points[i].x - center->x, p)
                 * pow(cloud->points[i].y - center->y, q)
                 * pow(cloud->points[i].z - center->z, r)
                 * vector3_distance(&cloud->points[i], center);
-
+	}
+	
+	vector3_free(center);
+	
     return moment;
 }
 
@@ -89,33 +92,16 @@ real hu_normalized_moment(int p, int q, int r, struct cloud* cloud)
  */
 real hu_refined_moment(int p, int q, int r, struct cloud* cloud)
 {
-    return hu_central_moment(p, q, r, cloud) / (1.0f * cloud_size(cloud));
-}
-
-/**
- * \brief Calcula momentos normalizados por ordem (superset de testes)
- * \param cloud A nuvem alvo
- * \return A matriz aonde os momentos serão salvos
- */
-struct matrix* hu_superset(struct cloud* cloud)
-{
-	struct matrix* results = matrix_new(1, HU_SUPERSET_MOMENTS);
+	real central = hu_central_moment(p, q, r, cloud);
+	real zero = hu_central_moment(0, 0, 0, cloud);
+	real x = hu_central_moment(p, 0, 0, cloud);
+	real y = hu_central_moment(0, q, 0, cloud);
+	real z = hu_central_moment(0, 0, r, cloud);
+	int size = cloud_size(cloud);
 	
-	int p = 0;
-    int q = 0;
-    int r = 0;
-    int col = 0;
-
-    for (p = 0; p <= HU_SUPERSET_ORDER; p++) {
-        for (q = 0; q <= HU_SUPERSET_ORDER; q++) {
-            for (r = 0; r <= HU_SUPERSET_ORDER; r++) {
-                matrix_set(results, 0, col, hu_normalized_moment(p,q,r,cloud));
-                col++;
-            }
-        }
-    }
+	return (central * pow(zero, 2)) / (x * y * z * size); // t+s
 	
-	return results;
+    //return hu_central_moment(p, q, r, cloud) / cloud_size(cloud); // t+r
 }
 
 /**
@@ -159,11 +145,14 @@ real hu_central_moment2D_xy(int p, int q, struct cloud* cloud)
 	struct vector3* center = cloud_get_center(cloud);
 	real moment = 0.0f;
 	
-    for (uint i = 0; i < cloud->num_pts; i++)
+    for (uint i = 0; i < cloud->num_pts; i++) {
         moment += pow(cloud->points[i].x - center->x, p)
                 * pow(cloud->points[i].y - center->y, q)
                 * vector3_distance(&cloud->points[i], center);
-
+	}
+	
+	vector3_free(center);
+	
     return moment;
 }
 
@@ -179,11 +168,14 @@ real hu_central_moment2D_xz(int p, int q, struct cloud* cloud)
 	struct vector3* center = cloud_get_center(cloud);
 	real moment = 0.0f;
 	
-    for (uint i = 0; i < cloud->num_pts; i++)
+    for (uint i = 0; i < cloud->num_pts; i++) {
         moment += pow(cloud->points[i].x - center->x, p)
                 * pow(cloud->points[i].z - center->z, q)
                 * vector3_distance(&cloud->points[i], center);
-
+	}
+	
+	vector3_free(center);
+	
     return moment;
 }
 
@@ -199,11 +191,14 @@ real hu_central_moment2D_yz(int p, int q, struct cloud* cloud)
 	struct vector3* center = cloud_get_center(cloud);
 	real moment = 0.0f;
 	
-    for (uint i = 0; i < cloud->num_pts; i++)
+    for (uint i = 0; i < cloud->num_pts; i++) {
         moment += pow(cloud->points[i].y - center->y, p)
                 * pow(cloud->points[i].z - center->z, q)
                 * vector3_distance(&cloud->points[i], center);
-
+	}
+	
+	vector3_free(center);
+	
     return moment;
 }
 
@@ -413,6 +408,32 @@ struct matrix* hu_cloud_moments_hututu(struct cloud* cloud)
     matrix_set(results, 0, 20, i7);
 
     return results;
+}
+
+/**
+ * \brief Calcula momentos normalizados de diferentes ordens
+ * \param cloud A nuvem alvo
+ * \return A matriz aonde os momentos serão salvos
+ */
+struct matrix* hu_superset(struct cloud* cloud)
+{
+	struct matrix* results = matrix_new(1, HU_SUPERSET_MOMENTS);
+	
+	int p = 0;
+    int q = 0;
+    int r = 0;
+    int col = 0;
+
+    for (p = 0; p <= HU_SUPERSET_ORDER; p++) {
+        for (q = 0; q <= HU_SUPERSET_ORDER; q++) {
+            for (r = 0; r <= HU_SUPERSET_ORDER; r++) {
+                matrix_set(results, 0, col, hu_normalized_moment(p,q,r,cloud));
+                col++;
+            }
+        }
+    }
+	
+	return results;
 }
 
 #endif // HU_H
