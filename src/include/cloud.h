@@ -1069,6 +1069,77 @@ struct vector3* cloud_average_direction(struct cloud* cloud)
 }
 
 /**
+ * \brief Ajusta um plano a uma nuvem de pontos
+ *        Fonte: https://www.ilikebigbits.com/2015_03_04_plane_from_points.html
+ * \param cloud A nuvem que se quer encontra o plano
+ * \return Um plano melhor ajustado a cloud
+ */
+struct plane* cloud_plane_fitting(struct cloud* cloud)
+{
+	if (cloud_size(cloud) < 3)
+		return NULL;
+	
+	struct vector3* centroid = cloud_get_center(cloud);
+	
+	real xx = 0.0f;
+	real xy = 0.0f;
+	real xz = 0.0f;
+	real yy = 0.0f;
+	real yz = 0.0f;
+	real zz = 0.0f;
+	
+	for (uint i = 0; i < cloud->num_pts; i++) {
+		struct vector3* r = vector3_sub(&cloud->points[i], centroid);
+		
+		xx += r->x * r->x;
+		xy += r->x * r->y;
+		xz += r->x * r->z;
+		yy += r->y * r->y;
+		yz += r->y * r->z;
+		zz += r->z * r->z;
+		
+		vector3_free(r);
+	}
+	
+	real det_x = yy*zz - yz*yz;
+	real det_y = xx*zz - xz*xz;
+	real det_z = xx*yy - xy*xy;
+	
+	real det_max = calc_max3(det_x, det_y, det_z);
+	
+	if (det_max <= 0.0f)
+		return NULL;
+	
+	real x = 0.0f;
+	real y = 0.0f;
+	real z = 0.0f;
+	
+	if (det_max == det_x) {
+		x = det_x;
+		y = xz*yz - xy*zz;
+		z = xy*yz - xz*yy;
+	} else if (det_max == det_y) {
+		x = xz*yz - xy*zz;
+		y = det_y;
+		z = xy*xz - yz*xx;
+	} else {
+		x = xy*yz - xz*yy;
+		y = xy*xz - yz*xx;
+		z = det_z;
+	}
+	
+	struct vector3* normal = vector3_new(x, y, z);
+	vector3_normalize(normal);
+	
+	struct plane* plane = plane_new(normal, centroid);
+	
+	vector3_free(normal);
+	vector3_free(centroid);
+	
+	return plane;
+}
+
+/**
  * \brief Debuga uma nuvem ponto a ponto na saída padrão
  * \param cloud A nuvem a ser debugada
  * \param output O arquivo aonde exibir a mensagem
@@ -1080,10 +1151,11 @@ void cloud_debug(struct cloud* cloud, FILE* output)
 		return;
 	}
 	
-    for (uint i = 0; i < cloud->num_pts; i++)
+    for (uint i = 0; i < cloud->num_pts; i++) {
         fprintf(output, "%le %le %le\n", cloud->points[i].x,
                                          cloud->points[i].y,
                                          cloud->points[i].z);
+	}
 }
 
 #endif // CLOUD_H

@@ -5,28 +5,16 @@
 #include "../src/include/legendre.h"
 #include "../src/include/chebyshev.h"
 
-//------------------------------------------------------------------------------
-
 real refined_moment(int p,
                     int q,
                     int r,
                     struct cloud* cloud,
                     real (*mfunc)(int, int, int, struct cloud*))
 {
-	/**
 	real central = (*mfunc)(p, q, r, cloud);
 	real zero = (*mfunc)(0, 0, 0, cloud);
 	
 	return central / pow(zero, 3);
-	*/
-	
-	real central = hu_central_moment(p, q, r, cloud);
-	real zero = hu_central_moment(0, 0, 0, cloud);
-	real x = hu_central_moment(p, 0, 0, cloud);
-	real y = hu_central_moment(0, q, 0, cloud);
-	real z = hu_central_moment(0, 0, r, cloud);
-	
-	return (central * x * y * z) / (pow(zero, 4)); // t+s
 }
 
 struct matrix* invariant_moments(struct cloud* cloud,
@@ -54,18 +42,16 @@ struct matrix* invariant_moments(struct cloud* cloud,
     return results;
 }
 
-//------------------------------------------------------------------------------
-
-int main()
+void invariant_testing()
 {
 	char* clouds[4] = {"../dump/bunny_raw.xyz",
 	                   "../dump/bunny_trans.xyz",
-	                   "../dump/bunny_scale_centroid.xyz",
+	                   "../dump/bunny_scale.xyz",
 	                   "../dump/bunny_rotate.xyz"};
 	
 	for (int i = 0; i < 4; i++) {
 		struct cloud* cloud = cloud_load_xyz(clouds[i]);
-		struct matrix* ans = invariant_moments(cloud, legendre_moment);
+		struct matrix* ans = invariant_moments(cloud, hu_central_moment);
 		//struct matrix* ans = chebyshev_invariant_moments(cloud);
 		//struct matrix* ans = legendre_invariant_moments(cloud);
 		//struct vector3* avg = cloud_average_direction(cloud);
@@ -79,6 +65,17 @@ int main()
 		matrix_free(ans);
 		cloud_free(cloud);
 	}
+}
+
+int main(int argc, char** argv)
+{
+	struct cloud* cloud = cloud_load_xyz("../dump/bs000_maroto.xyz");
+	struct plane* plane = cloud_plane_fitting(cloud);
+	
+	vector3_debug(plane->normal, stdout);
+	
+	plane_free(plane);
+	cloud_free(cloud);
 	
 	return 0;
 }

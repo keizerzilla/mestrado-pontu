@@ -11,6 +11,8 @@ import sys
 import parse
 import shutil
 import subprocess
+import numpy as np
+import pandas as pd
 
 def isInt(s):
 	try: 
@@ -264,13 +266,18 @@ def eurecom_setup(folder):
 		
 		print(f, " =>> ", new_name)
 		
-	
-if __name__ == "__main__":
-	eurecom_setup("../datasets/EURECOM")
-	
-	
-	
-	
-	
-	
-	
+def translate_to_zero(in_folder, out_folder):
+	origin = np.array([0, 0, 0])
+	for f in os.listdir(in_folder):
+		if ".xyz" in f:
+			cloud = in_folder + f
+			df = pd.read_csv(cloud, sep=' ', header=None)
+			pcd_data = np.array(df)
+			centroid = np.mean(pcd_data, axis=0)
+			direction = origin - centroid
+			pcd_trans = pcd_data + direction
+			df = pd.DataFrame(pcd_trans)
+			df.to_csv(out_folder + f, header=None, sep=' ', index=None)
+			
+			print(f, " done!")
+

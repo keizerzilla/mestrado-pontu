@@ -93,5 +93,25 @@ real calc_randr(real max)
     return (real)rand() / (real)(RAND_MAX / max);
 }
 
+/**
+ * \brief Retorna o maior entre 3 números reais
+ * \param a O primeiro real
+ * \param b O segundo real
+ * \param c O terceiro real
+ * \return O maior valor entre (a, b, c)
+ */
+real calc_max3(real a, real b, real c)
+{
+	real t = a;
+	
+	if (b >= t)
+		t = b;
+	
+	if (c >= t)
+		t = c;
+	
+	return t;
+}
+
 #endif // CALC_H
 

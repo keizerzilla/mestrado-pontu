@@ -10,16 +10,10 @@ faces = ["neutral"]
 
 cuts = {"w" : "whole", "f" : "frontal", "s" : "sagittal", "t" : "transversal"}
 
-scenarios= ["bosphorus",
-            "bosphorus-outlier",
-            "bosphorus-outlier-densit200",
-            "bosphorus-outlier-densit225",
-            "bosphorus-outlier-densit200-crop80",
-            "bosphorus-outlier-densit225-crop80",
-            "bosphorus-outlier-densit200-crop80-icp",
-            "bosphorus-outlier-densit225-crop80-icp"]
+scenarios= ["bosphorus-outlier-densit225-crop80-trans",
+            "bosphorus-outlier-densit225-crop80"]
 
-moments = ["hu1980"]
+moments = ["legendre"]
 
 mini_scenarios = []
 for s in scenarios:

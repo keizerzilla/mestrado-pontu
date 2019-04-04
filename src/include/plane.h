@@ -82,5 +82,25 @@ uint plane_on_direction(struct plane* plane, struct vector3* point)
 	return (d >= 0.0f) ? 1 : 0;
 }
 
+/**
+ * \brief Debuga um plano em um arquivo
+ * \param plane O plano a ser debugado
+ * \param out O arquivo aonde exibir a mensagem
+ */
+void plane_debug(struct plane* plane, FILE* out)
+{
+	if (plane == NULL) {
+		fprintf(out, "!!! plano vazia !!!\n");
+		return;
+	}
+	
+	fprintf(out, "P(%.4f, %.4f, %.4f)|N(%.4f, %.4f, %.4f)\n", plane->point->x,
+	                                                          plane->point->y,
+	                                                          plane->point->z,
+	                                                          plane->normal->x,
+	                                                          plane->normal->y,
+	                                                          plane->normal->z);
+}
+
 #endif // PLANE_H
 
