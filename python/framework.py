@@ -10,8 +10,7 @@ faces = ["neutral"]
 
 cuts = {"w" : "whole", "f" : "frontal", "s" : "sagittal", "t" : "transversal"}
 
-scenarios= ["bosphorus-outlier-densit225-crop80-trans",
-            "bosphorus-outlier-densit225-crop80"]
+scenarios= ["bosphorus-tutu"]
 
 moments = ["legendre"]
 

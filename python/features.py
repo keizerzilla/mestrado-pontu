@@ -11,6 +11,29 @@ import os
 import parse
 import subprocess
 
+def heatmap(dataset):
+	# carregando dados e limpando coluna sample
+	df = pd.read_csv(dataset)
+	cs = ["f"+str(x) for x in range(len(df.columns)-4)]
+	cs = cs + ["sample", "subject", "type", "expression"]
+	df.columns = cs
+	df = df.drop(["sample", "subject", "type", "expression"], axis=1)
+
+	# matriz de correlacao e preditores de maior correlacao
+	corr = df.corr().abs()
+	annot = corr.round(decimals=2)
+	upper = corr.where(np.triu(np.ones(corr.shape), k=1).astype(np.bool))
+	drop = [column for column in upper.columns if any(upper[column] >= 0.9)]
+	sup = [column for column in upper.columns if any(upper[column] >= 0.98)]
+	print("drops sugeridos: " + str(drop))
+	print("super correlacoes: " + str(sup))
+
+	# plot
+	seaborn.heatmap(corr, vmin=0, vmax=1.0, cmap="Purples", annot=annot)
+	moment = os.path.basename(dataset).split(".")[0]
+	plt.title("Correlação dos momentos " + moment)
+	plt.show()
+
 class MomentExtractor():
 	def __init__(self, mcalc="../bin/mcalc", fmt="bs{:d}_{:w}_{:w}_{:d}.xyz"):
 		self.mcalc = mcalc

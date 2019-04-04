@@ -69,12 +69,24 @@ void invariant_testing()
 
 int main(int argc, char** argv)
 {
+	if (argc != 4)
+		return 1;
+	
+	real c = atof(argv[3]);
 	struct cloud* cloud = cloud_load_xyz(argv[1]);
+	struct vector3* center = cloud_get_center(cloud);
 	struct plane* plane = cloud_plane_fitting(cloud);
+	struct cloud* cut = cloud_cut_cylinder(cloud, center, plane->normal, c);
 	
-	vector3_debug(plane->normal, stdout);
+	cloud_save_xyz(cut, argv[2]);
 	
+	printf("%s ok!\n", argv[1]);
+	
+	//vector3_debug(plane->normal, stdout);
+	
+	cloud_free(cut);
 	plane_free(plane);
+	vector3_free(center);
 	cloud_free(cloud);
 	
 	return 0;
