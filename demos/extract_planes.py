@@ -2,11 +2,21 @@ import os
 import subprocess
 import numpy as np
 from open3d import *
+from sklearn.decomposition import PCA
 
 def dispersion_analysis(cloud_file, direction):
 	# carrega nuvem
 	pcd = read_point_cloud(cloud_file)
 	pcd_data = np.asarray(pcd.points)
+	
+	# pca
+	pca = PCA(n_components=3)
+	pca.fit(pcd_data)
+	print(pca.components_)
+	print(direction)
+	
+	input("ENTER para proxima nuvem...")
+	return
 	
 	f = 20
 	
@@ -25,7 +35,7 @@ def dispersion_analysis(cloud_file, direction):
 	draw_geometries([pcd, dispersion_axis, mesh_frame])
 
 if __name__ == "__main__":
-	directory = "../datasets/bosphorus-outlier-densit225-crop80/"
+	directory = "../datasets/bosphorus-outlier-densit225-crop80/neutral/"
 	for f in os.listdir(directory):
 		if ".xyz" in f:
 			cloud_file = directory + f
@@ -35,6 +45,5 @@ if __name__ == "__main__":
 			ans = ans[:-2].decode("utf-8")
 			ans = [float(x) for x in ans.split()]
 			
-			print(f, ans)
 			dispersion_analysis(cloud_file, ans)
 			

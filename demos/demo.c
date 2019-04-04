@@ -69,7 +69,7 @@ void invariant_testing()
 
 int main(int argc, char** argv)
 {
-	struct cloud* cloud = cloud_load_xyz("../dump/bs000_maroto.xyz");
+	struct cloud* cloud = cloud_load_xyz(argv[1]);
 	struct plane* plane = cloud_plane_fitting(cloud);
 	
 	vector3_debug(plane->normal, stdout);
