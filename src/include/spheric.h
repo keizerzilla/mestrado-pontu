@@ -2,7 +2,7 @@
  * \file spheric.h
  * \author Artur Rodrigues Rocha Neto
  * \date 2019
- * \brief Implementação dos "Momentos Esféricos" (autoria minha???)
+ * \brief Implementação dos "Momentos Esféricos" (autoria minha??? SIM!!!)
  */
 
 #ifndef SPHERIC_H
@@ -27,6 +27,19 @@
 real spheric_quad(real x, real y, real z, int p, int q, int r)
 {
 	return sqrt(pow(x, 2*p) + pow(y, 2*q) + pow(z, 2*r));
+}
+
+/**
+ * \brief Cálculo dos momentos esféricos normalizados
+ * \param p A ordem da coordena x
+ * \param q A ordem da coordena y
+ * \param r A ordem da coordena z
+ * \param cloud A nuvem alvo cujos momentos se quer calcular
+ * \return O momento esférico normalizado de ordem p+q+r de cloud
+ */
+real spheric_norm(int p, int q, int r, struct cloud* cloud)
+{
+	return cloud_boundingbox_area(cloud);
 }
 
 /**
@@ -59,22 +72,7 @@ real spheric_moment(int p, int q, int r, struct cloud* cloud)
 	
 	vector3_free(center);
 	
-	return moment;
-}
-
-/**
- * \brief Cálculo dos momentos esféricos normalizados
- * \param p A ordem da coordena x
- * \param q A ordem da coordena y
- * \param r A ordem da coordena z
- * \param cloud A nuvem alvo cujos momentos se quer calcular
- * \return O momento esférico normalizado de ordem p+q+r de cloud
- */
-real spheric_norm(int p, int q, int r, struct cloud* cloud)
-{
-	real central = spheric_moment(p, q, r, cloud);
-	real zero = spheric_moment(0, 0, 0, cloud);
-	return central / (cloud_max_distance_from_center(cloud) * zero);
+	return moment / spheric_norm(p, q, r, cloud);
 }
 
 /**
@@ -94,7 +92,7 @@ struct matrix* spheric_cloud_moments(struct cloud* cloud)
     for (p = 0; p <= SPHERIC_ORDER; p++) {
         for (q = 0; q <= SPHERIC_ORDER; q++) {
             for (r = 0; r <= SPHERIC_ORDER; r++) {
-                matrix_set(results, 0, col, spheric_norm(p, q, r, cloud));
+                matrix_set(results, 0, col, spheric_moment(p, q, r, cloud));
                 col++;
             }
         }

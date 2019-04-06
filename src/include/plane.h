@@ -48,6 +48,9 @@ struct plane* plane_new(struct vector3* normal, struct vector3* point)
  */
 void plane_free(struct plane* plane)
 {
+	if (plane == NULL)
+		return;
+	
 	vector3_free(plane->normal);
 	vector3_free(plane->point);
 	free(plane);

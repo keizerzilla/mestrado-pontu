@@ -8,11 +8,12 @@ replace_dict = {"bosphorus" : "bs",
 
 faces = ["neutral"]
 
-cuts = {"w" : "whole", "f" : "frontal", "s" : "sagittal", "t" : "transversal"}
+#cuts = {"w" : "whole", "f" : "frontal", "s" : "sagittal", "t" : "transversal"}
+cuts = {"w" : "whole", "s" : "sagittal"}
 
-scenarios= ["bosphorus-tutu"]
+scenarios= ["bosphorus-outlier-densit200-crop80-icp"]
 
-moments = ["legendre"]
+moments = ["legendre", "golden", "spheric", "hututu"]
 
 mini_scenarios = []
 for s in scenarios:
@@ -115,7 +116,7 @@ def go_combination():
 
 if __name__ == "__main__":
 	extractor = MomentExtractor()
-	extractor.totalExtraction(faces, scenarios, cuts, moments, "tutu")
+	extractor.totalExtraction(faces, scenarios, cuts, ["hututu"], "tutu")
 	go_classification_rank1("tutu", plot=True)
 	
 	

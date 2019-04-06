@@ -281,3 +281,12 @@ def translate_to_zero(in_folder, out_folder):
 			
 			print(f, " done!")
 
+if __name__ == "__main__":
+	folder = "../datasets/bosphorus-outlier/other"
+	pcd2xyz(folder, folder)
+
+
+
+
+
+

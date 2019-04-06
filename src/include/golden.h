@@ -2,7 +2,7 @@
  * \file golden.h
  * \author Artur Rodrigues Rocha Neto
  * \date 2019
- * \brief Implementação de momentos baseado na relação algébrica da razão áurea.
+ * \brief Implementação de momentos baseados na razão áurea Phi.
  */
 
 #ifndef GOLDEN_H
@@ -15,31 +15,36 @@
 #include "matrix.h"
 
 /**
- * \brief Função imagem baseada na relação algébrica da razão áurea
- * \param x A coordenada x
- * \param y A coordenada y
- * \param z A coordenada z
- * \param p A ordem da coordena x
- * \param q A ordem da coordena y
- * \param r A ordem da coordena z
+ * \brief Função imagem baseada na razão áurea
+ * \param a O valor de coordenada
+ * \param p Ordem associada à coordenada
  * \return Real representativo da relação áurea
  */
-real golden_ratio(real x, real y, real z, int p, int q, int r)
+real golden_ratio(real a, int k)
 {
-	real xord = x*x - x - 1;
-	real yord = y*y - y - 1;
-	real zord = z*z - z - 1;
-	
-	return (p+1)*xord + (q+1)*yord + (r+1)*zord;
+	return pow(a*a - a - 1, k);
 }
 
 /**
- * \brief Cálculo dos momentos golden
+ * \brief Norma dos momentos de ouro
  * \param p A ordem da coordena x
  * \param q A ordem da coordena y
  * \param r A ordem da coordena z
  * \param cloud A nuvem alvo cujos momentos se quer calcular
- * \return O momento esférico de ordem p+q+r de cloud
+ * \return A norma de ouro de ordem p+q+r de cloud
+ */
+real golden_norm(int p, int q, int r, struct cloud* cloud)
+{
+	return cloud_size(cloud);
+}
+
+/**
+ * \brief Cálculo dos momentos de ouro
+ * \param p A ordem da coordena x
+ * \param q A ordem da coordena y
+ * \param r A ordem da coordena z
+ * \param cloud A nuvem alvo cujos momentos se quer calcular
+ * \return O momento de ouro de ordem p+q+r de cloud
  */
 real golden_moment(int p, int q, int r, struct cloud* cloud)
 {
@@ -55,20 +60,19 @@ real golden_moment(int p, int q, int r, struct cloud* cloud)
 		center_y = cloud->points[i].y - center->y;
 		center_z = cloud->points[i].z - center->z;
 		
-        moment += pow(center_x, p)
-                * pow(center_y, q)
-                * pow(center_z, r)
-                * golden_ratio(center_x, center_y, center_z, p, q, r);
+        moment += golden_ratio(center_x, p)
+                * golden_ratio(center_y, q)
+                * golden_ratio(center_z, r)
+                * vector3_distance(center, &cloud->points[i]);
 	}
 	
 	vector3_free(center);
 	
-	//return moment / (1.0f * cloud_size(cloud)); // original
-	return moment;
+	return moment / golden_norm(p, q, r, cloud);
 }
 
 /**
- * \brief Cálculo completo dos momentos esféricos de uma nuvem de pontos
+ * \brief Cálculo completo dos momentos de ouro de uma nuvem de pontos
  * \param cloud A nuvem alvo
  * \return Matriz contendo os momentos calculados
  */

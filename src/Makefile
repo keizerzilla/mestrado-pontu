@@ -4,7 +4,7 @@ COMPILER_FLAGS = -Wall
 LINKER_FLAGS = -lm
 
 # alvos de compilacao
-all: mcalc cloudz
+all: mcalc cloudz nosext
 
 # programa extrator de momentos invariantes
 mcalc: mcalc.c
@@ -13,4 +13,8 @@ mcalc: mcalc.c
 # utilitario manipulador de nuvens via linha de comando
 cloudz: cloudz.c
 	$(CC) cloudz.c $(COMPILER_FLAGS) $(LINKER_FLAGS) $(CFLAGS) -o ../bin/cloudz
+
+# programa extrator de ponta do nariz
+nosext: nosext.c
+	$(CC) nosext.c $(COMPILER_FLAGS) $(LINKER_FLAGS) $(CFLAGS) -o ../bin/nosext
 

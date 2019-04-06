@@ -15,8 +15,6 @@
 #include "include/matrix.h"
 #include "include/cloud.h"
 #include "include/util.h"
-#include "include/bsptree.h"
-#include "include/hashtable.h"
 #include "include/spheric.h"
 #include "include/golden.h"
 

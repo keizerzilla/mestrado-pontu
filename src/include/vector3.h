@@ -87,6 +87,9 @@ void vector3_copy(struct vector3* dst, struct vector3* src)
  */
 void vector3_free(struct vector3* v)
 {
+	if (v == NULL)
+		return;
+	
     free(v);
     v = NULL;
 }

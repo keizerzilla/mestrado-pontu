@@ -57,6 +57,9 @@ struct matrix* matrix_new(uint rows, uint cols)
  */
 void matrix_free(struct matrix* mat)
 {
+	if (mat == NULL)
+		return;
+	
     free(mat->data);
     mat->data = NULL;
 

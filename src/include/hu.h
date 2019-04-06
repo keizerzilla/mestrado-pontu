@@ -92,25 +92,10 @@ real hu_normalized_moment(int p, int q, int r, struct cloud* cloud)
  */
 real hu_refined_moment(int p, int q, int r, struct cloud* cloud)
 {
-	/**
 	real central = hu_central_moment(p, q, r, cloud);
 	real zero = hu_central_moment(0, 0, 0, cloud);
-	real x = hu_central_moment(p, 0, 0, cloud);
-	real y = hu_central_moment(0, q, 0, cloud);
-	real z = hu_central_moment(0, 0, r, cloud);
 	
-	return (central * pow(zero, 2)) / (x * y * z); // t+s
-	*/
-	
-	/**
-	real norm = 1.0f;
-    return hu_central_moment(p, q, r, cloud) / norm; // t+r
-    */
-    
-    real central = hu_central_moment(p, q, r, cloud);
-	real zero = hu_central_moment(0, 0, 0, cloud);
-	
-	return central / pow(zero, 3); // t+s+r
+	return central / pow(zero, 3);
 }
 
 /**

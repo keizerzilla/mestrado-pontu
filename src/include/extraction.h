@@ -157,9 +157,9 @@ struct matrix* extraction_radial(struct cloud* cloud,
 		d = vector3_distance(&cloud->points[i], center);
 		
 		if (d <= slice)
-			cloud_add_point(sub1, &cloud->points[i]);
+			cloud_add_point_vector(sub1, &cloud->points[i]);
 		else
-			cloud_add_point(sub2, &cloud->points[i]);
+			cloud_add_point_vector(sub2, &cloud->points[i]);
 	}
 	
 	struct matrix* ans = matrix_concat_hor((*mfunc)(sub1), (*mfunc)(sub2));

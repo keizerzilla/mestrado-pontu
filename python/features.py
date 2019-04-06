@@ -43,6 +43,9 @@ class MomentExtractor():
 		path, filename = os.path.split(cloud)
 		match = parse.parse(self.fmt, filename)
 		
+		if match == None:
+			return None
+		
 		subject = str(match[0])
 		tp = str(match[1])
 		ex = str(match[2])
@@ -64,6 +67,10 @@ class MomentExtractor():
 				if cloud.endswith(".xyz"):
 					fullPath = dataset + "/" + cloud
 					ans = self.cloudExtraction(moment, fullPath, cut)
+					
+					if ans == None:
+						continue
+					
 					dump.write(ans)
 					count = count + 1
 					print("\r{}".format(count), end="\r")
