@@ -134,7 +134,6 @@ struct matrix* legendre_invariant_moments(struct cloud* cloud)
     matrix_set(results, 0, 2, i3);
     matrix_set(results, 0, 3, j2);
     matrix_set(results, 0, 4, j3);
-    //matrix_set(results, 0, 5, j3);
 
     return results;
 }
