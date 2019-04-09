@@ -756,17 +756,33 @@ struct vector3* cloud_axis_size(struct cloud* cloud)
 }
 
 /**
- * \brief Calcula a área do bounding box que enclausura uma nuvem
+ * \brief Calcula o área do bounding box que enclausura uma nuvem
  * \param cloud A nuvem alvo
  * \return A área do bbox de cloud
  */
 real cloud_boundingbox_area(struct cloud* cloud)
 {
 	struct vector3* axis = cloud_axis_size(cloud);
-	real area = axis->x * axis->y * axis->z;
+	real area = (2.0f * axis->x * axis->y) +
+	            (2.0f * axis->y * axis->z) +
+	            (2.0f * axis->x * axis->z);
 	vector3_free(axis);
 	
 	return area;
+}
+
+/**
+ * \brief Calcula o volume do bounding box que enclausura uma nuvem
+ * \param cloud A nuvem alvo
+ * \return O volume do bbox de cloud
+ */
+real cloud_boundingbox_volume(struct cloud* cloud)
+{
+	struct vector3* axis = cloud_axis_size(cloud);
+	real vol = axis->x * axis->y * axis->z;
+	vector3_free(axis);
+	
+	return vol;
 }
 
 /**

@@ -1,15 +1,15 @@
 /**
- * \file spheric.h
+ * \file tutu.h
  * \author Artur Rodrigues Rocha Neto
  * \date 2019
- * \brief Implementação dos "Momentos Esféricos" (autoria minha??? SIM!!!)
+ * \brief Implementação dos "Momentos Tutu" (autoria minha??? SIM!!!)
  */
 
-#ifndef SPHERIC_H
-#define SPHERIC_H
+#ifndef TUTU_H
+#define TUTU_H
 
-#define SPHERIC_ORDER 2
-#define SPHERIC_MOMENTS 27
+#define TUTU_ORDER 2
+#define TUTU_MOMENTS 27
 
 #include "cloud.h"
 #include "matrix.h"
@@ -24,9 +24,9 @@
  * \param r A ordem da coordena z
  * \return Real representativo da relação esférica
  */
-real spheric_quad(real x, real y, real z, int p, int q, int r)
+real tutu_quad(real x, real y, real z, int p, int q, int r)
 {
-	return sqrt(pow(x, 2*p) + pow(y, 2*q) + pow(z, 2*r));
+	return sqrt(pow(x, 2*p) + pow(y, 2*q) + pow(z, 2*q));
 }
 
 /**
@@ -37,9 +37,17 @@ real spheric_quad(real x, real y, real z, int p, int q, int r)
  * \param cloud A nuvem alvo cujos momentos se quer calcular
  * \return O momento esférico normalizado de ordem p+q+r de cloud
  */
-real spheric_norm(int p, int q, int r, struct cloud* cloud)
+real tutu_norm(int p, int q, int r, struct cloud* cloud)
 {
-	return cloud_boundingbox_volume(cloud);
+	//real radius = cloud_max_distance_from_center(cloud);
+	//real v = (4.0f * CALC_PI * pow(radius, 3)) / (3.0f * cloud_size(cloud));
+	//return v;
+	
+	real V = cloud_boundingbox_volume(cloud);
+	real A = cloud_boundingbox_area(cloud);
+	return (pow(CALC_PI, 1.0f/3.0f) * pow(6.0f * V, 2.0f/3.0f)) / A;
+	
+	//return cloud_size(cloud);
 }
 
 /**
@@ -50,7 +58,7 @@ real spheric_norm(int p, int q, int r, struct cloud* cloud)
  * \param cloud A nuvem alvo cujos momentos se quer calcular
  * \return O momento esférico de ordem p+q+r de cloud
  */
-real spheric_moment(int p, int q, int r, struct cloud* cloud)
+real tutu_moment(int p, int q, int r, struct cloud* cloud)
 {
 	struct vector3* center = cloud_get_center(cloud);
 	
@@ -67,12 +75,12 @@ real spheric_moment(int p, int q, int r, struct cloud* cloud)
         moment += pow(center_x, p)
                 * pow(center_y, q)
                 * pow(center_z, r)
-                * spheric_quad(center_x, center_y, center_z, p, q, r);
+                * tutu_quad(center_x, center_y, center_z, p, q, r);
 	}
 	
 	vector3_free(center);
 	
-	return moment / spheric_norm(p, q, r, cloud);
+	return moment * tutu_norm(p, q, r, cloud);
 }
 
 /**
@@ -80,26 +88,32 @@ real spheric_moment(int p, int q, int r, struct cloud* cloud)
  * \param cloud A nuvem alvo
  * \return Matriz contendo os momentos calculados
  */
-struct matrix* spheric_cloud_moments(struct cloud* cloud)
+struct matrix* tutu_cloud_moments(struct cloud* cloud)
 {
-    struct matrix* results = matrix_new(1, SPHERIC_MOMENTS);
+	/**
+    struct matrix* results = matrix_new(1, TUTU_MOMENTS);
 
     int p = 0;
     int q = 0;
     int r = 0;
     int col = 0;
 
-    for (p = 0; p <= SPHERIC_ORDER; p++) {
-        for (q = 0; q <= SPHERIC_ORDER; q++) {
-            for (r = 0; r <= SPHERIC_ORDER; r++) {
-                matrix_set(results, 0, col, spheric_moment(p, q, r, cloud));
+    for (p = 0; p <= TUTU_ORDER; p++) {
+        for (q = 0; q <= TUTU_ORDER; q++) {
+            for (r = 0; r <= TUTU_ORDER; r++) {
+                matrix_set(results, 0, col, tutu_moment(p, q, r, cloud));
                 col++;
             }
         }
     }
 
     return results;
+    */
+    
+    struct matrix* results = matrix_new(1, 1);
+    matrix_set(results, 0, 0, tutu_moment(2, 2, 2, cloud));
+    return results;
 }
 
-#endif // SPHERIC_H
+#endif // TUTU_H
 

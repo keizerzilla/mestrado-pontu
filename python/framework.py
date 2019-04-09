@@ -6,18 +6,13 @@ replace_dict = {"bosphorus" : "bs",
                 "densit"    : "d",
                 "crop"      : "c"}
 
-faces = ["neutral", "nonneutral"]
+faces = ["neutral"]
 
-cuts = {"f" : "frontal",
-        "s" : "sagittal",
-        "t" : "transversal",
-        "r" : "radial",
-        "u" : "upper",
-        "l" : "lower"}
+cuts = {"s" : "sagittal"}
 
-scenarios= ["bosphorus-outlier-densit200-crop80-icp"]
+scenarios= ["tutu"]
 
-moments = ["chebyshev", "legendre", "golden", "spheric"]
+moments = ["spheric"]
 
 mini_scenarios = []
 for s in scenarios:

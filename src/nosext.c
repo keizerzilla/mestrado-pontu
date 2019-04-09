@@ -20,6 +20,7 @@ int main(int argc, char** argv)
 	struct plane* plane = cloud_plane_fitting(cloud);
 	struct vector3* p = cloud_max_distance_from_plane(cloud, plane);
 	
+	vector3_debug(plane->normal, stdout);
 	vector3_debug(p, stdout);
 	
 	vector3_free(p);
