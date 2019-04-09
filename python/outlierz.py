@@ -1,7 +1,10 @@
+import sys
 from open3d import *
 import matplotlib.pyplot as plt
 
-outstd = 0.1
+leafsize = 1
+outstd = 1
+pcd = read_point_cloud(sys.argv[1])
 
 def custom_draw_geometry_with_key_callback(pcd):
 	def change_background_to_black(vis):
@@ -14,23 +17,39 @@ def custom_draw_geometry_with_key_callback(pcd):
 		plt.show()
 		return False
 	def capture_image(vis):
+		print("eita")
 		image = vis.capture_screen_float_buffer()
 		plt.imshow(np.asarray(image))
 		plt.show()
 		return False
-	def change_outlier(vis)
-		print(outstd)
+	def change_densit(vis):
+		global leafsize
+		global pcd
+		leafsize += 0.1
+		print(leafsize)
+		voxelpcd = voxel_down_sample(pcd, 2)
+		pcd.points = Vector3dVector(voxelpcd.points)
+		vis.update_geometry()
+		vis.poll_events()
+		vis.update_renderer()
+		return False
+	def change_outlier(vis):
+		global outstd
+		global pcd
 		outstd += 0.1
-		outpcd, _ = statistical_outlier_removal(pcd, 5, outstd)
-		vis.update_geometry(outpcd)
 		print(outstd)
+		outpcd, _ = statistical_outlier_removal(pcd, 40, 0.5)
+		#outpcd, _ = radius_outlier_removal(pcd, 5, 10)
+		pcd.points = Vector3dVector(outpcd.points)
+		vis.update_geometry()
+		vis.poll_events()
+		vis.update_renderer()
+		return False
 	key_to_callback = {}
 	key_to_callback[ord("K")] = change_background_to_black
-	key_to_callback[ord(",")] = capture_depth
-	key_to_callback[ord(".")] = capture_image
-	key_to_callback[ord("l")] = change_outlier
+	key_to_callback[ord(",")] = change_densit
+	key_to_callback[ord(".")] = change_outlier
 	draw_geometries_with_key_callbacks([pcd], key_to_callback)
 
-pcd = read_point_cloud(sys.argv[1])
 custom_draw_geometry_with_key_callback(pcd)
 
