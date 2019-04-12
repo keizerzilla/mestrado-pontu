@@ -145,28 +145,41 @@ struct matrix* extraction_frontal(struct cloud* cloud,
 struct matrix* extraction_radial(struct cloud* cloud,
                                  struct matrix* (*mfunc)(struct cloud*))
 {
-	real d = 0.0f;
-	//real slice = cloud_max_distance_from_center(cloud) / 2.0f;
-	real slice = cloud_max_distance(cloud, cloud_min_z(cloud)) / 2.0f;
+	struct plane* bestfit = cloud_plane_fitting(cloud);
+	struct vector3* nosetip = cloud_max_distance_from_plane(cloud, bestfit);
+	real slice = 100.0f / 4.0f;
 	
-	struct vector3* center = cloud_get_center(cloud);
 	struct cloud* sub1 = cloud_empty();
 	struct cloud* sub2 = cloud_empty();
+	struct cloud* sub3 = cloud_empty();
+	struct cloud* sub4 = cloud_empty();
 	
+	real d = 0.0f;
 	for (uint i = 0; i < cloud_size(cloud); i++) {
-		d = vector3_distance(&cloud->points[i], center);
+		d = vector3_distance(&cloud->points[i], nosetip);
 		
 		if (d <= slice)
 			cloud_add_point_vector(sub1, &cloud->points[i]);
-		else
+		else if (d > slice && d <= 2.0f*slice)
 			cloud_add_point_vector(sub2, &cloud->points[i]);
+		else if (d > 2.0f*slice && d <= 3.0f*slice)
+			cloud_add_point_vector(sub3, &cloud->points[i]);
+		else
+			cloud_add_point_vector(sub4, &cloud->points[i]);
 	}
 	
-	struct matrix* ans = matrix_concat_hor((*mfunc)(sub1), (*mfunc)(sub2));
+	struct matrix* ans1 = matrix_concat_hor((*mfunc)(sub1), (*mfunc)(sub2));
+	struct matrix* ans2 = matrix_concat_hor((*mfunc)(sub3), (*mfunc)(sub4));
+	struct matrix* ans = matrix_concat_hor(ans1, ans2);
 	
+	matrix_free(ans1);
+	matrix_free(ans2);
+	cloud_free(sub4);
+	cloud_free(sub3);
 	cloud_free(sub2);
 	cloud_free(sub1);
-	vector3_free(center);
+	vector3_free(nosetip);
+	plane_free(bestfit);
 	
 	return ans;
 }

@@ -38,8 +38,8 @@ def custom_draw_geometry_with_key_callback(pcd):
 		global pcd
 		outstd += 0.1
 		print(outstd)
-		outpcd, _ = statistical_outlier_removal(pcd, 40, 0.5)
-		#outpcd, _ = radius_outlier_removal(pcd, 5, 10)
+		#outpcd, _ = statistical_outlier_removal(pcd, 40, 0.5)
+		outpcd, _ = radius_outlier_removal(pcd, 50, 10)
 		pcd.points = Vector3dVector(outpcd.points)
 		vis.update_geometry()
 		vis.poll_events()

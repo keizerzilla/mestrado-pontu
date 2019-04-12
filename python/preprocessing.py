@@ -3,14 +3,28 @@ import subprocess
 import numpy as np
 import pandas as pd
 import numpy.linalg as linalg
+import copy
+from scipy.spatial.distance import cdist
 from open3d import *
 from sklearn.decomposition import PCA
+
+def get_nosetip_normal(cloud):
+	cmd = ["../bin/nosext", cloud]
+	ans = subprocess.run(cmd, stdout=subprocess.PIPE).stdout
+	l = ans[:-2].decode("utf-8").split('\n')
+	normal = np.array([float(x) for x in l[0].split(' ')])
+	nosetip = np.array([float(x) for x in l[1].split(' ')])
+	
+	return nosetip, normal
 
 def unit_vector(v):
 	return v / (v**2).sum()**0.5
 
-def preprocessing(input_cloud, cloud, outdir,
-                  leafsize=2.00, outnn=40, outstd=0.5, cut=80):
+def gram_schmidt_columns(X):
+	Q, R = np.linalg.qr(X)
+	return Q
+
+def preprocessing(input_cloud, cloud, outdir, leafsize=2.00, cut=80):
 	"""
 	Gera base com pré-processamentos comuns. Obrigado, Open3D!
 	
@@ -30,16 +44,12 @@ def preprocessing(input_cloud, cloud, outdir,
 	voxelpcd = voxel_down_sample(pcd, voxel_size=leafsize)
 	
 	# outlier removal
-	outpcd, _ = statistical_outlier_removal(voxelpcd, outnn, outstd)
+	outpcd, _ = radius_outlier_removal(voxelpcd, 50, 10)
 	
 	# nose tip pra corte!!!
 	df = pd.DataFrame(np.asarray(outpcd.points))
 	df.to_csv("../dump/temp.xyz", header=None, index=None, sep=' ')
-	cmd = ["../bin/nosext", "../dump/temp.xyz"]
-	ans = subprocess.run(cmd, stdout=subprocess.PIPE).stdout
-	l = ans[:-2].decode("utf-8").split('\n')
-	normal = np.array([float(x) for x in l[0].split(' ')])
-	nosetip = np.array([float(x) for x in l[1].split(' ')])
+	nosetip, normal = get_nosetip_normal("../dump/temp.xyz")
 	
 	# translada para nariz
 	outpcd = np.asarray(outpcd.points)
@@ -47,28 +57,23 @@ def preprocessing(input_cloud, cloud, outdir,
 	direction = origin - nosetip
 	transpcd = outpcd + direction
 	
-	# corte (em relacao ao centro de massa, mudar pro nariz depois)
+	"""
+	# corte
 	idx = linalg.norm(transpcd, axis=1) <= cut
 	transpcd = transpcd[idx]
+	"""
 	
-	# normal pra alinhamento!!!
-	df = pd.DataFrame(transpcd)
-	df.to_csv("../dump/temp.xyz", header=None, index=None, sep=' ')
-	cmd = ["../bin/nosext", "../dump/temp.xyz"]
-	ans = subprocess.run(cmd, stdout=subprocess.PIPE).stdout
-	l = ans[:-2].decode("utf-8").split('\n')
-	normal = np.array([float(x) for x in l[0].split(' ')])
-	nosetip = np.array([float(x) for x in l[1].split(' ')])
-	
-	# ajuste de pose usando PCA (versao revisada e melhorada)
+	"""
+	# ajuste de pose usando PCA
 	pca = PCA(n_components=3)
 	pca.fit(transpcd)
 	v = pca.components_
+	"""
 	
 	x = np.array([1, 0, 0])
 	y = np.array([0, 1, 0])
-	z = v[2]
-	#z = normal
+	#z = v[2]
+	z = normal
 	
 	y = y * np.dot(z, y)
 	x = np.cross(z, y)
@@ -86,15 +91,15 @@ def preprocessing(input_cloud, cloud, outdir,
 
 
 if __name__ == "__main__":
-	folder = "../datasets/bosphorus/neutral/"
-	outdir = "../datasets/tutu/neutral/"
+	folder = "../datasets/bosphorus/nonneutral/"
+	outdir = "../datasets/tutu/nonneutral/"
 	
 	for cloud in os.listdir(folder):
 		if ".xyz" in cloud:
 			input_cloud = folder + cloud
 			preprocessing(input_cloud, cloud, outdir)
 			print(cloud, "ok!")
-
+	
 
 
 

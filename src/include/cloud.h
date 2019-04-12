@@ -779,8 +779,26 @@ real cloud_boundingbox_area(struct cloud* cloud)
 real cloud_boundingbox_volume(struct cloud* cloud)
 {
 	struct vector3* axis = cloud_axis_size(cloud);
-	real vol = axis->x * axis->y * axis->z;
+	real vol = vector3_volume(axis);
 	vector3_free(axis);
+	
+	return vol;
+}
+
+/**
+ * \brief Calcula o volume de função de uma nuvem
+ * \param cloud A nuvem alvo
+ * \return Volume-função de cloud
+ */
+real cloud_function_volume(struct cloud* cloud)
+{
+	struct vector3* center = cloud_get_center(cloud);
+	real vol = 0.0f;
+	
+	for (uint i = 0; i < cloud_size(cloud); i++)
+		vol += vector3_distance(center, &cloud->points[i]);
+	
+	vector3_free(center);
 	
 	return vol;
 }
