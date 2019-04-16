@@ -8,12 +8,9 @@ replace_dict = {"bosphorus" : "bs",
 
 faces = ["neutral"]
 
-cuts = {"r" : "radial"}
+cuts = {"m" : "manhattan"}
 
-scenarios= ["bosphorus-outlier-densit200",
-            "bosphorus-outlier-densit200-crop80",
-            "bosphorus-outlier-densit200-crop80-icp",
-            "tutu"]
+scenarios= ["bosphorus-outlier-densit200-crop80-icp"]
 
 moments = ["spheric"]
 

@@ -344,6 +344,17 @@ real vector3_dot(struct vector3* a, struct vector3* b)
 }
 
 /**
+ * \brief Calcula o ângulo entre dois vetores
+ * \param a O primeiro vetor
+ * \param b O segundo vetor
+ * \return O ângulo entre a e b em radianos
+ */
+real vector3_angle(struct vector3* a, struct vector3* b)
+{
+    return acos(vector3_dot(a, b) / vector3_length(a) * vector3_length(b));
+}
+
+/**
  * \brief Calcula o produto vetorial entre dois vetores
  * \param a O primeiro vetor
  * \param b O segundo vetor
@@ -427,6 +438,91 @@ real vector3_modsse(struct vector3* v1, struct vector3* v2)
 }
 
 /**
+ * \brief Calcula distância cosseno entre dois vetores
+ * \param v1 O primeiro vetor
+ * \param v2 O segundo vetor
+ * \return A distância cosseno entre v1 e v2
+ */
+real vector3_cosdistance(struct vector3* v1, struct vector3* v2)
+{
+	return -1.0f * vector3_angle(v1, v2);
+}
+
+/**
+ * \brief Calcula distância "erro quadrático médio"
+ * \param v1 O primeiro vetor
+ * \param v2 O segundo vetor
+ * \return A distância MSE entre v1 e v2
+ */
+real vector3_mse(struct vector3* v1, struct vector3* v2)
+{
+	real d = calc_squared_length3(v1->x - v2->x, v1->y - v2->y, v1->z - v2->z);
+	return d / 3.0f;
+}
+
+/**
+ * \brief Calcula distância euclidiana quadrática
+ * \param v1 O primeiro vetor
+ * \param v2 O segundo vetor
+ * \return A distância SSE entre v1 e v2
+ */
+real vector3_sse(struct vector3* v1, struct vector3* v2)
+{
+	return calc_squared_length3(v1->x - v2->x, v1->y - v2->y, v1->z - v2->z);
+}
+
+/**
+ * \brief Calcula distância Chi
+ * \param v1 O primeiro vetor
+ * \param v2 O segundo vetor
+ * \return A distância Chi entre v1 e v2
+ */
+real vector3_chi_distance(struct vector3* v1, struct vector3* v2)
+{
+	real n = calc_squared_length3(v1->x - v2->x, v1->y - v2->y, v1->z - v2->z);
+	real d = v1->x + v2->x +
+	         v1->y + v2->y +
+	         v1->z + v2->z;
+	
+	return n / d;
+}
+
+/**
+ * \brief Calcula distância Canberra
+ * \param v1 O primeiro vetor
+ * \param v2 O segundo vetor
+ * \return A distância Canberra entre v1 e v2
+ */
+real vector3_canberra(struct vector3* v1, struct vector3* v2)
+{
+	real n = abs(v1->x - v2->x) +
+	         abs(v1->y - v2->y) +
+	         abs(v1->z - v2->z);
+	real d = abs(v1->x) + abs(v2->x) +
+	         abs(v1->y) + abs(v2->y) +
+	         abs(v1->z) + abs(v2->z);
+	
+	return n / d;
+}
+
+/**
+ * \brief Calcula distância manhattan modificada
+ * \param v1 O primeiro vetor
+ * \param v2 O segundo vetor
+ * \return A distância manhattan modificada entre v1 e v2
+ */
+real vector3_modmanhattan(struct vector3* v1, struct vector3* v2)
+{
+	real n = abs(v1->x - v2->x) +
+	         abs(v1->y - v2->y) +
+	         abs(v1->z - v2->z);
+	real d1 = abs(v1->x) + abs(v1->y) + abs(v1->z);
+	real d2 = abs(v2->x) + abs(v2->y) + abs(v2->z);
+	
+	return n / (d1 * d2);
+}
+
+/**
  * \brief Efetua interpolação linear em um vetor
  * \param s O vetor a ser interpolado
  * \param t O vetor alvo/objetivo
@@ -480,17 +576,6 @@ struct vector3* vector3_reflection(struct vector3* v, struct vector3* n)
 	r = vector3_sub(v, r);
 	
 	return r;
-}
-
-/**
- * \brief Calcula o ângulo entre dois vetores
- * \param a O primeiro vetor
- * \param b O segundo vetor
- * \return O ângulo entre a e b em radianos
- */
-real vector3_angle(struct vector3* a, struct vector3* b)
-{
-    return acos(vector3_dot(a, b) / vector3_length(a) * vector3_length(b));
 }
 
 /**

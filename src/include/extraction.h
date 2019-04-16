@@ -231,6 +231,38 @@ struct matrix* extraction_lower(struct cloud* cloud,
 }
 
 /**
+ * \brief Extrái momentos usando apenas o nariz
+ * \param cloud A nuvem alvo
+ * \param mfunc A função extratora de momentos
+ * \return A matrix com os momentos extraídos
+ */
+struct matrix* extraction_manhattan(struct cloud* cloud,
+                                    struct matrix* (*mfunc)(struct cloud*))
+{
+	struct plane* bestfit = cloud_plane_fitting(cloud);
+	struct vector3* nosetip = cloud_max_distance_from_plane(cloud, bestfit);
+	struct cloud* nose = cloud_empty();
+	real d = 0.0f;
+	
+	for (uint i = 0; i < cloud_size(cloud); i++) {
+		d = vector3_manhattan(&cloud->points[i], nosetip);
+		
+		if (d <= 150.0f)
+			cloud_add_point_vector(nose, &cloud->points[i]);
+	}
+	
+	cloud_save_xyz(nose, "/home/artur/github/latin/dump/nose.xyz");
+	
+	struct matrix* ans = (*mfunc)(nose);
+	
+	cloud_free(nose);
+	vector3_free(nosetip);
+	plane_free(bestfit);
+	
+	return ans;
+}
+
+/**
  * \brief Os 4 segmentos do tutu (e do iraniano)
  * \param cloud A nuvem alvo
  * \param mfunc A função extratora de momentos

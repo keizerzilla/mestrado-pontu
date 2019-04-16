@@ -421,7 +421,7 @@ struct matrix* hu_superset(struct cloud* cloud)
     for (p = 0; p <= HU_SUPERSET_ORDER; p++) {
         for (q = 0; q <= HU_SUPERSET_ORDER; q++) {
             for (r = 0; r <= HU_SUPERSET_ORDER; r++) {
-                matrix_set(results, 0, col, hu_normalized_moment(p,q,r,cloud));
+                matrix_set(results, 0, col, hu_refined_moment(p, q, r, cloud));
                 col++;
             }
         }

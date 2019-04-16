@@ -22,6 +22,7 @@
 #define HUTUTU			"hututu"
 #define HU1980			"hu1980"
 #define HUSIQ			"husiq"
+#define HUSUPER			"husuper"
 #define ZERNIKE			"zernike"
 #define LEGENDRE		"legendre"
 #define CHEBYSHEV		"chebyshev"
@@ -39,6 +40,7 @@
 #define CUT_7			"7"
 #define CUT_6			"6"
 #define CUT_4			"4"
+#define CUT_MANHATTAN	"m"
 
 /**
  * \brief Exibe mensagem ao usuário informando como usar o extrator de momentos
@@ -53,6 +55,7 @@ void extraction_help()
     printf("     > hututu\n");
     printf("     > husiq\n");
     printf("     > hu1980\n");
+    printf("     > husuper\n");
     printf("     > zernike\n");
     printf("     > legendre\n");
     printf("     > chebyshev\n");
@@ -78,6 +81,7 @@ void extraction_help()
     printf("     > 7: corte em 7 segmentos\n");
     printf("     > 6: corte em 6 segmentos\n");
     printf("     > 4: corte em 4 segmentos\n");
+    printf("     > m: corte manhattan\n");
     
     printf("EX1: mcalc -m hu_1980 -i ../data/cloud1.xyz -o hu1.txt -c t\n");
     printf("EX2: mcalc -m legendre -i ../dataset/bunny.xyz -o stdout -c w\n\n");
@@ -127,6 +131,8 @@ int main(int argc, char** argv)
         mfunc = &hu_cloud_moments_hu1980;
     else if (!strcmp(moment, HUSIQ))
         mfunc = &hu_cloud_moments_husiq;
+    else if (!strcmp(moment, HUSUPER))
+        mfunc = &hu_superset;
     else if (!strcmp(moment, LEGENDRE))
         mfunc = &legendre_cloud_moments;
     else if (!strcmp(moment, CHEBYSHEV))
@@ -169,6 +175,8 @@ int main(int argc, char** argv)
 		results = extraction_6(cloud, mfunc);
 	else if (!strcmp(cut, CUT_4))
 		results = extraction_4(cloud, mfunc);
+	else if (!strcmp(cut, CUT_MANHATTAN))
+		results = extraction_manhattan(cloud, mfunc);
 	else
 		results = (*mfunc)(cloud);
 	

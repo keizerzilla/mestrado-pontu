@@ -4,30 +4,33 @@
 #include "../src/include/spheric.h"
 #include "../src/include/legendre.h"
 #include "../src/include/chebyshev.h"
+#include "../src/include/tutu.h"
+#include "../src/include/extraction.h"
 
 int main(int argc, char** argv)
 {
+	/**
+	char* clouds[4] = {"../dump/bunny_raw.xyz",
+	                   "../dump/bunny_trans.xyz",
+	                   "../dump/bunny_scale.xyz",
+	                   "../dump/bunny_rotate.xyz"};
 	
-	struct vector3* v1 = vector3_new(2, 1, 0);
-	struct vector3* v2 = vector3_new(0, 1, 2);
-	struct vector3* v3 = vector3_new(3, 4, 0);
+	for (int i = 0; i < 4; i++) {
+		printf("%s\n", clouds[i]);
+		
+		struct cloud* cloud = cloud_load_xyz(clouds[i]);
+		struct matrix* ans = tutu_invariant_moments(cloud);
+		
+		matrix_debug(ans, stdout);
+		
+		printf("\n");
+	}
+	*/
 	
-	printf("v1 dot v2 = %.4f\n", vector3_dot(v1, v2));
-	printf("v1 dot v3 = %.4f\n", vector3_dot(v1, v3));
-	printf("v2 dot v3 = %.4f\n", vector3_dot(v2, v3));
-	
-	struct vector3* u1 = v1;
-	struct vector3* u2 = vector3_sub(v2, vector3_projection(v2, u1));
-	struct vector3* v31 = vector3_sub(v3, vector3_projection(v3, u1));
-	struct vector3* u3 = vector3_sub(v31, vector3_projection(v31, u2));
-	
-	vector3_normalize(u1);
-	vector3_normalize(u2);
-	vector3_normalize(u3);
-	
-	printf("u1 dot u2 = %.4f\n", vector3_dot(u1, u2));
-	printf("u1 dot u3 = %.4f\n", vector3_dot(u1, u3));
-	printf("u2 dot u3 = %.4f\n", vector3_dot(u2, u3));
+	struct cloud* cloud = cloud_load_xyz("../dump/bs000_N_N_0.xyz");
+	struct matrix* ans = extraction_manhattan(cloud, tutu_invariant_moments);
+		
+	matrix_debug(ans, stdout);
 	
 	return 0;
 }

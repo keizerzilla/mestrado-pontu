@@ -39,8 +39,7 @@ real spheric_quad(real x, real y, real z, int p, int q, int r)
  */
 real spheric_norm(int p, int q, int r, struct cloud* cloud)
 {
-	//return cloud_boundingbox_volume(cloud);
-	return cloud_size(cloud);
+	return cloud_boundingbox_volume(cloud);
 }
 
 /**
