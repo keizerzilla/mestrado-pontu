@@ -7,30 +7,18 @@
 #include "../src/include/tutu.h"
 #include "../src/include/extraction.h"
 
+void extraction_tshape(struct cloud* cloud)
+{
+	
+}
+
 int main(int argc, char** argv)
 {
-	/**
-	char* clouds[4] = {"../dump/bunny_raw.xyz",
-	                   "../dump/bunny_trans.xyz",
-	                   "../dump/bunny_scale.xyz",
-	                   "../dump/bunny_rotate.xyz"};
+	struct cloud* cloud = cloud_load_xyz("../dump/bs000_raw.xyz");
 	
-	for (int i = 0; i < 4; i++) {
-		printf("%s\n", clouds[i]);
-		
-		struct cloud* cloud = cloud_load_xyz(clouds[i]);
-		struct matrix* ans = tutu_invariant_moments(cloud);
-		
-		matrix_debug(ans, stdout);
-		
-		printf("\n");
-	}
-	*/
+	extraction_tshape(cloud);
 	
-	struct cloud* cloud = cloud_load_xyz("../dump/bs000_N_N_0.xyz");
-	struct matrix* ans = extraction_manhattan(cloud, tutu_invariant_moments);
-		
-	matrix_debug(ans, stdout);
+	cloud_free(cloud);
 	
 	return 0;
 }

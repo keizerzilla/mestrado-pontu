@@ -6,9 +6,10 @@ replace_dict = {"bosphorus" : "bs",
                 "densit"    : "d",
                 "crop"      : "c"}
 
-faces = ["neutral"]
+faces = ["neutral", "nonneutral"]
 
-cuts = {"m" : "manhattan"}
+#cuts = {"s" : "sagittal", "t" : "transversal", "f" : "frontal"}
+cuts = {"r" : "radial"}
 
 scenarios= ["bosphorus-outlier-densit200-crop80-icp"]
 
@@ -117,5 +118,14 @@ if __name__ == "__main__":
 	extractor = MomentExtractor()
 	extractor.totalExtraction(faces, scenarios, cuts, moments, "tutu")
 	go_classification_rank1("tutu", plot=True)
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	

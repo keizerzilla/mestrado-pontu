@@ -1219,6 +1219,21 @@ struct plane* cloud_plane_fitting(struct cloud* cloud)
 }
 
 /**
+ * \brief Retorna o ponto mais distante ao plano de melhor ajuste
+ * \param cloud A nuvem alvo
+ * \return O ponto mais distante ao plano ajustado à cloud
+ */
+struct vector3* cloud_point_faraway_bestfit(struct cloud* cloud)
+{
+	struct plane* bestfit = cloud_plane_fitting(cloud);
+	struct vector3* faraway = cloud_max_distance_from_plane(cloud, bestfit);
+	
+	plane_free(bestfit);
+	
+	return faraway;
+}
+
+/**
  * \brief Debuga uma nuvem ponto a ponto na saída padrão
  * \param cloud A nuvem a ser debugada
  * \param output O arquivo aonde exibir a mensagem

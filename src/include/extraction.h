@@ -145,8 +145,7 @@ struct matrix* extraction_frontal(struct cloud* cloud,
 struct matrix* extraction_radial(struct cloud* cloud,
                                  struct matrix* (*mfunc)(struct cloud*))
 {
-	struct plane* bestfit = cloud_plane_fitting(cloud);
-	struct vector3* nosetip = cloud_max_distance_from_plane(cloud, bestfit);
+	struct vector3* nosetip = cloud_point_faraway_bestfit(cloud);
 	real slice = 100.0f / 4.0f;
 	
 	struct cloud* sub1 = cloud_empty();
@@ -179,7 +178,6 @@ struct matrix* extraction_radial(struct cloud* cloud,
 	cloud_free(sub2);
 	cloud_free(sub1);
 	vector3_free(nosetip);
-	plane_free(bestfit);
 	
 	return ans;
 }
@@ -194,7 +192,7 @@ struct matrix* extraction_upper(struct cloud* cloud,
                                 struct matrix* (*mfunc)(struct cloud*))
 {
 	struct vector3* norm = vector3_new(0, 1, 0);
-	struct vector3* point = cloud_min_z(cloud);
+	struct vector3* point = cloud_point_faraway_bestfit(cloud);
 	struct plane* plane = plane_new(norm, point);
 	struct cloud* sub = cloud_cut_plane(cloud, plane);
 	struct matrix* ans = (*mfunc)(sub);
@@ -217,7 +215,7 @@ struct matrix* extraction_lower(struct cloud* cloud,
                                 struct matrix* (*mfunc)(struct cloud*))
 {
 	struct vector3* norm = vector3_new(0, -1, 0);
-	struct vector3* point = cloud_min_z(cloud);
+	struct vector3* point = cloud_point_faraway_bestfit(cloud);
 	struct plane* plane = plane_new(norm, point);
 	struct cloud* sub = cloud_cut_plane(cloud, plane);
 	struct matrix* ans = (*mfunc)(sub);
@@ -239,8 +237,7 @@ struct matrix* extraction_lower(struct cloud* cloud,
 struct matrix* extraction_manhattan(struct cloud* cloud,
                                     struct matrix* (*mfunc)(struct cloud*))
 {
-	struct plane* bestfit = cloud_plane_fitting(cloud);
-	struct vector3* nosetip = cloud_max_distance_from_plane(cloud, bestfit);
+	struct vector3* nosetip = cloud_point_faraway_bestfit(cloud);
 	struct cloud* nose = cloud_empty();
 	real d = 0.0f;
 	
@@ -257,7 +254,6 @@ struct matrix* extraction_manhattan(struct cloud* cloud,
 	
 	cloud_free(nose);
 	vector3_free(nosetip);
-	plane_free(bestfit);
 	
 	return ans;
 }

@@ -91,8 +91,8 @@ def preprocessing(input_cloud, cloud, outdir, leafsize=2.00, cut=80):
 
 
 if __name__ == "__main__":
-	folder = "../datasets/bosphorus/nonneutral/"
-	outdir = "../datasets/tutu/nonneutral/"
+	folder = "../datasets/bosphorus/neutral/"
+	outdir = "../datasets/tutu/neutral/"
 	
 	for cloud in os.listdir(folder):
 		if ".xyz" in cloud:

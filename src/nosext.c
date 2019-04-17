@@ -11,20 +11,20 @@
 
 int main(int argc, char** argv)
 {
-	if (argc != 2) {
+	if (argc != 3) {
 		printf("! paramentros insuficientes !\n");
 		return 1;
 	}
 	
 	struct cloud* cloud = cloud_load_xyz(argv[1]);
-	struct plane* plane = cloud_plane_fitting(cloud);
-	struct vector3* p = cloud_max_distance_from_plane(cloud, plane);
+	struct vector3* p = cloud_point_faraway_bestfit(cloud);
+	struct cloud* nose = cloud_empty();
 	
-	vector3_debug(plane->normal, stdout);
-	vector3_debug(p, stdout);
+	cloud_add_point_vector(nose, p);
+	cloud_save_xyz(nose, argv[2]);
 	
+	cloud_free(nose);
 	vector3_free(p);
-	plane_free(plane);
 	cloud_free(cloud);
 	
 	return 0;

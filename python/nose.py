@@ -5,6 +5,7 @@ import subprocess
 import numpy as np
 import pandas as pd
 import numpy.linalg as linalg
+import matplotlib.pyplot as plt
 
 def nose_bosphorus(folder):
 	fmt = "bs{:d}_{:w}_{:w}_{:d}.xyz"
@@ -52,6 +53,15 @@ def nose_bosphorus(folder):
 					print("not found at", i)
 	
 	saved = pd.DataFrame(dump)
+	mean = saved["dist"].mean()
+	std = saved["dist"].std()
+	
+	saved.hist("dist", bins=10)
+	plt.show()
+	
+	
+	print("MEDIA: {}, DESVIO: {}".format(mean, std))
+	
 	saved.to_csv(f, index=None)
 	
 	
@@ -95,3 +105,9 @@ def nose_view(folder):
 			        "-fc", "255,0,0", "-ps", "5", output_pcd]
 			subprocess.run(view)
 
+if __name__ == "__main__":
+	#nose_convert_pcd("../datasets/tutu/neutral/")
+	#nose_view("../datasets/tutu/neutral/")
+	nose_extraction("../datasets/bosphorus-outlier/neutral/")
+	nose_bosphorus("../datasets/bosphorus-outlier/neutral/")
+	
