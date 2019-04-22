@@ -8,7 +8,7 @@ from open3d import *
 from sklearn.decomposition import PCA
 
 def get_nosetip_normal(cloud):
-	cmd = ["../bin/nosext", cloud]
+	cmd = ["../bin/nosex", cloud]
 	ans = subprocess.run(cmd, stdout=subprocess.PIPE).stdout
 	l = ans[:-2].decode("utf-8").split('\n')
 	normal = np.array([float(x) for x in l[0].split(' ')])

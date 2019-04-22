@@ -3,77 +3,81 @@ import subprocess
 import numpy as np
 import pandas as pd
 import numpy.linalg as linalg
-import copy
-from scipy.spatial.distance import cdist
 from open3d import *
-from sklearn.decomposition import PCA
-
-def get_nosetip_normal(cloud):
-	cmd = ["../bin/nosext", cloud]
-	ans = subprocess.run(cmd, stdout=subprocess.PIPE).stdout
-	l = ans[:-2].decode("utf-8").split('\n')
-	normal = np.array([float(x) for x in l[0].split(' ')])
-	nosetip = np.array([float(x) for x in l[1].split(' ')])
-	
-	return nosetip, normal
 
 def unit_vector(v):
 	return v / (v**2).sum()**0.5
 
-def gram_schmidt_columns(X):
-	Q, R = np.linalg.qr(X)
-	return Q
+def get_nosetip(pcd):
+	prog = "../bin/nosex"
+	cloud = "../dump/temp.xyz"
+	cmd = [prog, cloud]
+	
+	if isinstance(pcd, np.ndarray):
+		df = pd.DataFrame(pcd)
+	else:
+		df = pd.DataFrame(np.asarray(pcd.points))
+	
+	df.to_csv(cloud, header=None, index=None, sep=' ')
+	
+	ans = subprocess.run(cmd, stdout=subprocess.PIPE).stdout
+	ans = ans[:-2].decode("utf-8")
+	
+	nosetip = np.array([float(x) for x in ans.split(' ')])
+	
+	return nosetip
 
-def preprocessing(input_cloud, cloud, outdir, leafsize=2.00, cut=80):
-	"""
-	Gera base com pré-processamentos comuns. Obrigado, Open3D!
+def get_normal(pcd):
+	prog = "../bin/normx"
+	cloud = "../dump/temp.xyz"
+	cmd = [prog, cloud]
 	
-	:param input_cloud: caminho completo para uma nuvem
-	:param cloud: apenas o nome da nuvem para fins de salvamento (bad code)
-	:param outdir: caminho para pasta aonde a nuvem pré-processada será salva
-	:param leafsize: leafsize do voxel grid (mm)
-	:param outnn: número de vizinhos para decisão se ponto é outlier
-	:param outstd: número de desvios-padrão para decisão se ponto é outlier
-	:param cut: tamanho do corte ao redor do centro de massa (bad code)
-	"""
+	if isinstance(pcd, np.ndarray):
+		df = pd.DataFrame(pcd)
+	else:
+		df = pd.DataFrame(np.asarray(pcd.points))
 	
-	# carrega nuvem
-	pcd = read_point_cloud(input_cloud)
+	df.to_csv(cloud, header=None, index=None, sep=' ')
 	
-	# downsample
-	voxelpcd = voxel_down_sample(pcd, voxel_size=leafsize)
+	ans = subprocess.run(cmd, stdout=subprocess.PIPE).stdout
+	ans = ans[:-2].decode("utf-8")
 	
-	# outlier removal
-	outpcd, _ = radius_outlier_removal(voxelpcd, 50, 10)
+	normal = np.array([float(x) for x in ans.split(' ')])
 	
-	# nose tip pra corte!!!
-	df = pd.DataFrame(np.asarray(outpcd.points))
-	df.to_csv("../dump/temp.xyz", header=None, index=None, sep=' ')
-	nosetip, normal = get_nosetip_normal("../dump/temp.xyz")
+	return normal
+
+def load_cloud(filepath):
+	return read_point_cloud(filepath)
+
+def downsample(pcd, leafsize=2.00):
+	return voxel_down_sample(pcd, leafsize)
+
+def outlier_removal(pcd, nn=50, r=10):
+	out, _ = radius_outlier_removal(pcd, nn, r)
 	
-	# translada para nariz
-	outpcd = np.asarray(outpcd.points)
+	return out
+
+def segmentation(pcd, cut=80):
+	nosetip = get_nosetip(pcd)
+	
+	if isinstance(pcd, np.ndarray):
+		data = pcd
+	else:
+		data = np.asarray(pcd.points)
+	
 	origin = np.array([0, 0, 0])
 	direction = origin - nosetip
-	transpcd = outpcd + direction
+	data = data + direction
 	
-	"""
-	# corte
-	idx = linalg.norm(transpcd, axis=1) <= cut
-	transpcd = transpcd[idx]
-	"""
+	indexes = linalg.norm(data, axis=1) <= cut
+	data = data[indexes]
 	
-	"""
-	# ajuste de pose usando PCA
-	pca = PCA(n_components=3)
-	pca.fit(transpcd)
-	v = pca.components_
-	"""
-	
+	return data
+
+def alignment(data, by_nose=False):
 	x = np.array([1, 0, 0])
 	y = np.array([0, 1, 0])
-	#z = v[2]
-	z = normal
+	z = get_normal(data)
 	
 	y = y * np.dot(z, y)
 	x = np.cross(z, y)
@@ -82,36 +86,40 @@ def preprocessing(input_cloud, cloud, outdir, leafsize=2.00, cut=80):
 	y = unit_vector(y)
 	z = unit_vector(z)
 	
-	rot = np.absolute(np.array([x, y, z]))
-	rotpcd = np.matmul(transpcd, rot)
+	rotation_matrix = np.absolute(np.array([x, y, z]))
+	aligned = np.matmul(data, rotation_matrix)
 	
-	# salva nuvem
-	df = pd.DataFrame(rotpcd)
-	df.to_csv(outdir + cloud, header=None, index=None, sep=' ')
+	return aligned
 
-
-if __name__ == "__main__":
-	folder = "../datasets/bosphorus/neutral/"
-	outdir = "../datasets/tutu/neutral/"
+def save_result(data, outfile):
+	if not isinstance(data, np.ndarray):
+		data = np.asarray(data.points)
 	
+	df = pd.DataFrame(data)
+	df.to_csv(outfile, header=None, index=None, sep=' ')
+
+def preprocessing(filepath, cloud, outdir, leafsize=2.00, nn=50, r=10, cut=80):
+	pcd = load_cloud(filepath)
+	pcd = downsample(pcd, leafsize)
+	pcd = outlier_removal(pcd, nn, r)
+	#pcd = segmentation(pcd, cut)
+	#pcd = alignment(pcd)
+	save_result(pcd, outdir + cloud)
+
+def batch_preprocessing(folder, outdir, leafsize=2.00, nn=50, r=10, cut=80):
+	os.makedirs(outdir, exist_ok=True)
 	for cloud in os.listdir(folder):
 		if ".xyz" in cloud:
 			input_cloud = folder + cloud
-			preprocessing(input_cloud, cloud, outdir)
+			preprocessing(input_cloud, cloud, outdir, leafsize, nn, r, cut)
 			print(cloud, "ok!")
+
+if __name__ == "__main__":
+	folder = ["../datasets/bosphorus/neutral/",
+	          "../datasets/bosphorus/nonneutral/"]
+	outdir = ["../datasets/bosphorus-tutu/neutral/",
+	          "../datasets/bosphorus-tutu/nonneutral/"]
 	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	for f, o in zip(folder, outdir):
+		batch_preprocessing(f, o)
+	

@@ -16,7 +16,6 @@
 #include "include/cloud.h"
 #include "include/util.h"
 #include "include/spheric.h"
-#include "include/golden.h"
 #include "include/tutu.h"
 
 #define HUTUTU			"hututu"
@@ -27,7 +26,6 @@
 #define LEGENDRE		"legendre"
 #define CHEBYSHEV		"chebyshev"
 #define SPHERIC			"spheric"
-#define GOLDEN			"golden"
 #define TUTU			"tutu"
 
 #define CUT_WHOLE		"w"
@@ -41,6 +39,10 @@
 #define CUT_6			"6"
 #define CUT_4			"4"
 #define CUT_MANHATTAN	"m"
+#define CUT_VSHAPE		"v"
+#define CUT_VSHAPE_F	"vf"
+#define CUT_VSHAPE_S	"vs"
+#define CUT_VSHAPE_T	"vt"
 
 /**
  * \brief Exibe mensagem ao usuário informando como usar o extrator de momentos
@@ -60,7 +62,6 @@ void extraction_help()
     printf("     > legendre\n");
     printf("     > chebyshev\n");
     printf("     > spheric\n");
-    printf("     > golden\n");
     printf("     > tutu\n");
     
     printf(" -i: nuvem de entrada no formato XYZ\n");
@@ -82,6 +83,10 @@ void extraction_help()
     printf("     > 6: corte em 6 segmentos\n");
     printf("     > 4: corte em 4 segmentos\n");
     printf("     > m: corte manhattan\n");
+    printf("     > v: corte em V\n");
+    printf("     > vf: corte em V frontal\n");
+    printf("     > vs: corte em V sagital\n");
+    printf("     > vt: corte em V transversal\n");
     
     printf("EX1: mcalc -m hu_1980 -i ../data/cloud1.xyz -o hu1.txt -c t\n");
     printf("EX2: mcalc -m legendre -i ../dataset/bunny.xyz -o stdout -c w\n\n");
@@ -141,8 +146,6 @@ int main(int argc, char** argv)
         mfunc = &zernike_cloud_moments;
     else if (!strcmp(moment, SPHERIC))
         mfunc = &spheric_cloud_moments;
-    else if (!strcmp(moment, GOLDEN))
-        mfunc = &golden_cloud_moments;
     else if (!strcmp(moment, TUTU))
         mfunc = &tutu_cloud_moments;
     else
@@ -177,6 +180,14 @@ int main(int argc, char** argv)
 		results = extraction_4(cloud, mfunc);
 	else if (!strcmp(cut, CUT_MANHATTAN))
 		results = extraction_manhattan(cloud, mfunc);
+	else if (!strcmp(cut, CUT_VSHAPE))
+		results = extraction_vshape(cloud, mfunc);
+	else if (!strcmp(cut, CUT_VSHAPE_F))
+		results = extraction_vshape_f(cloud, mfunc);
+	else if (!strcmp(cut, CUT_VSHAPE_S))
+		results = extraction_vshape_s(cloud, mfunc);
+	else if (!strcmp(cut, CUT_VSHAPE_T))
+		results = extraction_vshape_t(cloud, mfunc);
 	else
 		results = (*mfunc)(cloud);
 	

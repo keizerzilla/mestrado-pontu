@@ -4,7 +4,7 @@ COMPILER_FLAGS = -Wall
 LINKER_FLAGS = -lm
 
 # alvos de compilacao
-all: mcalc cloudz nosext
+all: mcalc cloudz nosex normx
 
 # programa extrator de momentos invariantes
 mcalc: mcalc.c
@@ -15,6 +15,9 @@ cloudz: cloudz.c
 	$(CC) cloudz.c $(COMPILER_FLAGS) $(LINKER_FLAGS) $(CFLAGS) -o ../bin/cloudz
 
 # programa extrator de ponta do nariz
-nosext: nosext.c
-	$(CC) nosext.c $(COMPILER_FLAGS) $(LINKER_FLAGS) $(CFLAGS) -o ../bin/nosext
+nosex: nosex.c
+	$(CC) nosex.c $(COMPILER_FLAGS) $(LINKER_FLAGS) $(CFLAGS) -o ../bin/nosex
 
+# programa extrator de normal a nuvem
+normx: normx.c
+	$(CC) normx.c $(COMPILER_FLAGS) $(LINKER_FLAGS) $(CFLAGS) -o ../bin/normx

@@ -6,12 +6,11 @@ replace_dict = {"bosphorus" : "bs",
                 "densit"    : "d",
                 "crop"      : "c"}
 
-faces = ["neutral", "nonneutral"]
+faces = ["neutral"]
 
-#cuts = {"s" : "sagittal", "t" : "transversal", "f" : "frontal"}
-cuts = {"r" : "radial"}
+cuts = {"s" : "sagittal"}
 
-scenarios= ["bosphorus-outlier-densit200-crop80-icp"]
+scenarios= ["tutu"]
 
 moments = ["spheric"]
 
@@ -112,20 +111,10 @@ def go_combination():
 	for dataset in scenarios:
 		combination_rank1_neutral(dataset, moments, cuts, dump="../tutu/")
 		combination_rank1_nonneutral(dataset, moments, cuts, dump="../tutu/")
-		combination_roc1(dataset, moments, cuts, dump="../tutu/", n=3)
+		combination_roc1(dataset, moments, cuts, dump="../tutu/")
 
 if __name__ == "__main__":
 	extractor = MomentExtractor()
 	extractor.totalExtraction(faces, scenarios, cuts, moments, "tutu")
 	go_classification_rank1("tutu", plot=True)
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	

@@ -173,11 +173,11 @@ uint cloud_size(struct cloud* cloud)
 }
 
 /**
- * \brief Cria cópia de uma nuvem
+ * \brief Cria cópia por valor de uma nuvem
  * \param cloud A nuvem a ser copiada
  * \return Uma cópia de cloud
  */
-struct cloud* cloud_copy(struct cloud* cloud)
+struct cloud* cloud_cpy(struct cloud* cloud)
 {
 	struct cloud* cpy = cloud_new(cloud_size(cloud));
 	
@@ -628,19 +628,6 @@ void cloud_rotate_z(struct cloud* cloud, real d)
 }
 
 /**
- * \brief Função utilitária para a função de ordenação qsort()
- * \param p1 O primeiro ponto para comparação
- * \param p2 O segundo ponto para comparação
- */
-int cloud_compare(const void* p1, const void* p2)
-{
-    struct vector3* dp1 = (struct vector3*)p1;
-    struct vector3* dp2 = (struct vector3*)p2;
-	
-    return dp2->z - dp1->z;
-}
-
-/**
  * \brief Valor médio das coordenadas x de uma nuvem
  * \param cloud A nuvem alvo
  * \return Valor da média de x em cloud
@@ -686,12 +673,60 @@ real cloud_mean_z(struct cloud* cloud)
 }
 
 /**
+ * \brief Função utilitária para a função de ordenação qsort()
+ * \param p1 O primeiro ponto para comparação
+ * \param p2 O segundo ponto para comparação
+ */
+int cloud_compare(const void* p1, const void* p2)
+{
+    struct vector3* dp1 = (struct vector3*)p1;
+    struct vector3* dp2 = (struct vector3*)p2;
+	
+    return dp2->z - dp1->z;
+}
+
+/**
  * \brief Ordena uma cloud em profundidade usando qsort()
  * \param cloud A cloud alvo
  */
 void cloud_sort(struct cloud* cloud)
 {
     qsort(cloud->points, cloud->num_pts, sizeof(struct vector3), cloud_compare);
+}
+
+/**
+ * \brief Função utilitária para a função de ordenação qsort() (angulação)
+ * \param p1 O primeiro ponto para comparação
+ * \param p2 O segundo ponto para comparação
+ */
+int cloud_polar_compare(const void* p1, const void* p2)
+{
+	struct vector3* dp1 = (struct vector3*)p1;
+    struct vector3* dp2 = (struct vector3*)p2;
+	
+    return dp2->alpha - dp1->alpha;
+}
+
+/**
+ * \brief Ordena uma cloud por angulação usando qsort()
+ * \param cloud A cloud alvo
+ */
+void cloud_polar_sort(struct cloud* cloud)
+{
+	struct vector3* center = cloud_get_center(cloud);
+	struct vector3* p = NULL;
+	
+	for (uint i = 0; i < cloud_size(cloud); i++) {
+		p = &cloud->points[i];
+		p->alpha = atan2(p->y - center->y, p->x - center->x);
+	}
+	
+	qsort(cloud->points,
+	      cloud->num_pts,
+	      sizeof(struct vector3),
+	      cloud_polar_compare);
+	
+	vector3_free(center);
 }
 
 /**
@@ -801,6 +836,25 @@ real cloud_function_volume(struct cloud* cloud)
 	vector3_free(center);
 	
 	return vol;
+}
+
+/**
+ * \brief Secciona uma nuvem com base em corte circular a partir de referência
+ * \param cloud A nuvem alvo
+ * \param p O ponto de referência
+ * \param r Valor do raio de corte (em milimetros)
+ * \return A subnuvem cortada
+ */
+struct cloud* cloud_cut_radius(struct cloud* cloud, struct vector3* p, real r)
+{
+	struct cloud* sub = cloud_empty();
+    
+    for (uint i = 0; i < cloud->num_pts; i++) {
+        if (vector3_distance(p, &cloud->points[i]) <= r)
+            cloud_add_point_vector(sub, &cloud->points[i]);
+    }
+    
+    return sub;
 }
 
 /**
@@ -1231,6 +1285,31 @@ struct vector3* cloud_point_faraway_bestfit(struct cloud* cloud)
 	plane_free(bestfit);
 	
 	return faraway;
+}
+
+/**
+ * \brief Ordena uma cloud por distância usando qsort()
+ * \param cloud A cloud alvo
+ */
+void cloud_dist_sort(struct cloud* cloud)
+{
+	struct vector3* center = cloud_get_center(cloud);
+	struct vector3* p = NULL;
+	
+	struct plane* bestfit = cloud_plane_fitting(cloud);
+	
+	for (uint i = 0; i < cloud_size(cloud); i++) {
+		p = &cloud->points[i];
+		p->alpha = plane_distance2point(bestfit, p);
+	}
+	
+	qsort(cloud->points,
+	      cloud->num_pts,
+	      sizeof(struct vector3),
+	      cloud_polar_compare);
+	
+	plane_free(bestfit);
+	vector3_free(center);
 }
 
 /**

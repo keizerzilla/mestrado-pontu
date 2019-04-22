@@ -20,9 +20,16 @@
  * \brief Estrutura que armazena pontos no espaço tridimensional.
  */
 struct vector3 {
-    real x;
-    real y;
-    real z;
+	union {
+		struct {
+			real x, y, z;
+		};
+		struct {
+			real coord[3];
+		};
+	};
+	
+	real alpha;
 };
 
 /**
@@ -43,6 +50,7 @@ struct vector3* vector3_new(real x, real y, real z)
     v->x = x;
     v->y = y;
     v->z = z;
+    v->alpha = 0.0f;
 
     return v;
 }
@@ -615,6 +623,31 @@ real vector3_area(struct vector3* a,
     vector3_free(n);
 
     return ret;
+}
+
+/**
+ * \brief Computa a Curvatura de Menger
+ * \param a Primeiro vetor
+ * \param b Segundo vetor
+ * \param c Terceiro vetor
+ * \return A curvatura do lugar gerado por (a, b, c)
+ */
+real vector3_menger_curvature(struct vector3* a,
+                              struct vector3* b,
+                              struct vector3* c)
+{
+	struct vector3* s1 = vector3_sub(a, b);
+	struct vector3* s2 = vector3_sub(b, c);
+	struct vector3* s3 = vector3_sub(c, a);
+	
+	real num = 4*vector3_area(a, b, c);
+	real den = vector3_length(s1) * vector3_length(s2) * vector3_length(s3);
+	
+	vector3_free(s1);
+	vector3_free(s2);
+	vector3_free(s3);
+	
+	return num / den;
 }
 
 /**

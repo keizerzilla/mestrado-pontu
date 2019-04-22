@@ -457,5 +457,105 @@ struct matrix* extraction_7(struct cloud* cloud,
 	return ret;
 }
 
+/**
+ * \brief Corta a face em V (nariz, olhos, testa)
+ * \param cloud A nuvem alvo
+ * \return Nuvem cortada em V
+ */
+struct cloud* extraction_vshape_base(struct cloud* cloud)
+{
+	int spacing = 15;
+	
+	struct vector3* nosetip = cloud_point_faraway_bestfit(cloud);
+	nosetip->y += spacing;
+	struct vector3* diry = vector3_new(0, 1, 0);
+	struct vector3* dirx = vector3_new(1, 0, 0);
+	struct plane* plane = plane_new(diry, nosetip);
+	struct cloud* upper = cloud_cut_plane(cloud, plane);
+	nosetip->y -= spacing;
+	struct cloud* nose = cloud_segment(cloud, nosetip, diry, spacing);
+	struct cloud* nose_slice = cloud_segment(nose, nosetip, dirx, 25);
+	
+	struct cloud* concat = cloud_concat(nose_slice, upper);
+	
+	cloud_free(nose_slice);
+	cloud_free(nose);
+	cloud_free(upper);
+	plane_free(plane);
+	vector3_free(dirx);
+	vector3_free(diry);
+	vector3_free(nosetip);
+	
+	return concat;
+}
+
+/**
+ * \brief Corta a face em V (nariz, olhos, testa)
+ * \param cloud A nuvem alvo
+ * \param mfunc A função extratora de momentos
+ * \return Momentos do corte V
+ */
+struct matrix* extraction_vshape(struct cloud* cloud,
+                                 struct matrix* (*mfunc)(struct cloud*))
+{
+	struct cloud* seg = extraction_vshape_base(cloud);
+	struct matrix* ans = (*mfunc)(seg);
+	
+	cloud_free(seg);
+	
+	return ans;
+}
+
+/**
+ * \brief Corta a face em V frontalmente
+ * \param cloud A nuvem alvo
+ * \param mfunc A função extratora de momentos
+ * \return Momentos do corte V
+ */
+struct matrix* extraction_vshape_f(struct cloud* cloud,
+                                   struct matrix* (*mfunc)(struct cloud*))
+{
+	struct cloud* seg = extraction_vshape_base(cloud);
+	struct matrix* ans = extraction_frontal(seg, mfunc);
+	
+	cloud_free(seg);
+	
+	return ans;
+}
+
+/**
+ * \brief Corta a face em V sagitalmente
+ * \param cloud A nuvem alvo
+ * \param mfunc A função extratora de momentos
+ * \return Momentos do corte V
+ */
+struct matrix* extraction_vshape_s(struct cloud* cloud,
+                                   struct matrix* (*mfunc)(struct cloud*))
+{
+	struct cloud* seg = extraction_vshape_base(cloud);
+	struct matrix* ans = extraction_sagittal(seg, mfunc);
+	
+	cloud_free(seg);
+	
+	return ans;
+}
+
+/**
+ * \brief Corta a face em V transversalmente
+ * \param cloud A nuvem alvo
+ * \param mfunc A função extratora de momentos
+ * \return Momentos do corte V
+ */
+struct matrix* extraction_vshape_t(struct cloud* cloud,
+                                   struct matrix* (*mfunc)(struct cloud*))
+{
+	struct cloud* seg = extraction_vshape_base(cloud);
+	struct matrix* ans = extraction_transversal(seg, mfunc);
+	
+	cloud_free(seg);
+	
+	return ans;
+}
+
 #endif // EXTRACTION_H
 

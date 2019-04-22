@@ -2,3 +2,7 @@ bin/
 dump/
 datasets/
 __pycache__/
+
+demo
+*.xyz
+*.pcd
