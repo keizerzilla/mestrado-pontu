@@ -1044,7 +1044,7 @@ struct vector3* cloud_min_x(struct cloud* cloud)
 	uint index = 0;
 	real min_x = cloud->points[0].x;
 	for (uint i = 1; i < cloud->num_pts; i++) {
-        if (min_x < cloud->points[i].x) {
+        if (min_x > cloud->points[i].x) {
             min_x = cloud->points[i].x;
             index = i;
 		}
@@ -1063,7 +1063,7 @@ struct vector3* cloud_min_y(struct cloud* cloud)
 	uint index = 0;
 	real min_y = cloud->points[0].y;
 	for (uint i = 1; i < cloud->num_pts; i++) {
-        if (min_y < cloud->points[i].y) {
+        if (min_y > cloud->points[i].y) {
             min_y = cloud->points[i].y;
             index = i;
 		}
@@ -1082,7 +1082,7 @@ struct vector3* cloud_min_z(struct cloud* cloud)
 	uint index = 0;
 	real minz = cloud->points[0].z;
 	for (uint i = 1; i < cloud->num_pts; i++) {
-        if (minz < cloud->points[i].z) {
+        if (minz > cloud->points[i].z) {
             minz = cloud->points[i].z;
             index = i;
 		}
@@ -1101,7 +1101,7 @@ struct vector3* cloud_max_x(struct cloud* cloud)
 	uint index = 0;
 	real max_x = cloud->points[0].x;
 	for (uint i = 1; i < cloud->num_pts; i++) {
-        if (max_x > cloud->points[i].x) {
+        if (max_x < cloud->points[i].x) {
             max_x = cloud->points[i].x;
             index = i;
 		}
@@ -1120,7 +1120,7 @@ struct vector3* cloud_max_y(struct cloud* cloud)
 	uint index = 0;
 	real max_y = cloud->points[0].y;
 	for (uint i = 1; i < cloud->num_pts; i++) {
-        if (max_y > cloud->points[i].y) {
+        if (max_y < cloud->points[i].y) {
             max_y = cloud->points[i].y;
             index = i;
 		}
@@ -1139,7 +1139,7 @@ struct vector3* cloud_max_z(struct cloud* cloud)
 	uint index = 0;
 	real max_z = cloud->points[0].z;
 	for (uint i = 1; i < cloud->num_pts; i++) {
-        if (max_z > cloud->points[i].z) {
+        if (max_z < cloud->points[i].z) {
             max_z = cloud->points[i].z;
             index = i;
 		}
