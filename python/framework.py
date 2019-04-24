@@ -10,7 +10,7 @@ faces = ["neutral"]
 
 cuts = {"s" : "sagittal"}
 
-scenarios= ["tutu"]
+scenarios= ["bosphorus-tutu"]
 
 moments = ["spheric"]
 

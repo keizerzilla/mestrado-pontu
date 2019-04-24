@@ -1,12 +1,15 @@
 import os
+import math
 import subprocess
 import numpy as np
 import pandas as pd
 import numpy.linalg as linalg
 from open3d import *
+from sklearn.decomposition import PCA
 
-def unit_vector(v):
-	return v / (v**2).sum()**0.5
+def angle(v1, v2):
+	angle = np.arccos(np.dot(v1, v2)/(np.linalg.norm(v1) * np.linalg.norm(v2)))
+	return angle
 
 def get_nosetip(pcd):
 	prog = "../bin/nosex"
@@ -28,14 +31,14 @@ def get_nosetip(pcd):
 	return nosetip
 
 def get_normal(pcd):
-	prog = "../bin/normx"
-	cloud = "../dump/temp.xyz"
-	cmd = [prog, cloud]
-	
 	if isinstance(pcd, np.ndarray):
 		df = pd.DataFrame(pcd)
 	else:
 		df = pd.DataFrame(np.asarray(pcd.points))
+	
+	prog = "../bin/normx"
+	cloud = "../dump/temp.xyz"
+	cmd = [prog, cloud]
 	
 	df.to_csv(cloud, header=None, index=None, sep=' ')
 	
@@ -58,12 +61,12 @@ def outlier_removal(pcd, nn=50, r=10):
 	return out
 
 def segmentation(pcd, cut=80):
-	nosetip = get_nosetip(pcd)
-	
 	if isinstance(pcd, np.ndarray):
 		data = pcd
 	else:
 		data = np.asarray(pcd.points)
+	
+	nosetip = get_nosetip(data)
 	
 	origin = np.array([0, 0, 0])
 	direction = origin - nosetip
@@ -74,19 +77,21 @@ def segmentation(pcd, cut=80):
 	
 	return data
 
-def alignment(data, by_nose=False):
-	x = np.array([1, 0, 0])
-	y = np.array([0, 1, 0])
-	z = get_normal(data)
+def dispersion(data):
+	pca = PCA(n_components=3)
+	pca.fit(data)
 	
-	y = y * np.dot(z, y)
-	x = np.cross(z, y)
+	return np.abs(pca.components_)
+
+def alignment(data):
+	z = dispersion(data)[2]
+	z0 = np.array([0, 0, 1])
+	tz = angle(z, z0)
 	
-	x = unit_vector(x)
-	y = unit_vector(y)
-	z = unit_vector(z)
+	rotation_matrix = np.array([[1,          0,           0],
+	                            [0, np.cos(tz), -np.sin(tz)],
+	                            [0, np.sin(tz),  np.cos(tz)]])
 	
-	rotation_matrix = np.absolute(np.array([x, y, z]))
 	aligned = np.matmul(data, rotation_matrix)
 	
 	return aligned
@@ -102,8 +107,8 @@ def preprocessing(filepath, cloud, outdir, leafsize=2.00, nn=50, r=10, cut=80):
 	pcd = load_cloud(filepath)
 	pcd = downsample(pcd, leafsize)
 	pcd = outlier_removal(pcd, nn, r)
-	#pcd = segmentation(pcd, cut)
-	#pcd = alignment(pcd)
+	pcd = segmentation(pcd, cut)
+	pcd = alignment(pcd)
 	save_result(pcd, outdir + cloud)
 
 def batch_preprocessing(folder, outdir, leafsize=2.00, nn=50, r=10, cut=80):
@@ -115,11 +120,8 @@ def batch_preprocessing(folder, outdir, leafsize=2.00, nn=50, r=10, cut=80):
 			print(cloud, "ok!")
 
 if __name__ == "__main__":
-	folder = ["../datasets/bosphorus/neutral/",
-	          "../datasets/bosphorus/nonneutral/"]
-	outdir = ["../datasets/bosphorus-tutu/neutral/",
-	          "../datasets/bosphorus-tutu/nonneutral/"]
+	folder = "../datasets/bosphorus/neutral/"
+	outdir = "../datasets/bosphorus-tutu/neutral/"
 	
-	for f, o in zip(folder, outdir):
-		batch_preprocessing(f, o)
+	batch_preprocessing(folder, outdir)
 	
