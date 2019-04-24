@@ -1331,5 +1331,43 @@ void cloud_debug(struct cloud* cloud, FILE* output)
 	}
 }
 
+/**
+ * \brief Remove um ponto da nuvem de pontos
+ * \param cloud A nuvem alvo
+ * \param idx Index do ponto a ser removido
+ * \return O ponto removido ou NULL se não houver memória ou se o index for
+ * inválido
+*/
+struct vector3* cloud_remove_point(struct cloud* cloud, uint idx)
+{
+	if (idx >= cloud->num_pts || idx < 0) {
+		return NULL;
+	}
+
+	struct vector3* removed_point;
+	removed_point = vector3_from_vector(&cloud->points[idx]);
+
+	if (cloud->num_pts == 1) {	
+		cloud_free(cloud);
+		cloud = cloud_empty();
+	} else {
+		cloud->num_pts--;
+		for (uint i = idx; i < cloud->num_pts; i++) {
+			vector3_copy(&cloud->points[i], &cloud->points[i+1]);
+		}
+		
+		uint new_size = cloud->num_pts * sizeof(struct vector3);
+		struct vector3* new_points = realloc(cloud->points, new_size);
+		if (new_points == NULL) {
+			util_error("%s: erro removendo novo ponto [points]", __FUNCTION__);
+			return NULL;
+		}
+		
+		cloud_calc_center(cloud);
+	}
+
+	return removed_point;
+}
+
 #endif // CLOUD_H
 
