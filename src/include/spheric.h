@@ -72,7 +72,7 @@ real spheric_moment(int p, int q, int r, struct cloud* cloud)
 	
 	vector3_free(center);
 	
-	return moment / spheric_norm(p, q, r, cloud);
+	return moment / cloud_size(cloud);
 }
 
 /**
@@ -97,6 +97,42 @@ struct matrix* spheric_cloud_moments(struct cloud* cloud)
             }
         }
     }
+
+    return results;
+}
+
+/**
+ * \brief Calcula os momentos esféricos invariantes
+ * \param cloud A nuvem alvo
+ * \return A matriz aonde os momentos serão salvos
+ */
+struct matrix* spheric_invariant_moments(struct cloud* cloud)
+{
+	struct matrix* results = matrix_new(1, 6);
+	
+    real m200 = spheric_moment(2, 0, 0, cloud);
+    real m020 = spheric_moment(0, 2, 0, cloud);
+    real m002 = spheric_moment(0, 0, 2, cloud);
+    real m110 = spheric_moment(1, 1, 0, cloud);
+    real m101 = spheric_moment(1, 0, 1, cloud);
+    real m011 = spheric_moment(0, 1, 1, cloud);
+
+    real i1 = m200 + m020 + m002;
+    real i2 = m200*m020 + m200*m002 + m020*m002 -
+              m110*m110 - m101*m101 - m011*m011;
+    real i3 = m200*m020*m002 + 2*m110*m101*m011 -
+              m002*m110*m110 - m020*m101*m101 - m200*m011*m011;
+	
+	real j1 = i1;
+	real j2 = i1*i1 - 2*i2;
+	real j3 = i1*i1*i1 - 3*i1*i2 + 3*i3;
+	
+    matrix_set(results, 0, 0, i1);
+    matrix_set(results, 0, 1, i2);
+    matrix_set(results, 0, 2, i3);
+    matrix_set(results, 0, 3, j1);
+    matrix_set(results, 0, 4, j2);
+    matrix_set(results, 0, 5, j3);
 
     return results;
 }

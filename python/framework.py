@@ -1,3 +1,4 @@
+import sys
 from features import *
 from classification import *
 
@@ -6,13 +7,24 @@ replace_dict = {"bosphorus" : "bs",
                 "densit"    : "d",
                 "crop"      : "c"}
 
-faces = ["neutral"]
+faces = ["nonneutral"]
 
-cuts = {"s" : "sagittal"}
+cuts = {"f" : "frontal",
+        "s" : "sagittal",
+        "t" : "transversal",
+        "vf" : "vfrontal",
+        "vs" : "vsagittal",
+        "vt" : "vtransversal",
+        "r" : "radial",
+        "u" : "upper",
+        "l" : "lower",
+        "7" : "seven",
+        "6" : "six",
+        "4" : "four"}
 
-scenarios= ["bosphorus-tutu"]
+scenarios= ["bosphorus-outlier-densit200-crop80-icp"]
 
-moments = ["spheric"]
+moments = ["zernike"]
 
 mini_scenarios = []
 for s in scenarios:
@@ -41,13 +53,12 @@ def plot_classification(res, title, rdir, cut_folder):
 	os.makedirs(figpath, exist_ok=True)
 	plt.savefig(figpath + filename + ".png")
 
-def go_classification_rank1(rdir, dump=False, plot=False):
+def go_classification_rank1(rdir, tname="Rank1", dump=False, plot=False):
 	for face in faces:
 		datasets = ["../datasets/" + x + "/{}".format(face) for x in scenarios]
 		for cut, cut_folder in cuts.items():
 			
 			res = pd.DataFrame(columns=moments, index=mini_scenarios)
-			test_name = ""
 			
 			for data in datasets:
 				scenario = data.split("/")[2]
@@ -65,11 +76,9 @@ def go_classification_rank1(rdir, dump=False, plot=False):
 					ans = None
 					if face == "neutral":
 						ans = rank1_neutral(neutral)
-						test_name = "Rank1a"
 					else:
 						nonneutral = folder + "nonneutral-{}.dat".format(moment)
 						ans = rank1_nonneutral(neutral, nonneutral)
-						test_name = "Rank1b"
 					
 					classifier, rate = max_rate(ans)
 					rate = round(rate*100, 2)
@@ -77,10 +86,10 @@ def go_classification_rank1(rdir, dump=False, plot=False):
 					print("{:<11}{:<15}{:<7}".format(moment, classifier, rate))
 			
 			if dump:
-				d = "../"+rdir+"/{}-{}-{}.csv".format(test_name, rdir, cut_folder)
+				d = "../"+rdir+"/{}-{}-{}.csv".format(tname, rdir, cut_folder)
 				res.to_csv(d)
 			if plot:
-				plot_classification(res, test_name, rdir, cut_folder)
+				plot_classification(res, tname, rdir, cut_folder)
 
 def go_classification_roc1(rdir, plot=False):
 	for cut, cut_folder in cuts.items():
@@ -114,7 +123,12 @@ def go_combination():
 		combination_roc1(dataset, moments, cuts, dump="../tutu/")
 
 if __name__ == "__main__":
-	extractor = MomentExtractor()
-	extractor.totalExtraction(faces, scenarios, cuts, moments, "tutu")
-	go_classification_rank1("tutu", plot=True)
+	if len(sys.argv) == 3:
+		tname = "zernike_n{}_m{}".format(sys.argv[1], sys.argv[2])
+	else:
+		tname = "tutu"
+	
+	#extractor = MomentExtractor()
+	#extractor.totalExtraction(faces, scenarios, cuts, moments, "tutu")
+	go_classification_rank1("tutu", tname="nonneutralz", dump=True, plot=True)
 	

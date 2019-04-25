@@ -6,13 +6,19 @@
  * utilizando voxel grid.
  */
 
- #ifndef VOXELGRID_H
- #define VOXELGRID_H
+#ifndef VOXELGRID_H
+#define VOXELGRID_H
 
 #include "cloud.h"
 
-struct cloud* cubic_voxel_grid(struct cloud* src, float leafsize) {
-    
+/**
+ * \brief Executa redução de dimensionalidade numa nuvem de pontos
+ * \param cloud A nuvem alvo
+ * \param leafsize Tamanho do cubo deslizante
+ * \return A nuvem cloud com dimensão reduzida
+ */
+struct cloud* cubic_voxel_grid(struct cloud* src, float leafsize)
+{
     float apothem = leafsize / 2;
     
     struct vector3* centroid = cloud_get_center(src);
@@ -118,4 +124,5 @@ struct cloud* cubic_voxel_grid(struct cloud* src, float leafsize) {
     return output;
 }
 
- #endif // VOXELGRID_H
+#endif // VOXELGRID_H
+

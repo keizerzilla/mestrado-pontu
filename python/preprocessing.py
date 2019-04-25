@@ -53,7 +53,11 @@ def load_cloud(filepath):
 	return read_point_cloud(filepath)
 
 def downsample(pcd, leafsize=2.00):
-	return voxel_down_sample(pcd, leafsize)
+	if isinstance(pcd, np.ndarray):
+		data = PointCloud()
+		data.points = Vector3dVector(pcd)
+	
+	return voxel_down_sample(data, leafsize)
 
 def outlier_removal(pcd, nn=50, r=10):
 	out, _ = radius_outlier_removal(pcd, nn, r)
@@ -105,10 +109,10 @@ def save_result(data, outfile):
 
 def preprocessing(filepath, cloud, outdir, leafsize=2.00, nn=50, r=10, cut=80):
 	pcd = load_cloud(filepath)
-	pcd = downsample(pcd, leafsize)
 	pcd = outlier_removal(pcd, nn, r)
 	pcd = segmentation(pcd, cut)
 	pcd = alignment(pcd)
+	pcd = downsample(pcd, leafsize)
 	save_result(pcd, outdir + cloud)
 
 def batch_preprocessing(folder, outdir, leafsize=2.00, nn=50, r=10, cut=80):

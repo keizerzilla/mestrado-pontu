@@ -25,3 +25,4 @@ nosex: nosex.c
 # programa extrator de normal a nuvem
 normx: normx.c
 	$(CC) normx.c $(COMPILER_FLAGS) $(LINKER_FLAGS) $(CFLAGS) -o $(DIR)normx
+
