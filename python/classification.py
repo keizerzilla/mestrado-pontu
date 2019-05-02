@@ -86,6 +86,11 @@ def run_classification(X_train, y_train, X_test, y_test, norm=True, skew=True):
 	
 	ans = dict()
 	
+	#print("antes:", X_train.shape, X_test.shape)
+	#X_train = X_train[:, ~np.all(np.equal(X_train, 0.0), axis=0)]
+	#X_test = X_test[:, ~np.all(np.equal(X_test, 0.0), axis=0)]
+	#print("depois:", X_train.shape, X_test.shape)
+	
 	X_train[X_train == np.inf] = 0
 	X_train[X_train == -np.inf] = 0
 	X_train[X_train == np.nan] = 0

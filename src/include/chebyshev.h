@@ -12,8 +12,17 @@
 #ifndef CHEBYSHEV_H
 #define CHEBYSHEV_H
 
-#define CHEBYSHEV_ORDER 2
-#define CHEBYSHEV_MOMENTS 27
+#ifndef CHEBYSHEV_ORDER_X
+#define CHEBYSHEV_ORDER_X 2
+#endif
+
+#ifndef CHEBYSHEV_ORDER_Y
+#define CHEBYSHEV_ORDER_Y 2
+#endif
+
+#ifndef CHEBYSHEV_ORDER_Z
+#define CHEBYSHEV_ORDER_Z 2
+#endif
 
 #include "cloud.h"
 #include "matrix.h"
@@ -68,13 +77,9 @@ real chebyshev_norm(int p, int n)
  */
 real chebyshev_moment(int p, int q, int r, struct cloud* cloud)
 {
+	struct vector3* center = cloud_get_center(cloud);
 	int n = cloud_size(cloud);
     real moment = 0.0f;
-    real norm = chebyshev_norm(p, n) *
-                chebyshev_norm(q, n) *
-                chebyshev_norm(r, n);
-                
-    struct vector3* center = cloud_get_center(cloud);
 
     for (uint i = 0; i < cloud->num_pts; i++) {
         moment += chebyshev_poly(p, n, cloud->points[i].x - center->x) *
@@ -84,6 +89,10 @@ real chebyshev_moment(int p, int q, int r, struct cloud* cloud)
 	}
 	
 	vector3_free(center);
+	
+	real norm = chebyshev_norm(p, n) *
+	            chebyshev_norm(q, n) *
+	            chebyshev_norm(r, n);
 	
     return moment / norm;
 }
@@ -96,16 +105,19 @@ real chebyshev_moment(int p, int q, int r, struct cloud* cloud)
  */
 struct matrix* chebyshev_cloud_moments(struct cloud* cloud)
 {
-    struct matrix* results = matrix_new(1, CHEBYSHEV_MOMENTS);
+	int nmoments = (CHEBYSHEV_ORDER_X + 1) *
+	               (CHEBYSHEV_ORDER_Y + 1) *
+	               (CHEBYSHEV_ORDER_Z + 1);
+    struct matrix* results = matrix_new(1, nmoments);
 
     int p = 0;
     int q = 0;
     int r = 0;
     int col = 0;
 
-    for (p = 0; p <= CHEBYSHEV_ORDER; p++) {
-        for (q = 0; q <= CHEBYSHEV_ORDER; q++) {
-            for (r = 0; r <= CHEBYSHEV_ORDER; r++) {
+    for (p = 0; p <= CHEBYSHEV_ORDER_X; p++) {
+        for (q = 0; q <= CHEBYSHEV_ORDER_Y; q++) {
+            for (r = 0; r <= CHEBYSHEV_ORDER_Z; r++) {
                 matrix_set(results, 0, col, chebyshev_moment(p, q, r, cloud));
                 col++;
             }

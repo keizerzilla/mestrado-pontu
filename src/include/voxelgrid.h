@@ -6,8 +6,8 @@
  * utilizando voxel grid.
  */
 
- #ifndef VOXELGRID_H
- #define VOXELGRID_H
+#ifndef VOXELGRID_H
+#define VOXELGRID_H
 
 #include "cloud.h"
 
@@ -15,6 +15,12 @@ uint idx_offset (uint i, uint j, uint k, uint size_x, uint size_y) {
     return (k * size_x * size_y) + (j * size_x) + i;
 }
 
+/**
+ * \brief Executa redução de dimensionalidade numa nuvem de pontos
+ * \param cloud A nuvem alvo
+ * \param leafsize Tamanho do cubo deslizante
+ * \return A nuvem cloud com dimensão reduzida
+ */
 struct cloud* cubic_voxel_grid(struct cloud* src, float leafsize) {
     if (leafsize <= 0.0) {
         return NULL;
@@ -148,4 +154,5 @@ struct cloud* cubic_voxel_grid(struct cloud* src, float leafsize) {
     return output;
 }
 
- #endif // VOXELGRID_H
+#endif // VOXELGRID_H
+
