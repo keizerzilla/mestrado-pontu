@@ -7,6 +7,9 @@ import numpy.linalg as linalg
 from open3d import *
 from sklearn.decomposition import PCA
 
+def unit_vector(v):
+	return v / (v**2).sum()**0.5
+
 def angle(v1, v2):
 	angle = np.arccos(np.dot(v1, v2)/(np.linalg.norm(v1) * np.linalg.norm(v2)))
 	return angle
@@ -66,41 +69,40 @@ def outlier_removal(pcd, nn=50, r=10):
 	
 	return out
 
+def translation(pcd):
+	if isinstance(pcd, np.ndarray):
+		data = pcd
+	else:
+		data = np.asarray(pcd.points)
+		
+	#nosetip = np.mean(data, axis=0)
+	nosetip = get_nosetip(data)
+	origin = np.array([0, 0, 0])
+	direction = origin - nosetip
+	data = data + direction
+	
+	return data
+
 def segmentation(pcd, cut=80):
 	if isinstance(pcd, np.ndarray):
 		data = pcd
 	else:
 		data = np.asarray(pcd.points)
 	
-	nosetip = get_nosetip(data)
-	
-	origin = np.array([0, 0, 0])
-	direction = origin - nosetip
-	data = data + direction
-	
 	indexes = linalg.norm(data, axis=1) <= cut
 	data = data[indexes]
 	
 	return data
 
-def dispersion(data):
-	"""
+def alignment(data):
 	pca = PCA(n_components=3)
 	pca.fit(data)
 	
-	return np.abs(pca.components_[2])
-	"""
-	return get_normal(data)
+	x = pca.components_[1]
+	y = pca.components_[0]
+	z = pca.components_[2]
 	
-def alignment(data):
-	z = dispersion(data)
-	z0 = np.array([0, 0, 1])
-	tz = angle(z, z0)
-	
-	rotation_matrix = np.array([[1,          0,           0],
-	                            [0, np.cos(tz), -np.sin(tz)],
-	                            [0, np.sin(tz),  np.cos(tz)]])
-	
+	rotation_matrix = np.absolute(np.array([x, y, z]))
 	aligned = np.matmul(data, rotation_matrix)
 	
 	return aligned
@@ -114,8 +116,9 @@ def save_result(data, outfile):
 
 def preprocessing(filepath, cloud, outdir, leafsize=2.00, nn=50, r=10, cut=80):
 	pcd = load_cloud(filepath)
-	pcd = downsample(pcd, leafsize)
+	#pcd = downsample(pcd, leafsize)
 	pcd = outlier_removal(pcd, nn, r)
+	#pcd = translation(pcd)
 	#pcd = segmentation(pcd, cut)
 	#pcd = alignment(pcd)
 	save_result(pcd, outdir + cloud)
@@ -126,11 +129,18 @@ def batch_preprocessing(folder, outdir, leafsize=2.00, nn=50, r=10, cut=80):
 		if ".xyz" in cloud:
 			input_cloud = folder + cloud
 			preprocessing(input_cloud, cloud, outdir, leafsize, nn, r, cut)
-			print(cloud, "ok!")
+			print(cloud, "preprocessed Ok!")
 
 if __name__ == "__main__":
-	folder = "../datasets/bosphorus/other/"
-	outdir = "../datasets/bosphorus-tutu/other/"
+	folder = "../datasets/bosphorus-nose/neutral/"
+	outdir = "../datasets/bosphorus-nose-preprocessed/neutral/"
 	
 	batch_preprocessing(folder, outdir)
+	
+	
+	
+	
+	
+	
+	
 	

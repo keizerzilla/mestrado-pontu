@@ -615,18 +615,43 @@ void cloud_scale(struct cloud* cloud, real f)
 }
 
 /**
- * \brief Efetua translação na nuvem a partir de um vetor alvo
+ * \brief Efetua translação na nuvem a partir de uma origem e um destino
  * \param cloud A nuvem a ser transformada
+ * \param origin O vetor origem
+ * \param dest 0 vetor destino
  * \param t O vetor transformação
  */
-void cloud_translate_vector(struct cloud* cloud, struct vector3* dest)
+void cloud_translate_vector_dir(struct cloud* cloud,
+                                struct vector3* origin,
+                                struct vector3* dest)
 {
-    struct vector3* t = vector3_sub(dest, cloud_get_center(cloud));
+	struct vector3* t = vector3_sub(origin, dest);
 
     for (uint i = 0; i < cloud->num_pts; i++)
         vector3_increase(&cloud->points[i], t);
 
     vector3_free(t);
+    
+	cloud_calc_center(cloud);
+}
+
+/**
+ * \brief Efetua translação na nuvem a partir de um vetor alvo
+ * \param cloud A nuvem a ser transformada
+ * \param dest O vetor destino
+ * \param t O vetor transformação
+ */
+void cloud_translate_vector(struct cloud* cloud, struct vector3* dest)
+{
+	struct vector3* center = cloud_get_center(cloud);
+    struct vector3* t = vector3_sub(dest, center);
+
+    for (uint i = 0; i < cloud->num_pts; i++)
+        vector3_increase(&cloud->points[i], t);
+
+    vector3_free(t);
+    vector3_free(center);
+    
 	cloud_calc_center(cloud);
 }
 

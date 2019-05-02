@@ -16,7 +16,6 @@
 #include "include/cloud.h"
 #include "include/util.h"
 #include "include/spheric.h"
-#include "include/tutu.h"
 
 #define HUTUTU			"hututu"
 #define HU1980			"hu1980"
@@ -26,7 +25,6 @@
 #define LEGENDRE		"legendre"
 #define CHEBYSHEV		"chebyshev"
 #define SPHERIC			"spheric"
-#define TUTU			"tutu"
 
 #define CUT_WHOLE		"w"
 #define CUT_SAGITTAL	"s"
@@ -62,7 +60,6 @@ void extraction_help()
     printf("     > legendre\n");
     printf("     > chebyshev\n");
     printf("     > spheric\n");
-    printf("     > tutu\n");
     
     printf(" -i: nuvem de entrada no formato XYZ\n");
     printf("     > ../data/bunny.xyz, face666.xyz, ~/bs/bs001.xyz, etc\n");
@@ -146,8 +143,6 @@ int main(int argc, char** argv)
         mfunc = &zernike_cloud_moments;
     else if (!strcmp(moment, SPHERIC))
         mfunc = &spheric_cloud_moments;
-    else if (!strcmp(moment, TUTU))
-        mfunc = &tutu_cloud_moments;
     else
     	mfunc = &hu_cloud_moments_hututu;
 	

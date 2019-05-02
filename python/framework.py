@@ -9,12 +9,9 @@ replace_dict = {"bosphorus" : "bs",
 
 faces = ["neutral"]
 
-cuts = {"w" : "whole",
-        "f" : "frontal",
-        "s" : "sagittal",
-        "t" : "transversal"}
+cuts = {"t" : "transversal"}
 
-scenarios= ["bosphorus-outlier-densit200-crop80-icp"]
+scenarios= ["bosphorus-nose-preprocessed"]
 
 moments = ["zernike"]
 
@@ -125,5 +122,5 @@ if __name__ == "__main__":
 	
 	extractor = MomentExtractor()
 	extractor.totalExtraction(faces, scenarios, cuts, moments, "tutu")
-	go_classification_rank1("tutu", plot=True)
+	go_classification_rank1("tutu", tname=tname, dump=True)
 	

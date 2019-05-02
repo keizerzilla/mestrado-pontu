@@ -8,7 +8,7 @@ DIR = ../bin/
 $(shell mkdir -p $(DIR))
 
 # alvos de compilacao
-all: mcalc cloudz nosex normx
+all: mcalc cloudz nosex normx nosecut
 
 # programa extrator de momentos invariantes
 mcalc: mcalc.c
@@ -25,4 +25,8 @@ nosex: nosex.c
 # programa extrator de normal a nuvem
 normx: normx.c
 	$(CC) normx.c $(COMPILER_FLAGS) $(LINKER_FLAGS) $(CFLAGS) -o $(DIR)normx
+
+# programa extrator de região do nariz
+nosecut: nosecut.c
+	$(CC) nosecut.c $(COMPILER_FLAGS) $(LINKER_FLAGS) $(CFLAGS) -o $(DIR)nosecut
 
