@@ -17,6 +17,17 @@
 #include "matrix.h"
 
 /**
+ * \brief Coeficiente B de Legendre (@TODO)
+ * \param a Primeiro sub-índice
+ * \param k Segund sub-índice
+ * \return Bak 
+ */
+real legendre_B(int a, int k)
+{
+	return 1.0f;
+}
+
+/**
  * \brief Calcula o polinômio de Legendre
  * \param n A ordem do polinômio
  * \param x O argumento do polinômio
@@ -111,6 +122,25 @@ real legendre_moment(int p, int q, int r, struct cloud* cloud)
 }
 
 /**
+ * \brief Calcula o momento normalizado de legendre (@ERRADO)
+ * \param p A ordem da dimensão x
+ * \param q A ordem da dimensão y
+ * \param r A ordem da dimensão z
+ * \param cloud A nuvem alvo
+ * \return O momento normalizado de ordem p+q+r da nuvem cloud
+ */
+real legendre_scaled(int p, int q, int r, struct cloud* cloud)
+{
+	real central = legendre_moment(p, q, r, cloud);
+	real zero = pow(legendre_moment(0, 0, 0, cloud), 2);
+	real x = legendre_moment(p, 0, 0, cloud);
+	real y = legendre_moment(0, q, 0, cloud);
+	real z = legendre_moment(0, 0, r, cloud);
+	
+	return (zero * central) / (x * y * z);
+}
+
+/**
  * \brief Calcula os momentos de Legendre de uma nuvem
  * \param cloud A nuvem alvo
  * \return A matrix aonde os resultados serão salvos
@@ -127,47 +157,11 @@ struct matrix* legendre_cloud_moments(struct cloud* cloud)
     for (p = 0; p <= LEGENDRE_ORDER; p++) {
         for (q = 0; q <= LEGENDRE_ORDER; q++) {
             for (r = 0; r <= LEGENDRE_ORDER; r++) {
-                matrix_set(results, 0, col, legendre_moment(p, q, r, cloud));
+            	matrix_set(results, 0, col, legendre_moment(p, q, r, cloud));
                 col++;
             }
         }
     }
-
-    return results;
-}
-
-/**
- * \brief Calcula os momentos invariantes de Legendre de uma nuvem (!!!TEMP!!!)
- * \param cloud A nuvem alvo
- * \return A matrix aonde os resultados serão salvos
- */
-struct matrix* legendre_invariant_moments(struct cloud* cloud)
-{
-    struct matrix* results = matrix_new(1, 6);
-	
-	real m200 = legendre_moment(2, 0, 0, cloud);
-    real m020 = legendre_moment(0, 2, 0, cloud);
-    real m002 = legendre_moment(0, 0, 2, cloud);
-    real m110 = legendre_moment(1, 1, 0, cloud);
-    real m101 = legendre_moment(1, 0, 1, cloud);
-    real m011 = legendre_moment(0, 1, 1, cloud);
-	
-    real i1 = m200 + m020 + m002;
-    real i2 = m200*m020 + m200*m002 + m020*m002 -
-              m110*m110 - m101*m101 - m011*m011;
-    real i3 = m200*m020*m002 + 2*m110*m101*m011 -
-              m002*m110*m110 - m020*m101*m101 - m200*m011*m011;
-	
-	real j1 = i1;
-	real j2 = i1*i1 - 2*i2;
-	real j3 = i1*i1*i1 - 3*i1*i2 + 3*i3;
-	
-    matrix_set(results, 0, 0, i1);
-    matrix_set(results, 0, 1, i2);
-    matrix_set(results, 0, 2, i3);
-    matrix_set(results, 0, 3, j1);
-    matrix_set(results, 0, 4, j2);
-    matrix_set(results, 0, 5, j3);
 
     return results;
 }

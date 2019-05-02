@@ -124,6 +124,8 @@ def nose_extraction(folder):
 			
 			cmd = ["../bin/nosex", input_cloud, output_cloud]
 			subprocess.run(cmd)
+			
+			print(input_cloud, "extracted ok!")
 
 def nose_convert_pcd(folder):
 	for cloud in os.listdir(folder):
@@ -145,15 +147,18 @@ def nose_view(folder):
 			output_pcd = output_cloud.replace(".xyz", ".pcd")
 			
 			view = ["pcl_viewer", "-fc", "0,0,255", "-ps", "2", input_pcd,
-			        "-fc", "255,0,0", "-ps", "5", output_pcd]
+			                      "-fc", "255,0,0", "-ps", "5", output_pcd]
 			subprocess.run(view)
 
 if __name__ == "__main__":
-	outdir = "../datasets/bosphorus-tutu/nonneutral/"
+	outdir = "../datasets/bosphorus-tutu/neutral/"
 	
-	#nose_extraction(outdir)
-	#nose_bosphorus(outdir)
+	nose_extraction(outdir)
+	nose_bosphorus(outdir)
+	nose_dispersion("../datasets/bosphorus-tutu/nose-neutral.csv")
+	
 	#nose_convert_pcd(outdir)
-	nose_convert_pcd(outdir + "bsnose/")
-	#nose_dispersion("../datasets/bosphorus-tutu/nose-nonneutral.csv")
+	nose_convert_pcd(outdir + "nose/")
+	#nose_convert_pcd(outdir + "bsnose/")
+	#nose_view(outdir)
 	

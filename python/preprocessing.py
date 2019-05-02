@@ -56,6 +56,8 @@ def downsample(pcd, leafsize=2.00):
 	if isinstance(pcd, np.ndarray):
 		data = PointCloud()
 		data.points = Vector3dVector(pcd)
+	else:
+		data = pcd
 	
 	return voxel_down_sample(data, leafsize)
 
@@ -82,13 +84,16 @@ def segmentation(pcd, cut=80):
 	return data
 
 def dispersion(data):
+	"""
 	pca = PCA(n_components=3)
 	pca.fit(data)
 	
-	return np.abs(pca.components_)
-
+	return np.abs(pca.components_[2])
+	"""
+	return get_normal(data)
+	
 def alignment(data):
-	z = dispersion(data)[2]
+	z = dispersion(data)
 	z0 = np.array([0, 0, 1])
 	tz = angle(z, z0)
 	
@@ -109,10 +114,10 @@ def save_result(data, outfile):
 
 def preprocessing(filepath, cloud, outdir, leafsize=2.00, nn=50, r=10, cut=80):
 	pcd = load_cloud(filepath)
-	pcd = outlier_removal(pcd, nn, r)
-	pcd = segmentation(pcd, cut)
-	pcd = alignment(pcd)
 	pcd = downsample(pcd, leafsize)
+	pcd = outlier_removal(pcd, nn, r)
+	#pcd = segmentation(pcd, cut)
+	#pcd = alignment(pcd)
 	save_result(pcd, outdir + cloud)
 
 def batch_preprocessing(folder, outdir, leafsize=2.00, nn=50, r=10, cut=80):
@@ -124,8 +129,8 @@ def batch_preprocessing(folder, outdir, leafsize=2.00, nn=50, r=10, cut=80):
 			print(cloud, "ok!")
 
 if __name__ == "__main__":
-	folder = "../datasets/bosphorus/neutral/"
-	outdir = "../datasets/bosphorus-tutu/neutral/"
+	folder = "../datasets/bosphorus/other/"
+	outdir = "../datasets/bosphorus-tutu/other/"
 	
 	batch_preprocessing(folder, outdir)
 	

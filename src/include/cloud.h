@@ -193,6 +193,52 @@ struct cloud* cloud_cpy(struct cloud* cloud)
 }
 
 /**
+ * \brief Retorna o ponto de menor alpha de uma nuvem
+ * \param cloud A nuvem alvo
+ * \return O endereço do ponto de menor alpha em cloud
+ */
+struct vector3* cloud_min_alpha(struct cloud* cloud)
+{
+	if (cloud_size(cloud) == 0)
+		return NULL;
+	
+	struct vector3* p = &cloud->points[0];
+	real min = p->alpha;
+	
+	for (uint i = 1; i < cloud_size(cloud); i++) {
+		if (cloud->points[i].alpha < min) {
+			min = cloud->points[i].alpha;
+			p = &cloud->points[i];
+		}
+	}
+	
+	return p;
+}
+
+/**
+ * \brief Retorna o ponto de maior alpha de uma nuvem
+ * \param cloud A nuvem alvo
+ * \return O endereço do ponto de maior alpha em cloud
+ */
+struct vector3* cloud_max_alpha(struct cloud* cloud)
+{
+	if (cloud_size(cloud) == 0)
+		return NULL;
+	
+	struct vector3* p = &cloud->points[0];
+	real max = p->alpha;
+	
+	for (uint i = 1; i < cloud_size(cloud); i++) {
+		if (cloud->points[i].alpha > max) {
+			max = cloud->points[i].alpha;
+			p = &cloud->points[i];
+		}
+	}
+	
+	return p;
+}
+
+/**
  * \brief Carrega uma nuvem a partir de um arquivo XYZ
  * \param filename O arquivo onde a nuvem está guardada
  * \return Um estrutura cloud carregada em memória ou NULL caso ocorra erro
@@ -457,14 +503,27 @@ int cloud_save_ply(struct cloud* cloud, const char* filename)
 	fprintf(file, "property float x\n");
 	fprintf(file, "property float y\n");
 	fprintf(file, "property float z\n");
+	fprintf(file, "property uchar red\n");
+	fprintf(file, "property uchar green\n");
+	fprintf(file, "property uchar blue\n");
 	fprintf(file, "end_header\n");
 	
+	real max_alpha = cloud_max_alpha(cloud)->alpha;
+	real min_alpha = cloud_min_alpha(cloud)->alpha;
+	
     for (uint i = 0; i < cloud->num_pts; i++) {
-        fprintf(file, "%le %le %le\n", cloud->points[i].x,
-                                       cloud->points[i].y,
-                                       cloud->points[i].z);
+    	float f = cloud->points[i].alpha;
+    	unsigned short x = ((f - min_alpha) / (max_alpha - min_alpha)) * 255;
+    	
+    	unsigned short r = x;
+    	unsigned short g = x;
+    	unsigned short b = x;
+        fprintf(file, "%le %le %le %hu %hu %hu\n", cloud->points[i].x,
+                                                   cloud->points[i].y,
+                                                   cloud->points[i].z,
+                                                   r, g, b);
     }
-
+	
     fclose(file);
 
     return 1;
@@ -1202,17 +1261,16 @@ struct vector3* cloud_average_direction(struct cloud* cloud)
 }
 
 /**
- * \brief Ajusta um plano a uma nuvem de pontos
- *        Fonte: https://www.ilikebigbits.com/2015_03_04_plane_from_points.html
+ * \brief Ajusta um plano a uma nuvem de pontos em função de um ponto
+ *  Fonte: https://www.ilikebigbits.com/2015_03_04_plane_from_points.html
  * \param cloud A nuvem que se quer encontra o plano
+ * \param ref O ponto de referência
  * \return Um plano melhor ajustado a cloud
  */
-struct plane* cloud_plane_fitting(struct cloud* cloud)
+struct plane* cloud_dispersion_plane(struct cloud* cloud, struct vector3* ref)
 {
 	if (cloud_size(cloud) < 3)
 		return NULL;
-	
-	struct vector3* centroid = cloud_get_center(cloud);
 	
 	real xx = 0.0f;
 	real xy = 0.0f;
@@ -1222,7 +1280,7 @@ struct plane* cloud_plane_fitting(struct cloud* cloud)
 	real zz = 0.0f;
 	
 	for (uint i = 0; i < cloud->num_pts; i++) {
-		struct vector3* r = vector3_sub(&cloud->points[i], centroid);
+		struct vector3* r = vector3_sub(&cloud->points[i], ref);
 		
 		xx += r->x * r->x;
 		xy += r->x * r->y;
@@ -1264,10 +1322,40 @@ struct plane* cloud_plane_fitting(struct cloud* cloud)
 	struct vector3* normal = vector3_new(x, y, z);
 	vector3_normalize(normal);
 	
-	struct plane* plane = plane_new(normal, centroid);
+	struct plane* plane = plane_new(normal, ref);
 	
 	vector3_free(normal);
-	vector3_free(centroid);
+	
+	return plane;
+}
+
+/**
+ * \brief Direção normal da dispersão de uma nuvem em função de um ponto
+ * \param cloud A nuvem alvo
+ * \param ref O ponto de referência
+ * \return Um plano melhor ajustado a cloud
+ */
+struct vector3* cloud_normal(struct cloud* cloud, struct vector3* ref)
+{
+	struct plane* bestfit = cloud_dispersion_plane(cloud, ref);
+	struct vector3* normal = vector3_from_vector(bestfit->normal);
+	
+	plane_free(bestfit);
+	
+	return normal;
+}
+
+/**
+ * \brief Ajusta um plano a uma nuvem de pontos globalmente
+ * \param cloud A nuvem que se quer encontra o plano
+ * \return Um plano melhor ajustado a cloud
+ */
+struct plane* cloud_plane_fitting(struct cloud* cloud)
+{
+	struct vector3* center = cloud_get_center(cloud);
+	struct plane* plane =  cloud_dispersion_plane(cloud, center);
+	
+	vector3_free(center);
 	
 	return plane;
 }
@@ -1285,6 +1373,46 @@ struct vector3* cloud_point_faraway_bestfit(struct cloud* cloud)
 	plane_free(bestfit);
 	
 	return faraway;
+}
+
+/**
+ * \brief Curvatura global de um nuvem
+ * \param cloud A nuvem alvo
+ * \return Ajusta nuvem a uma esfera e retorna 1/R (R: raio da esfera ajustada)
+ */
+real cloud_curvature(struct cloud* cloud)
+{
+	struct vector3* center = cloud_get_center(cloud);
+	struct vector3* p = NULL;
+	int size = cloud_size(cloud);
+	real radius = 0.0f;
+	real a = center->x;
+	real b = center->y;
+	real c = center->z;
+	
+	for (int i = 0; i < size; i++) {
+		p = &cloud->points[i];
+		
+		a -= p->x;
+		b -= p->y;
+		c -= p->z;
+	}
+	
+	a = center->x + (a / size);
+	b = center->y + (b / size);
+	c = center->z + (c / size);
+	
+	for (int i = 0; i < size; i++) {
+		p = &cloud->points[i];
+		
+		radius += sqrt(pow(p->x - a, 2) + pow(p->y - b, 2) + pow(p->z - c, 2));
+	}
+	
+	radius /= size;
+	
+	vector3_free(center);
+	
+	return 1.0f / radius;
 }
 
 /**
@@ -1313,31 +1441,12 @@ void cloud_dist_sort(struct cloud* cloud)
 }
 
 /**
- * \brief Debuga uma nuvem ponto a ponto na saída padrão
- * \param cloud A nuvem a ser debugada
- * \param output O arquivo aonde exibir a mensagem
- */
-void cloud_debug(struct cloud* cloud, FILE* output)
-{
-	if (cloud == NULL) {
-		fprintf(output, "!!! nuvem vazia !!!\n");
-		return;
-	}
-	
-    for (uint i = 0; i < cloud->num_pts; i++) {
-        fprintf(output, "%le %le %le\n", cloud->points[i].x,
-                                         cloud->points[i].y,
-                                         cloud->points[i].z);
-	}
-}
-
-/**
  * \brief Remove um ponto da nuvem de pontos
  * \param cloud A nuvem alvo
  * \param idx Index do ponto a ser removido
  * \return O ponto removido ou NULL se não houver memória ou se o index for
  * inválido
-*/
+ */
 struct vector3* cloud_remove_point(struct cloud* cloud, uint idx)
 {
 	if (idx >= cloud->num_pts || idx < 0) {
@@ -1367,6 +1476,25 @@ struct vector3* cloud_remove_point(struct cloud* cloud, uint idx)
 	}
 
 	return removed_point;
+}
+
+/**
+ * \brief Debuga uma nuvem ponto a ponto na saída padrão
+ * \param cloud A nuvem a ser debugada
+ * \param output O arquivo aonde exibir a mensagem
+ */
+void cloud_debug(struct cloud* cloud, FILE* output)
+{
+	if (cloud == NULL) {
+		fprintf(output, "!!! nuvem vazia !!!\n");
+		return;
+	}
+	
+    for (uint i = 0; i < cloud->num_pts; i++) {
+        fprintf(output, "%le %le %le\n", cloud->points[i].x,
+                                         cloud->points[i].y,
+                                         cloud->points[i].z);
+	}
 }
 
 #endif // CLOUD_H

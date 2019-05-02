@@ -1,6 +1,8 @@
 #!/bin/bash
 
 clear
-gcc -D ZERNIKE_ORDER=2 -D ZERNIKE_REPETITION=6 demo.c -o demo -lm
+gcc demo.c -o demo -lm
 ./demo
+#pcl_ply2pcd color_cloud.ply color_cloud.pcd
+#pcl_viewer color_cloud.pcd
 

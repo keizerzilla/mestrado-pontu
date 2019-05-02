@@ -13,13 +13,12 @@
 #ifndef HU_H
 #define HU_H
 
-#define HU_SUPERSET_ORDER 2
-#define HU_SUPERSET_MOMENTS 27
+#define HU_SUPERSET_ORDER 1
+#define HU_SUPERSET_MOMENTS 8
 #define HU_MOMENTS 21
 
 #include "cloud.h"
 #include "matrix.h"
-
 
 /**
  * \brief Calcula o momento regular de Hu 3D
@@ -79,7 +78,7 @@ real hu_normalized_moment(int p, int q, int r, struct cloud* cloud)
     real central = hu_central_moment(p, q, r, cloud);
     real zero = hu_central_moment(0, 0, 0, cloud);
     
-    return central / (pow(zero, ((p + q + r)/3) + 1));
+    return central / (pow(zero, ((p + q + r)/3.0f) + 1.0f));
 }
 
 /**

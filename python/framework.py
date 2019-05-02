@@ -7,20 +7,12 @@ replace_dict = {"bosphorus" : "bs",
                 "densit"    : "d",
                 "crop"      : "c"}
 
-faces = ["nonneutral"]
+faces = ["neutral"]
 
-cuts = {"f" : "frontal",
+cuts = {"w" : "whole",
+        "f" : "frontal",
         "s" : "sagittal",
-        "t" : "transversal",
-        "vf" : "vfrontal",
-        "vs" : "vsagittal",
-        "vt" : "vtransversal",
-        "r" : "radial",
-        "u" : "upper",
-        "l" : "lower",
-        "7" : "seven",
-        "6" : "six",
-        "4" : "four"}
+        "t" : "transversal"}
 
 scenarios= ["bosphorus-outlier-densit200-crop80-icp"]
 
@@ -116,19 +108,22 @@ def go_classification_roc1(rdir, plot=False):
 		if plot:
 			plot_classification(res, "ROC1", rdir, cut_folder)
 
-def go_combination():
+def go_combination(n=2):
 	for dataset in scenarios:
-		combination_rank1_neutral(dataset, moments, cuts, dump="../tutu/")
-		combination_rank1_nonneutral(dataset, moments, cuts, dump="../tutu/")
-		combination_roc1(dataset, moments, cuts, dump="../tutu/")
+		print("rank1a")
+		combination_rank1_neutral(dataset, moments, cuts, dump="../tutu/", n=n)
+		print("rank1b")
+		combination_rank1_nonneutral(dataset, moments, cuts, dump="../tutu/", n=n)
+		print("roc1")
+		combination_roc1(dataset, moments, cuts, dump="../tutu/", n=2)
 
 if __name__ == "__main__":
 	if len(sys.argv) == 3:
-		tname = "zernike_n{}_m{}".format(sys.argv[1], sys.argv[2])
+		tname = "{}_{}".format(sys.argv[1], sys.argv[2])
 	else:
 		tname = "tutu"
 	
-	#extractor = MomentExtractor()
-	#extractor.totalExtraction(faces, scenarios, cuts, moments, "tutu")
-	go_classification_rank1("tutu", tname="nonneutralz", dump=True, plot=True)
+	extractor = MomentExtractor()
+	extractor.totalExtraction(faces, scenarios, cuts, moments, "tutu")
+	go_classification_rank1("tutu", plot=True)
 	

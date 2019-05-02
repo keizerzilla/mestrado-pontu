@@ -38,6 +38,43 @@ typedef unsigned int uint;
 typedef long long int64;
 
 /**
+ * \brief Calcula o fatorial de um número
+ * \param n Entrada da função fatorial
+ * \return n!
+ */
+int calc_factorial(int n)
+{
+    int result = 1;
+    
+    for (uint c = 1; c <= n; c++)
+        result *= c;
+
+    return result;
+}
+
+/**
+ * \brief Número de combinações N-P
+ * \param n Ordem 1
+ * \param p Ordem 2
+ * \return N-P combinações
+ */
+int calc_combination(int n, int p)
+{
+	return calc_factorial(n) / (calc_factorial(p) * calc_factorial(n - p));
+}
+
+/**
+ * \brief Calcula o Delta de Kronecker
+ * \param i Primeiro sub-índice
+ * \param j Segundo sub-índice
+ * \return 1 se i==j, 0 caso-contrário
+ */
+int calc_kronecker(int i, int j)
+{
+	return i == j ? 1 : 0;
+}
+
+/**
  * \brief Calcula o tamanho quadrático em 3 dimensões
  * \param x Coordenada x
  * \param y Coordenada y

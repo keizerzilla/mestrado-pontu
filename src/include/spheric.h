@@ -8,8 +8,17 @@
 #ifndef SPHERIC_H
 #define SPHERIC_H
 
-#define SPHERIC_ORDER 2
-#define SPHERIC_MOMENTS 27
+#ifndef SPHERIC_ORDER_X
+#define SPHERIC_ORDER_X 2
+#endif
+
+#ifndef SPHERIC_ORDER_Y
+#define SPHERIC_ORDER_Y 2
+#endif
+
+#ifndef SPHERIC_ORDER_Z
+#define SPHERIC_ORDER_Z 2
+#endif
 
 #include "cloud.h"
 #include "matrix.h"
@@ -82,16 +91,19 @@ real spheric_moment(int p, int q, int r, struct cloud* cloud)
  */
 struct matrix* spheric_cloud_moments(struct cloud* cloud)
 {
-    struct matrix* results = matrix_new(1, SPHERIC_MOMENTS);
+	int nmoments = (SPHERIC_ORDER_X + 1) *
+	               (SPHERIC_ORDER_Y + 1) *
+	               (SPHERIC_ORDER_Z + 1);
+    struct matrix* results = matrix_new(1, nmoments);
 
     int p = 0;
     int q = 0;
     int r = 0;
     int col = 0;
 
-    for (p = 0; p <= SPHERIC_ORDER; p++) {
-        for (q = 0; q <= SPHERIC_ORDER; q++) {
-            for (r = 0; r <= SPHERIC_ORDER; r++) {
+    for (p = 0; p <= SPHERIC_ORDER_X; p++) {
+        for (q = 0; q <= SPHERIC_ORDER_Y; q++) {
+            for (r = 0; r <= SPHERIC_ORDER_Z; r++) {
                 matrix_set(results, 0, col, spheric_moment(p, q, r, cloud));
                 col++;
             }

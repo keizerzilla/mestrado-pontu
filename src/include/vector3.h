@@ -137,6 +137,18 @@ struct vector3* vector3_sub(struct vector3* a, struct vector3* b)
 }
 
 /**
+ * \brief Eleva um vetor a uma potência (elemento a elemento)
+ * \param p O vetor alvo
+ * \param n A potência
+ */
+void vector3_pow(struct vector3* p, real n)
+{
+	p->x = pow(p->x, n);
+	p->y = pow(p->y, n);
+	p->z = pow(p->z, n);
+}
+
+/**
  * \brief vector3_decrease
  * \param src O vetor a ser modificado (diminuído)
  * \param dec O vetor que servirá de decremento
