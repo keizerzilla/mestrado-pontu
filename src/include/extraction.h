@@ -464,17 +464,18 @@ struct matrix* extraction_7(struct cloud* cloud,
  */
 struct cloud* extraction_vshape_base(struct cloud* cloud)
 {
-	int spacing = 15;
+	real y_margin = 15.0f; // 20
+	real x_margin = 25.0f; // 30
 	
 	struct vector3* nosetip = cloud_point_faraway_bestfit(cloud);
-	nosetip->y += spacing;
+	nosetip->y += y_margin;
 	struct vector3* diry = vector3_new(0, 1, 0);
 	struct vector3* dirx = vector3_new(1, 0, 0);
 	struct plane* plane = plane_new(diry, nosetip);
 	struct cloud* upper = cloud_cut_plane(cloud, plane);
-	nosetip->y -= spacing;
-	struct cloud* nose = cloud_segment(cloud, nosetip, diry, spacing);
-	struct cloud* nose_slice = cloud_segment(nose, nosetip, dirx, 25);
+	nosetip->y -= y_margin;
+	struct cloud* nose = cloud_segment(cloud, nosetip, diry, y_margin);
+	struct cloud* nose_slice = cloud_segment(nose, nosetip, dirx, x_margin);
 	
 	struct cloud* concat = cloud_concat(nose_slice, upper);
 	

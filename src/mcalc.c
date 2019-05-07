@@ -189,7 +189,7 @@ int main(int argc, char** argv)
 	if (!strcmp(output, "stdout")) {
 		matrix_debug(results, stdout);
 	} else {
-		matrix_save_to_file(results, output);
+		matrix_save_to_file(results, output, "w");
 	}
 	
     matrix_free(results);

@@ -126,14 +126,14 @@ real zernike_zenith(real z, real r)
 }
 
 /**
- * \brief Calcula um momento de Zernike
+ * \brief Calcula momento de Zernike ímpar
  * \param n A ordem do polinômio
  * \param m A repetição do polinômio
  * \param r O raio de atuação
  * \param cloud A nuvem alvo
  * \return O momento de Zernike de ordem(n) e repetição(m)
  */
-real zernike_moment(int n, int m, real r, struct cloud* cloud)
+real zernike_odd_moment(int n, int m, real r, struct cloud* cloud)
 {
 	struct vector3* center = cloud_get_center(cloud);
     
@@ -154,7 +154,44 @@ real zernike_moment(int n, int m, real r, struct cloud* cloud)
         poly = zernike_radpoly(n, m, dist);
         azimuth = zernike_azimuth(center_y, center_z);
         
-        moment += poly * (sin(m * azimuth) / CALC_PI);
+        moment += poly * sin(m * azimuth) / CALC_PI;
+    }
+	
+	vector3_free(center);
+	
+    return ((n + 1.0f) / CALC_PI) * moment;
+}
+
+/**
+ * \brief Calcula momento de Zernike par
+ * \param n A ordem do polinômio
+ * \param m A repetição do polinômio
+ * \param r O raio de atuação
+ * \param cloud A nuvem alvo
+ * \return O momento de Zernike de ordem(n) e repetição(m)
+ */
+real zernike_even_moment(int n, int m, real r, struct cloud* cloud)
+{
+	struct vector3* center = cloud_get_center(cloud);
+    
+	real center_y = 0.0f;
+	real center_z = 0.0f;
+	real d = 0.0f;
+    real dist = 0.0f;
+    real poly = 0.0f;
+    real azimuth = 0.0f;
+	real moment = 0.0f;
+	
+    for (uint i = 0; i < cloud->num_pts; i++) {
+		center_y = cloud->points[i].y - center->y;
+        center_z = cloud->points[i].z - center->z;
+        
+        d = vector3_distance(center, &cloud->points[i]);
+        dist = d / r;
+        poly = zernike_radpoly(n, m, dist);
+        azimuth = zernike_azimuth(center_y, center_z);
+        
+        moment += poly * cos(m * azimuth) / CALC_PI;
     }
 	
 	vector3_free(center);
@@ -180,7 +217,8 @@ struct matrix* zernike_cloud_moments(struct cloud* cloud)
     for (n = 0; n <= ZERNIKE_ORDER; n++) {
         for (m = 0; m <= ZERNIKE_REPETITION; m++) {
             if (zernike_conditions_odd(n, m)) {
-                matrix_set(results, 0, col, zernike_moment(n, m, r, cloud));
+            	real moment = zernike_odd_moment(n, m, r, cloud);
+                matrix_set(results, 0, col, moment);
                 col++;
             }
         }
@@ -190,13 +228,13 @@ struct matrix* zernike_cloud_moments(struct cloud* cloud)
 }
 
 /**
- * \brief Superset de momentos de zernike selecionados
+ * \brief Superset de momentos de zernike ímpares selecionados
  * \param ord A ordem
  * \param rep A repetição
  * \param cloud A nuvem alvo
  * \return A matriz onde os resultados serão salvos
  */
-struct matrix* zernike_superset(int ord, int rep, struct cloud* cloud)
+struct matrix* zernike_odd_superset(int ord, int rep, struct cloud* cloud)
 {
 	real r = cloud_max_distance_from_center(cloud);
 	int num_moments = zernike_num_moments(ord, rep);
@@ -209,7 +247,38 @@ struct matrix* zernike_superset(int ord, int rep, struct cloud* cloud)
     for (n = 0; n <= ord; n++) {
         for (m = 0; m <= rep; m++) {
             if (zernike_conditions(n, m)) {
-                matrix_set(results, 0, col, zernike_moment(n, m, r, cloud));
+            	real moment = zernike_odd_moment(n, m, r, cloud);
+                matrix_set(results, 0, col, moment);
+                col++;
+            }
+        }
+    }
+    
+    return results;
+}
+
+/**
+ * \brief Superset de momentos de zernike pares selecionados
+ * \param ord A ordem
+ * \param rep A repetição
+ * \param cloud A nuvem alvo
+ * \return A matriz onde os resultados serão salvos
+ */
+struct matrix* zernike_even_superset(int ord, int rep, struct cloud* cloud)
+{
+	real r = cloud_max_distance_from_center(cloud);
+	int num_moments = zernike_num_moments(ord, rep);
+	struct matrix* results = matrix_new(1, num_moments);
+	
+    int n = 0;
+    int m = 0;
+    int col = 0;
+	
+    for (n = 0; n <= ord; n++) {
+        for (m = 0; m <= rep; m++) {
+            if (zernike_conditions(n, m)) {
+            	real moment = zernike_even_moment(n, m, r, cloud);
+                matrix_set(results, 0, col, moment);
                 col++;
             }
         }

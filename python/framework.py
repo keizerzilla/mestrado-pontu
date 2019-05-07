@@ -7,11 +7,13 @@ replace_dict = {"bosphorus" : "bs",
                 "densit"    : "d",
                 "crop"      : "c"}
 
-faces = ["neutral"]
+faces = ["neutral", "nonneutral"]
 
-cuts = {"t" : "transversal"}
+cuts = {"f" : "frontal",
+        "s" : "saggital",
+        "t" : "transversal"}
 
-scenarios= ["bosphorus-nose-preprocessed"]
+scenarios= ["bosphorus-outlier-densit200-crop80-icp"]
 
 moments = ["zernike"]
 
@@ -73,6 +75,7 @@ def go_classification_rank1(rdir, tname="Rank1", dump=False, plot=False):
 					rate = round(rate*100, 2)
 					res.at[dataset, moment] = rate
 					print("{:<11}{:<15}{:<7}".format(moment, classifier, rate))
+					
 			
 			if dump:
 				d = "../"+rdir+"/{}-{}-{}.csv".format(tname, rdir, cut_folder)
@@ -112,7 +115,7 @@ def go_combination(n=2):
 		print("rank1b")
 		combination_rank1_nonneutral(dataset, moments, cuts, dump="../tutu/", n=n)
 		print("roc1")
-		combination_roc1(dataset, moments, cuts, dump="../tutu/", n=2)
+		combination_roc1(dataset, moments, cuts, dump="../tutu/", n=n)
 
 if __name__ == "__main__":
 	if len(sys.argv) == 3:
@@ -120,7 +123,9 @@ if __name__ == "__main__":
 	else:
 		tname = "tutu"
 	
-	extractor = MomentExtractor()
-	extractor.totalExtraction(faces, scenarios, cuts, moments, "tutu")
-	go_classification_rank1("tutu", tname=tname, dump=True)
+	#extractor = MomentExtractor()
+	#extractor.totalExtraction(faces, scenarios, cuts, moments, "tutu")
+	#go_classification_rank1("tutu")
+	#go_classification_roc1("tutu")
+	go_combination(n=3)
 	

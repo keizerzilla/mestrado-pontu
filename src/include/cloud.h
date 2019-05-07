@@ -433,6 +433,39 @@ struct cloud* cloud_load_pcd(const char* filename)
 }
 
 /**
+ * \brief Carrega uma nuvem a partir de um arquivo .obj
+ * \param filename O arquivo onde a nuvem está guardada
+ * \return Um estrutura cloud carregada em memória ou NULL caso ocorra erro
+ */
+struct cloud* cloud_load_obj(const char* filename)
+{
+    FILE* file = fopen(filename, "r");
+    if (file == NULL) {
+        util_error("%s: erro abrir arquivo %s", __FUNCTION__, filename);
+        return NULL;
+    }
+    
+    struct cloud* cloud = cloud_empty();
+    real x = 0;
+    real y = 0;
+    real z = 0;
+    
+    while (!feof(file)) {
+        char buffer[512];
+        fgets(buffer, 512, file);
+        
+        if (buffer[0] == 'v' && buffer[1] == ' ') {
+        	sscanf(buffer, "v %lf %lf %lf\n", &x, &y, &z);
+        	cloud_add_point_real(cloud, x, y, z);
+        }
+    }
+
+    fclose(file);
+
+    return cloud;
+}
+
+/**
  * \brief Salva uma nuvem em arquivo XYZ
  * \param cloud A nuvem a ser salva
  * \param filename O arquivo destino

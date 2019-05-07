@@ -173,13 +173,6 @@ def rank1_neutral(features):
 	cols = cols + ["sample", "subject", "tp", "exp"]
 	df.columns = cols
 	
-	""" REMOCAO DE ALTAS CORRELACOES - INUTIL (por enquanto...)
-	corr = df.drop(["sample", "subject", "tp", "exp"], axis=1).corr().abs()
-	upper = corr.where(np.triu(np.ones(corr.shape), k=1).astype(np.bool))
-	to_drop = [column for column in upper.columns if any(upper[column] >= 0.9)]
-	df = df.drop(to_drop, axis=1)
-	"""
-	
 	trainset = df.loc[df["sample"] == 0].drop(["sample", "tp", "exp"], axis=1)
 	X_train = np.array(trainset.drop(["subject"], axis=1))
 	y_train = np.ravel(trainset[["subject"]])
@@ -216,6 +209,9 @@ def rank1_nonneutral(feat_neutral, feat_nonneutral):
 	cols = cols + ["sample", "subject", "tp", "exp"]
 	df.columns = cols
 	
+	# seleciona apenas _E_
+	#df = df.loc[df["tp"] == "E"]
+	
 	testset = df.drop(["sample", "tp", "exp"], axis=1)
 	X_test = np.array(testset.drop(["subject"], axis=1))
 	y_test = np.ravel(testset[["subject"]])
@@ -247,6 +243,9 @@ def roc1(feat_neutral, feat_nonneutral):
 	cols = ["f"+str(x) for x in range(len(df.columns)-4)]
 	cols = cols + ["sample", "subject", "tp", "exp"]
 	df.columns = cols
+	
+	# seleciona apenas _E_
+	#df = df.loc[df["tp"] == "E"]
 	
 	testset = df.drop(["sample", "tp", "exp"], axis=1)
 	X_test = np.array(testset.drop(["subject"], axis=1))
@@ -280,7 +279,6 @@ def expression_classification(feat_nonneutral):
 		X_train, X_test, y_train, y_test = data_split(X, y, test_size=0.7)
 		ans = run_classification(X_train, y_train, X_test, y_test)
 		results.append(ans)
-	
 
 def rank1_neutral_concat(moments):
 	"""
@@ -456,6 +454,7 @@ def max_rate(ans):
 	
 	rates = dict((key, value["recog"]) for key, value in ans.items())
 	lemax = max(rates.items(), key=operator.itemgetter(1))
+	
 	return lemax[0], lemax[1]
 
 def max_confusion(ans):

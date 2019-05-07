@@ -208,11 +208,12 @@ struct matrix* matrix_concat_ver(struct matrix* m1, struct matrix* m2)
  * \brief Salva uma matriz em arquivo
  * \param mat A matriz a ser salva
  * \param filename O caminho para o arquivo destino
+ * \param m Modo de escrita no arquivo
  * \return 1 se a matriz for salva com sucesso, 0 caso-contrário
  */
-int matrix_save_to_file(struct matrix* mat, const char* filename)
+int matrix_save_to_file(struct matrix* mat, const char* filename, const char* m)
 {
-    FILE* file = fopen(filename, "w");
+    FILE* file = fopen(filename, m);
     if (file == NULL) {
         util_error("%s: erro abrir arquivo %s\n", __FUNCTION__, filename);
         return 0;
@@ -246,8 +247,12 @@ void matrix_debug(struct matrix* mat, FILE* output)
 	}
 	
 	for (uint i = 0; i < mat->rows; i++) {
-        for (uint j = 0; j < mat->cols; j++)
-            fprintf(output, "%le ", mat->data[(i * mat->cols) + j]);
+        for (uint j = 0; j < mat->cols; j++) {
+        	if (j == mat->cols - 1)
+            	fprintf(output, "%le", mat->data[(i * mat->cols) + j]);
+            else
+            	fprintf(output, "%le ", mat->data[(i * mat->cols) + j]);
+        }
         
         fprintf(output, "\n");
     }

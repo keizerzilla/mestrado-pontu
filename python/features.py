@@ -8,6 +8,7 @@ suportado. Mudanças futuras: padrões FRGC v2.0 e EURECOM.
 """
 
 import os
+import time
 import parse
 import subprocess
 
@@ -53,7 +54,8 @@ class MomentExtractor():
 		
 		cmd = [self.mcalc, "-m", moment, "-i", cloud, "-o", "stdout", "-c", cut]
 		ans = subprocess.run(cmd, stdout=subprocess.PIPE).stdout
-		ans = ans[:-2].decode("utf-8").replace(" ", ",")
+		#ans = ans[:-2].decode("utf-8").replace(" ", ",")
+		ans = ans[:-1].decode("utf-8").replace(" ", ",")
 		ans = ans + ",{},{},{},{}\n".format(sample, subject, tp, ex)
 		
 		return ans
@@ -62,6 +64,8 @@ class MomentExtractor():
 		print("[{:<12}] - [ {} ] - [{}]".format(moment, cut, dataset))
 		
 		count = 0
+		start_time = time.time()
+		
 		with open(output, "w") as dump:
 			for cloud in os.listdir(dataset):
 				if cloud.endswith(".xyz"):
@@ -75,7 +79,10 @@ class MomentExtractor():
 					count = count + 1
 					print("\r{}".format(count), end="\r")
 		
-		print("[     OK     ] - [ {} nuvens analisadas ]".format(count))
+		elapsed = time.time() - start_time
+		velocity = round(elapsed / count, 6)
+		
+		print("[     OK     ] - [ {} nuvens analisadas, {} seg/nuvem]".format(count, velocity))
 	
 	def totalExtraction(self, faces, scenarios, cuts, moments, rdir="results"):
 		for face in faces:

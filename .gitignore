@@ -1,4 +1,5 @@
 bin/
+tutu/
 dump/
 datasets/
 __pycache__/
@@ -6,3 +7,5 @@ __pycache__/
 demo
 *.xyz
 *.pcd
+*.obj
+*.ply
