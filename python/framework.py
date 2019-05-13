@@ -7,15 +7,13 @@ replace_dict = {"bosphorus" : "bs",
                 "densit"    : "d",
                 "crop"      : "c"}
 
-faces = ["neutral", "nonneutral"]
+faces = ["neutral"]
 
-cuts = {"f" : "frontal",
-        "s" : "saggital",
-        "t" : "transversal"}
+cuts = {"w" : "whole"}
 
 scenarios= ["bosphorus-outlier-densit200-crop80-icp"]
 
-moments = ["zernike"]
+moments = ["chebyshev"]
 
 mini_scenarios = []
 for s in scenarios:
@@ -123,9 +121,9 @@ if __name__ == "__main__":
 	else:
 		tname = "tutu"
 	
-	#extractor = MomentExtractor()
-	#extractor.totalExtraction(faces, scenarios, cuts, moments, "tutu")
-	#go_classification_rank1("tutu")
+	extractor = MomentExtractor()
+	extractor.totalExtraction(faces, scenarios, cuts, moments, "tutu")
+	go_classification_rank1("tutu")
 	#go_classification_roc1("tutu")
-	go_combination(n=3)
+	#go_combination(n=3)
 	

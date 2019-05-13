@@ -20,7 +20,6 @@
 #define HUTUTU			"hututu"
 #define HU1980			"hu1980"
 #define HUSIQ			"husiq"
-#define HUSUPER			"husuper"
 #define ZERNIKE			"zernike"
 #define LEGENDRE		"legendre"
 #define CHEBYSHEV		"chebyshev"
@@ -55,7 +54,6 @@ void extraction_help()
     printf("     > hututu\n");
     printf("     > husiq\n");
     printf("     > hu1980\n");
-    printf("     > husuper\n");
     printf("     > zernike\n");
     printf("     > legendre\n");
     printf("     > chebyshev\n");
@@ -133,8 +131,6 @@ int main(int argc, char** argv)
         mfunc = &hu_cloud_moments_hu1980;
     else if (!strcmp(moment, HUSIQ))
         mfunc = &hu_cloud_moments_husiq;
-    else if (!strcmp(moment, HUSUPER))
-        mfunc = &hu_superset;
     else if (!strcmp(moment, LEGENDRE))
         mfunc = &legendre_cloud_moments;
     else if (!strcmp(moment, CHEBYSHEV))

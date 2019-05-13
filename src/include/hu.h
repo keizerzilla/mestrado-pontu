@@ -403,31 +403,5 @@ struct matrix* hu_cloud_moments_hututu(struct cloud* cloud)
     return results;
 }
 
-/**
- * \brief Calcula momentos normalizados de diferentes ordens
- * \param cloud A nuvem alvo
- * \return A matriz aonde os momentos serão salvos
- */
-struct matrix* hu_superset(struct cloud* cloud)
-{
-	struct matrix* results = matrix_new(1, HU_SUPERSET_MOMENTS);
-	
-	int p = 0;
-    int q = 0;
-    int r = 0;
-    int col = 0;
-
-    for (p = 0; p <= HU_SUPERSET_ORDER; p++) {
-        for (q = 0; q <= HU_SUPERSET_ORDER; q++) {
-            for (r = 0; r <= HU_SUPERSET_ORDER; r++) {
-                matrix_set(results, 0, col, hu_refined_moment(p, q, r, cloud));
-                col++;
-            }
-        }
-    }
-	
-	return results;
-}
-
 #endif // HU_H
 

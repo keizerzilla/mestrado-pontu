@@ -6,7 +6,7 @@
  * momentos de chebyshev. Os momentos de chebyshev são calculados com base no
  * próprio espaço dos pontos da nuvem. Ou seja, diferente de outros momentos,
  * não há necessidade de efetuar uma transformação das coordenadas dos pontos de
- * um domínio para outro.
+ * um domínio para outro. Momentos invarintes apenas à translação.
  */
 
 #ifndef CHEBYSHEV_H
@@ -50,24 +50,6 @@ real chebyshev_poly(int p, int n, real x)
 }
 
 /**
- * \brief A norma dos polinômios de chebyshev
- * \param p A ordem do polinômio
- * \param n O número de pontos da nuvem
- * \return A norma do polinômio de ordem(p)
- */
-real chebyshev_norm(int p, int n)
-{
-    real norm = 1.0f * n;
-    real num_pts = 1.0f * n;
-
-    int i;
-    for (i = 1; i <= p; i++)
-        norm *= (1.0f - ((i * i) / num_pts));
-
-    return norm / (p + 1.0f);
-}
-
-/**
  * \brief Calcula um momento de chebyshev
  * \param p A ordem da dimensão x
  * \param q A ordem da dimensão y
@@ -90,11 +72,18 @@ real chebyshev_moment(int p, int q, int r, struct cloud* cloud)
 	
 	vector3_free(center);
 	
-	real norm = chebyshev_norm(p, n) *
-	            chebyshev_norm(q, n) *
-	            chebyshev_norm(r, n);
+    return moment;
+}
+
+struct cloud* chebyshev_reconstruction(struct matrix* moments, int numpts)
+{
+	struct cloud* cloud = cloud_new(numpts);
 	
-    return moment / norm;
+	for (int i = 0; i < numpts; i++) {
+		// asdf
+	}
+	
+	return cloud;
 }
 
 /**

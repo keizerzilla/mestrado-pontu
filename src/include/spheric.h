@@ -39,19 +39,6 @@ real spheric_quad(real x, real y, real z, int p, int q, int r)
 }
 
 /**
- * \brief Cálculo dos momentos esféricos normalizados
- * \param p A ordem da coordena x
- * \param q A ordem da coordena y
- * \param r A ordem da coordena z
- * \param cloud A nuvem alvo cujos momentos se quer calcular
- * \return O momento esférico normalizado de ordem p+q+r de cloud
- */
-real spheric_norm(int p, int q, int r, struct cloud* cloud)
-{
-	return cloud_boundingbox_volume(cloud);
-}
-
-/**
  * \brief Cálculo dos momentos esféricos
  * \param p A ordem da coordena x
  * \param q A ordem da coordena y
@@ -81,7 +68,7 @@ real spheric_moment(int p, int q, int r, struct cloud* cloud)
 	
 	vector3_free(center);
 	
-	return moment / cloud_size(cloud);
+	return moment / cloud_boundingbox_volume(cloud);
 }
 
 /**

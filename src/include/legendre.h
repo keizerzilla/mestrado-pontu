@@ -4,7 +4,8 @@
  * \date 2017
  * \brief Implementações necessárias para o cálculo dos momentos de Legendre
  * para nuvens de pontos. O momentos de Legendre são derivados da relação
- * recursiva dos polinômios de Legendre.
+ * recursiva dos polinômios de Legendre. No momento: invariância apenas à
+ * translação. Implementar invariância à escala a partir de Ong et al. (2006)
  */
 
 #ifndef LEGENDRE_H
@@ -15,17 +16,6 @@
 
 #include "cloud.h"
 #include "matrix.h"
-
-/**
- * \brief Coeficiente B de Legendre (@TODO)
- * \param a Primeiro sub-índice
- * \param k Segund sub-índice
- * \return Bak 
- */
-real legendre_B(int a, int k)
-{
-	return 1.0f;
-}
 
 /**
  * \brief Calcula o polinômio de Legendre
@@ -119,25 +109,6 @@ real legendre_moment(int p, int q, int r, struct cloud* cloud)
 	vector3_free(center);
 	
     return legendre_norm(p, q, r, cloud) * moment;
-}
-
-/**
- * \brief Calcula o momento normalizado de legendre (@ERRADO)
- * \param p A ordem da dimensão x
- * \param q A ordem da dimensão y
- * \param r A ordem da dimensão z
- * \param cloud A nuvem alvo
- * \return O momento normalizado de ordem p+q+r da nuvem cloud
- */
-real legendre_scaled(int p, int q, int r, struct cloud* cloud)
-{
-	real central = legendre_moment(p, q, r, cloud);
-	real zero = pow(legendre_moment(0, 0, 0, cloud), 2);
-	real x = legendre_moment(p, 0, 0, cloud);
-	real y = legendre_moment(0, q, 0, cloud);
-	real z = legendre_moment(0, 0, r, cloud);
-	
-	return (zero * central) / (x * y * z);
 }
 
 /**

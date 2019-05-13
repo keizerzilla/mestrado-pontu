@@ -59,10 +59,10 @@ def classification(moment, datafile):
 	val = split.loc[split["split"] == "val"]
 	
 	classifiers = {
-		"KNN_manhattam" : KNN(p=1, n_neighbors=39),
-		"KNN_euclidean" : KNN(p=2, n_neighbors=39),
+		"KNN_manhattam" : KNN(p=1),
+		"KNN_euclidean" : KNN(p=2),
 		"SVM_radial"    : SVM(kernel="rbf", gamma="auto"),
-		#"SVM_linear"      : SVM(kernel="linear", gamma="auto"),
+		"SVM_linear"      : SVM(kernel="linear", gamma="auto"),
 		"RandomForest"  : RandomForestClassifier(n_estimators=200),
 		"MLP" : MLP(hidden_layer_sizes=(1000, ), max_iter=1000)
 	}
@@ -73,8 +73,7 @@ def classification(moment, datafile):
 	df.columns = cols
 	
 	train_set = df.loc[df["modelId"].isin(train["modelId"])]
-	#test_set = df.loc[df["modelId"].isin(test["modelId"])]
-	test_set = df.loc[df["modelId"].isin(val["modelId"])]
+	test_set = df.loc[df["modelId"].isin(test["modelId"])]
 	
 	X_train = train_set.drop(["synsetId", "modelId"], axis=1)
 	y_train = train_set["synsetId"]
@@ -123,7 +122,7 @@ def classification(moment, datafile):
 	ans.to_csv("../shapenet/ans.csv", index=None)
 	
 if __name__ == "__main__":
-	moments = ["zernike"]
+	moments = ["spheric"]
 	folder = "/home/artur/ShapeNetCore_v2/"
 	
 	for moment in moments:
