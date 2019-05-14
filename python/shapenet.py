@@ -53,7 +53,7 @@ def classification(moment, datafile):
 		"elapsed"    : []
 	}
 	
-	split = pd.read_csv("/home/artur/SHREC17/all.csv")
+	split = pd.read_csv("../doc/SHREC17.csv")
 	train = split.loc[split["split"] == "train"]
 	test = split.loc[split["split"] == "test"]
 	val = split.loc[split["split"] == "val"]
@@ -122,10 +122,12 @@ def classification(moment, datafile):
 	ans.to_csv("../shapenet/ans.csv", index=None)
 	
 if __name__ == "__main__":
-	moments = ["spheric"]
-	folder = "/home/artur/ShapeNetCore_v2/"
+	moments = ["hu1980"]
+	folder = "../datasets/ShapeNetCore_v2/"
 	
 	for moment in moments:
 		outfile = "../shapenet/" + moment + ".dat"
+		extraction(folder, moment, outfile)
 		classification(moment, outfile)
+		
 		
