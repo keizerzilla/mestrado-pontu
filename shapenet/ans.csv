@@ -1,7 +1,0 @@
-classifier,accuracy,precision,recall,f1,elapsed
-KNN_manhattam,0.65,0.65,0.65,0.65,36.9635
-KNN_euclidean,0.62,0.62,0.62,0.62,25.3832
-SVM_radial,0.51,0.51,0.51,0.51,102.029
-SVM_linear,0.56,0.56,0.56,0.56,66.6679
-RandomForest,0.71,0.71,0.71,0.71,73.1999
-MLP,0.69,0.69,0.69,0.69,752.2594

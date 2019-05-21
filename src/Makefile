@@ -8,7 +8,7 @@ DIR = ../bin/
 $(shell mkdir -p $(DIR))
 
 # alvos de compilacao
-all: mcalc cloudz nosex normx nosecut shapenet
+all: mcalc cloudz nosex normx nosecut siqueira
 
 # programa extrator de momentos invariantes
 mcalc: mcalc.c
@@ -30,7 +30,6 @@ normx: normx.c
 nosecut: nosecut.c
 	$(CC) nosecut.c $(COMPILER_FLAGS) $(LINKER_FLAGS) $(CFLAGS) -o $(DIR)nosecut
 
-# extrator de momentos para nuvens shapenet
-shapenet: shapenet.c
-	$(CC) shapenet.c $(COMPILER_FLAGS) $(LINKER_FLAGS) $(CFLAGS) -o $(DIR)shapenet
-
+# programa extrator de momentos especificos segundo siqueira
+siqueira: siqueira.c
+	$(CC) siqueira.c $(COMPILER_FLAGS) $(LINKER_FLAGS) $(CFLAGS) -o $(DIR)siqueira
