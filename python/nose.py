@@ -219,17 +219,3 @@ if __name__ == "__main__":
 	
 	nose_region_ext(folder, noses, output)
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	

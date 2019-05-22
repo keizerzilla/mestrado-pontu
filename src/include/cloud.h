@@ -9,6 +9,8 @@
 #ifndef CLOUD_H
 #define CLOUD_H
 
+#define MAX_BUFFER 512
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -314,7 +316,7 @@ struct cloud* cloud_load_csv(const char* filename)
 struct cloud* cloud_load_ply(const char* filename)
 {
 	uint num_pts = 0;
-	char buffer[80];
+	char buffer[MAX_BUFFER];
 	
 	FILE* file = fopen(filename, "r");
     if (file == NULL) {
@@ -322,7 +324,7 @@ struct cloud* cloud_load_ply(const char* filename)
         return NULL;
     }
 	
-	if (fgets(buffer, 80, file)) {
+	if (fgets(buffer, MAX_BUFFER, file)) {
 		if (strcmp(buffer, "ply\n")) {
 			util_error("%s: arquivo ply invalido [%s]", __FUNCTION__, filename);
 			fclose(file);
@@ -334,7 +336,7 @@ struct cloud* cloud_load_ply(const char* filename)
 		return NULL;
 	}
 	
-	if (fgets(buffer, 80, file)) {
+	if (fgets(buffer, MAX_BUFFER, file)) {
 		if (strcmp(buffer, "format ascii 1.0\n")) {
 			util_error("%s: formato ply invalido [%s]", __FUNCTION__, filename);
 			fclose(file);
@@ -346,7 +348,7 @@ struct cloud* cloud_load_ply(const char* filename)
 		return NULL;
 	}
 	
-	while (fgets(buffer, 80, file)) {
+	while (fgets(buffer, MAX_BUFFER, file)) {
 		if (!strcmp(buffer, "end_header\n"))
 			break;
 		
@@ -366,7 +368,7 @@ struct cloud* cloud_load_ply(const char* filename)
 	real z = 0;
 	uint index = 0;
 	for (uint i = 0; i < num_pts; i++) {
-		if (fgets(buffer, 80, file)) {
+		if (fgets(buffer, MAX_BUFFER, file)) {
 			sscanf(buffer, "%le %le %le %*s\n", &x, &y, &z);
 			cloud_set_point_real(cloud, index, x, y, z);
 			index++;
@@ -389,7 +391,7 @@ struct cloud* cloud_load_ply(const char* filename)
 struct cloud* cloud_load_pcd(const char* filename)
 {
 	uint num_pts = 0;
-	char buffer[80];
+	char buffer[MAX_BUFFER];
 	
 	FILE* file = fopen(filename, "r");
     if (file == NULL) {
@@ -397,7 +399,7 @@ struct cloud* cloud_load_pcd(const char* filename)
         return NULL;
     }
 	
-	while (fgets(buffer, 80, file)) {
+	while (fgets(buffer, MAX_BUFFER, file)) {
 		if (!strcmp(buffer, "DATA ascii\n"))
 			break;
 		
@@ -417,7 +419,7 @@ struct cloud* cloud_load_pcd(const char* filename)
 	real z = 0;
 	uint index = 0;
 	for (uint i = 0; i < num_pts; i++) {
-		if (fgets(buffer, 80, file)) {
+		if (fgets(buffer, MAX_BUFFER, file)) {
 			sscanf(buffer, "%le %le %le %*s\n", &x, &y, &z);
 			cloud_set_point_real(cloud, index, x, y, z);
 			index++;

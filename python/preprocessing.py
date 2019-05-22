@@ -137,10 +137,3 @@ if __name__ == "__main__":
 	
 	batch_preprocessing(folder, outdir)
 	
-	
-	
-	
-	
-	
-	
-	

@@ -8,7 +8,7 @@ DIR = ../bin/
 $(shell mkdir -p $(DIR))
 
 # alvos de compilacao
-all: mcalc cloudz nosex normx nosecut siqueira
+all: mcalc cloudz nosex normx nosecut siqcalc
 
 # programa extrator de momentos invariantes
 mcalc: mcalc.c
@@ -30,6 +30,6 @@ normx: normx.c
 nosecut: nosecut.c
 	$(CC) nosecut.c $(COMPILER_FLAGS) $(LINKER_FLAGS) $(CFLAGS) -o $(DIR)nosecut
 
-# programa extrator de momentos especificos segundo siqueira
-siqueira: siqueira.c
-	$(CC) siqueira.c $(COMPILER_FLAGS) $(LINKER_FLAGS) $(CFLAGS) -o $(DIR)siqueira
+# programa extrator de momentos especificos segundo siqcalc
+siqcalc: siqcalc.c
+	$(CC) siqcalc.c $(COMPILER_FLAGS) $(LINKER_FLAGS) $(CFLAGS) -o $(DIR)siqcalc
