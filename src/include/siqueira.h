@@ -8,6 +8,8 @@
 #ifndef SIQUEIRA_H
 #define SIQUEIRA_H
 
+#define CUT_SIZE 20
+
 #include "matrix.h"
 #include "cloud.h"
 
@@ -16,6 +18,7 @@
  * \param p A ordem da dimensão x
  * \param q A ordem da dimensão y
  * \param cloud A nuvem alvo
+ * \param nose A ponta do nariz
  * \return O momento central(p,q) da nuvem cloud em relação ao plano XY
  */
 real siqueira_moment_xy(int p, int q, struct cloud* cloud, struct vector3* nose)
@@ -39,6 +42,7 @@ real siqueira_moment_xy(int p, int q, struct cloud* cloud, struct vector3* nose)
  * \param p A ordem da dimensão x
  * \param q A ordem da dimensão z
  * \param cloud A nuvem alvo
+ * \param nose A ponta do nariz
  * \return O momento central(p,q) da nuvem cloud em relação ao plano XZ
  */
 real siqueira_moment_xz(int p, int q, struct cloud* cloud, struct vector3* nose)
@@ -62,6 +66,7 @@ real siqueira_moment_xz(int p, int q, struct cloud* cloud, struct vector3* nose)
  * \param p A ordem da dimensão y
  * \param q A ordem da dimensão z
  * \param cloud A nuvem alvo
+ * \param nose A ponta do nariz
  * \return O momento central(p,q) da nuvem cloud em relação ao plano YZ
  */
 real siqueira_moment_yz(int p, int q, struct cloud* cloud, struct vector3* nose)
@@ -88,13 +93,14 @@ real siqueira_moment_yz(int p, int q, struct cloud* cloud, struct vector3* nose)
 struct matrix* siqueira_cloud_moments(struct cloud* cloud, struct vector3* nose)
 {
 	struct matrix* results = matrix_new(1, 12);
-	real a = 0.0f;
-    real b = 0.0f;
-    real c = 0.0f;
-    real d = 0.0f;
-    real e = 0.0f;
-    real f = 0.0f;
-    real g = 0.0f;
+	
+	real u02 = 0.0f;
+    real u03 = 0.0f;
+    real u11 = 0.0f;
+    real u12 = 0.0f;
+    real u20 = 0.0f;
+    real u21 = 0.0f;
+    real u30 = 0.0f;
     real i1 = 0.0f;
     real i2 = 0.0f;
     real i3 = 0.0f;
@@ -108,44 +114,44 @@ struct matrix* siqueira_cloud_moments(struct cloud* cloud, struct vector3* nose)
     real i11 = 0.0f;
     real i12 = 0.0f;
     
-    a = siqueira_moment_xy(0, 2, cloud, nose);
-    b = siqueira_moment_xy(0, 3, cloud, nose);
-    c = siqueira_moment_xy(1, 1, cloud, nose);
-    d = siqueira_moment_xy(1, 2, cloud, nose);
-    e = siqueira_moment_xy(2, 0, cloud, nose);
-    f = siqueira_moment_xy(2, 1, cloud, nose);
-    g = siqueira_moment_xy(3, 0, cloud, nose);
+    u02 = siqueira_moment_xy(0, 2, cloud, nose);
+    u03 = siqueira_moment_xy(0, 3, cloud, nose);
+    u11 = siqueira_moment_xy(1, 1, cloud, nose);
+    u12 = siqueira_moment_xy(1, 2, cloud, nose);
+    u20 = siqueira_moment_xy(2, 0, cloud, nose);
+    u21 = siqueira_moment_xy(2, 1, cloud, nose);
+    u30 = siqueira_moment_xy(3, 0, cloud, nose);
     
-    i1 = e + a;
-    i2 = pow((e - a), 2.0f) + 4.0f*pow(c, 2.0f);
-    i3 = pow((g - 3.0f*d), 2.0f) + pow((3.0f*f - b), 2.0f);
-    i4 = pow((g + d), 2.0f) + pow((f + b), 2.0f);
+    i1 = u20 + u02;
+    i2 = pow((u20 - u02), 2.0f) + 4.0f*pow(u11, 2.0f);
+    i3 = pow((u30 - 3.0f*u12), 2.0f) + pow((3.0f*u21 - u03), 2.0f);
+    i4 = pow((u30 + u12), 2.0f) + pow((u21 + u03), 2.0f);
     
-    a = siqueira_moment_xz(0, 2, cloud, nose);
-    b = siqueira_moment_xz(0, 3, cloud, nose);
-    c = siqueira_moment_xz(1, 1, cloud, nose);
-    d = siqueira_moment_xz(1, 2, cloud, nose);
-    e = siqueira_moment_xz(2, 0, cloud, nose);
-    f = siqueira_moment_xz(2, 1, cloud, nose);
-    g = siqueira_moment_xz(3, 0, cloud, nose);
+    u02 = siqueira_moment_xz(0, 2, cloud, nose);
+    u03 = siqueira_moment_xz(0, 3, cloud, nose);
+    u11 = siqueira_moment_xz(1, 1, cloud, nose);
+    u12 = siqueira_moment_xz(1, 2, cloud, nose);
+    u20 = siqueira_moment_xz(2, 0, cloud, nose);
+    u21 = siqueira_moment_xz(2, 1, cloud, nose);
+    u30 = siqueira_moment_xz(3, 0, cloud, nose);
     
-    i5 = e + a;
-    i6 = pow((e - a), 2.0f) + 4.0f*pow(c, 2.0f);
-    i7 = pow((g - 3.0f*d), 2.0f) + pow((3.0f*f - b), 2.0f);
-    i8 = pow((g + d), 2.0f) + pow((f + b), 2.0f);
+    i5 = u20 + u02;
+    i6 = pow((u20 - u02), 2.0f) + 4.0f*pow(u11, 2.0f);
+    i7 = pow((u30 - 3.0f*u12), 2.0f) + pow((3.0f*u21 - u03), 2.0f);
+    i8 = pow((u30 + u12), 2.0f) + pow((u21 + u03), 2.0f);
     
-    a = siqueira_moment_yz(0, 2, cloud, nose);
-    b = siqueira_moment_yz(0, 3, cloud, nose);
-    c = siqueira_moment_yz(1, 1, cloud, nose);
-    d = siqueira_moment_yz(1, 2, cloud, nose);
-    e = siqueira_moment_yz(2, 0, cloud, nose);
-    f = siqueira_moment_yz(2, 1, cloud, nose);
-    g = siqueira_moment_yz(3, 0, cloud, nose);
+    u02 = siqueira_moment_yz(0, 2, cloud, nose);
+    u03 = siqueira_moment_yz(0, 3, cloud, nose);
+    u11 = siqueira_moment_yz(1, 1, cloud, nose);
+    u12 = siqueira_moment_yz(1, 2, cloud, nose);
+    u20 = siqueira_moment_yz(2, 0, cloud, nose);
+    u21 = siqueira_moment_yz(2, 1, cloud, nose);
+    u30 = siqueira_moment_yz(3, 0, cloud, nose);
     
-    i9 = e + a;
-    i10 = pow((e - a), 2.0f) + 4.0f*pow(c, 2.0f);
-    i11 = pow((g - 3.0f*d), 2.0f) + pow((3.0f*f - b), 2.0f);
-    i12 = pow((g + d), 2.0f) + pow((f + b), 2.0f);
+    i9 = u20 + u02;
+    i10 = pow((u20 - u02), 2.0f) + 4.0f*pow(u11, 2.0f);
+    i11 = pow((u30 - 3.0f*u12), 2.0f) + pow((3.0f*u21 - u03), 2.0f);
+    i12 = pow((u30 + u12), 2.0f) + pow((u21 + u03), 2.0f);
     
     matrix_set(results, 0, 0, i1);
     matrix_set(results, 0, 1, i2);
@@ -164,6 +170,19 @@ struct matrix* siqueira_cloud_moments(struct cloud* cloud, struct vector3* nose)
 }
 
 /**
+ * \brief Retorna sinal de uma valor real
+ * \param n O valor que se quer descobrir o sinal
+ * \return 1.0f se n for positivo, 1.0f caso-contrário
+ */
+real siqueira_sign(real n)
+{
+	if (n >= 0.0f)
+		return 1.0f;
+	else
+		return -1.0f;
+}
+
+/**
  * \brief Corte transversal
  * \param cloud A nuvem alvo
  * \return nose A ponta do nariz
@@ -171,53 +190,73 @@ struct matrix* siqueira_cloud_moments(struct cloud* cloud, struct vector3* nose)
  */
 struct matrix* siqueira_transversal(struct cloud* cloud, struct vector3* nose)
 {
-	struct vector3* dir = vector3_new(0.0f, 1.0f, 0.0f);
+	struct matrix* ans = NULL;
 	
-	struct cloud* sub0 = cloud_segment(cloud, vector3_new(nose->x, nose->y, nose->z), dir, 10.0f);
-	struct cloud* sub1 = cloud_segment(cloud, vector3_new(nose->x, nose->y + 20.0f, nose->z), dir, 10.0f);
-	struct cloud* sub2 = cloud_segment(cloud, vector3_new(nose->x, nose->y + 40.0f, nose->z), dir, 10.0f);
-	struct cloud* sub3 = cloud_segment(cloud, vector3_new(nose->x, nose->y + 60.0f, nose->z), dir, 10.0f);
-	struct cloud* sub1m = cloud_segment(cloud, vector3_new(nose->x, nose->y - 20.0f, nose->z), dir, 10.0f);
-	struct cloud* sub2m = cloud_segment(cloud, vector3_new(nose->x, nose->y - 40.0f, nose->z), dir, 10.0f);
-	struct cloud* sub3m = cloud_segment(cloud, vector3_new(nose->x, nose->y - 60.0f, nose->z), dir, 10.0f);
+	struct cloud* sub0 = cloud_empty();
+	struct cloud* sub1 = cloud_empty();
+	struct cloud* sub2 = cloud_empty();
+	struct cloud* sub3 = cloud_empty();
+	struct cloud* sub4 = cloud_empty();
+	struct cloud* sub5 = cloud_empty();
+	struct cloud* sub6 = cloud_empty();
 	
-	struct matrix* ans0 = siqueira_cloud_moments(sub0, nose);
-	struct matrix* ans1 = siqueira_cloud_moments(sub1, nose);
-	struct matrix* ans2 = siqueira_cloud_moments(sub2, nose);
-	struct matrix* ans3 = siqueira_cloud_moments(sub3, nose);
-	struct matrix* ans1m = siqueira_cloud_moments(sub1m, nose);
-	struct matrix* ans2m = siqueira_cloud_moments(sub2m, nose);
-	struct matrix* ans3m = siqueira_cloud_moments(sub3m, nose);
+	for (uint i = 0; i < cloud_size(cloud); i++) {
+		real segment = floor(fabs(nose->y - cloud->points[i].y) / CUT_SIZE);
+		real sign = siqueira_sign(nose->y - cloud->points[i].y);
+		segment = segment * sign;
+		
+		if (segment == 0.0f)
+			cloud_add_point_vector(sub0, &cloud->points[i]);
+		else if (segment == 1.0f)
+			cloud_add_point_vector(sub1, &cloud->points[i]);
+		else if (segment == 2.0f)
+			cloud_add_point_vector(sub2, &cloud->points[i]);
+		else if (segment == 3.0f)
+			cloud_add_point_vector(sub3, &cloud->points[i]);
+		else if (segment == -1.0f)
+			cloud_add_point_vector(sub4, &cloud->points[i]);
+		else if (segment == -2.0f)
+			cloud_add_point_vector(sub5, &cloud->points[i]);
+		else if (segment == -3.0f)
+			cloud_add_point_vector(sub6, &cloud->points[i]);
+	}
 	
-	struct matrix* concat1 = matrix_concat_hor(ans0, ans1);
-	struct matrix* concat2 = matrix_concat_hor(ans2, ans3);
-	struct matrix* concat3 = matrix_concat_hor(ans1m, ans2m);
-	struct matrix* concat4 = matrix_concat_hor(ans3m, concat1);
-	struct matrix* concat5 = matrix_concat_hor(concat4, concat2);
-	struct matrix* concat6 = matrix_concat_hor(concat5, concat3);
+	struct matrix* moments0 = siqueira_cloud_moments(sub0, nose);
+	struct matrix* moments1 = siqueira_cloud_moments(sub1, nose);
+	struct matrix* moments2 = siqueira_cloud_moments(sub2, nose);
+	struct matrix* moments3 = siqueira_cloud_moments(sub3, nose);
+	struct matrix* moments4 = siqueira_cloud_moments(sub4, nose);
+	struct matrix* moments5 = siqueira_cloud_moments(sub5, nose);
+	struct matrix* moments6 = siqueira_cloud_moments(sub6, nose);
+	struct matrix* concat0 = matrix_concat_hor(moments0, moments1);
+	struct matrix* concat1 = matrix_concat_hor(concat0, moments2);
+	struct matrix* concat2 = matrix_concat_hor(concat1, moments3);
+	struct matrix* concat3 = matrix_concat_hor(concat2, moments4);
+	struct matrix* concat4 = matrix_concat_hor(concat3, moments5);
 	
-	vector3_free(dir);
-	cloud_free(sub0);
-	cloud_free(sub1);
-	cloud_free(sub2);
-	cloud_free(sub3);
-	cloud_free(sub1m);
-	cloud_free(sub2m);
-	cloud_free(sub3m);
-	matrix_free(ans0);
-	matrix_free(ans1);
-	matrix_free(ans2);
-	matrix_free(ans3);
-	matrix_free(ans1m);
-	matrix_free(ans2m);
-	matrix_free(ans3m);
+	ans = matrix_concat_hor(concat4, moments6);
+	
+	matrix_free(moments0);
+	matrix_free(moments1);
+	matrix_free(moments2);
+	matrix_free(moments3);
+	matrix_free(moments4);
+	matrix_free(moments5);
+	matrix_free(moments6);
+	matrix_free(concat0);
 	matrix_free(concat1);
 	matrix_free(concat2);
 	matrix_free(concat3);
 	matrix_free(concat4);
-	matrix_free(concat5);
+	cloud_free(sub0);
+	cloud_free(sub1);
+	cloud_free(sub2);
+	cloud_free(sub3);
+	cloud_free(sub4);
+	cloud_free(sub5);
+	cloud_free(sub6);
 	
-	return concat6;
+	return ans;
 }
 
 /**
@@ -228,53 +267,73 @@ struct matrix* siqueira_transversal(struct cloud* cloud, struct vector3* nose)
  */
 struct matrix* siqueira_sagittal(struct cloud* cloud, struct vector3* nose)
 {
-	struct vector3* dir = vector3_new(1.0f, 0.0f, 0.0f);
+	struct matrix* ans = NULL;
 	
-	struct cloud* sub0 = cloud_segment(cloud, vector3_new(nose->x, nose->y, nose->z), dir, 10.0f);
-	struct cloud* sub1 = cloud_segment(cloud, vector3_new(nose->x + 20.0f, nose->y, nose->z), dir, 10.0f);
-	struct cloud* sub2 = cloud_segment(cloud, vector3_new(nose->x + 40.0f, nose->y, nose->z), dir, 10.0f);
-	struct cloud* sub3 = cloud_segment(cloud, vector3_new(nose->x + 60.0f, nose->y, nose->z), dir, 10.0f);
-	struct cloud* sub1m = cloud_segment(cloud, vector3_new(nose->x - 20.0f, nose->y, nose->z), dir, 10.0f);
-	struct cloud* sub2m = cloud_segment(cloud, vector3_new(nose->x - 40.0f, nose->y, nose->z), dir, 10.0f);
-	struct cloud* sub3m = cloud_segment(cloud, vector3_new(nose->x - 60.0f, nose->y, nose->z), dir, 10.0f);
+	struct cloud* sub0 = cloud_empty();
+	struct cloud* sub1 = cloud_empty();
+	struct cloud* sub2 = cloud_empty();
+	struct cloud* sub3 = cloud_empty();
+	struct cloud* sub4 = cloud_empty();
+	struct cloud* sub5 = cloud_empty();
+	struct cloud* sub6 = cloud_empty();
 	
-	struct matrix* ans0 = siqueira_cloud_moments(sub0, nose);
-	struct matrix* ans1 = siqueira_cloud_moments(sub1, nose);
-	struct matrix* ans2 = siqueira_cloud_moments(sub2, nose);
-	struct matrix* ans3 = siqueira_cloud_moments(sub3, nose);
-	struct matrix* ans1m = siqueira_cloud_moments(sub1m, nose);
-	struct matrix* ans2m = siqueira_cloud_moments(sub2m, nose);
-	struct matrix* ans3m = siqueira_cloud_moments(sub3m, nose);
+	for (uint i = 0; i < cloud_size(cloud); i++) {
+		real segment = floor(fabs(nose->x - cloud->points[i].x) / CUT_SIZE);
+		real sign = siqueira_sign(nose->x - cloud->points[i].x);
+		segment = segment * sign;
+		
+		if (segment == 0.0f)
+			cloud_add_point_vector(sub0, &cloud->points[i]);
+		else if (segment == 1.0f)
+			cloud_add_point_vector(sub1, &cloud->points[i]);
+		else if (segment == 2.0f)
+			cloud_add_point_vector(sub2, &cloud->points[i]);
+		else if (segment == 3.0f)
+			cloud_add_point_vector(sub3, &cloud->points[i]);
+		else if (segment == -1.0f)
+			cloud_add_point_vector(sub4, &cloud->points[i]);
+		else if (segment == -2.0f)
+			cloud_add_point_vector(sub5, &cloud->points[i]);
+		else if (segment == -3.0f)
+			cloud_add_point_vector(sub6, &cloud->points[i]);
+	}
 	
-	struct matrix* concat1 = matrix_concat_hor(ans0, ans1);
-	struct matrix* concat2 = matrix_concat_hor(ans2, ans3);
-	struct matrix* concat3 = matrix_concat_hor(ans1m, ans2m);
-	struct matrix* concat4 = matrix_concat_hor(ans3m, concat1);
-	struct matrix* concat5 = matrix_concat_hor(concat4, concat2);
-	struct matrix* concat6 = matrix_concat_hor(concat5, concat3);
+	struct matrix* moments0 = siqueira_cloud_moments(sub0, nose);
+	struct matrix* moments1 = siqueira_cloud_moments(sub1, nose);
+	struct matrix* moments2 = siqueira_cloud_moments(sub2, nose);
+	struct matrix* moments3 = siqueira_cloud_moments(sub3, nose);
+	struct matrix* moments4 = siqueira_cloud_moments(sub4, nose);
+	struct matrix* moments5 = siqueira_cloud_moments(sub5, nose);
+	struct matrix* moments6 = siqueira_cloud_moments(sub6, nose);
+	struct matrix* concat0 = matrix_concat_hor(moments0, moments1);
+	struct matrix* concat1 = matrix_concat_hor(concat0, moments2);
+	struct matrix* concat2 = matrix_concat_hor(concat1, moments3);
+	struct matrix* concat3 = matrix_concat_hor(concat2, moments4);
+	struct matrix* concat4 = matrix_concat_hor(concat3, moments5);
 	
-	vector3_free(dir);
-	cloud_free(sub0);
-	cloud_free(sub1);
-	cloud_free(sub2);
-	cloud_free(sub3);
-	cloud_free(sub1m);
-	cloud_free(sub2m);
-	cloud_free(sub3m);
-	matrix_free(ans0);
-	matrix_free(ans1);
-	matrix_free(ans2);
-	matrix_free(ans3);
-	matrix_free(ans1m);
-	matrix_free(ans2m);
-	matrix_free(ans3m);
+	ans = matrix_concat_hor(concat4, moments6);
+	
+	matrix_free(moments0);
+	matrix_free(moments1);
+	matrix_free(moments2);
+	matrix_free(moments3);
+	matrix_free(moments4);
+	matrix_free(moments5);
+	matrix_free(moments6);
+	matrix_free(concat0);
 	matrix_free(concat1);
 	matrix_free(concat2);
 	matrix_free(concat3);
 	matrix_free(concat4);
-	matrix_free(concat5);
+	cloud_free(sub0);
+	cloud_free(sub1);
+	cloud_free(sub2);
+	cloud_free(sub3);
+	cloud_free(sub4);
+	cloud_free(sub5);
+	cloud_free(sub6);
 	
-	return concat6;
+	return ans;
 }
 
 /**
@@ -285,29 +344,38 @@ struct matrix* siqueira_sagittal(struct cloud* cloud, struct vector3* nose)
  */
 struct matrix* siqueira_frontal(struct cloud* cloud, struct vector3* nose)
 {
-	struct vector3* dir = vector3_new(0.0f, 0.0f, 1.0f);
+	struct matrix* ans = NULL;
+	struct cloud* sub0 = cloud_empty();
+	struct cloud* sub1 = cloud_empty();
+	struct cloud* sub2 = cloud_empty();
 	
-	struct cloud* sub0 = cloud_segment(cloud, vector3_new(nose->x, nose->y, nose->z), dir, 10.0f);
-	struct cloud* sub1 = cloud_segment(cloud, vector3_new(nose->x, nose->y, nose->z - 20.0f), dir, 10.0f);
-	struct cloud* sub2 = cloud_segment(cloud, vector3_new(nose->x, nose->y, nose->z - 40.0f), dir, 10.0f);
+	for (uint i = 0; i < cloud_size(cloud); i++) {
+		real segment = floor(fabs(nose->z - cloud->points[i].z) / CUT_SIZE);
+		
+		if (segment == 0.0f)
+			cloud_add_point_vector(sub0, &cloud->points[i]);
+		else if (segment == 1.0f)
+			cloud_add_point_vector(sub1, &cloud->points[i]);
+		else if (segment == 2.0f)
+			cloud_add_point_vector(sub2, &cloud->points[i]);
+	}
 	
-	struct matrix* ans0 = siqueira_cloud_moments(sub0, nose);
-	struct matrix* ans1 = siqueira_cloud_moments(sub1, nose);
-	struct matrix* ans2 = siqueira_cloud_moments(sub2, nose);
+	struct matrix* moments0 = siqueira_cloud_moments(sub0, nose);
+	struct matrix* moments1 = siqueira_cloud_moments(sub1, nose);
+	struct matrix* moments2 = siqueira_cloud_moments(sub2, nose);
+	struct matrix* concat0 = matrix_concat_hor(moments0, moments1);
 	
-	struct matrix* concat1 = matrix_concat_hor(ans0, ans1);
-	struct matrix* concat2 = matrix_concat_hor(ans2, concat1);
+	ans = matrix_concat_hor(concat0, moments2);
 	
-	vector3_free(dir);
+	matrix_free(moments0);
+	matrix_free(moments1);
+	matrix_free(moments2);
+	matrix_free(concat0);
 	cloud_free(sub0);
 	cloud_free(sub1);
 	cloud_free(sub2);
-	matrix_free(ans0);
-	matrix_free(ans1);
-	matrix_free(ans2);
-	matrix_free(concat1);
 	
-	return concat2;
+	return ans;
 }
 
 #endif // SIQUEIRA_H

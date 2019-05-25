@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+import copy
 import parse
 import seaborn
 import operator
@@ -12,8 +13,11 @@ import matplotlib.pyplot as plt
 from open3d import *
 from sklearn.svm import SVC as SVM
 from sklearn.decomposition import PCA
+from scipy.spatial.distance import cdist
 from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import confusion_matrix
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MaxAbsScaler
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.preprocessing import StandardScaler
@@ -33,7 +37,7 @@ classifiers = {
 	#"DMC_manhattam" : NC(metric="manhattan"),
 	#"DMC_euclidean" : NC(metric="euclidean"),
 	"SVM_radial"    : SVM(kernel="rbf", C=8.0, gamma=0.125),
-	"SVM_poly"      : SVM(kernel="poly", C=8.0, gamma=0.125),
+	#"SVM_poly"      : SVM(kernel="poly", C=8.0, gamma=0.125),
 	#"LDA"           : LDA(),
 	#"QDA"           : QDA(),
 	#"GaussianNB"    : GaussianNB(),
@@ -42,23 +46,76 @@ classifiers = {
 	#"DecisionTree"  : DecisionTreeClassifier()
 }
 
-def registration(input_folder, nose_folder, output_folder):
-	#------------------------#
-	# |                    | #
-	# | UNDER CONSTRUCTION | #
-	# |                    | #
-	#------------------------#
-	for bsdir in os.listdir(input_folder):
-		folder = input_folder + bsdir
-		nose_path = nose_folder + bsdir
-		result_folder = output_folder + bsdir
+def draw_registration_result(source, target, transformation):
+	source_temp = copy.deepcopy(source)
+	target_temp = copy.deepcopy(target)
+	source_temp.paint_uniform_color([1, 0.706, 0])
+	target_temp.paint_uniform_color([0, 0.651, 0.929])
+	source_temp.transform(transformation)
+	draw_geometries([source_temp, target_temp])
+
+def registration(input_clouds, input_lm3, output_clouds, output_lm3):
+	fmt = "bs{:d}_{:w}_{:w}_{:d}.pcd"
+	os.makedirs(output_clouds, exist_ok=True)
+	os.makedirs(output_lm3, exist_ok=True)
+	
+	for bsdir in os.listdir(input_clouds):
+		folder = input_clouds + bsdir
+		nose_path = input_lm3 + bsdir
+		result_folder = output_clouds + bsdir
+		lm3_folder = output_lm3 + bsdir
+		
 		if os.path.isdir(folder):
+			os.makedirs(result_folder, exist_ok=True)
+			os.makedirs(lm3_folder, exist_ok=True)
+			
 			for cloud in os.listdir(folder):
-				if cloud.endswith(".pcd"):
+				match = parse.parse(fmt, cloud)
+				tp = str(match[1])
+				
+				if cloud.endswith(".pcd") and tp == "N":
+					ref_file = folder + "/" + bsdir + "_N_N_0.pcd"
 					fullPath = folder + "/" + cloud
 					fullNose = nose_path + "/" + cloud
+					fullResult = result_folder + "/" + cloud
+					lm3Result = lm3_folder + "/" + cloud
 					
-					print(result_folder)
+					neutral0 = read_point_cloud(ref_file)
+					cloud_data = read_point_cloud(fullPath)
+					lm3 = read_point_cloud(fullNose)
+					
+					points = np.asarray(cloud_data.points)
+					nosetip = np.reshape(lm3.points[13], (1, 3))
+					condition = cdist(points, nosetip) <= 40
+					nose_points = points[list(np.ravel(condition))]
+					nose_cloud = PointCloud()
+					nose_cloud.points = Vector3dVector(nose_points)
+					
+					trans_init = np.array([[1., 0., 0., 0.],
+					                       [0., 1., 0., 0.],
+					                       [0., 0., 1., 0.],
+					                       [0., 0., 0., 1.]])
+					point2point = TransformationEstimationPointToPoint()
+					criteria = ICPConvergenceCriteria(relative_fitness=0.0001,
+					                                  relative_rmse=0.0001,
+					                                  max_iteration=100)
+					threshold = 100
+					reg = registration_icp(neutral0,
+					                       nose_cloud,
+					                       threshold,
+					                       trans_init,
+					                       point2point,
+					                       criteria=criteria)
+					
+					cloud_copy = copy.deepcopy(cloud_data)
+					lm3_copy = copy.deepcopy(lm3)
+					cloud_copy.transform(reg.transformation)
+					lm3_copy.transform(reg.transformation)
+					
+					write_point_cloud(fullResult, cloud_copy, write_ascii=True)
+					write_point_cloud(lm3Result, lm3_copy, write_ascii=True)
+					
+					print(cloud, "ok!")
 
 def cloud_extraction(cloud, nose, cut):
 	mcalc = "../bin/siqcalc"
@@ -86,7 +143,6 @@ def batch_extraction(dataset, noses, cut, output):
 	
 	count = 0
 	start_time = time.time()
-	
 	
 	dump = []
 	for bsdir in os.listdir(dataset):
@@ -141,7 +197,7 @@ def run_classification(X_train, y_train, X_test, y_test):
 		result["y_pred"] = []
 		ans["ERROR_NORM"] = result
 		return ans
-	
+	"""
 	new_train = []
 	new_test = []
 	
@@ -163,7 +219,7 @@ def run_classification(X_train, y_train, X_test, y_test):
 	
 	X_train = np.array(new_train).T
 	X_test = np.array(new_test).T
-	
+	"""
 	for name, classifier in classifiers.items():
 		result = dict()
 		start_time = time.time()

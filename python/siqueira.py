@@ -1,25 +1,35 @@
 from recognition import *
 
-input_folder = "../datasets/tutu/BOSPHORUS_clouds/"
-nose_folder = "../datasets/tutu/BOSPHORUS_lm3/"
-output_folder = "../datasets/tutu/BOSPHORUS_icp/"
+"""----------------
+TAREFA DE REGISTRO
+----------------"""
 
-os.makedirs(output_folder, exist_ok=True)
+input_clouds = "../datasets/tutu/clouds/"
+input_lm3 = "../datasets/tutu/lm3/"
+output_clouds = "../datasets/tutu_icp/clouds/"
+output_lm3 = "../datasets/tutu_icp/lm3/"
 
-registration(input_folder, nose_folder, output_folder)
+#registration(input_clouds, input_lm3, output_clouds, output_lm3)
 
-"""
-dataset = "../datasets/siqueira/BOSPHORUS_clouds/"
-noses = "../datasets/siqueira/BOSPHORUS_lm3/"
-cuts = ["f", "s", "t", "fs", "ft", "st", "fst"]
+"""----------------------
+EXTRACAO E CLASSIFICACAO
+----------------------"""
+
+dataset = "../datasets/siqueira/clouds/"
+noses = "../datasets/siqueira/lm3/"
 result_folder = "../results/siqueira/"
 
 os.makedirs(result_folder, exist_ok=True)
 
+cuts = ["f", "s", "t", "fs", "ft", "st", "fst"]
 for cut in cuts:
 	output = result_folder + cut + "_data.dat"
-	batch_extraction(dataset, noses, cut, output)
-	ans = rank_neutral(output)
-	max_recognition(ans, cut.upper() + "_neutral")
-"""
+	
+	#batch_extraction(dataset, noses, cut, output)
+	
+	ans1 = rank_neutral(output)
+	max_recognition(ans1, cut.upper() + "_neutral")
+	
+	ans2 = rank_nonneutral(output)
+	max_recognition(ans2, cut.upper() + "_nonneutral")
 

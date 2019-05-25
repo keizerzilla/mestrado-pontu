@@ -9,11 +9,11 @@ replace_dict = {"bosphorus" : "bs",
 
 faces = ["neutral"]
 
-cuts = {"w" : "whole"}
+cuts = {"f" : "frontal", "s" : "sagittal", "t" : "transversal"}
 
 scenarios= ["bosphorus-outlier-densit200-crop80-icp"]
 
-moments = ["chebyshev"]
+moments = ["husiq"]
 
 mini_scenarios = []
 for s in scenarios:
@@ -116,11 +116,6 @@ def go_combination(n=2):
 		combination_roc1(dataset, moments, cuts, dump="../tutu/", n=n)
 
 if __name__ == "__main__":
-	if len(sys.argv) == 3:
-		tname = "{}_{}".format(sys.argv[1], sys.argv[2])
-	else:
-		tname = "tutu"
-	
 	extractor = MomentExtractor()
 	extractor.totalExtraction(faces, scenarios, cuts, moments, "tutu")
 	go_classification_rank1("tutu")

@@ -99,7 +99,8 @@ int main(int argc, char** argv)
 	struct vector3* nose = NULL;
 	
 	if (nose_cloud == NULL)
-		nose = cloud_point_faraway_bestfit(cloud); 
+		//nose = cloud_point_faraway_bestfit(cloud);
+		nose = cloud_min_z(cloud);
 	else
 		nose = &nose_cloud->points[13];
 	
@@ -147,6 +148,7 @@ int main(int argc, char** argv)
 		matrix_free(frontal);
 		matrix_free(sagittal);
 		matrix_free(transversal);
+		matrix_free(fs);
 	}
 	
 	if (!strcmp(output, "stdout")) {
