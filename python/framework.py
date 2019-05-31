@@ -9,11 +9,11 @@ replace_dict = {"bosphorus" : "bs",
 
 faces = ["neutral"]
 
-cuts = {"f" : "frontal", "s" : "sagittal", "t" : "transversal"}
+cuts = {"w" : "whole"}
 
-scenarios= ["bosphorus-outlier-densit200-crop80-icp"]
+scenarios= ["bosphorus-wavelet"]
 
-moments = ["husiq"]
+moments = ["spheric"]
 
 mini_scenarios = []
 for s in scenarios:

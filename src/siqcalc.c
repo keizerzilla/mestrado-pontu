@@ -96,10 +96,9 @@ int main(int argc, char** argv)
     }
 	
 	struct cloud* nose_cloud = cloud_load_pcd(nose_file);
-	struct vector3* nose = NULL;
 	
+	struct vector3* nose = NULL;
 	if (nose_cloud == NULL)
-		//nose = cloud_point_faraway_bestfit(cloud);
 		nose = cloud_min_z(cloud);
 	else
 		nose = &nose_cloud->points[13];

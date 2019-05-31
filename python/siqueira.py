@@ -1,35 +1,25 @@
 from recognition import *
 
-"""----------------
-TAREFA DE REGISTRO
-----------------"""
+input_clouds = "../datasets/siqueira/clouds/"
+input_lm3 = "../datasets/siqueira/lm3/"
+output_clouds = "../datasets/siqueira-icp/clouds/"
+output_lm3 = "../datasets/siqueira-icp/lm3/"
+f_all = "../datasets/siqueira-icp/all/"
 
-input_clouds = "../datasets/tutu/clouds/"
-input_lm3 = "../datasets/tutu/lm3/"
-output_clouds = "../datasets/tutu_icp/clouds/"
-output_lm3 = "../datasets/tutu_icp/lm3/"
+registration(input_clouds, input_lm3, output_clouds, output_lm3, f_all)
 
-#registration(input_clouds, input_lm3, output_clouds, output_lm3)
-
-"""----------------------
-EXTRACAO E CLASSIFICACAO
-----------------------"""
-
-dataset = "../datasets/siqueira/clouds/"
-noses = "../datasets/siqueira/lm3/"
-result_folder = "../results/siqueira/"
+dataset = "../datasets/siqueira-icp/clouds/"
+noses = "../datasets/siqueira-icp/lm3/"
+result_folder = "../results/robson/"
 
 os.makedirs(result_folder, exist_ok=True)
 
-cuts = ["f", "s", "t", "fs", "ft", "st", "fst"]
+cuts = ["st"]
 for cut in cuts:
 	output = result_folder + cut + "_data.dat"
 	
-	#batch_extraction(dataset, noses, cut, output)
+	batch_extraction(dataset, noses, cut, output)
 	
-	ans1 = rank_neutral(output)
-	max_recognition(ans1, cut.upper() + "_neutral")
+	ans = rank_neutral(output)
+	rocog_rate(ans, cut.upper() + "_neutral")
 	
-	ans2 = rank_nonneutral(output)
-	max_recognition(ans2, cut.upper() + "_nonneutral")
-

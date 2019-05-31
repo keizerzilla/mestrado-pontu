@@ -27,7 +27,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sn
 import matplotlib.pyplot as plt
-from sklearn.svm import SVC
+from sklearn.svm import SVM
 from sklearn.decomposition import PCA
 from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import confusion_matrix
@@ -38,7 +38,7 @@ from sklearn.preprocessing import PowerTransformer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import NearestCentroid as NC
 from sklearn.neural_network import MLPClassifier as MLP
-from sklearn.neighbors import KNeighborsClassifier as KNC
+from sklearn.neighbors import KNeighborsClassifier as KNN
 from sklearn.model_selection import train_test_split as data_split
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis as QDA
@@ -55,12 +55,12 @@ expressions = {
 warnings.filterwarnings("ignore")
 
 classifiers = {
-	"KNN_manhattam" : KNC(p=1, n_neighbors=1),
-	"KNN_euclidean" : KNC(p=2, n_neighbors=1),
+	"KNN_manhattam" : KNN(p=1, n_neighbors=1),
+	"KNN_euclidean" : KNN(p=2, n_neighbors=1),
 	"DMC_manhattam" : NC(metric="manhattan"),
 	"DMC_euclidean" : NC(metric="euclidean"),
-	"SVM_radial"    : SVC(kernel="rbf", gamma="auto"),
-	"SVM_poly"      : SVC(kernel="poly", gamma="auto"),
+	"SVM_radial"    : SVM(kernel="rbf", gamma="auto"),
+	"SVM_poly"      : SVM(kernel="poly", gamma="auto"),
 	"LDA"           : LDA(),
 	"QDA"           : QDA(),
 	"GaussianNB"    : GaussianNB(),

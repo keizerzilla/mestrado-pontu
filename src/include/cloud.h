@@ -248,10 +248,8 @@ struct vector3* cloud_max_alpha(struct cloud* cloud)
 struct cloud* cloud_load_xyz(const char* filename)
 {
     FILE* file = fopen(filename, "r");
-    if (file == NULL) {
-        util_error("%s: erro abrir arquivo %s", __FUNCTION__, filename);
+    if (file == NULL)
         return NULL;
-    }
 
     uint num_pts = 0;
     while (!feof(file) && (fscanf(file, "%*s %*s %*s\n") != EOF))
@@ -282,10 +280,8 @@ struct cloud* cloud_load_xyz(const char* filename)
 struct cloud* cloud_load_csv(const char* filename)
 {
     FILE* file = fopen(filename, "r");
-    if (file == NULL) {
-        util_error("%s: erro abrir arquivo %s", __FUNCTION__, filename);
+    if (file == NULL)
         return NULL;
-    }
 
     uint num_pts = 0;
     while (!feof(file) && (fscanf(file, "%*s,%*s,%*s\n") != EOF))

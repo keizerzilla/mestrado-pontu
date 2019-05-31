@@ -1,3 +1,13 @@
+"""
+recognition.py
+Artur Rodrigues Rocha Neto - artur.rodrigues26@gmail.com - 2019
+
+Subconjunto de funções do pipeline de reconhecimento facial segundo reportado
+por (SIQUEIRA;2018). Operações de registro, extração e classificação.
+
+Requisitos: numpy, scipy, pandas, matplotlib, seaborn, parse, sklearn, open3d
+"""
+
 import os
 import sys
 import time
@@ -5,47 +15,21 @@ import copy
 import parse
 import seaborn
 import operator
-import warnings
 import subprocess
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from open3d import *
 from sklearn.svm import SVC as SVM
-from sklearn.decomposition import PCA
 from scipy.spatial.distance import cdist
-from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import confusion_matrix
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.preprocessing import MaxAbsScaler
-from sklearn.ensemble import AdaBoostClassifier
-from sklearn.tree import DecisionTreeClassifier
 from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing import PowerTransformer
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.neighbors import NearestCentroid as NC
-from sklearn.neighbors import KNeighborsClassifier as KNN
-from sklearn.model_selection import train_test_split as data_split
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
-from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis as QDA
 
-warnings.filterwarnings("ignore")
-
-classifiers = {
-	#"KNN_manhattam" : KNN(p=1, n_neighbors=1),
-	#"KNN_euclidean" : KNN(p=2, n_neighbors=1),
-	#"DMC_manhattam" : NC(metric="manhattan"),
-	#"DMC_euclidean" : NC(metric="euclidean"),
-	"SVM_radial"    : SVM(kernel="rbf", C=8.0, gamma=0.125),
-	#"SVM_poly"      : SVM(kernel="poly", C=8.0, gamma=0.125),
-	#"LDA"           : LDA(),
-	#"QDA"           : QDA(),
-	#"GaussianNB"    : GaussianNB(),
-	#"RandomForest"  : RandomForestClassifier(n_estimators=100),
-	#"AdaBoost"      : AdaBoostClassifier(),
-	#"DecisionTree"  : DecisionTreeClassifier()
-}
-
+# @TODO
+"""
+Debug para função de registro.
+Plota duas nuvens em função de uma transformação.
+"""
 def draw_registration_result(source, target, transformation):
 	source_temp = copy.deepcopy(source)
 	target_temp = copy.deepcopy(target)
@@ -54,10 +38,16 @@ def draw_registration_result(source, target, transformation):
 	source_temp.transform(transformation)
 	draw_geometries([source_temp, target_temp])
 
-def registration(input_clouds, input_lm3, output_clouds, output_lm3):
+# @TODO
+"""
+Tarefa de registro. Efetua operação em uma base completa.
+A ideia é reproduzir fielmanete o pipeline do Robson. Sem sucesso até o momento.
+"""
+def registration(input_clouds, input_lm3, output_clouds, output_lm3, f_all):
 	fmt = "bs{:d}_{:w}_{:w}_{:d}.pcd"
 	os.makedirs(output_clouds, exist_ok=True)
 	os.makedirs(output_lm3, exist_ok=True)
+	os.makedirs(f_all, exist_ok=True)
 	
 	for bsdir in os.listdir(input_clouds):
 		folder = input_clouds + bsdir
@@ -72,20 +62,23 @@ def registration(input_clouds, input_lm3, output_clouds, output_lm3):
 			for cloud in os.listdir(folder):
 				match = parse.parse(fmt, cloud)
 				tp = str(match[1])
+				sample = str(match[3])
 				
 				if cloud.endswith(".pcd") and tp == "N":
-					ref_file = folder + "/" + bsdir + "_N_N_0.pcd"
+					ref_cloud = folder + "/" + bsdir + "_N_N_0.pcd"
+					ref_nose = nose_path + "/" + bsdir + "_N_N_0.pcd"
 					fullPath = folder + "/" + cloud
-					fullNose = nose_path + "/" + cloud
+					fullLm3 = nose_path + "/" + cloud
 					fullResult = result_folder + "/" + cloud
 					lm3Result = lm3_folder + "/" + cloud
 					
-					neutral0 = read_point_cloud(ref_file)
-					cloud_data = read_point_cloud(fullPath)
-					lm3 = read_point_cloud(fullNose)
+					cloud_neutral0 = read_point_cloud(ref_cloud)
+					lm3_neutral0 = read_point_cloud(ref_nose)
+					cloud_target = read_point_cloud(fullPath)
+					lm3_target = read_point_cloud(fullLm3)
 					
-					points = np.asarray(cloud_data.points)
-					nosetip = np.reshape(lm3.points[13], (1, 3))
+					points = np.asarray(cloud_neutral0.points)
+					nosetip = np.reshape(lm3_neutral0.points[13], (1, 3))
 					condition = cdist(points, nosetip) <= 40
 					nose_points = points[list(np.ravel(condition))]
 					nose_cloud = PointCloud()
@@ -100,26 +93,36 @@ def registration(input_clouds, input_lm3, output_clouds, output_lm3):
 					                                  relative_rmse=0.0001,
 					                                  max_iteration=100)
 					threshold = 100
-					reg = registration_icp(neutral0,
-					                       nose_cloud,
+					reg = registration_icp(nose_cloud,
+					                       cloud_target,
 					                       threshold,
 					                       trans_init,
 					                       point2point,
 					                       criteria=criteria)
 					
-					cloud_copy = copy.deepcopy(cloud_data)
-					lm3_copy = copy.deepcopy(lm3)
+					cloud_copy = copy.deepcopy(cloud_target)
+					lm3_copy = copy.deepcopy(lm3_target)
+					
 					cloud_copy.transform(reg.transformation)
 					lm3_copy.transform(reg.transformation)
 					
 					write_point_cloud(fullResult, cloud_copy, write_ascii=True)
 					write_point_cloud(lm3Result, lm3_copy, write_ascii=True)
 					
+					fullAll = f_all + cloud
+					all_copy = np.asarray(cloud_copy.points)
+					np.savetxt(fullAll.replace("pcd", "xyz"),
+					           all_copy,
+					           delimiter=" ")
+					
 					print(cloud, "ok!")
 
-def cloud_extraction(cloud, nose, cut):
+"""
+Extração momentos.
+Toma uma nuvem alvo, a nuvem de landmarks e o tipo de fatiamento.
+"""
+def cloud_extraction(cloud, nose, cut, fmt="bs{:d}_{:w}_{:w}_{:d}.pcd"):
 	mcalc = "../bin/siqcalc"
-	fmt = "bs{:d}_{:w}_{:w}_{:d}.pcd"
 	path, filename = os.path.split(cloud)
 	match = parse.parse(fmt, filename)
 	
@@ -138,6 +141,9 @@ def cloud_extraction(cloud, nose, cut):
 	
 	return ans
 
+"""
+Executa extração de momentos em uma base completa.
+"""
 def batch_extraction(dataset, noses, cut, output):
 	print("[  siqueira  ] - [ {} ] - [{}]".format(cut, dataset))
 	
@@ -176,15 +182,62 @@ def batch_extraction(dataset, noses, cut, output):
 	
 	print("[     OK     ] - [ {} nuvens, {} seg/nuvem]".format(count, vel))
 
-def run_classification(X_train, y_train, X_test, y_test):
-	ans = dict()
+"""
+Executa extração de momentos em uma base completa.
+"""
+def batch_extraction_allinone(dataset, cut, output):
+	print("[  siqueira  ] - [ {} ] - [{}]".format(cut, dataset))
 	
+	fmt="bs{:d}_{:w}_{:w}_{:d}.xyz"
+	count = 0
+	start_time = time.time()
+	
+	dump = []
+	for cloud in os.listdir(dataset):
+		if cloud.endswith(".xyz"):
+			fullPath = dataset + "/" + cloud
+			
+			ans = cloud_extraction(fullPath, "vruco.pcd", cut, fmt)
+			if ans == None:
+				continue
+			
+			dump.append(ans)
+			count = count + 1
+			print("\r{}".format(count), end="\r")
+	
+	elapsed = time.time() - start_time
+	vel = round(elapsed / count, 6)
+	
+	cols = ["m" + str(x) for x in range(len(dump[0].split(",")) - 4)]
+	cols = cols + ["sample", "subject", "tp", "exp"]
+	cols = ",".join(cols) + "\n"
+	dump = cols + "".join(dump)
+	
+	data_file = open(output, "w")
+	data_file.write(dump)
+	data_file.close()
+	
+	print("[     OK     ] - [ {} nuvens, {} seg/nuvem]".format(count, vel))
+
+"""
+Função base de classificação.
+Toma conjuntos de treino e teste, efetua normalização e executa classificador.
+Retorno é um dicionário com os seguintes campos:
+
+"recog": taxa de reconhecimento
+"y_true": vetor com as classes verdadeiras
+"y_pred": vetor com as classes preditas pelo classificador
+"time": quanto tempo (segundos) demorou para rodar normalização + classificação
+"""
+def run_classification(X_train, y_train, X_test, y_test):
 	X_train[X_train == np.inf] = 0
 	X_train[X_train == -np.inf] = 0
 	X_train[X_train == np.nan] = 0
 	X_test[X_test == np.inf] = 0
 	X_test[X_test == -np.inf] = 0
 	X_test[X_test == np.nan] = 0
+	
+	start_time = time.time()
 	
 	try:
 		scaler = StandardScaler().fit(X_train)
@@ -195,55 +248,38 @@ def run_classification(X_train, y_train, X_test, y_test):
 		result["recog"] = 0
 		result["y_true"] = []
 		result["y_pred"] = []
-		ans["ERROR_NORM"] = result
-		return ans
-	"""
-	new_train = []
-	new_test = []
+		print("! normalization error !")
+		return result
+	
+	classifier = SVM(kernel="rbf", C=8.0, gamma=0.125)
+	result = dict()
 	
 	try:
-		pt = PowerTransformer(method="yeo-johnson", standardize=False)
-		for m_train, m_test in zip(X_train.T, X_test.T):
-			data_train = m_train.reshape(-1, 1)
-			data_test = m_test.reshape(-1, 1)
-			pt.fit(data_train)
-			new_train.append(np.ravel(pt.transform(data_train)))
-			new_test.append(np.ravel(pt.transform(data_test)))
+		classifier.fit(X_train, y_train)
+		score = classifier.score(X_test, y_test)
 	except:
-		result = dict()
-		result["recog"] = 0
-		result["y_true"] = []
+		print("! fit error !")
+		score = 0
+	
+	result["recog"] = score
+	result["y_true"] = y_test
+	
+	try:
+		result["y_pred"] = classifier.predict(X_test)
+	except:
+		print("! predict error !")
 		result["y_pred"] = []
-		ans["ERROR_SKEW"] = result
-		return ans
 	
-	X_train = np.array(new_train).T
-	X_test = np.array(new_test).T
-	"""
-	for name, classifier in classifiers.items():
-		result = dict()
-		start_time = time.time()
-		
-		try:
-			classifier.fit(X_train, y_train)
-			score = classifier.score(X_test, y_test)
-		except:
-			score = 0
-		
-		result["recog"] = score
-		result["y_true"] = y_test
-		
-		try:
-			result["y_pred"] = classifier.predict(X_test)
-		except:
-			result["y_pred"] = []
-		
-		elapsed_time = str(round(time.time() - start_time, 4))
-		result["time"] = elapsed_time
-		ans[name] = result
+	elapsed_time = str(round(time.time() - start_time, 4))
+	result["time"] = elapsed_time
 	
-	return ans
-	
+	return result
+
+"""
+Efetua cenário de classificação neutra.
+Teste: amostra 0 neutra
+Treino: todas as demais amostras neutras
+"""
 def rank_neutral(features):
 	df = pd.read_csv(features)
 	
@@ -259,6 +295,11 @@ def rank_neutral(features):
 	
 	return run_classification(X_train, y_train, X_test, y_test)
 
+"""
+Efetua cenário de classificação não-neutra.
+Teste: amostra 0 neutra
+Treino: todas as amostras não-neutras (expressões e AUs)
+"""
 def rank_nonneutral(features):
 	df = pd.read_csv(features)
 	
@@ -277,6 +318,11 @@ def rank_nonneutral(features):
 	
 	return run_classification(X_train, y_train, X_test, y_test)
 
+"""
+Efetua cenário de classificação roc3.
+Teste: todas as amostras neutras
+Treino: todas as amostras não-neutras (expressões e AUs)
+"""
 def roc3(features):
 	df = pd.read_csv(features)
 	
@@ -295,6 +341,11 @@ def roc3(features):
 	
 	return run_classification(X_train, y_train, X_test, y_test)
 
+"""
+Efetua cenário de classificação com oclusão.
+Teste: amostra 0 neutra
+Treino: todas as amostras de oclusão
+"""
 def rank_occlusion(features):
 	df = pd.read_csv(features)
 	
@@ -310,19 +361,39 @@ def rank_occlusion(features):
 	
 	return run_classification(X_train, y_train, X_test, y_test)
 
-def max_recognition(ans, msg):
-	rates = dict((key, value["recog"]) for key, value in ans.items())
-	lemax = max(rates.items(), key=operator.itemgetter(1))
-	
-	classifier, rate = lemax[0], round(lemax[1]*100, 2)
-	print("{:<15}{:<15}{:<7}".format(msg, classifier, rate))
-	
-	return classifier, rate
+"""
+Imprime taxa de reconhecimento em formato humanamente legível.
+Recebe também um parâmetro opcional de mensagem de debug.
+"""
+def rocog_rate(ans, msg="RecogRate"):
+	rate = round(ans["recog"]*100, 2)
+	print("{:<16}{:<8}".format(msg, rate))
 
-def confusion(y_true, y_pred):
-	classes = [x for x in range(105)]
-	
+"""
+Plota matriz de confusão de um dado experimento.
+Printa na saída padrão uma lista dos erros para melhor visualização.
+Recebe parâmetro opcional com título da figura.
+"""
+def plot_confusion_matrix(ans, title="reconhecimento"):
 	seaborn.set()
+	
+	y_true = ans["y_true"]
+	y_pred = ans["y_pred"]
+	errors = 0
+	
+	print("VERDADE\t\tPREDICAO")
+	
+	for i in range(y_true.shape[0]):
+		truth = y_true[i]
+		pred = y_pred[i]
+		
+		if truth != pred:
+			print("{}\t\t{}".format(truth, pred))
+			errors = errors + 1
+	
+	print("{} errors".format(errors))
+	
+	classes = [x for x in range(105)]
 	
 	conf = confusion_matrix(y_true, y_pred, labels=classes)
 	seaborn.heatmap(conf, cmap="Purples")
@@ -331,7 +402,7 @@ def confusion(y_true, y_pred):
 	plt.xticks(tick_marks, classes, rotation=90)
 	plt.yticks(tick_marks, classes, rotation=360)
 	
-	plt.title("Matriz de Confusão")
+	plt.title("Matriz de Confusão: " + title)
 	plt.ylabel("Verdade terrestre")
 	plt.xlabel("Classes estimadas")
 	plt.tight_layout()
