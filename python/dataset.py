@@ -14,13 +14,6 @@ import subprocess
 import numpy as np
 import pandas as pd
 
-def isInt(s):
-	try: 
-		int(s)
-		return True
-	except ValueError:
-		return False
-
 def cloud2xyz(source):
 	"""
 	Normaliza as extenções dos arquivos de nuvem (FUNÇÃO HISTÓRICA).
