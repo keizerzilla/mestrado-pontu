@@ -32,14 +32,13 @@ def cloud_extraction(moment, cloud, cut):
 	
 	subject = str(match[0])
 	tp = str(match[1])
-	ex = str(match[2])
+	exp = str(match[2])
 	sample = str(match[3])
 	
 	cmd = [mcalc, "-m", moment, "-i", cloud, "-o", "stdout", "-c", cut]
 	ans = subprocess.run(cmd, stdout=subprocess.PIPE).stdout
-	#ans = ans[:-2].decode("utf-8").replace(" ", ",")
 	ans = ans[:-1].decode("utf-8").replace(" ", ",")
-	ans = ans + ",{},{},{},{}\n".format(sample, subject, tp, ex)
+	ans = ans + ",{},{},{},{}\n".format(tp, exp, sample, subject)
 	
 	return ans
 
@@ -57,23 +56,32 @@ def batch_extraction(moment, dataset, cut, output):
 	count = 0
 	start_time = time.time()
 	
-	with open(output, "w") as dump:
-		for cloud in os.listdir(dataset):
-			if cloud.endswith(".xyz"):
-				fullPath = dataset + "/" + cloud
-				ans = cloud_extraction(moment, fullPath, cut)
-				
-				if ans == None:
-					continue
-				
-				dump.write(ans)
-				count = count + 1
-				print("\r{}".format(count), end="\r")
+	dump = []
+	for cloud in os.listdir(dataset):
+		if cloud.endswith(".xyz"):
+			fullPath = dataset + "/" + cloud
+			ans = cloud_extraction(moment, fullPath, cut)
+			
+			if ans == None:
+				continue
+			
+			dump.append(ans)
+			count = count + 1
+			print("\r{}".format(count), end="\r")
 	
 	elapsed = time.time() - start_time
-	velocity = round(elapsed / count, 6)
+	vel = round(elapsed / count, 6)
 	
-	print("[     OK     ] - [ {} nuvens, {} seg/nuvem]".format(count, velocity))
+	cols = ["m" + str(x) for x in range(len(dump[0].split(",")) - 4)]
+	cols = cols + ["tp", "exp", "sample", "subject"]
+	cols = ",".join(cols) + "\n"
+	dump = cols + "".join(dump)
+	
+	data_file = open(output, "w")
+	data_file.write(dump)
+	data_file.close()
+	
+	print("[     OK     ] - [ {} nuvens, {} seg/nuvem]".format(count, vel))
 
 def total_extraction(faces, scenarios, cuts, moments, rdir="results"):
 	"""

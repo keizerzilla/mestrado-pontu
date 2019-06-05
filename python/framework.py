@@ -11,7 +11,7 @@ faces = ["neutral"]
 
 cuts = {"w" : "whole"}
 
-scenarios= ["bosphorus-wavelet"]
+scenarios= ["bosphorus-outlier-densit200-crop80-icp"]
 
 moments = ["spheric"]
 

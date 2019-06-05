@@ -7,15 +7,10 @@ Funções para classificação, análise de resultados e pré-processamento.
 Os arquivos de dados com as features/atributos devem estar no formato:
 - p+4 colunas, onde p é o número de atributos
 - as quatros colunas finais devem ser, respectivamente:
-  - amostra
-  - classe
   - tipo de expressao
   - expressao
-- os arquivos NÃO DEVEM POSSUIR CABEÇALHO!
-- exemplos:
-	1,2,3,4,5,6,9,7,N,N # seis atributos, amostra 9, classe 7, neutra-neutra
-	9,2,0,2,1,2,E,ANGER # quatro atributos, amostra 1, classe 2, expressao-anger
-	3,4,9,LFAU,A22B22   # um atributo, amostra 4, classe 9, actionunit-A22B22
+  - amostra
+  - classe
 """
 
 import os
@@ -27,7 +22,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sn
 import matplotlib.pyplot as plt
-from sklearn.svm import SVM
+from sklearn.svm import SVC as SVM 
 from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import confusion_matrix
 from sklearn.ensemble import AdaBoostClassifier
@@ -147,16 +142,15 @@ def rank1_neutral(features):
 	:return: dicionário com taxas de reconhecimento e predições
 	"""
 	
-	df = pd.read_csv(features, header=None)
-	cols = ["f"+str(x) for x in range(len(df.columns)-4)]
-	cols = cols + ["sample", "subject", "tp", "exp"]
-	df.columns = cols
+	df = pd.read_csv(features)
 	
-	trainset = df.loc[df["sample"] == 0].drop(["sample", "tp", "exp"], axis=1)
+	cond_train = (df["tp"] == "N") & (df["sample"] == 0)
+	trainset = df.loc[cond_train].drop(["sample", "tp", "exp"], axis=1)
 	X_train = np.array(trainset.drop(["subject"], axis=1))
 	y_train = np.ravel(trainset[["subject"]])
 	
-	testset = df.loc[df["sample"] != 0].drop(["sample", "tp", "exp"], axis=1)
+	cond_test = (df["tp"] == "N") & (df["sample"] != 0)
+	testset = df.loc[cond_test].drop(["sample", "tp", "exp"], axis=1)
 	X_test = np.array(testset.drop(["subject"], axis=1))
 	y_test = np.ravel(testset[["subject"]])
 	
@@ -173,21 +167,13 @@ def rank1_nonneutral(feat_neutral, feat_nonneutral):
 	"""
 	
 	# neutras: conjunto de treino
-	df = pd.read_csv(feat_neutral, header=None)
-	cols = ["f"+str(x) for x in range(len(df.columns)-4)]
-	cols = cols + ["sample", "subject", "tp", "exp"]
-	df.columns = cols
-	
+	df = pd.read_csv(feat_neutral)
 	trainset = df.loc[df["sample"] == 0].drop(["sample", "tp", "exp"], axis=1)
 	X_train = np.array(trainset.drop(["subject"], axis=1))
 	y_train = np.ravel(trainset[["subject"]])
 	
 	# nao-neutras: conjunto de teste
-	df = pd.read_csv(feat_nonneutral, header=None)
-	cols = ["f"+str(x) for x in range(len(df.columns)-4)]
-	cols = cols + ["sample", "subject", "tp", "exp"]
-	df.columns = cols
-	
+	df = pd.read_csv(feat_nonneutral)
 	testset = df.drop(["sample", "tp", "exp"], axis=1)
 	X_test = np.array(testset.drop(["subject"], axis=1))
 	y_test = np.ravel(testset[["subject"]])
@@ -205,21 +191,13 @@ def roc1(feat_neutral, feat_nonneutral):
 	"""
 	
 	# neutras: conjunto de treino
-	df = pd.read_csv(feat_neutral, header=None)
-	cols = ["f"+str(x) for x in range(len(df.columns)-4)]
-	cols = cols + ["sample", "subject", "tp", "exp"]
-	df.columns = cols
-	
+	df = pd.read_csv(feat_neutral)
 	trainset = df.drop(["sample", "tp", "exp"], axis=1)
 	X_train = np.array(trainset.drop(["subject"], axis=1))
 	y_train = np.ravel(trainset[["subject"]])
 	
 	# nao-neutras: conjunto de teste
-	df = pd.read_csv(feat_nonneutral, header=None)
-	cols = ["f"+str(x) for x in range(len(df.columns)-4)]
-	cols = cols + ["sample", "subject", "tp", "exp"]
-	df.columns = cols
-	
+	df = pd.read_csv(feat_nonneutral)
 	testset = df.drop(["sample", "tp", "exp"], axis=1)
 	X_test = np.array(testset.drop(["subject"], axis=1))
 	y_test = np.ravel(testset[["subject"]])
@@ -274,4 +252,4 @@ def max_confusion(ans):
 	for i in range(diff.shape[0]):
 		if diff[i, 0] != diff[i, 1]:
 			print("[{}]:\t{}".format(i, diff[i,:]))
-
+	
