@@ -3,6 +3,7 @@ tutu/
 dump/
 datasets/
 robson/
+results/
 __pycache__/
 
 demo
