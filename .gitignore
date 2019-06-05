@@ -1,12 +1,12 @@
 bin/
 tutu/
 dump/
-datasets/
+demos/
 robson/
 results/
+datasets/
 __pycache__/
 
-demo
 *.xyz
 *.pcd
 *.obj
