@@ -28,11 +28,8 @@ void extraction_help()
 	printf("autor: Artur Rodrigues Rocha Neto (UFC/LATIN/INTERFACES)\n");
     printf("FALTANDO ARGUMENTOS! obrigatorios: [ -i | -n | -o | -c ]\n");
         
-    printf(" -i: nuvem de entrada no formato PCD\n");
-    printf("     > ../data/bunny.pcd, face666.pcd, ~/bs/bs001.pcd, etc\n");
-    
-    printf(" -n: arquivo da ponta do nariz (em PCD)\n");
-    printf("     > ../data/face_nose.pcd, etc.\n");
+    printf(" -i: nuvem de entrada no formato xyz\n");
+    printf("     > ../data/bunny.xyz, face666.xyz, ~/bs/bs001.xyz, etc\n");
     
     printf(" -o: arquivo aonde os momentos serao salvos\n");
     printf("     > path para arquivo texto\n");
@@ -48,8 +45,8 @@ void extraction_help()
     printf("     > st: sagital + transversal\n");
     printf("     > fst: frontal + sagital + transversal\n");
     
-    printf("EX1: siqueira -i ../data/face1.pcd -o dump.txt -c t\n");
-    printf("EX2: siqueira -i ../data/face2.pcd -o stdout -c f\n\n");
+    printf("EX1: siqueira -i ../data/face1.xyz -o dump.txt -c t\n");
+    printf("EX2: siqueira -i ../data/face2.xyz -o stdout -c f\n\n");
 }
 
 /**
@@ -60,18 +57,14 @@ void extraction_help()
 int main(int argc, char** argv)
 {
 	char* input = NULL;
-	char* nose_file = NULL;
     char* output = NULL;
     char* cut = NULL;
 	
     int opt;
-    while ((opt = getopt(argc, argv, "i:n:o:c:")) != -1) {
+    while ((opt = getopt(argc, argv, "i:o:c:")) != -1) {
         switch (opt) {
         	case 'i':
                 input = optarg;
-                break;
-            case 'n':
-                nose_file = optarg;
                 break;
             case 'o':
                 output = optarg;
@@ -84,24 +77,18 @@ int main(int argc, char** argv)
         }
     }
 	
-    if (input == NULL || nose_file == NULL || output == NULL || cut == NULL) {
+    if (input == NULL || output == NULL || cut == NULL) {
         extraction_help();
         return 1;
     }
 	
-    struct cloud* cloud = cloud_load_pcd(input);
+    struct cloud* cloud = cloud_load_xyz(input);
     if (input == NULL) {
         util_seg("abortando..\n");
         exit(1);
     }
 	
-	struct cloud* nose_cloud = cloud_load_pcd(nose_file);
-	
-	struct vector3* nose = NULL;
-	if (nose_cloud == NULL)
-		nose = cloud_min_z(cloud);
-	else
-		nose = &nose_cloud->points[13];
+	struct vector3* nose = vector3_from_vector(&cloud->points[0]);
 	
 	struct matrix* results = NULL;
 	if (!strcmp(cut, CUT_WHOLE)) {
@@ -156,7 +143,7 @@ int main(int argc, char** argv)
 		matrix_save_to_file(results, output, "w");
 	}
 	
-	cloud_free(nose_cloud);
+	vector3_free(nose);
     matrix_free(results);
     cloud_free(cloud);
     

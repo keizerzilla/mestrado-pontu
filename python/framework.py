@@ -9,11 +9,11 @@ replace_dict = {"bosphorus" : "bs",
 
 faces = ["neutral"]
 
-cuts = {"w" : "whole"}
+cuts = {"s" : "saggital"}
 
-scenarios= ["bosphorus-outlier-densit200-crop80-icp"]
+scenarios= ["bosphorus-robson"]
 
-moments = ["spheric"]
+moments = ["spheric", "husiq"]
 
 def go_classification_rank1(rdir, tname="Rank1"):
 	for face in faces:

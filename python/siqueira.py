@@ -25,103 +25,12 @@ from scipy.spatial.distance import cdist
 from sklearn.metrics import confusion_matrix
 from sklearn.preprocessing import StandardScaler
 
-# @TODO
-"""
-Debug para função de registro.
-Plota duas nuvens em função de uma transformação.
-"""
-def draw_registration_result(source, target, transformation):
-	source_temp = copy.deepcopy(source)
-	target_temp = copy.deepcopy(target)
-	source_temp.paint_uniform_color([1, 0.706, 0])
-	target_temp.paint_uniform_color([0, 0.651, 0.929])
-	source_temp.transform(transformation)
-	draw_geometries([source_temp, target_temp])
-
-# @TODO
-"""
-Tarefa de registro. Efetua operação em uma base completa.
-A ideia é reproduzir fielmanete o pipeline do Robson. Sem sucesso até o momento.
-"""
-def registration(input_clouds, input_lm3, output_clouds, output_lm3, f_all):
-	fmt = "bs{:d}_{:w}_{:w}_{:d}.pcd"
-	os.makedirs(output_clouds, exist_ok=True)
-	os.makedirs(output_lm3, exist_ok=True)
-	os.makedirs(f_all, exist_ok=True)
-	
-	for bsdir in os.listdir(input_clouds):
-		folder = input_clouds + bsdir
-		nose_path = input_lm3 + bsdir
-		result_folder = output_clouds + bsdir
-		lm3_folder = output_lm3 + bsdir
-		
-		if os.path.isdir(folder):
-			os.makedirs(result_folder, exist_ok=True)
-			os.makedirs(lm3_folder, exist_ok=True)
-			
-			for cloud in os.listdir(folder):
-				match = parse.parse(fmt, cloud)
-				tp = str(match[1])
-				sample = str(match[3])
-				
-				if cloud.endswith(".pcd") and tp == "N":
-					ref_cloud = folder + "/" + bsdir + "_N_N_0.pcd"
-					ref_nose = nose_path + "/" + bsdir + "_N_N_0.pcd"
-					fullPath = folder + "/" + cloud
-					fullLm3 = nose_path + "/" + cloud
-					fullResult = result_folder + "/" + cloud
-					lm3Result = lm3_folder + "/" + cloud
-					
-					cloud_neutral0 = read_point_cloud(ref_cloud)
-					lm3_neutral0 = read_point_cloud(ref_nose)
-					cloud_target = read_point_cloud(fullPath)
-					lm3_target = read_point_cloud(fullLm3)
-					
-					points = np.asarray(cloud_neutral0.points)
-					nosetip = np.reshape(lm3_neutral0.points[13], (1, 3))
-					condition = cdist(points, nosetip) <= 40
-					nose_points = points[list(np.ravel(condition))]
-					nose_cloud = PointCloud()
-					nose_cloud.points = Vector3dVector(nose_points)
-					
-					trans_init = np.array([[1., 0., 0., 0.],
-					                       [0., 1., 0., 0.],
-					                       [0., 0., 1., 0.],
-					                       [0., 0., 0., 1.]])
-					point2point = TransformationEstimationPointToPoint()
-					criteria = ICPConvergenceCriteria(relative_fitness=0.0001,
-					                                  relative_rmse=0.0001,
-					                                  max_iteration=100)
-					threshold = 100
-					reg = registration_icp(nose_cloud,
-					                       cloud_target,
-					                       threshold,
-					                       trans_init,
-					                       point2point,
-					                       criteria=criteria)
-					
-					cloud_copy = copy.deepcopy(cloud_target)
-					lm3_copy = copy.deepcopy(lm3_target)
-					
-					cloud_copy.transform(reg.transformation)
-					lm3_copy.transform(reg.transformation)
-					
-					write_point_cloud(fullResult, cloud_copy, write_ascii=True)
-					write_point_cloud(lm3Result, lm3_copy, write_ascii=True)
-					
-					fullAll = f_all + cloud
-					all_copy = np.asarray(cloud_copy.points)
-					np.savetxt(fullAll.replace("pcd", "xyz"),
-					           all_copy,
-					           delimiter=" ")
-					
-					print(cloud, "ok!")
-
 """
 Extração momentos.
-Toma uma nuvem alvo, a nuvem de landmarks e o tipo de fatiamento.
+Toma uma nuvem alvo e o tipo de fatiamento.
 """
-def cloud_extraction(cloud, nose, cut, fmt="bs{:d}_{:w}_{:w}_{:d}.pcd"):
+def cloud_extraction(cloud, cut):
+	fmt = "bs{:d}_{:w}_{:w}_{:d}.xyz"
 	mcalc = "../bin/siqcalc"
 	path, filename = os.path.split(cloud)
 	match = parse.parse(fmt, filename)
@@ -131,20 +40,20 @@ def cloud_extraction(cloud, nose, cut, fmt="bs{:d}_{:w}_{:w}_{:d}.pcd"):
 	
 	subject = str(match[0])
 	tp = str(match[1])
-	ex = str(match[2])
+	exp = str(match[2])
 	sample = str(match[3])
 	
-	cmd = [mcalc, "-i", cloud, "-n", nose, "-o", "stdout", "-c", cut]
+	cmd = [mcalc, "-i", cloud, "-o", "stdout", "-c", cut]
 	ans = subprocess.run(cmd, stdout=subprocess.PIPE).stdout
 	ans = ans[:-1].decode("utf-8").replace(" ", ",")
-	ans = ans + ",{},{},{},{}\n".format(sample, subject, tp, ex)
+	ans = ans + ",{},{},{},{}\n".format(tp, exp, sample, subject)
 	
 	return ans
 
 """
 Executa extração de momentos em uma base completa.
 """
-def batch_extraction(dataset, noses, cut, output):
+def batch_extraction(dataset, cut, output):
 	print("[  siqueira  ] - [ {} ] - [{}]".format(cut, dataset))
 	
 	count = 0
@@ -153,14 +62,12 @@ def batch_extraction(dataset, noses, cut, output):
 	dump = []
 	for bsdir in os.listdir(dataset):
 		folder = dataset + bsdir
-		noseFolder = noses + bsdir
 		if os.path.isdir(folder):
 			for cloud in os.listdir(folder):
-				if cloud.endswith(".pcd"):
+				if cloud.endswith(".xyz"):
 					fullPath = folder + "/" + cloud
-					fullNose = noseFolder + "/" + cloud
 					
-					ans = cloud_extraction(fullPath, fullNose, cut)
+					ans = cloud_extraction(fullPath, cut)
 					if ans == None:
 						continue
 					
@@ -172,7 +79,7 @@ def batch_extraction(dataset, noses, cut, output):
 	vel = round(elapsed / count, 6)
 	
 	cols = ["m" + str(x) for x in range(len(dump[0].split(",")) - 4)]
-	cols = cols + ["sample", "subject", "tp", "exp"]
+	cols = cols + ["tp", "exp", "sample", "subject"]
 	cols = ",".join(cols) + "\n"
 	dump = cols + "".join(dump)
 	
@@ -188,7 +95,6 @@ Executa extração de momentos em uma base completa.
 def batch_extraction_allinone(dataset, cut, output):
 	print("[  siqueira  ] - [ {} ] - [{}]".format(cut, dataset))
 	
-	fmt="bs{:d}_{:w}_{:w}_{:d}.xyz"
 	count = 0
 	start_time = time.time()
 	
@@ -197,7 +103,7 @@ def batch_extraction_allinone(dataset, cut, output):
 		if cloud.endswith(".xyz"):
 			fullPath = dataset + "/" + cloud
 			
-			ans = cloud_extraction(fullPath, "vruco.pcd", cut, fmt)
+			ans = cloud_extraction(fullPath, cut)
 			if ans == None:
 				continue
 			
@@ -209,7 +115,7 @@ def batch_extraction_allinone(dataset, cut, output):
 	vel = round(elapsed / count, 6)
 	
 	cols = ["m" + str(x) for x in range(len(dump[0].split(",")) - 4)]
-	cols = cols + ["sample", "subject", "tp", "exp"]
+	cols = cols + ["tp", "exp", "sample", "subject"]
 	cols = ",".join(cols) + "\n"
 	dump = cols + "".join(dump)
 	
@@ -409,16 +315,7 @@ def plot_confusion_matrix(ans, title="reconhecimento"):
 	plt.show()
 
 if __name__ == "__main__":
-	input_clouds = "../datasets/siqueira/clouds/"
-	input_lm3 = "../datasets/siqueira/lm3/"
-	output_clouds = "../datasets/siqueira-icp/clouds/"
-	output_lm3 = "../datasets/siqueira-icp/lm3/"
-	f_all = "../datasets/siqueira-icp/all/"
-
-	registration(input_clouds, input_lm3, output_clouds, output_lm3, f_all)
-
-	dataset = "../datasets/siqueira-icp/clouds/"
-	noses = "../datasets/siqueira-icp/lm3/"
+	dataset = "../datasets/bosphorus-robson/xyz/"
 	result_folder = "../results/robson/"
 
 	os.makedirs(result_folder, exist_ok=True)
@@ -427,8 +324,10 @@ if __name__ == "__main__":
 	for cut in cuts:
 		output = result_folder + cut + "_data.dat"
 		
-		batch_extraction(dataset, noses, cut, output)
+		batch_extraction_allinone(dataset, cut, output)
 		
 		ans = rank_neutral(output)
 		rocog_rate(ans, cut.upper() + "_neutral")
+		ans = rank_nonneutral(output)
+		rocog_rate(ans, cut.upper() + "_nonneutral")
 		
