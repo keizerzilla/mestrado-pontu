@@ -91,7 +91,7 @@ real vector3_distance(struct vector3 *a, struct vector3 *b)
 
 real vector3_manhattan(struct vector3 *a, struct vector3 *b)
 {
-	return abs(a->x - b->x) + abs(a->y - b->y) + abs(a->z - b->z);
+	return fabs(a->x - b->x) + fabs(a->y - b->y) + fabs(a->z - b->z);
 }
 
 real vector3_squared_length(struct vector3 *v)
@@ -269,21 +269,21 @@ real vector3_chi_distance(struct vector3 *v1, struct vector3 *v2)
 
 real vector3_canberra(struct vector3 *v1, struct vector3 *v2)
 {
-	real n = abs(v1->x - v2->x) +
-	         abs(v1->y - v2->y) +
-	         abs(v1->z - v2->z);
-	real d = abs(v1->x) + abs(v2->x) +
-	         abs(v1->y) + abs(v2->y) +
-	         abs(v1->z) + abs(v2->z);
+	real n = fabs(v1->x - v2->x) +
+	         fabs(v1->y - v2->y) +
+	         fabs(v1->z - v2->z);
+	real d = fabs(v1->x) + fabs(v2->x) +
+	         fabs(v1->y) + fabs(v2->y) +
+	         fabs(v1->z) + fabs(v2->z);
 
 	return n / d;
 }
 
 real vector3_modmanhattan(struct vector3 *v1, struct vector3 *v2)
 {
-	real n = abs(v1->x - v2->x) + abs(v1->y - v2->y) + abs(v1->z - v2->z);
-	real d1 = abs(v1->x) + abs(v1->y) + abs(v1->z);
-	real d2 = abs(v2->x) + abs(v2->y) + abs(v2->z);
+	real n = fabs(v1->x - v2->x) + fabs(v1->y - v2->y) + fabs(v1->z - v2->z);
+	real d1 = fabs(v1->x) + fabs(v1->y) + fabs(v1->z);
+	real d2 = fabs(v2->x) + fabs(v2->y) + fabs(v2->z);
 
 	return n / (d1 * d2);
 }
