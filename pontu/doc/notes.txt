@@ -1,0 +1,16 @@
+- regra geral de estilo: kernel linux (na duvida: K&R) - bom senso e melhor
+  legibilidade sao chave
+- funcoes cuja assinatura excede o limite de 80 colunas devem ter seus
+  parametros empilhados na mesma indentacao
+- a forma padrao de identacao eh TAB, e nao SPACE (excecao: alinhamento de
+  paramentros de funcao)
+- uma linha em branco deve sempre existir ao final de todos os arquivos
+- operacoes matematicas com mais de uma linha devem ser empilhadas de acordo com
+  a identacao da primeira linha e em concorcodancia com o operador de maior
+  precedencia
+- operacoes matematicas com mais de uma linha dentro de laco podem quebrar a
+  regra das chaves
+- expressoes matematicas devem ser implementadas o mais fielmente com relacao as
+  fontes no que diz respeito a parenteses (legibilidade > precedencia)
+- ponteiros devem ser testados para NULL explicitamente
+- 
