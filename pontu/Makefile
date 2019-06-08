@@ -24,6 +24,12 @@ LIB_FEATURES = $(OBJ_DIR)/matrix.o $(OBJ_DIR)/extraction.o \
                $(OBJ_DIR)/chebyshev.o $(OBJ_DIR)/hu.o $(OBJ_DIR)/legendre.o
 LIB_SAMPLING = $(OBJ_DIR)/voxelgrid.o
 
+# cria dir se nao existir
+$(shell mkdir -p $(OBJ_DIR))
+$(shell mkdir -p $(LIB_DIR))
+$(shell mkdir -p $(SHARED_DIR))
+$(shell mkdir -p $(STATIC_DIR))
+
 # targets to create
 all: objects shared static
 
