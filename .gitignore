@@ -5,6 +5,12 @@ results/
 datasets/
 __pycache__/
 
+pontu/bin/
+
 *.pcd
 *.obj
 *.ply
+
+*.o
+*.a
+*.so

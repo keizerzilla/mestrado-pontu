@@ -1,0 +1,3 @@
+- Estudar flags de warnings e errors que deixam o código o mais sólido possível:
+	- https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html
+
