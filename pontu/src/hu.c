@@ -4,7 +4,7 @@ real hu_regular_moment(int p, int q, int r, struct cloud *cloud)
 {
 	real moment = 0.0f;
 
-	for (uint i = 0; i < cloud->num_pts; i++) {
+	for (uint i = 0; i < cloud->numpts; i++) {
 		moment += pow(cloud->points[i].x, p) *
 		          pow(cloud->points[i].y, q) *
 		          pow(cloud->points[i].z, r);
@@ -18,7 +18,7 @@ real hu_central_moment(int p, int q, int r, struct cloud *cloud)
 	real moment = 0.0f;
 	struct vector3 *center = cloud_get_center(cloud);
 
-	for (uint i = 0; i < cloud->num_pts; i++) {
+	for (uint i = 0; i < cloud->numpts; i++) {
 		moment += pow(cloud->points[i].x - center->x, p) *
 		          pow(cloud->points[i].y - center->y, q) *
 		          pow(cloud->points[i].z - center->z, r) *
@@ -67,132 +67,6 @@ struct matrix *hu_cloud_moments_hu1980(struct cloud *cloud)
 	matrix_set(results, 0, 0, j1);
 	matrix_set(results, 0, 1, j2);
 	matrix_set(results, 0, 2, j3);
-
-	return results;
-}
-
-real hu_central_moment2D_xy(int p, int q, struct cloud *cloud)
-{
-	real moment = 0.0f;
-	struct vector3 *center = cloud_get_center(cloud);
-
-	for (uint i = 0; i < cloud->num_pts; i++) {
-		moment += pow(cloud->points[i].x - center->x, p) *
-		          pow(cloud->points[i].y - center->y, q) *
-		          vector3_distance(&cloud->points[i], center);
-	}
-
-	vector3_free(center);
-
-	return moment;
-}
-
-real hu_central_moment2D_xz(int p, int q, struct cloud *cloud)
-{
-	real moment = 0.0f;
-	struct vector3 *center = cloud_get_center(cloud);
-
-	for (uint i = 0; i < cloud->num_pts; i++) {
-		moment += pow(cloud->points[i].x - center->x, p) *
-		          pow(cloud->points[i].z - center->z, q) *
-		          vector3_distance(&cloud->points[i], center);
-	}
-
-	vector3_free(center);
-
-	return moment;
-}
-
-real hu_central_moment2D_yz(int p, int q, struct cloud *cloud)
-{
-	real moment = 0.0f;
-	struct vector3 *center = cloud_get_center(cloud);
-
-	for (uint i = 0; i < cloud->num_pts; i++) {
-		moment += pow(cloud->points[i].y - center->y, p) *
-		          pow(cloud->points[i].z - center->z, q) *
-		          vector3_distance(&cloud->points[i], center);
-	}
-
-	vector3_free(center);
-
-	return moment;
-}
-
-struct matrix *hu_cloud_moments_husiq(struct cloud *cloud)
-{
-	struct matrix *results = matrix_new(1, 12);
-	real a;
-	real b;
-	real c;
-	real d;
-	real e;
-	real f;
-	real g;
-	real i1;
-	real i2;
-	real i3;
-	real i4;
-	real i5;
-	real i6;
-	real i7;
-	real i8;
-	real i9;
-	real i10;
-	real i11;
-	real i12;
-
-	a = hu_central_moment2D_xy(0, 2, cloud);
-	b = hu_central_moment2D_xy(0, 3, cloud);
-	c = hu_central_moment2D_xy(1, 1, cloud);
-	d = hu_central_moment2D_xy(1, 2, cloud);
-	e = hu_central_moment2D_xy(2, 0, cloud);
-	f = hu_central_moment2D_xy(2, 1, cloud);
-	g = hu_central_moment2D_xy(3, 0, cloud);
-
-	i1 = e + a;
-	i2 = pow((e - a), 2) + 4 * pow(c, 2);
-	i3 = pow((g - 3 * d), 2) + pow((3 * f - b), 2);
-	i4 = pow((g + d), 2) + pow((f + b), 2);
-
-	a = hu_central_moment2D_xz(0, 2, cloud);
-	b = hu_central_moment2D_xz(0, 3, cloud);
-	c = hu_central_moment2D_xz(1, 1, cloud);
-	d = hu_central_moment2D_xz(1, 2, cloud);
-	e = hu_central_moment2D_xz(2, 0, cloud);
-	f = hu_central_moment2D_xz(2, 1, cloud);
-	g = hu_central_moment2D_xz(3, 0, cloud);
-
-	i5 = e + a;
-	i6 = pow((e - a), 2) + 4 * pow(c, 2);
-	i7 = pow((g - 3 * d), 2) + pow((3 * f - b), 2);
-	i8 = pow((g + d), 2) + pow((f + b), 2);
-
-	a = hu_central_moment2D_yz(0, 2, cloud);
-	b = hu_central_moment2D_yz(0, 3, cloud);
-	c = hu_central_moment2D_yz(1, 1, cloud);
-	d = hu_central_moment2D_yz(1, 2, cloud);
-	e = hu_central_moment2D_yz(2, 0, cloud);
-	f = hu_central_moment2D_yz(2, 1, cloud);
-	g = hu_central_moment2D_yz(3, 0, cloud);
-
-	i9 = e + a;
-	i10 = pow((e - a), 2) + 4 * pow(c, 2);
-	i11 = pow((g - 3 * d), 2) + pow((3 * f - b), 2);
-	i12 = pow((g + d), 2) + pow((f + b), 2);
-
-	matrix_set(results, 0, 0, i1);
-	matrix_set(results, 0, 1, i2);
-	matrix_set(results, 0, 2, i3);
-	matrix_set(results, 0, 3, i4);
-	matrix_set(results, 0, 4, i5);
-	matrix_set(results, 0, 5, i6);
-	matrix_set(results, 0, 6, i7);
-	matrix_set(results, 0, 7, i8);
-	matrix_set(results, 0, 8, i9);
-	matrix_set(results, 0, 9, i10);
-	matrix_set(results, 0, 10, i11);
-	matrix_set(results, 0, 11, i12);
 
 	return results;
 }

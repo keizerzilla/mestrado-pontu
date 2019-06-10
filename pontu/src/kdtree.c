@@ -17,13 +17,12 @@ struct kdtree *kdtree_new()
 
 void kdtree_free(struct kdtree *kdt)
 {
-	if (!kdt)
+	if (kdt == NULL)
 		return;
 
 	free(kdt->points);
 	kdtree_free(kdt->left);
 	kdtree_free(kdt->right);
-
 	free(kdt);
 	
 	kdt = NULL;
@@ -31,10 +30,10 @@ void kdtree_free(struct kdtree *kdt)
 
 struct kdtree *kdtree_add_point(struct kdtree *kdt, struct vector3 *p)
 {
-	uint new_size = (kdt->numpts + 1) * sizeof(struct vector3 *);
+	uint new_numpts = (kdt->numpts + 1) * sizeof(struct vector3 *);
 
-	struct vector3 **new_points = realloc(kdt->points, new_size);
-	if (!new_points)
+	struct vector3 **new_points = realloc(kdt->points, new_numpts);
+	if (new_points == NULL)
 		return NULL;
 
 	kdt->points = new_points;
@@ -75,28 +74,30 @@ void kdtree_partitionate(struct kdtree *kdt, int axis, int depth)
 
 struct kdtree *kdtree_init(struct kdtree *kdt, struct cloud *cloud)
 {
-	if (!kdt)
+	if (kdt == NULL)
 		kdt = kdtree_new();
 
-	int size = cloud_size(cloud);
-	kdt->points = malloc(size * sizeof(struct vector3 *));
-	if (!kdt->points)
+	uint numpts = cloud->numpts;
+	kdt->points = malloc(numpts * sizeof(struct vector3 *));
+	if (kdt->points == NULL)
 		return NULL;
 
-	for (int i = 0; i < size; i++)
+	for (uint i = 0; i < numpts; i++)
 		kdt->points[i] = &cloud->points[i];
 
-	kdt->numpts = size;
+	kdt->numpts = numpts;
 
 	return kdt;
 }
 
 void kdtree_debug(struct kdtree *kdt)
 {
-	if (!kdt)
+	if (kdt == NULL) {
+		printf("!!! kdtree node empty !!!\n");
 		return;
-
-	if (!kdt->left && !kdt->right)
+	}
+	
+	if (kdt->left == NULL && kdt->right == NULL)
 		printf("numpts = %d\n", kdt->numpts);
 
 	kdtree_debug(kdt->left);
@@ -115,11 +116,11 @@ struct cloud *kdtree_tocloud(struct kdtree *kdt)
 
 void kdtree_tofile(struct kdtree *kdt, const char *path)
 {
-	if (!kdt)
+	if (kdt == NULL)
 		return;
 
-	if (!kdt->left && !kdt->right) {
-		char buffer[80];
+	if (kdt->left == NULL && kdt->right == NULL) {
+		char buffer[KDTREE_MAXBUFFER];
 		sprintf(buffer, "%sleaf_%p.pcd", path, kdt);
 
 		struct cloud *cloud = kdtree_tocloud(kdt);

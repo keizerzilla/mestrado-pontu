@@ -25,8 +25,6 @@ struct vector3 {
 			real coord[3];
 		};
 	};
-
-	real alpha;
 };
 
 /**

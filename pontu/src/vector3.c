@@ -3,13 +3,12 @@
 struct vector3 *vector3_new(real x, real y, real z)
 {
 	struct vector3 *v = malloc(sizeof(struct vector3));
-	if (!v)
+	if (v == NULL)
 		return NULL;
 
 	v->x = x;
 	v->y = y;
 	v->z = z;
-	v->alpha = 0.0f;
 
 	return v;
 }
@@ -33,7 +32,7 @@ void vector3_copy(struct vector3 *dst, struct vector3 *src)
 
 void vector3_free(struct vector3 *v)
 {
-	if (v) {
+	if (v != NULL) {
 		free(v);
 		v = NULL;
 	}
@@ -251,6 +250,7 @@ real vector3_cosdistance(struct vector3 *v1, struct vector3 *v2)
 real vector3_mse(struct vector3 *v1, struct vector3 *v2)
 {
 	real d = calc_squared_length3(v1->x - v2->x, v1->y - v2->y, v1->z - v2->z);
+	
 	return d / 3.0f;
 }
 
@@ -313,9 +313,10 @@ struct vector3 *vector3_projection(struct vector3 *a, struct vector3 *b)
 struct vector3 *vector3_reflection(struct vector3 *v, struct vector3 *n)
 {
 	struct vector3 *r = vector3_zero();
+	
 	vector3_copy(n, r);
-
 	vector3_scale(r, 2 * vector3_dot(v, n));
+	
 	r = vector3_sub(v, r);
 
 	return r;
@@ -339,6 +340,7 @@ real vector3_area(struct vector3 *a, struct vector3 *b, struct vector3 *c)
 {
 	struct vector3 *n = vector3_normal(a, b, c);
 	real ret = 0.5f * vector3_length(n);
+	
 	vector3_free(n);
 
 	return ret;
@@ -375,7 +377,7 @@ struct vector3 *vector3_average(struct vector3 *a, struct vector3 *b)
 
 void vector3_debug(struct vector3 *v, FILE * output)
 {
-	if (!v) {
+	if (v != NULL) {
 		fprintf(output, "!!! vector3 empty !!!\n");
 		return;
 	}

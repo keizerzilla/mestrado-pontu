@@ -8,9 +8,17 @@
 - operacoes matematicas com mais de uma linha devem ser empilhadas de acordo com
   a identacao da primeira linha e em concorcodancia com o operador de maior
   precedencia
-- operacoes matematicas com mais de uma linha dentro de laco podem quebrar a
-  regra das chaves
+- operacoes matematicas grandes (quebradas em  mais de uma linha) dentro de laco
+  podem quebrar a regra das chaves
 - expressoes matematicas devem ser implementadas o mais fielmente com relacao as
   fontes no que diz respeito a parenteses (legibilidade > precedencia)
 - ponteiros devem ser testados para NULL explicitamente
+- conferir as documentacoes (traducao e sentido)
+- mudar a descricao da biblioteca com relacao a dependencia do C99 (o uso de
+  struct e union anonimas soh veio no C11, alem de questoes dogmaticas com GNU)
+- a ordem de compilacao dos modulos interfere no uso de certos truques do
+  compilador, como otimizacao usando inline. Desenhar um esquema de blocos da
+  biblioteca pode ajudar a visualizar melhor as relacoes e evitar essas coisas
+- matrix.h precisa ser trabalhada melhor um dia
+- extraction.h precisa ser trabalhada melhor um dia
 - 

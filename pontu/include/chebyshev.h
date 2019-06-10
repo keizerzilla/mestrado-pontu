@@ -30,7 +30,7 @@
  * \param x Polynomial argument
  * \return The chebyshev polynomial of order(p)
  */
-real chebyshev_poly(int p, int n, real x);
+real chebyshev_poly(int p, uint n, real x);
 
 /**
  * \brief Calculates a chebyshev moment

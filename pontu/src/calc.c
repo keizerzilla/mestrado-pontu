@@ -1,8 +1,8 @@
 #include "../include/calc.h"
 
-int calc_factorial(int n)
+uint calc_factorial(uint n)
 {
-	int result = 1;
+	uint result = 1;
 
 	for (uint c = 1; c <= n; c++)
 		result *= c;

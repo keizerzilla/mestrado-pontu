@@ -3,14 +3,14 @@
 struct matrix *matrix_new(uint rows, uint cols)
 {
 	struct matrix *mat = malloc(sizeof(struct matrix));
-	if (!mat)
+	if (mat == NULL)
 		return NULL;
 
 	mat->rows = rows;
 	mat->cols = cols;
+	
 	mat->data = malloc(rows * cols * sizeof(real));
-
-	if (!mat->data)
+	if (mat->data == NULL)
 		return NULL;
 
 	for (uint i = 0; i < rows; i++)
@@ -22,22 +22,20 @@ struct matrix *matrix_new(uint rows, uint cols)
 
 void matrix_free(struct matrix *mat)
 {
-	if (!mat)
+	if (mat == NULL)
 		return;
 
 	free(mat->data);
 	mat->data = NULL;
-
 	free(mat);
 	mat = NULL;
 }
 
 int matrix_add_row(struct matrix *mat)
 {
-	real *row =
-	    realloc(mat->data, mat->cols * (mat->rows + 1) * sizeof(real));
+	real *row = realloc(mat->data, mat->cols * (mat->rows + 1) * sizeof(real));
 
-	if (row) {
+	if (row != NULL) {
 		mat->data = row;
 		mat->rows++;
 
@@ -53,7 +51,7 @@ int matrix_add_row(struct matrix *mat)
 int matrix_add_col(struct matrix *mat)
 {
 	real *new_mat = malloc(mat->rows * (mat->cols + 1) * sizeof(real));
-	if (!new_mat)
+	if (new_mat != NULL)
 		return 0;
 
 	for (uint i = 0; i < mat->rows; i++)
@@ -66,6 +64,7 @@ int matrix_add_col(struct matrix *mat)
 			    mat->data[(i * mat->cols) + j];
 
 	free(mat->data);
+	
 	mat->data = new_mat;
 	mat->cols++;
 
@@ -98,7 +97,7 @@ struct matrix *matrix_concat_hor(struct matrix *m1, struct matrix *m2)
 	uint ncols = m1->cols + m2->cols;
 
 	struct matrix *ans = matrix_new(m1->rows, ncols);
-	if (!ans)
+	if (ans == NULL)
 		return NULL;
 
 	for (uint i = 0; i < m1->rows; i++)
@@ -120,7 +119,7 @@ struct matrix *matrix_concat_ver(struct matrix *m1, struct matrix *m2)
 	uint nrows = m1->rows + m2->rows;
 
 	struct matrix *ans = matrix_new(nrows, m1->cols);
-	if (!ans)
+	if (ans == NULL)
 		return NULL;
 
 	for (uint i = 0; i < m1->rows; i++)
@@ -137,7 +136,7 @@ struct matrix *matrix_concat_ver(struct matrix *m1, struct matrix *m2)
 int matrix_save_to_file(struct matrix *mat, const char *filename, const char *m)
 {
 	FILE *file = fopen(filename, m);
-	if (!file) {
+	if (file == NULL) {
 		printf("%s: erro abrir arquivo %s\n", __FUNCTION__, filename);
 		return 0;
 	}
@@ -159,7 +158,7 @@ int matrix_save_to_file(struct matrix *mat, const char *filename, const char *m)
 
 void matrix_debug(struct matrix *mat, FILE *output)
 {
-	if (!mat) {
+	if (mat == NULL) {
 		fprintf(output, "!!! matrix empty !!!\n");
 		return;
 	}

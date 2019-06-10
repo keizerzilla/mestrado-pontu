@@ -14,13 +14,14 @@
 #define KDTREE_AXIS_X 0
 #define KDTREE_AXIS_Y 1
 #define KDTREE_AXIS_Z 2
+#define KDTREE_MAXBUFFER 512
 
 /**
  * \brief Struct to store a kdtree
  */
 struct kdtree {
 	real median;
-	int numpts;
+	uint numpts;
 	struct vector3 **points;
 	struct kdtree *left;
 	struct kdtree *right;

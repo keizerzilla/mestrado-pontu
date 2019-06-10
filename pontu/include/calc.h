@@ -42,7 +42,7 @@ typedef long long int64;
  * \param n Number to calculate the factorial
  * \return n!
  */
-int calc_factorial(int n);
+uint calc_factorial(uint n);
 
 /**
  * \brief Number of combinations N-P

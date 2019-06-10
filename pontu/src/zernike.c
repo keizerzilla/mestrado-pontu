@@ -38,7 +38,7 @@ real zernike_radpoly(int n, int m, real distance)
 {
 	real radpoly = 0.0f;
 
-	for (uint s = 0; s <= (n - m) / 2; s++) {
+	for (int s = 0; s <= (n - m) / 2; s++) {
 		real num = pow(-1, s) * (calc_factorial(n - s));
 
 		real den = calc_factorial(s) *
@@ -73,7 +73,7 @@ real zernike_odd_moment(int n, int m, real r, struct cloud *cloud)
 	real azimuth = 0.0f;
 	real moment = 0.0f;
 
-	for (uint i = 0; i < cloud->num_pts; i++) {
+	for (uint i = 0; i < cloud->numpts; i++) {
 		center_y = cloud->points[i].y - center->y;
 		center_z = cloud->points[i].z - center->z;
 
@@ -102,7 +102,7 @@ real zernike_even_moment(int n, int m, real r, struct cloud *cloud)
 	real azimuth = 0.0f;
 	real moment = 0.0f;
 
-	for (uint i = 0; i < cloud->num_pts; i++) {
+	for (uint i = 0; i < cloud->numpts; i++) {
 		center_y = cloud->points[i].y - center->y;
 		center_z = cloud->points[i].z - center->z;
 

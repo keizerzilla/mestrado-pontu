@@ -28,7 +28,7 @@ real legendre_poly(int n, real x);
  * \param numpts Number of points in the cloud
  * \return Normalized coordinate
  */
-real legendre_normcoord(real c, int numpts);
+real legendre_normcoord(real c, uint numpts);
 
 /**
  * \brief Calculates a normalization constant

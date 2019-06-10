@@ -15,7 +15,7 @@
 #include "vector3.h"
 #include "plane.h"
 
-#define MAX_BUFFER 512
+#define CLOUD_MAXBUFFER 512
 
 /**
  * \brief Struct to store a cloud
@@ -23,15 +23,15 @@
 struct cloud {
 	struct vector3 *points;
 	struct vector3 *centroid;
-	uint num_pts;
+	uint numpts;
 };
 
 /**
  * \brief Initializes a cloud
- * \param num_pts Number of points in the cloud
+ * \param numpts Number of points in the cloud
  * \return Pointer to the new cloud or NULL if it fails to allocate memory
  */
-struct cloud *cloud_new(uint num_pts);
+struct cloud *cloud_new(uint numpts);
 
 /**
  * \brief Initialize an empty cloud
@@ -106,20 +106,6 @@ uint cloud_size(struct cloud *cloud);
  * \return Copy of the cloud
  */
 struct cloud *cloud_cpy(struct cloud *cloud);
-
-/**
- * \brief Gets the point with minimum alpha in the cloud
- * \param cloud Target cloud
- * \return Pointer to the point with the lesser alpha in the cloud
- */
-struct vector3 *cloud_min_alpha(struct cloud *cloud);
-
-/**
- * \brief Gets the point with the greater alpha in the cloud
- * \param cloud Target cloud
- * \return Pointer to the point with the greater alpha in the cloud
- */
-struct vector3 *cloud_max_alpha(struct cloud *cloud);
 
 /**
  * \brief Loads cloud from a XYZ file
@@ -293,19 +279,6 @@ int cloud_compare(const void *p1, const void *p2);
 void cloud_sort(struct cloud *cloud);
 
 /**
- * \brief Utility function for qsort
- * \param p1 First point for the comparison
- * \param p2 Second point for the comparison
- */
-int cloud_polar_compare(const void *p1, const void *p2);
-
-/**
- * \brief Sorts a cloud by angle using qsort
- * \param cloud Target cloud
- */
-void cloud_polar_sort(struct cloud *cloud);
-
-/**
  * \brief Concatenates two clouds
  * \param c1 First cloud
  * \param c2 Second cloud
@@ -337,7 +310,7 @@ real cloud_boundingbox_volume(struct cloud *cloud);
 /**
  * \brief Calculates the volume of a cloud function
  * \param cloud Target cloud
- * \return Volume of the cloud function
+ * \return Volume of the cloud function (sum of central distances)
  */
 real cloud_function_volume(struct cloud *cloud);
 
@@ -372,7 +345,7 @@ struct cloud *cloud_cut_plane(struct cloud *cloud, struct plane *plane);
  * \param plane The plane to be used to split the cloud
  * \param par1 First slice of the split cloud
  * \param par2 Second slice of the split cloud
- * \return 0 if it fails, or 0 if not
+ * \return 0 if it fails, or 1 if not
  */
 int cloud_plane_partition(struct cloud *src,
 			              struct plane *plane,
@@ -535,12 +508,6 @@ struct vector3 *cloud_point_faraway_bestfit(struct cloud *cloud);
  * \return Fits the cloud in a sphere and returns 1/R (R = radius of the sphere)
  */
 real cloud_curvature(struct cloud *cloud);
-
-/**
- * \brief Sorts a cloud by distance using qsort
- * \param cloud Target cloud
- */
-void cloud_dist_sort(struct cloud *cloud);
 
 /**
  * \brief Removes a point from the cloud

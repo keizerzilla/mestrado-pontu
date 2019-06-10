@@ -3,7 +3,7 @@
 struct plane *plane_new(struct vector3 *normal, struct vector3 *point)
 {
 	struct plane *plane = malloc(sizeof(struct plane));
-	if (!plane)
+	if (plane == NULL)
 		return NULL;
 
 	plane->normal = vector3_from_vector(normal);
@@ -17,7 +17,7 @@ struct plane *plane_new(struct vector3 *normal, struct vector3 *point)
 
 void plane_free(struct plane *plane)
 {
-	if (!plane)
+	if (plane == NULL)
 		return;
 
 	vector3_free(plane->normal);
@@ -30,7 +30,9 @@ real plane_distance2point(struct plane *plane, struct vector3 *point)
 {
 	struct vector3 *proj = vector3_sub(point, plane->point);
 	real d = vector3_dot(proj, plane->normal) / vector3_length(plane->normal);
+	
 	vector3_free(proj);
+	
 	return fabs(d);
 }
 
@@ -38,13 +40,15 @@ uint plane_on_direction(struct plane *plane, struct vector3 *point)
 {
 	struct vector3 *proj = vector3_sub(point, plane->point);
 	real d = vector3_dot(proj, plane->normal);
+	
 	vector3_free(proj);
+	
 	return (d >= 0.0f) ? 1 : 0;
 }
 
 void plane_debug(struct plane *plane, FILE *out)
 {
-	if (!plane) {
+	if (plane == NULL) {
 		fprintf(out, "!!! plane empty !!!\n");
 		return;
 	}

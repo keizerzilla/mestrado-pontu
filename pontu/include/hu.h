@@ -63,40 +63,6 @@ real hu_refined_moment(int p, int q, int r, struct cloud *cloud);
 struct matrix *hu_cloud_moments_hu1980(struct cloud *cloud);
 
 /**
- * \brief Calculates central moments 2D of Hu over the plane XY
- * \param p Order of the dimension x
- * \param q Order of the dimension y
- * \param cloud Target cloud
- * \return Central moment (p,q) of the cloud using the plane XY as reference
- */
-real hu_central_moment2D_xy(int p, int q, struct cloud *cloud);
-
-/**
- * \brief Calculates central moments 2D of Hu over the plane XZ
- * \param p Order of the dimension x
- * \param q Order of the dimension z
- * \param cloud Target cloud
- * \return Central moment (p,q) of the cloud using the plane XZ as reference
- */
-real hu_central_moment2D_xz(int p, int q, struct cloud *cloud);
-
-/**
- * \brief Calculates central moments 2D of Hu over the plane YZ
- * \param p Order of the dimension y
- * \param q Order of the dimension z
- * \param cloud Target cloud
- * \return Central moment (p,q) of the cloud using the plane YZ as reference
- */
-real hu_central_moment2D_yz(int p, int q, struct cloud *cloud);
-
-/**
- * \brief Calculates invariants moments of Hu (Siqueira - 2018)
- * \param cloud Target cloud
- * \return Matrix with moments
- */
-struct matrix *hu_cloud_moments_husiq(struct cloud *cloud);
-
-/**
  * \brief Calculates invariants moments of Hu (Rocha Neto - 2017)
  * \param cloud Target cloud
  * \return Matrix with the moments

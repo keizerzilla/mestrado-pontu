@@ -1,6 +1,6 @@
 # configuration variables
 CC = gcc
-COMPILER_FLAGS = -Wall -Werror -fPIC
+COMPILER_FLAGS = -Wall -Werror -Wextra -Winline -fPIC
 LINKER_FLAGS = -lm
 SRC_DIR = ./src
 OBJ_DIR = ./obj

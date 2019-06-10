@@ -12,7 +12,6 @@ struct cloud *cubic_voxel_grid(struct cloud *src, real leafsize) {
     real apothem = leafsize / 2;
 
     struct vector3 *centroid = cloud_get_center(src);
-    
     struct vector3 *axis_size = cloud_axis_size(src);
     
     uint num_voxels_x = (uint) ceil(axis_size->x/leafsize) + 1;
@@ -20,6 +19,7 @@ struct cloud *cubic_voxel_grid(struct cloud *src, real leafsize) {
     uint num_voxels_z = (uint) ceil(axis_size->z/leafsize) + 1;
 
     struct vector3 *voxel_o = vector3_zero();
+    
     voxel_o->x = (cloud_min_x(src)->x + cloud_max_x(src)->x) / 2;
     voxel_o->y = (cloud_min_y(src)->y + cloud_max_y(src)->y) / 2;
     voxel_o->z = (cloud_min_z(src)->z + cloud_max_z(src)->z) / 2;
@@ -33,7 +33,7 @@ struct cloud *cubic_voxel_grid(struct cloud *src, real leafsize) {
     uint idx_aux;
 
     struct cloud *output = cloud_empty();
-
+    
     uint total_dim = num_voxels_x * num_voxels_y * num_voxels_z;
 
     struct cloud** clouds = calloc (sizeof (struct cloud*), total_dim);
@@ -42,7 +42,7 @@ struct cloud *cubic_voxel_grid(struct cloud *src, real leafsize) {
         return NULL;
     }
 
-    for (uint n = 0; n < src->num_pts; n++) {
+    for (uint n = 0; n < src->numpts; n++) {
         d_x = src->points[n].x - voxel_o->x;
         if (d_x < 0.0) {
             pos_x = 0;
