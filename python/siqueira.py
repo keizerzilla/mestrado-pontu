@@ -315,12 +315,12 @@ def plot_confusion_matrix(ans, title="reconhecimento"):
 	plt.show()
 
 if __name__ == "__main__":
-	dataset = "../datasets/bosphorus-robson/xyz/"
+	dataset = "../datasets/bosphorus-robson/"
 	result_folder = "../results/robson/"
 
 	os.makedirs(result_folder, exist_ok=True)
 
-	cuts = ["st"]
+	cuts = ["fst"]
 	for cut in cuts:
 		output = result_folder + cut + "_data.dat"
 		
@@ -328,6 +328,7 @@ if __name__ == "__main__":
 		
 		ans = rank_neutral(output)
 		rocog_rate(ans, cut.upper() + "_neutral")
+		
 		ans = rank_nonneutral(output)
 		rocog_rate(ans, cut.upper() + "_nonneutral")
 		

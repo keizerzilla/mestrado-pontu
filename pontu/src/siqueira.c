@@ -6,8 +6,8 @@ real siqueira_moment_xy(int p, int q, struct cloud *cloud, struct vector3 *ref)
 	struct vector3 *center = cloud_get_center(cloud);
 	
     for (uint i = 0; i < cloud->numpts; i++) {
-        moment += pow(cloud->points[i].x - center->x, p)
-                * pow(cloud->points[i].y - center->y, q)
+        moment += pow(cloud->points[i].x, p)
+                * pow(cloud->points[i].y, q)
                 * vector3_distance(&cloud->points[i], ref);
 	}
 	
@@ -22,8 +22,8 @@ real siqueira_moment_xz(int p, int q, struct cloud *cloud, struct vector3 *ref)
 	struct vector3 *center = cloud_get_center(cloud);
 	
     for (uint i = 0; i < cloud->numpts; i++) {
-        moment += pow(cloud->points[i].x - center->x, p)
-                * pow(cloud->points[i].z - center->z, q)
+        moment += pow(cloud->points[i].x, p)
+                * pow(cloud->points[i].z, q)
                 * vector3_distance(&cloud->points[i], ref);
 	}
 	
@@ -38,8 +38,8 @@ real siqueira_moment_yz(int p, int q, struct cloud *cloud, struct vector3 *ref)
 	struct vector3 *center = cloud_get_center(cloud);
 	
     for (uint i = 0; i < cloud->numpts; i++) {
-        moment += pow(cloud->points[i].y - center->y, p)
-                * pow(cloud->points[i].z - center->z, q)
+        moment += pow(cloud->points[i].y, p)
+                * pow(cloud->points[i].z, q)
                 * vector3_distance(&cloud->points[i], ref);
 	}
 	

@@ -6,9 +6,9 @@
  */
 
 #include <unistd.h>
-#include "include/siqueira.h"
-#include "include/matrix.h"
-#include "include/cloud.h"
+#include "../pontu_core.h"
+#include "../pontu_features.h"
+#include "../pontu_sampling.h"
 
 #define CUT_WHOLE							"w"
 #define CUT_FRONTAL							"f"
@@ -84,13 +84,15 @@ int main(int argc, char** argv)
 	
     struct cloud* cloud = cloud_load_xyz(input);
     if (input == NULL) {
-        util_seg("abortando..\n");
+        printf("abortando..\n");
         exit(1);
     }
 	
+	struct vector3* nose = vector3_from_vector(&cloud->points[0]);
+	
 	cloud_scale(cloud, 0.001);
 	
-	struct vector3* nose = vector3_from_vector(&cloud->points[0]);
+	//struct vector3* nose = cloud_min_z(cloud);
 	
 	struct matrix* results = NULL;
 	if (!strcmp(cut, CUT_WHOLE)) {
