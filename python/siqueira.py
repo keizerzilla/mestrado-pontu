@@ -1,9 +1,9 @@
 """
-recognition.py
+siqueira.py
 Artur Rodrigues Rocha Neto - artur.rodrigues26@gmail.com - 2019
 
 Subconjunto de funções do pipeline de reconhecimento facial segundo reportado
-por (SIQUEIRA;2018). Operações de registro, extração e classificação.
+por (Siqueira et al, 2018). Operações de registro, extração e classificação.
 
 Requisitos: numpy, scipy, pandas, matplotlib, seaborn, parse, sklearn, open3d
 """
@@ -314,21 +314,3 @@ def plot_confusion_matrix(ans, title="reconhecimento"):
 	plt.tight_layout()
 	plt.show()
 
-if __name__ == "__main__":
-	dataset = "../datasets/bosphorus-robson/"
-	result_folder = "../results/robson/"
-
-	os.makedirs(result_folder, exist_ok=True)
-
-	cuts = ["fst"]
-	for cut in cuts:
-		output = result_folder + cut + "_data.dat"
-		
-		batch_extraction_allinone(dataset, cut, output)
-		
-		ans = rank_neutral(output)
-		rocog_rate(ans, cut.upper() + "_neutral")
-		
-		ans = rank_nonneutral(output)
-		rocog_rate(ans, cut.upper() + "_nonneutral")
-		

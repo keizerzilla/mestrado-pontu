@@ -5,8 +5,9 @@
  * \brief Interface de programa para manipulação de nuvens de pontos
  */
 
-#include "include/cloud.h"
-#include "include/util.h"
+#include "../pontu_core.h"
+#include "../pontu_features.h"
+#include "../pontu_sampling.h"
 
 #define INPUT_SIZE		80
 #define COMMAND_SIZE	16
@@ -51,24 +52,24 @@ void help()
 void sort(struct cloud* cloud)
 {
 	cloud_sort(cloud);
-	util_info("nuvem ordenada");
+	printf("nuvem ordenada");
 }
 
 void center(struct cloud* cloud)
 {
 	struct vector3* center = cloud_get_center(cloud);
-	util_info("%.4f %.4f %.4f", center->x, center->y, center->z);
+	printf("%.4f %.4f %.4f", center->x, center->y, center->z);
 }
 
 void size(struct cloud* cloud)
 {
-	util_info("%d", cloud_size(cloud));
+	printf("%d", cloud_size(cloud));
 }
 
 void save(struct cloud* cloud, const char* param)
 {
 	if (cloud_save_xyz(cloud, param))
-		util_info("nuvem salva em %s", param);
+		printf("nuvem salva em %s", param);
 }
 
 void scale(struct cloud* cloud, const char* param)
@@ -76,10 +77,10 @@ void scale(struct cloud* cloud, const char* param)
 	real f;
 	
 	if (sscanf(param, "%lf", &f) < 1) {
-		util_error("parametros incorretos para comando scale");
+		printf("parametros incorretos para comando scale");
 	} else {
 		cloud_scale(cloud, f);
-		util_info("nuvem escalada %.2fx", f);
+		printf("nuvem escalada %.2fx", f);
 	}
 }
 
@@ -90,10 +91,10 @@ void translate(struct cloud* cloud, const char* param)
 	real z;
 	
 	if (sscanf(param, "%lf %lf %lf", &x, &y, &z) < 3) {
-		util_error("parametros incorretos para comando translate");
+		printf("parametros incorretos para comando translate");
 	} else {
 		cloud_translate_real(cloud, x, y, z);
-		util_info("nuvem translada para (%.4f, %.4f, %.4f)", x, y, z);
+		printf("nuvem translada para (%.4f, %.4f, %.4f)", x, y, z);
 	}
 }
 
@@ -102,10 +103,10 @@ void rotatex(struct cloud* cloud, const char* param)
 	real d;
 	
 	if (sscanf(param, "%lf", &d) < 1) {
-		util_error("parametros incorretos para comando rotatex");
+		printf("parametros incorretos para comando rotatex");
 	} else {
 		cloud_rotate_x(cloud, d);
-		util_info("nuvem rotacionada %.2fº em torno de x", d);
+		printf("nuvem rotacionada %.2fº em torno de x", d);
 	}
 }
 
@@ -114,10 +115,10 @@ void rotatey(struct cloud* cloud, const char* param)
 	real d;
 	
 	if (sscanf(param, "%lf", &d) < 1) {
-		util_error("parametros incorretos para comando rotatey");
+		printf("parametros incorretos para comando rotatey");
 	} else {
 		cloud_rotate_y(cloud, d);
-		util_info("nuvem rotacionada %.2fº em torno de y", d);
+		printf("nuvem rotacionada %.2fº em torno de y", d);
 	}
 }
 
@@ -126,10 +127,10 @@ void rotatez(struct cloud* cloud, const char* param)
 	real d;
 	
 	if (sscanf(param, "%lf", &d) < 1) {
-		util_error("parametros incorretos para comando rotatez");
+		printf("parametros incorretos para comando rotatez");
 	} else {
 		cloud_rotate_z(cloud, d);
-		util_info("nuvem rotacionada %.2fº em torno de z", d);
+		printf("nuvem rotacionada %.2fº em torno de z", d);
 	}
 }
 
@@ -143,7 +144,7 @@ int prompt(struct cloud* cloud)
 	
 	printf("> ");
 	if (fgets(input, INPUT_SIZE, stdin) == NULL) {
-		util_error("input error...");
+		printf("input error...");
 		exit(1);
 	}
 	
@@ -175,7 +176,7 @@ int prompt(struct cloud* cloud)
 	} else if (!strcmp(command, ROTATEZ)) {
 		rotatez(cloud, param);
 	} else {
-		util_error("comando %s desconhecido!", command);
+		printf("comando %s desconhecido!", command);
 	}
 	
 	return running;
@@ -216,11 +217,11 @@ void cli(int argc, char** argv, struct cloud* cloud)
 	} else if (!strcmp(command, ROTATEZ)) {
 		rotatez(cloud, param);
 	} else {
-		util_error("comando %s desconhecido!", command);
+		printf("comando %s desconhecido!", command);
 	}
 	
 	if (!cloud_save_xyz(cloud, argv[4]))
-		util_error("erro salvando nuven processada");
+		printf("erro salvando nuven processada");
 }
 
 /**
@@ -231,9 +232,9 @@ void cli(int argc, char** argv, struct cloud* cloud)
 int main(int argc, char** argv)
 {
 	if (argc < 2) {
-		util_error("número incorreto de argumentos!");
-		util_info("uso: cloudz <arquivo_nuvem> <!cmd> <!param> <!out>");
-		util_info("<cmd>, <param> e <out> são opcionais");
+		printf("número incorreto de argumentos!");
+		printf("uso: cloudz <arquivo_nuvem> <!cmd> <!param> <!out>");
+		printf("<cmd>, <param> e <out> são opcionais");
 		
 		exit(1);
 	} else if (argc > 2) {

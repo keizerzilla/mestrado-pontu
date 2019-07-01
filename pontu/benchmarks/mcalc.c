@@ -7,19 +7,12 @@
 
 #include <time.h>
 #include <unistd.h>
-#include "include/extraction.h"
-#include "include/hu.h"
-#include "include/zernike.h"
-#include "include/legendre.h"
-#include "include/chebyshev.h"
-#include "include/matrix.h"
-#include "include/cloud.h"
-#include "include/util.h"
-#include "include/spheric.h"
+#include "../pontu_core.h"
+#include "../pontu_features.h"
+#include "../pontu_sampling.h"
 
 #define HUTUTU			"hututu"
 #define HU1980			"hu1980"
-#define HUSIQ			"husiq"
 #define ZERNIKE			"zernike"
 #define LEGENDRE		"legendre"
 #define CHEBYSHEV		"chebyshev"
@@ -52,7 +45,6 @@ void extraction_help()
     
     printf(" -m: momento usado para extracao de atributos\n");
     printf("     > hututu\n");
-    printf("     > husiq\n");
     printf("     > hu1980\n");
     printf("     > zernike\n");
     printf("     > legendre\n");
@@ -129,8 +121,6 @@ int main(int argc, char** argv)
         mfunc = &hu_cloud_moments_hututu;
     else if (!strcmp(moment, HU1980))
         mfunc = &hu_cloud_moments_hu1980;
-    else if (!strcmp(moment, HUSIQ))
-        mfunc = &hu_cloud_moments_husiq;
     else if (!strcmp(moment, LEGENDRE))
         mfunc = &legendre_cloud_moments;
     else if (!strcmp(moment, CHEBYSHEV))
@@ -144,7 +134,7 @@ int main(int argc, char** argv)
 	
     struct cloud* cloud = cloud_load_xyz(input);
     if (input == NULL) {
-        util_seg("abortando");
+        printf("abortando...\n");
         exit(1);
     }
 	

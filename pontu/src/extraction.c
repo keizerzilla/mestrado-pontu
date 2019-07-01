@@ -327,7 +327,7 @@ struct matrix *extraction_7(struct cloud *cloud,
 
 	cloud_plane_partition(left, plane_left, left_1, left_2);
 	cloud_plane_partition(right, plane_right, right_1, right_2);
-
+	
 	struct matrix *ans_left_1 = (*mfunc) (left_1);
 	struct matrix *ans_left_2 = (*mfunc) (left_2);
 	struct matrix *ans_right_1 = (*mfunc) (right_1);

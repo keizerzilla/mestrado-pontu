@@ -39,17 +39,17 @@ warnings.filterwarnings("ignore")
 
 classifiers = {
 	"KNN_manhattam" : KNN(p=1, n_neighbors=1),
-	"KNN_euclidean" : KNN(p=2, n_neighbors=1),
-	"DMC_manhattam" : NC(metric="manhattan"),
-	"DMC_euclidean" : NC(metric="euclidean"),
+	#"KNN_euclidean" : KNN(p=2, n_neighbors=1),
+	#"DMC_manhattam" : NC(metric="manhattan"),
+	#"DMC_euclidean" : NC(metric="euclidean"),
 	"SVM_radial"    : SVM(kernel="rbf", gamma="auto"),
-	"SVM_poly"      : SVM(kernel="poly", gamma="auto"),
-	"LDA"           : LDA(),
-	"QDA"           : QDA(),
-	"GaussianNB"    : GaussianNB(),
+	"SVM_linear"    : SVM(kernel="linear", gamma="auto"),
+	#"LDA"           : LDA(),
+	#"QDA"           : QDA(),
+	#"GaussianNB"    : GaussianNB(),
 	"RandomForest"  : RandomForestClassifier(),
 	"AdaBoost"      : AdaBoostClassifier(),
-	"DecisionTree"  : DecisionTreeClassifier()
+	#"DecisionTree"  : DecisionTreeClassifier()
 }
 
 def run_classification(X_train, y_train, X_test, y_test):
@@ -239,6 +239,14 @@ def max_rate(ans):
 	
 	return lemax[0], lemax[1]
 
+def summary(ans, moment):
+	print(moment)
+	
+	for k, v in ans.items():
+		print("{}\t{}".format(k, round(v["recog"]*100, 2)))
+	
+	print()
+	
 def max_confusion(ans):
 	"""
 	Monta uma matriz com as predições e os reais da maior taxa de acerto de uma

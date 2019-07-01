@@ -7,13 +7,13 @@ replace_dict = {"bosphorus" : "bs",
                 "densit"    : "d",
                 "crop"      : "c"}
 
-faces = ["neutral"]
+faces = ["neutral", "happy", "occlusion", "nonneutral"]
 
-cuts = {"s" : "saggital"}
+cuts = {"7" : "seven"}
 
-scenarios= ["bosphorus-robson"]
+scenarios= ["bosphorus-pdi"]
 
-moments = ["spheric", "husiq"]
+moments = ["legendre", "chebyshev"]
 
 def go_classification_rank1(rdir, tname="Rank1"):
 	for face in faces:
@@ -37,12 +37,13 @@ def go_classification_rank1(rdir, tname="Rank1"):
 					if face == "neutral":
 						ans = rank1_neutral(neutral)
 					else:
-						nonneutral = folder + "nonneutral-{}.dat".format(moment)
+						nonneutral = folder + "{}-{}.dat".format(face, moment)
 						ans = rank1_nonneutral(neutral, nonneutral)
 					
-					classifier, rate = max_rate(ans)
-					rate = round(rate*100, 2)
-					print("{:<11}{:<15}{:<7}".format(moment, classifier, rate))
+					summary(ans, moment)
+					#classifier, rate = max_rate(ans)
+					#rate = round(rate*100, 2)
+					#print("{:<11}{:<15}{:<7}".format(moment, classifier, rate))
 
 def go_classification_roc1(rdir):
 	for cut, cut_folder in cuts.items():
@@ -65,8 +66,8 @@ def go_classification_roc1(rdir):
 				print("{:<11}{:<15}{:<7}".format(moment, classifier, rate))
 
 if __name__ == "__main__":
-	total_extraction(faces, scenarios, cuts, moments, "tutu")
-	go_classification_rank1("tutu")
+	#total_extraction(faces, scenarios, cuts, moments, "pdi")
+	go_classification_rank1("pdi")
 	#go_classification_roc1("tutu")
 	#go_combination(n=3)
 	
