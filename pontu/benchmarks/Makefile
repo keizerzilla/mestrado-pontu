@@ -2,7 +2,7 @@
 CC = gcc
 COMPILER_FLAGS = -Wall -Werror -fPIC
 LINKER_FLAGS = ../lib/libpontu.a -lm
-BIN_DIR = ../../bin
+BIN_DIR = ../bin
 
 # making the necessary directories
 $(shell mkdir -p $(BIN_DIR))

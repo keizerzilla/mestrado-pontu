@@ -1017,9 +1017,71 @@ struct vector3 *cloud_remove_point(struct cloud *cloud, uint idx)
 	return removed_point;
 }
 
+void cloud_ritter(struct cloud *cloud, struct vector3 *center, real *radius)
+{
+	struct vector3* vmin = vector3_from_vector(&cloud->points[0]);
+	struct vector3* vmax = vector3_from_vector(&cloud->points[0]);
+	struct vector3* p = NULL;
+	
+	vector3_debug(vmax, stdout);
+	vector3_debug(vmin, stdout);
+	
+	for (uint i = 1; i < cloud->numpts; i++) {
+		p = &cloud->points[i];
+		
+		if (p->x < vmin->x)
+			vmin->x = p->x;
+		if (p->y < vmin->y)
+			vmin->y = p->y;
+		if (p->z < vmin->z)
+			vmin->z = p->z;
+		
+		if (p->x > vmax->x)
+			vmax->x = p->x;
+		if (p->y > vmax->y)
+			vmax->y = p->y;
+		if (p->z > vmax->z)
+			vmax->z = p->z;
+	}
+	
+	vector3_debug(vmax, stdout);
+	vector3_debug(vmin, stdout);
+	
+	real xdiff = vmax->x - vmin->x;
+	real ydiff = vmax->y - vmin->y;
+	real zdiff = vmax->z - vmin->z;
+	
+	real diameter = calc_max3(xdiff, ydiff, zdiff);
+	*radius = diameter * 0.5f;
+	real sq_radius = *radius * *radius;
+	center = vector3_average(vmax, vmin);
+	
+	for (uint i = 0; i < cloud->numpts; i++) {
+		p = &cloud->points[i];
+		
+		struct vector3 *direction = vector3_sub(p, center);
+		real sq_distance = vector3_length(direction);
+		
+		if (sq_distance > sq_radius) {
+			real distance = sqrt(sq_distance);
+			real difference = distance - *radius;
+			
+			diameter = (2.0f * *radius) + difference;
+			*radius = diameter * 0.5f;
+			sq_radius = *radius * *radius;
+			difference *= 0.5f;
+			
+			vector3_scale(direction, difference);
+			vector3_increase(center, direction);
+		}
+		
+		vector3_free(direction);
+	}
+}
+
 void cloud_debug(struct cloud *cloud, FILE *output)
 {
-	if (!cloud) {
+	if (cloud == NULL) {
 		fprintf(output, "!!! cloud empty !!!");
 		return;
 	}

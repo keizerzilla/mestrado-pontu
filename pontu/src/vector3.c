@@ -377,7 +377,7 @@ struct vector3 *vector3_average(struct vector3 *a, struct vector3 *b)
 
 void vector3_debug(struct vector3 *v, FILE * output)
 {
-	if (v != NULL) {
+	if (v == NULL) {
 		fprintf(output, "!!! vector3 empty !!!\n");
 		return;
 	}
