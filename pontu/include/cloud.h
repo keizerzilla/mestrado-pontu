@@ -524,7 +524,7 @@ struct vector3 *cloud_remove_point(struct cloud *cloud, uint idx);
  * \param center Point in which the center of the bounding sphere will be stored
  * \param radius Variable to store the radius of the bounding sphere
  */
-void cloud_ritter(struct cloud *cloud, struct vector3 *center, real *radius);
+void cloud_ritter(struct cloud *cloud, struct vector3 **center, real *radius);
 
 /**
  * \brief Debugs a cloud

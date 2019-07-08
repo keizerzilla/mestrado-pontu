@@ -132,6 +132,7 @@ struct cloud *cubic_voxel_grid(struct cloud *src, real leafsize) {
             }
         }
     }
+    
     free(clouds);
 
     return output;
