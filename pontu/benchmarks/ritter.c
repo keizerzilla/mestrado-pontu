@@ -2,14 +2,27 @@
 #include "../pontu_features.h"
 #include "../pontu_sampling.h"
 
-real calc_sign(real a)
+struct cloud *cloud_gaussian_filter(struct cloud *cloud, real sig)
 {
-	return (a >= 0.0f) ? 1.0f : -1.0f;
-}
-
-real calc_logt(real a)
-{
-	return -1.0f * calc_sign(a) * log(fabs(a));
+	struct cloud *blured = cloud_copy(cloud);
+	if (blured == NULL)
+		return NULL;
+	
+	struct vector3 *center = cloud_get_center(blured);
+	
+	for (uint i = 0; i < blured->numpts; i++) {
+		real d = vector3_distance(center, &blured->points[i]);
+		real bd = calc_gaussian(d, sig);
+		vector3_scale(&blured->points[i], bd);
+		
+		//blured->points[i].x *= calc_gaussian(blured->points[i].x, sig);
+		//blured->points[i].y *= calc_gaussian(blured->points[i].y, sig);
+		//blured->points[i].z *= calc_gaussian(blured->points[i].z, sig);
+	}
+	
+	vector3_free(center);
+	
+	return blured;
 }
 
 real cloud_nmbe(struct cloud *cloud, real sig, struct vector3 *center, real rad)
@@ -36,6 +49,13 @@ real cloud_nmbe(struct cloud *cloud, real sig, struct vector3 *center, real rad)
 
 int main()
 {
+	struct cloud *bunny = cloud_load_xyz("../samples/bunny.xyz");
+	struct cloud *blured = cloud_gaussian_filter(bunny, 0.2f);
+	cloud_save_pcd(blured, "blured_bunny.pcd");
+	cloud_free(blured);
+	cloud_free(bunny);
+	
+	/**
 	char *clouds[4] = {
 		"../samples/bunny.xyz",
 		"../samples/bunny_trans.xyz",
@@ -60,7 +80,8 @@ int main()
 		
 		cloud_free(cloud);
 		vector3_free(center);
-	}	
+	}
+	*/
 	
 	return 0;
 }

@@ -58,3 +58,21 @@ real calc_max3(real a, real b, real c)
 	return t;
 }
 
+real calc_sign(real a)
+{
+	return (a >= 0.0f) ? 1.0f : -1.0f;
+}
+
+real calc_logt(real a)
+{
+	return -1.0f * calc_sign(a) * log(fabs(a));
+}
+
+real calc_gaussian(real x, real sigma)
+{
+	real num = exp((-1.0f * x * x) / (2.0f * sigma * sigma));
+	real den = sqrt(2.0f * CALC_PI * sigma * sigma);
+	
+	return num / den;
+}
+

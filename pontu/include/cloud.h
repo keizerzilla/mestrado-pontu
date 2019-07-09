@@ -175,6 +175,13 @@ int cloud_save_ply(struct cloud *cloud, const char *filename);
 int cloud_save_pcd(struct cloud *cloud, const char *filename);
 
 /**
+ * \brief Makes a copy of a cloud
+ * \param cloud The cloud to be copied
+ * \return A copy of the input cloud
+ */
+struct cloud *cloud_copy(struct cloud *cloud);
+
+/**
  * \brief Calculates the geometric center of a cloud
  * \param cloud Target cloud
  * \return Point with the coordinates of the geometric center of the cloud

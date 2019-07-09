@@ -110,5 +110,27 @@ real calc_randr(real max);
  */
 real calc_max3(real a, real b, real c);
 
+/**
+ * \brief Returns the signal of a real number
+ * \param a The number
+ * \return 1.0f if a >= 0.0f, or -1.0f otherwise
+ */
+real calc_sign(real a);
+
+/**
+ * \brief Performs a simple log transformation
+ * \param a The number to be transformed
+ * \return -1 * sign(a) * log(abs(a))
+ */
+real calc_logt(real a);
+
+/**
+ * \brief Calculates the gaussian value for a number
+ * \param x The value
+ * \param sigma The standard deviation of the distribuition
+ * \return the zero mean and sigma deviation of the gaussian distribuition of x
+ */
+real calc_gaussian(real x, real sigma);
+
 #endif // CALC_H
 

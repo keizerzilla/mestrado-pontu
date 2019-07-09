@@ -373,6 +373,18 @@ int cloud_save_pcd(struct cloud *cloud, const char *filename)
 	return 1;
 }
 
+struct cloud *cloud_copy(struct cloud *cloud)
+{
+	struct cloud *cpy = cloud_new(cloud->numpts);
+	if (cpy == NULL)
+		return NULL;
+	
+	for (uint i = 0; i < cloud->numpts; i++)
+		cloud_set_point_vector(cpy, i, &cloud->points[i]);
+	
+	return cpy;
+}
+
 struct vector3 *cloud_calc_center(struct cloud *cloud)
 {
 	vector3_free(cloud->centroid);
