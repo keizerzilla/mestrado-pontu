@@ -15,11 +15,6 @@ real legendre_poly(int n, real x)
 	       (n - 1) * legendre_poly(n - 2, x)) / (1.0f * n);
 }
 
-real legendre_normcoord(real c, uint numpts)
-{
-	return ((2.0f * c) - numpts - 1) / (numpts - 1);
-}
-
 real legendre_norm(int p, int q, int r, struct cloud *cloud)
 {
 	real num = ((2.0f * p) + 1) * ((2.0f * q) + 1) * ((2.0f * r) + 1);
@@ -31,12 +26,7 @@ real legendre_norm(int p, int q, int r, struct cloud *cloud)
 real legendre_moment(int p, int q, int r, struct cloud *cloud)
 {
 	struct vector3 *center = cloud_get_center(cloud);
-	uint numpts = cloud_size(cloud);
-
-	center->x = legendre_normcoord(center->x, numpts);
-	center->y = legendre_normcoord(center->y, numpts);
-	center->z = legendre_normcoord(center->z, numpts);
-
+	
 	real moment = 0.0f;
 	real center_x = 0.0f;
 	real center_y = 0.0f;
@@ -44,11 +34,7 @@ real legendre_moment(int p, int q, int r, struct cloud *cloud)
 
 	for (uint i = 0; i < cloud->numpts; i++) {
 		struct vector3 *point = vector3_from_vector(&cloud->points[i]);
-
-		point->x = legendre_normcoord(point->x, numpts);
-		point->y = legendre_normcoord(point->y, numpts);
-		point->z = legendre_normcoord(point->z, numpts);
-
+		
 		center_x = point->x - center->x;
 		center_y = point->y - center->y;
 		center_z = point->z - center->z;

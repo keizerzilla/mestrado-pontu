@@ -88,6 +88,11 @@ real vector3_distance(struct vector3 *a, struct vector3 *b)
 	return calc_length3(a->x - b->x, a->y - b->y, a->z - b->z);
 }
 
+real vector3_squared_distance(struct vector3 *a, struct vector3 *b)
+{
+	return calc_squared_length3(a->x - b->x, a->y - b->y, a->z - b->z);
+}
+
 real vector3_manhattan(struct vector3 *a, struct vector3 *b)
 {
 	return fabs(a->x - b->x) + fabs(a->y - b->y) + fabs(a->z - b->z);

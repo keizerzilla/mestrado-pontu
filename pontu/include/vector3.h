@@ -125,6 +125,14 @@ void vector3_invert(struct vector3 *v);
 real vector3_distance(struct vector3 *a, struct vector3 *b);
 
 /**
+ * \brief Calculates the squared euclidian distance between two vectors
+ * \param a First vector
+ * \param b Second vector
+ * \return Squared euclidian distance between a and b
+ */
+real vector3_squared_distance(struct vector3 *a, struct vector3 *b);
+
+/**
  * \brief Calculate the manhattan distance between two vectors
  * \param a First vector
  * \param b Second vector

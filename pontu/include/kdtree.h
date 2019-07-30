@@ -17,7 +17,7 @@
 #define KDTREE_MAXBUFFER 512
 
 /**
- * \brief Struct to store a kdtree
+ * \brief Struct to store a kdtree node
  */
 struct kdtree {
 	real median;
@@ -62,6 +62,15 @@ void kdtree_partitionate(struct kdtree *kdt, int axis, int depth);
  * \return NULL if it fails, or the pointer to the kdtree if it doesn't
  */
 struct kdtree *kdtree_init(struct kdtree *kdt, struct cloud *cloud);
+
+/**
+ * \brief The same as cloud_cut_radius(), but no bruteforce
+ * \param kdt Target kdtree
+ * \param p Center point of the sphere
+ * \param r Cut radius
+ * \return A subcloud with only points contain
+ */
+struct cloud *kdtree_cut_radius(struct kdtree *kdt, struct vector3 *p, real r);
 
 /**
  * \brief Debugs a kdtree (number of points in a leaf)

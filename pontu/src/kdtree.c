@@ -3,7 +3,7 @@
 struct kdtree *kdtree_new()
 {
 	struct kdtree *kdt = malloc(sizeof(struct kdtree));
-	if (!kdt)
+	if (kdt == NULL)
 		return NULL;
 
 	kdt->median = 0.0f;
@@ -21,8 +21,10 @@ void kdtree_free(struct kdtree *kdt)
 		return;
 
 	free(kdt->points);
+	
 	kdtree_free(kdt->left);
 	kdtree_free(kdt->right);
+	
 	free(kdt);
 	
 	kdt = NULL;
@@ -78,6 +80,7 @@ struct kdtree *kdtree_init(struct kdtree *kdt, struct cloud *cloud)
 		kdt = kdtree_new();
 
 	uint numpts = cloud->numpts;
+	
 	kdt->points = malloc(numpts * sizeof(struct vector3 *));
 	if (kdt->points == NULL)
 		return NULL;
@@ -88,6 +91,16 @@ struct kdtree *kdtree_init(struct kdtree *kdt, struct cloud *cloud)
 	kdt->numpts = numpts;
 
 	return kdt;
+}
+
+struct cloud *kdtree_cut_radius(struct kdtree *kdt, struct vector3 *p, real r)
+{
+	if (kdt == NULL || p == NULL || r <= 0.0f)
+		return NULL;
+	
+	printf("CAUTION: incomplete function!\n");
+	
+	return NULL;
 }
 
 void kdtree_debug(struct kdtree *kdt)
@@ -126,8 +139,6 @@ void kdtree_tofile(struct kdtree *kdt, const char *path)
 		struct cloud *cloud = kdtree_tocloud(kdt);
 		cloud_save_pcd(cloud, buffer);
 		cloud_free(cloud);
-
-		printf("%s ok!\n", buffer);
 	}
 
 	kdtree_tofile(kdt->left, path);

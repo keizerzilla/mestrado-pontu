@@ -68,10 +68,18 @@ real calc_logt(real a)
 	return -1.0f * calc_sign(a) * log(fabs(a));
 }
 
-real calc_gaussian(real x, real sigma)
+real calc_gaussian(real x, real s)
 {
-	real num = exp((-1.0f * x * x) / (2.0f * sigma * sigma));
-	real den = sqrt(2.0f * CALC_PI * sigma * sigma);
+	real num = exp((-1.0f * x * x) / (2.0f * s * s));
+	real den = s * sqrt(2.0f * CALC_PI);
+	
+	return num / den;
+}
+
+real calc_gaussian3(real x, real y, real z, real s)
+{
+	real num = exp(-1.0f * ((x * x) + (y * y) + (z * z)) / (2.0f * s * s));
+	real den = pow(2.0f * CALC_PI * s * s, 1.5f);
 	
 	return num / den;
 }

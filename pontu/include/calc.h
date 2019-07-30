@@ -125,12 +125,22 @@ real calc_sign(real a);
 real calc_logt(real a);
 
 /**
- * \brief Calculates the gaussian value for a number
- * \param x The value
- * \param sigma The standard deviation of the distribuition
- * \return the zero mean and sigma deviation of the gaussian distribuition of x
+ * \brief Calculates the 1D gaussian value
+ * \param x The input number
+ * \param s The standard deviation of the distribuition
+ * \return The zero mean and s-deviation of the gaussian distribuition of x
  */
-real calc_gaussian(real x, real sigma);
+real calc_gaussian(real x, real s);
+
+/**
+ * \brief Calculates the gaussian value for a number
+ * \param x The x value
+ * \param y The y value
+ * \param z The z value
+ * \param sigma The standard deviation of the distribuition
+ * \return zero-mean and s-deviation of the gaussian distribuition of (x,y,z)
+ */
+real calc_gaussian3(real x, real y, real z, real s);
 
 #endif // CALC_H
 
