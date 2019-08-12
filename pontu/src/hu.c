@@ -34,8 +34,8 @@ real hu_normalized_moment(int p, int q, int r, struct cloud *cloud)
 {
 	real central = hu_central_moment(p, q, r, cloud);
 	real zero = hu_central_moment(0, 0, 0, cloud);
-
-	return central / (pow(zero, ((p + q + r) / 3.0f) + 1.0f));
+	
+	return central / pow(zero, ((p + q + r) / 3.0f) + 1.0f);
 }
 
 real hu_refined_moment(int p, int q, int r, struct cloud *cloud)
@@ -69,6 +69,23 @@ struct matrix *hu_cloud_moments_hu1980(struct cloud *cloud)
 	matrix_set(results, 0, 2, j3);
 
 	return results;
+}
+
+struct matrix *hu_cloud_raw_moments(struct cloud *cloud, int p, int q, int r)
+{
+	struct matrix *ans = matrix_new(1, (p + 1) * (q + 1) * (r + 1));
+	
+	int col = 0;
+	for (int i = 0; i <= p; i++) {
+		for (int j = 0; j <= q; j++) {
+			for (int k = 0; k <= r; k++) {
+				matrix_set(ans, 0, col, hu_normalized_moment(i, j, k, cloud));
+				col++;
+			}
+		}
+	}
+	
+	return ans;
 }
 
 struct matrix *hu_cloud_moments_hututu(struct cloud *cloud)

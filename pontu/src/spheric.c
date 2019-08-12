@@ -29,6 +29,14 @@ real spheric_moment(int p, int q, int r, struct cloud *cloud)
 	return moment / cloud_boundingbox_volume(cloud);
 }
 
+real spheric_normalized_moment(int p, int q, int r, struct cloud *cloud)
+{
+	real central = spheric_moment(p, q, r, cloud);
+	real zero = spheric_moment(0, 0, 0, cloud);
+	
+	return central / pow(zero, ((p + q + r) / 3.0f) + 1.0f);
+}
+
 struct matrix *spheric_cloud_moments(struct cloud *cloud)
 {
 	int m = (SPHERIC_ORDER_X + 1) *

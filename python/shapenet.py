@@ -1,32 +1,35 @@
 import os
+import subprocess
+import numpy as np
+import pandas as pd
 
-def obj2xyz(source, dest):
-	"""Converte conjunto de nuvens .obj em formato .xyz usando pcl_obj2ply.
+dataset = "/media/kz1/TUTU640GB/ShapeNetCoreV2/"
+bindir = "../pontu/bin/shapenet"
+dumpPath = "../shapenet_spheric.dat"
 
-	:param source: pasta com os arquivos a serem convertidos
-	:param dest: pasta destino das nuvens convertidas
-	"""
-	
-	for cloud in os.listdir(source):
-		inpf = os.path.join(source, cloud)
+with open(dumpPath, "w") as dump:
+	for shape in os.listdir(dataset):
+		objectPath = os.path.join(dataset, shape)
 		
-		if not os.path.isfile(inpf) or not inpf.endswith(".obj"):
+		if not os.path.isdir(objectPath):
 			continue
 		
-		outf = os.path.join(dest, cloud.replace(".obj", ".ply"))
-		cmd = ["pcl_obj2ply", "-format", "1", "-use_camera", "0", inpf, outf]
-		print(" ".join(cmd))
-		subprocess.call(cmd)
-		
-		data = ""
-		with open(outf, "r") as ply:
-			data = ply.read()
-			data = data[data.find("end_header")+11:]
-		
-		with open(outf, "w") as dump:
-			dump.write(data)
-		
-		os.rename(outf, outf.replace(".ply", ".xyz"))
-		
-		print(outf + " OK")
-
+		for sample in os.listdir(objectPath):
+			samplePath = os.path.join(objectPath, sample)
+			
+			if not os.path.isdir(samplePath):
+				continue
+			
+			samplePath = os.path.join(samplePath, "models/model_normalized.obj")
+			
+			if not os.path.isfile(samplePath):
+				continue
+			
+			cmd = [bindir, samplePath]
+			ans = subprocess.run(cmd, stdout=subprocess.PIPE).stdout
+			ans = ans[:-1].decode("utf-8").replace(" ", ",")
+			ans = ans + ",{},{}\n".format(sample, shape)
+			dump.write(ans)
+			
+			print(sample, shape, "ok!")
+			

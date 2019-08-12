@@ -63,6 +63,16 @@ real hu_refined_moment(int p, int q, int r, struct cloud *cloud);
 struct matrix *hu_cloud_moments_hu1980(struct cloud *cloud);
 
 /**
+ * \brief Calculates a set of central raw moment of Hu 3D
+ * \param p Maximum order of dimension x
+ * \param q Maximum order of dimension y
+ * \param r Maximum order of dimension z
+ * \param cloud Target cloud
+ * \return Orders up to p, q, r of cloud
+ */
+struct matrix *hu_cloud_raw_moments(struct cloud *cloud, int p, int q, int r);
+
+/**
  * \brief Calculates invariants moments of Hu (Rocha Neto - 2017)
  * \param cloud Target cloud
  * \return Matrix with the moments

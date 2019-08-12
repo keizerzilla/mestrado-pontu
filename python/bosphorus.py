@@ -406,41 +406,18 @@ def pipeline_classification(dataset, moments, cuts, outfolder="../results/{}/"):
 		os.makedirs(folder, exist_ok=True)
 		for moment in moments:
 			outfile = folder + moment + ".dat"
-			ans = rank_neutral(outfile)
+			ans = rank_nonneutral(outfile)
 			classifier, rate = max_rate(ans)
 			print("{}-{}\t{}\t{}".format(moment, cut, classifier, rate))
-
-def pipeline_rfecv(features):
-	"""pipeline_rfecv - UNDER CONSTRUCTION
-	
-	:param features: Arquivo com os vetores de atributo
-	"""
-	
-	df = pd.read_csv(features)
-	df = df.loc[df["tp"] == "N"].drop(["sample", "tp", "exp"], axis=1)
-	X = df.drop(["subject"], axis=1)
-	y = df[["subject"]]
-	
-	estimator = SVM(kernel="linear", C=8.0, gamma=0.125, probability=True)
-	#estimator = KNN(p=1, n_neighbors=1)
-	selector = RFE(estimator, 10, step=1, verbose=2)
-	selector = selector.fit(X, y)
-
-	print(selector.support_)
-	print(selector.ranking_)
-	
-	X = X[selector.ranking_]
 
 ### MAIN FUNCTION
 if __name__ == "__main__":
 	dataset = "../datasets/bs-out-d200-c80-icp/"
-	moments = ["legendre"]
-	cuts = ["f"]
+	moments = ["spheric_filtered"]
+	cuts = ["s"]
 	
 	#pipeline_extraction(dataset, moments, cuts)
 	pipeline_classification(dataset, moments, cuts)
-	
-	#pipeline_rfecv("../results/f/legendre.dat")
 	
 	
 	

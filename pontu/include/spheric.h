@@ -9,15 +9,15 @@
 #define SPHERIC_H
 
 #ifndef SPHERIC_ORDER_X
-#define SPHERIC_ORDER_X 2
+#define SPHERIC_ORDER_X 5
 #endif
 
 #ifndef SPHERIC_ORDER_Y
-#define SPHERIC_ORDER_Y 2
+#define SPHERIC_ORDER_Y 5
 #endif
 
 #ifndef SPHERIC_ORDER_Z
-#define SPHERIC_ORDER_Z 2
+#define SPHERIC_ORDER_Z 5
 #endif
 
 #include "cloud.h"
@@ -44,6 +44,16 @@ real spheric_quad(real x, real y, real z, int p, int q, int r);
  * \return Spheric moment of order p+q+r
  */
 real spheric_moment(int p, int q, int r, struct cloud *cloud);
+
+/**
+ * \brief Calculates normalized spheric moments of a cloud
+ * \param p Order of coordinate x
+ * \param q Order of coordinate y
+ * \param r Order of coordinate z
+ * \param cloud Target cloud
+ * \return Normalized spheric moment of order p+q+r
+ */
+real spheric_normalized_moment(int p, int q, int r, struct cloud *cloud);
 
 /**
  * \brief Calculates spheric moments of a cloud

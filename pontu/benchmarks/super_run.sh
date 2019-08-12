@@ -1,8 +1,8 @@
 #!/bin/bash
 
+make -C .. clean
 make -C .. all -j4
-make -j4 ritter
+make -j4 $1
 clear
-../bin/ritter
-pcl_viewer blured_bunny.pcd
+../bin/$1
 
