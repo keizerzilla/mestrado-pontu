@@ -4,13 +4,19 @@
 
 int main()
 {
-	printf("%d\n", zernike_num_moments_even(20, 20));
+	struct cloud *bunny = cloud_load_xyz("../samples/bunny.xyz");
+	struct cloud *bunny_rotate = cloud_load_xyz("../samples/bunny_rotate.xyz");
+	struct matrix *ans = zernike_cloud_moments_mag(bunny);
+	struct matrix *ans_rotate = zernike_cloud_moments_mag(bunny_rotate);
 	
-	if (!strcmp("artur", "artur")) {
-		printf("equal\n");
-	} else {
-		printf("diff\n");
-	}
+	
+	matrix_debug(ans, stdout);
+	matrix_debug(ans_rotate, stdout);
+	
+	matrix_free(ans_rotate);
+	matrix_free(ans);
+	cloud_free(bunny_rotate);
+	cloud_free(bunny);
 	
 	return 0;
 }

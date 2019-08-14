@@ -25,8 +25,8 @@ from sklearn.model_selection import GridSearchCV
 from joblib import dump, load
 
 # FILES
-datFile = "../results/shapenet_zernike_odd.dat"
-splitFile = "/home/keizerzilla/SNCV2/train_test_split.csv"
+datFile = "../results/shapenet_zernike_mag.dat"
+splitFile = "/home/kz1/SNCV2/train_test_split.csv"
 
 # LOADING DATA FILE
 df = pd.read_csv(datFile, header=None)
@@ -55,16 +55,6 @@ y_test = test_set["class"]
 X_val = val_set.drop(["sample", "class"], axis=1)
 y_val = val_set["class"]
 
-# FEATURE SELECTION
-"""
-kbest = SelectKBest(f_classif, k=20)
-kbest = kbest.fit(X_train, y_train)
-selected_features = kbest.get_support()
-X_train = kbest.fit_transform(X_train, y_train)
-X_test = kbest.fit_transform(X_test, y_test)
-X_val = kbest.fit_transform(X_val, y_val)
-"""
-
 # STANDARDIZATION
 scaler = StandardScaler()
 scaler.fit(X_train)
@@ -85,24 +75,6 @@ y_trainval = pd.concat([y_train, y_val])
 prefold = [-1 for x in range(X_train.shape[0])] + \
           [0 for x in range(X_val.shape[0])]
 
-# HYPERPARAMETERS TUNING
-parameters = {
-	"hidden_layer_sizes" : [(100,), (200,), (300,), (400,), (500,), (600,)],
-	"activation" : ["identity", "logistic", "tanh", "relu"],
-	"alpha" : [0.001, 0.001, 0.01],
-	"max_iter" : [1000]
-}
-
-ps = PredefinedSplit(prefold)
-estimator = MLP()
-clf = GridSearchCV(estimator, parameters, cv=ps, n_jobs=-1, verbose=1)
-clf.fit(X_trainval, y_trainval)
-
-dump(clf, "../results/mlp_gridsearch.joblib")
-print(clf.best_params_)
-print(clf.best_score_)
-
-"""
 # CLASSIFICATION
 classifiers = {
 	"KNN_manhattam" : KNN(p=1),
@@ -152,4 +124,4 @@ for name, classifier in classifiers.items():
 
 ans = pd.DataFrame(ans)
 ans.to_csv("../results/shapenet_ans.csv", index=None)
-"""
+

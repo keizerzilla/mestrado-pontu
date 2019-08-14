@@ -119,6 +119,28 @@ real zernike_moment_odd(int n, int m, real r, struct cloud *cloud)
 	return ((n + 1.0f) / CALC_PI) * moment;
 }
 
+real zernike_moment_mag(int n, int m, real r, struct cloud *cloud)
+{
+	struct vector3 *center = cloud_get_center(cloud);
+
+	real d = 0.0f;
+	real dist = 0.0f;
+	real poly = 0.0f;
+	real moment = 0.0f;
+
+	for (uint i = 0; i < cloud->numpts; i++) {
+		d = vector3_distance(center, &cloud->points[i]);
+		dist = d / r;
+		poly = zernike_radpoly(n, m, dist);
+		
+		moment += poly / CALC_PI;
+	}
+
+	vector3_free(center);
+
+	return ((n + 1.0f) / CALC_PI) * moment;
+}
+
 struct matrix *zernike_cloud_moments_even(struct cloud *cloud)
 {
 	int n_moments = zernike_num_moments_even(ZERNIKE_ORDER, ZERNIKE_REPETITION);
@@ -156,6 +178,29 @@ struct matrix *zernike_cloud_moments_odd(struct cloud *cloud)
 		for (m = 0; m <= ZERNIKE_REPETITION; m++) {
 			if (zernike_conditions_odd(n, m)) {
 				real moment = zernike_moment_odd(n, m, r, cloud);
+				matrix_set(results, 0, col, moment);
+				col++;
+			}
+		}
+	}
+
+	return results;
+}
+
+struct matrix *zernike_cloud_moments_mag(struct cloud *cloud)
+{
+	int n_moments = zernike_num_moments_even(ZERNIKE_ORDER, ZERNIKE_REPETITION);
+	struct matrix *results = matrix_new(1, n_moments);
+	real r = cloud_max_distance_from_center(cloud);
+
+	int n = 0;
+	int m = 0;
+	int col = 0;
+
+	for (n = 0; n <= ZERNIKE_ORDER; n++) {
+		for (m = 0; m <= ZERNIKE_REPETITION; m++) {
+			if (zernike_conditions_even(n, m)) {
+				real moment = zernike_moment_mag(n, m, r, cloud);
 				matrix_set(results, 0, col, moment);
 				col++;
 			}

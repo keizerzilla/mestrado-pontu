@@ -13,7 +13,9 @@
 
 #define HUTUTU			"hututu"
 #define HU1980			"hu1980"
-#define ZERNIKE			"zernike"
+#define ZERNIKE_ODD		"zernike_odd"
+#define ZERNIKE_EVEN	"zernike_even"
+#define ZERNIKE_MAG		"zernike_mag"
 #define LEGENDRE		"legendre"
 #define CHEBYSHEV		"chebyshev"
 #define SPHERIC			"spheric"
@@ -46,7 +48,9 @@ void extraction_help()
     printf(" -m: momento usado para extracao de atributos\n");
     printf("     > hututu\n");
     printf("     > hu1980\n");
-    printf("     > zernike\n");
+    printf("     > zernike_odd\n");
+    printf("     > zernike_even\n");
+    printf("     > zernike_mag\n");
     printf("     > legendre\n");
     printf("     > chebyshev\n");
     printf("     > spheric\n");
@@ -125,8 +129,12 @@ int main(int argc, char** argv)
         mfunc = &legendre_cloud_moments;
     else if (!strcmp(moment, CHEBYSHEV))
         mfunc = &chebyshev_cloud_moments;
-    else if (!strcmp(moment, ZERNIKE))
+    else if (!strcmp(moment, ZERNIKE_ODD))
         mfunc = &zernike_cloud_moments_odd;
+    else if (!strcmp(moment, ZERNIKE_EVEN))
+        mfunc = &zernike_cloud_moments_even;
+    else if (!strcmp(moment, ZERNIKE_MAG))
+        mfunc = &zernike_cloud_moments_mag;
     else if (!strcmp(moment, SPHERIC))
         mfunc = &spheric_cloud_moments;
     else

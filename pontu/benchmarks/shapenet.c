@@ -4,6 +4,7 @@
 
 #define ZERNIKE_ODD		"odd"
 #define ZERNIKE_EVEN	"even"
+#define ZERNIKE_MAG		"mag"
 
 int main(int argc, char** argv)
 {
@@ -24,8 +25,10 @@ int main(int argc, char** argv)
 		moments = zernike_cloud_moments_odd(cloud);
 	else if (!strcmp(argv[2], ZERNIKE_EVEN))
 		moments = zernike_cloud_moments_even(cloud);
+	else if (!strcmp(argv[2], ZERNIKE_MAG))
+		moments = zernike_cloud_moments_mag(cloud);
 	else
-		moments = zernike_cloud_moments_odd(cloud);
+		moments = zernike_cloud_moments_mag(cloud);
 	
 	if (moments == NULL) {
 		printf("! ops, momentos vazios !");

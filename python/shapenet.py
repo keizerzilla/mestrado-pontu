@@ -7,11 +7,11 @@ import pandas as pd
 if len(sys.argv) != 2:
 	print("python: numero de parametros incorretos!")
 	print("python: uso     -> python3 shapenet.py <tipo_de_zernike>")
-	print("python: tipos   -> odd, even")
+	print("python: tipos   -> odd, even, mag")
 	print("python: exemplo -> python3 shapenet.py odd")
 	sys.exit(1)
 
-dataset = "/home/keizerzilla/SNCV2/"
+dataset = "/home/kz1/SNCV2/"
 bindir = "../pontu/bin/shapenet"
 dumpPath = "../results/shapenet_zernike_{}.dat".format(sys.argv[1])
 
