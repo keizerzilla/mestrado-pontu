@@ -4,10 +4,6 @@
 
 // https://www.inf.pucrs.br/~manssour/OpenGL/Programando3D.html
 // http://www.lighthouse3d.com/tutorials/glut-tutorial/
-#include <GL/gl.h>
-#include <GL/glut.h>
-#include <GL/freeglut.h>
-
 // SUPER UNDER CONSTRUCTION CAUTION WARNING KEEP OUT DANGER
 // https://stackoverflow.com/questions/16619327/gaussian-blur-of-3d-data
 struct cloud *cloud_gaussian_filter(struct cloud *cloud, real s)

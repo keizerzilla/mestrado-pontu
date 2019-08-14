@@ -1,11 +1,19 @@
 import os
+import sys
 import subprocess
 import numpy as np
 import pandas as pd
 
-dataset = "/media/kz1/TUTU640GB/ShapeNetCoreV2/"
+if len(sys.argv) != 2:
+	print("python: numero de parametros incorretos!")
+	print("python: uso     -> python3 shapenet.py <tipo_de_zernike>")
+	print("python: tipos   -> odd, even")
+	print("python: exemplo -> python3 shapenet.py odd")
+	sys.exit(1)
+
+dataset = "/home/keizerzilla/SNCV2/"
 bindir = "../pontu/bin/shapenet"
-dumpPath = "../shapenet_spheric.dat"
+dumpPath = "../results/shapenet_zernike_{}.dat".format(sys.argv[1])
 
 with open(dumpPath, "w") as dump:
 	for shape in os.listdir(dataset):
@@ -25,7 +33,7 @@ with open(dumpPath, "w") as dump:
 			if not os.path.isfile(samplePath):
 				continue
 			
-			cmd = [bindir, samplePath]
+			cmd = [bindir, samplePath, sys.argv[1]]
 			ans = subprocess.run(cmd, stdout=subprocess.PIPE).stdout
 			ans = ans[:-1].decode("utf-8").replace(" ", ",")
 			ans = ans + ",{},{}\n".format(sample, shape)

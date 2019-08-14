@@ -9,23 +9,23 @@
 #define ZERNIKE_H
 
 #ifndef ZERNIKE_ORDER
-#define ZERNIKE_ORDER 12
+#define ZERNIKE_ORDER 20
 #endif
 
 #ifndef ZERNIKE_REPETITION
-#define ZERNIKE_REPETITION 8
+#define ZERNIKE_REPETITION 20
 #endif
 
 #include "cloud.h"
 #include "matrix.h"
 
 /**
- * \brief Zernike polynomial boundary conditions
+ * \brief Zernike polynomial even boundary conditions
  * \param n Polynomial order
  * \param m Repetitions
  * \return 1 if the conditions were satisfied, or else 0
  */
-int zernike_conditions(int n, int m);
+int zernike_conditions_even(int n, int m);
 
 /**
  * \brief Zernike polynomial odd boundary conditions
@@ -36,12 +36,12 @@ int zernike_conditions(int n, int m);
 int zernike_conditions_odd(int n, int m);
 
 /**
- * \brief Auxilliary function for valid moments count
+ * \brief Auxilliary function for valid even moments count
  * \param ord Order
  * \param rep Repetitions
  * \return Quantity of valid moments
  */
-int zernike_num_moments(int ord, int rep);
+int zernike_num_moments_even(int ord, int rep);
 
 /**
  * \brief Auxilliary function for valid odd moments count
@@ -77,16 +77,6 @@ real zernike_azimuth(real y, real x);
 real zernike_zenith(real z, real r);
 
 /**
- * \brief Calculates Zernike odd moments
- * \param n Polynomial order
- * \param m Repetitions
- * \param r Radius
- * \param cloud Target cloud
- * \return Zernike moment of order(n) and repetition(m)
- */
-real zernike_odd_moment(int n, int m, real r, struct cloud *cloud);
-
-/**
  * \brief Calculates Zernike even moments
  * \param n Polynomial order
  * \param m Repetitions
@@ -94,14 +84,31 @@ real zernike_odd_moment(int n, int m, real r, struct cloud *cloud);
  * \param cloud Target cloud
  * \return Zernike moment of order(n) and repetition(m)
  */
-real zernike_even_moment(int n, int m, real r, struct cloud *cloud);
+real zernike_moment_even(int n, int m, real r, struct cloud *cloud);
 
 /**
- * \brief Calculates Zernike moments of a cloud
+ * \brief Calculates Zernike odd moments
+ * \param n Polynomial order
+ * \param m Repetitions
+ * \param r Radius
+ * \param cloud Target cloud
+ * \return Zernike moment of order(n) and repetition(m)
+ */
+real zernike_moment_odd(int n, int m, real r, struct cloud *cloud);
+
+/**
+ * \brief Calculates Zernike even moments of a cloud
  * \param cloud Target cloud
  * \return Matrix with the moments
  */
-struct matrix *zernike_cloud_moments(struct cloud *cloud);
+struct matrix *zernike_cloud_moments_even(struct cloud *cloud);
+
+/**
+ * \brief Calculates Zernike odd moments of a cloud
+ * \param cloud Target cloud
+ * \return Matrix with the moments
+ */
+struct matrix *zernike_cloud_moments_odd(struct cloud *cloud);
 
 #endif // ZERNIKE_H
 

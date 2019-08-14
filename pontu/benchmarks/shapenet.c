@@ -2,9 +2,12 @@
 #include "../pontu_features.h"
 #include "../pontu_sampling.h"
 
+#define ZERNIKE_ODD		"odd"
+#define ZERNIKE_EVEN	"even"
+
 int main(int argc, char** argv)
 {
-	if (argc != 2) {
+	if (argc != 3) {
 		printf("! numero de parametros incorreto !\n");
 		printf("uso: shapenet <arquivo_shape>");
 		exit(1);
@@ -16,7 +19,14 @@ int main(int argc, char** argv)
 		exit(1);
 	}
 	
-	struct matrix *moments = spheric_cloud_moments(cloud);
+	struct matrix *moments = NULL;
+	if (!strcmp(argv[2], ZERNIKE_ODD))
+		moments = zernike_cloud_moments_odd(cloud);
+	else if (!strcmp(argv[2], ZERNIKE_EVEN))
+		moments = zernike_cloud_moments_even(cloud);
+	else
+		moments = zernike_cloud_moments_odd(cloud);
+	
 	if (moments == NULL) {
 		printf("! ops, momentos vazios !");
 		exit(1);

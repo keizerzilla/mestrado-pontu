@@ -126,7 +126,7 @@ int main(int argc, char** argv)
     else if (!strcmp(moment, CHEBYSHEV))
         mfunc = &chebyshev_cloud_moments;
     else if (!strcmp(moment, ZERNIKE))
-        mfunc = &zernike_cloud_moments;
+        mfunc = &zernike_cloud_moments_odd;
     else if (!strcmp(moment, SPHERIC))
         mfunc = &spheric_cloud_moments;
     else
