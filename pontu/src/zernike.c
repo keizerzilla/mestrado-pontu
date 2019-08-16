@@ -65,8 +65,8 @@ real zernike_moment_even(int n, int m, real r, struct cloud *cloud)
 {
 	struct vector3 *center = cloud_get_center(cloud);
 
+	real center_x = 0.0f;
 	real center_y = 0.0f;
-	real center_z = 0.0f;
 	real d = 0.0f;
 	real dist = 0.0f;
 	real poly = 0.0f;
@@ -74,15 +74,15 @@ real zernike_moment_even(int n, int m, real r, struct cloud *cloud)
 	real moment = 0.0f;
 
 	for (uint i = 0; i < cloud->numpts; i++) {
+		center_x = cloud->points[i].x - center->x;
 		center_y = cloud->points[i].y - center->y;
-		center_z = cloud->points[i].z - center->z;
 
 		d = vector3_distance(center, &cloud->points[i]);
 		dist = d / r;
 		poly = zernike_radpoly(n, m, dist);
-		azimuth = zernike_azimuth(center_y, center_z);
+		azimuth = zernike_azimuth(center_y, center_x);
 
-		moment += poly * cos(m * azimuth) / CALC_PI;
+		moment += poly * cos(m * azimuth);
 	}
 
 	vector3_free(center);
@@ -94,8 +94,8 @@ real zernike_moment_odd(int n, int m, real r, struct cloud *cloud)
 {
 	struct vector3 *center = cloud_get_center(cloud);
 
+	real center_x = 0.0f;
 	real center_y = 0.0f;
-	real center_z = 0.0f;
 	real d = 0.0f;
 	real dist = 0.0f;
 	real poly = 0.0f;
@@ -103,15 +103,15 @@ real zernike_moment_odd(int n, int m, real r, struct cloud *cloud)
 	real moment = 0.0f;
 
 	for (uint i = 0; i < cloud->numpts; i++) {
+		center_x = cloud->points[i].x - center->x;
 		center_y = cloud->points[i].y - center->y;
-		center_z = cloud->points[i].z - center->z;
 
 		d = vector3_distance(center, &cloud->points[i]);
 		dist = d / r;
 		poly = zernike_radpoly(n, m, dist);
-		azimuth = zernike_azimuth(center_y, center_z);
+		azimuth = zernike_azimuth(center_y, center_x);
 
-		moment += poly * sin(m * azimuth) / CALC_PI;
+		moment += poly * sin(m * azimuth);
 	}
 
 	vector3_free(center);
@@ -133,7 +133,7 @@ real zernike_moment_mag(int n, int m, real r, struct cloud *cloud)
 		dist = d / r;
 		poly = zernike_radpoly(n, m, dist);
 		
-		moment += poly / CALC_PI;
+		moment += poly;
 	}
 
 	vector3_free(center);

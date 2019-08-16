@@ -9,11 +9,11 @@
 #define ZERNIKE_H
 
 #ifndef ZERNIKE_ORDER
-#define ZERNIKE_ORDER 20
+#define ZERNIKE_ORDER 8
 #endif
 
 #ifndef ZERNIKE_REPETITION
-#define ZERNIKE_REPETITION 20
+#define ZERNIKE_REPETITION 8
 #endif
 
 #include "cloud.h"

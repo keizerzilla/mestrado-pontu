@@ -406,17 +406,17 @@ def pipeline_classification(dataset, moments, cuts, outfolder="../results/{}/"):
 		os.makedirs(folder, exist_ok=True)
 		for moment in moments:
 			outfile = folder + moment + ".dat"
-			ans = rank_nonneutral(outfile)
+			ans = rank_neutral(outfile)
 			classifier, rate = max_rate(ans)
 			print("{}-{}\t{}\t{}".format(moment, cut, classifier, rate))
 
 ### MAIN FUNCTION
 if __name__ == "__main__":
 	dataset = "../datasets/bs-out-d200-c80-icp/"
-	moments = ["spheric_filtered"]
-	cuts = ["s"]
+	moments = ["zernike_odd"]
+	cuts = ["w"]
 	
-	#pipeline_extraction(dataset, moments, cuts)
+	pipeline_extraction(dataset, moments, cuts)
 	pipeline_classification(dataset, moments, cuts)
 	
 	

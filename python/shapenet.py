@@ -11,7 +11,7 @@ if len(sys.argv) != 2:
 	print("python: exemplo -> python3 shapenet.py odd")
 	sys.exit(1)
 
-dataset = "/home/kz1/SNCV2/"
+dataset = "/home/keizerzilla/SNCV2/"
 bindir = "../pontu/bin/shapenet"
 dumpPath = "../results/shapenet_zernike_{}.dat".format(sys.argv[1])
 

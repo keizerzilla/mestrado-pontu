@@ -20,12 +20,10 @@ from sklearn.neighbors import KNeighborsClassifier as KNN
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis as QDA
 
-from sklearn.decomposition import PCA
 from sklearn.model_selection import PredefinedSplit
 from sklearn.model_selection import GridSearchCV
-from joblib import dump
-from joblib import load
-from sklearn.feature_selection import VarianceThreshold
+from joblib import dump, load
+from sklearn.ensemble import VotingClassifier
 
 # FILES
 datFile = "../results/shapenet_zernike_odd.dat"
@@ -78,55 +76,57 @@ y_trainval = pd.concat([y_train, y_val])
 prefold = [-1 for x in range(X_train.shape[0])] + \
           [0 for x in range(X_val.shape[0])]
 
-# GRIDSEARCHCV - KNN
-# {'n_neighbors': 8, 'p': 1, 'weights': 'distance'} 58.33
-ps = PredefinedSplit(prefold)
-knn = KNN()
+# CLASSIFICATION
+knn = KNN(p=1, n_neighbors=8, weights="distance")
+svm = SVM(kernel="rbf", C=3.0, gamma="scale")
+randforest = RandomForestClassifier(n_estimators=500,
+	                                max_features="auto",
+	                                min_samples_leaf=1,
+	                                min_samples_split=2)
+estimators = [("knn", knn), ("smv", svm), ("randforest", randforest)]
+votinghard = VotingClassifier(estimators=estimators, voting="hard")
+votingsoft = VotingClassifier(estimators=estimators, voting="soft")
 
-param_grid = {
-	"p" : [1, 2],
-	"n_neighbors" : [5, 6, 7, 8, 9, 10],
-	"weights" : ["uniform", "distance"]
+classifiers = {
+	#"KNN"        : knn,
+	#"SVM"        : svm,
+	#"RandForest" : randforest,
+	"VotingHard" : votinghard,
+	"VotingSoft" : votingsoft
 }
 
-grid = GridSearchCV(knn, param_grid=param_grid, n_jobs=-1, cv=ps, verbose=1)
-grid.fit(X_trainval, y_trainval)
-print(grid.best_estimator_)
-print(grid.best_score_)
-print(grid.best_params_)
-
-# GRIDSEARCHCV - SVM
-# {'C': 3.0, 'gamma': 'scale', 'kernel': 'rbf'} 43.02
-ps = PredefinedSplit(prefold)
-svm = SVM()
-
-param_grid = {
-	"C" : [1.0, 2.0, 3.0, 4.0],
-	"kernel" : ["rbf", "poly"],
-	"gamma" : ["scale"],
+ans = {
+	"classifier" : [],
+	"accuracy"   : [],
+	"f1"         : [],
+	"elapsed"    : []
 }
 
-grid = GridSearchCV(svm, param_grid=param_grid, n_jobs=-1, cv=ps, verbose=1)
-grid.fit(X_trainval, y_trainval)
-print(grid.best_estimator_)
-print(grid.best_score_)
-print(grid.best_params_)
+print("CLASSIFIER\tACC\tPRE\tREC\tF1\tTIME")
+for name, classifier in classifiers.items():
+	start = time.time()
+	
+	classifier.fit(X_train, y_train)
+	pred = classifier.predict(X_test)
+	
+	accuracy = round(100 * accuracy_score(y_test, pred), 2)
+	precision = round(100 * precision_score(y_test, pred, average="micro"), 2)
+	recall = round(100 * recall_score(y_test, pred, average="micro"), 2)
+	f1 = round(100 * f1_score(y_test, pred, average="micro"), 2)
+	elapsed = round(time.time() - start, 4)
+	
+	ans["classifier"].append(name)
+	ans["accuracy"].append(accuracy)
+	ans["f1"].append(f1)
+	ans["elapsed"].append(elapsed)
+	
+	print("{}\t{}\t{}\t{}\t{}\t{}".format(name,
+	                                      accuracy,
+	                                      precision,
+	                                      recall,
+	                                      f1,
+	                                      elapsed))
 
-# GRIDSEARCHCV - RANDOM FOREST
-# {'max_features': 'auto', 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 500} 61.98
-ps = PredefinedSplit(prefold)
-randforest = RandomForestClassifier()
-
-param_grid = {
-	"n_estimators" : [500, 600],
-	"min_samples_split" : [2],
-	"min_samples_leaf" : [1],
-	"max_features" : ["auto"]
-}
-
-grid = GridSearchCV(randforest, param_grid=param_grid, n_jobs=-1, cv=ps, verbose=1)
-grid.fit(X_trainval, y_trainval)
-print(grid.best_estimator_)
-print(grid.best_score_)
-print(grid.best_params_)
+ans = pd.DataFrame(ans)
+ans.to_csv("../results/shapenet_ans.csv", index=None)
 
