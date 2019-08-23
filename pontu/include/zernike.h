@@ -8,48 +8,36 @@
 #ifndef ZERNIKE_H
 #define ZERNIKE_H
 
-#ifndef ZERNIKE_ORDER
-#define ZERNIKE_ORDER 8
+#ifndef ZERNIKE_ORD
+#define ZERNIKE_ORD 4
 #endif
 
-#ifndef ZERNIKE_REPETITION
-#define ZERNIKE_REPETITION 8
+#ifndef ZERNIKE_REP
+#define ZERNIKE_REP 4
+#endif
+
+#ifndef ZERNIKE_SPIN
+#define ZERNIKE_SPIN 4
 #endif
 
 #include "cloud.h"
 #include "matrix.h"
 
 /**
- * \brief Zernike polynomial even boundary conditions
+ * \brief Zernike polynomial boundary conditions
  * \param n Polynomial order
  * \param m Repetitions
  * \return 1 if the conditions were satisfied, or else 0
  */
-int zernike_conditions_even(int n, int m);
+int zernike_conditions(int n, int m);
 
 /**
- * \brief Zernike polynomial odd boundary conditions
- * \param n Polynomial order
- * \param m Repetitions
- * \return 1 if the conditions were satisfied, or else 0
- */
-int zernike_conditions_odd(int n, int m);
-
-/**
- * \brief Auxilliary function for valid even moments count
+ * \brief Auxilliary function for valid moments count
  * \param ord Order
  * \param rep Repetitions
  * \return Quantity of valid moments
  */
-int zernike_num_moments_even(int ord, int rep);
-
-/**
- * \brief Auxilliary function for valid odd moments count
- * \param ord Order
- * \param rep Repetitions
- * \return Quantity of valid moments
- */
-int zernike_num_moments_odd(int ord, int rep);
+int zernike_nummoments(int ord, int rep);
 
 /**
  * \brief Calculates the radial Zernike polynomial
@@ -126,6 +114,111 @@ struct matrix *zernike_cloud_moments_odd(struct cloud *cloud);
  * \return Matrix with the moments
  */
 struct matrix *zernike_cloud_moments_mag(struct cloud *cloud);
+
+// NEW -- NEW -- NEW -- NEW -- NEW -- NEW -- NEW -- NEW -- NEW -- NEW -- NEW --
+
+/**
+ * \brief
+ * \param
+ * \return
+ */
+int zernike_spharmon_conditions(int n, int m, int l);
+
+/**
+ * \brief
+ * \param
+ * \return
+ */
+int zernike_spharmon_nummoments(int ord, int rep, int spin);
+
+/**
+ * \brief
+ * \param
+ * \return
+ */
+real zernike_spharmon_norm(int m, int l);
+
+/**
+ * \brief
+ * \param
+ * \return
+ */
+real zernike_spharmon_legendrepoly(int m, int l, real x);
+
+/**
+ * \brief
+ * \param
+ * \return
+ */
+real zernike_spharmon_harmonic_odd(int m, int l, real theta, real phi);
+
+/**
+ * \brief
+ * \param
+ * \return
+ */
+real zernike_spharmon_harmonic_even(int m, int l, real theta, real phi);
+
+/**
+ * \brief
+ * \param
+ * \return
+ */
+real zernike_spharmon_harmonic_mag(int m, int l, real theta);
+
+/**
+ * \brief
+ * \param
+ * \return
+ */
+real zernike_spharmon_moment_odd(int n,
+                                 int m,
+                                 int l,
+                                 real r,
+                                 struct cloud *cloud);
+
+/**
+ * \brief
+ * \param
+ * \return
+ */
+real zernike_spharmon_moment_even(int n,
+                                  int m,
+                                  int l,
+                                  real r,
+                                  struct cloud *cloud);
+
+/**
+ * \brief
+ * \param
+ * \return
+ */
+real zernike_spharmon_moment_mag(int n,
+                                 int m,
+                                 int l,
+                                 real r,
+                                 struct cloud *cloud);
+
+/**
+ * \brief
+ * \param
+ * \return
+ */
+struct matrix *zernike_spharmon_cloud_moments_odd(struct cloud *cloud);
+
+/**
+ * \brief
+ * \param
+ * \return
+ */
+struct matrix *zernike_spharmon_cloud_moments_even(struct cloud *cloud);
+
+/**
+ * \brief
+ * \param
+ * \return
+ */
+struct matrix *zernike_spharmon_cloud_moments_mag(struct cloud *cloud);
 
 #endif // ZERNIKE_H
 

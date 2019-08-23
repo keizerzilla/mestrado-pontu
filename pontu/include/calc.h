@@ -45,12 +45,12 @@ typedef long long int64;
 uint calc_factorial(uint n);
 
 /**
- * \brief Number of combinations N-P
+ * \brief Number of combinations N-K
  * \param n dimension 1
- * \param p dimension 2
- * \return N-P combinations
+ * \param k dimension 2
+ * \return N-K combinations
  */
-int calc_combination(int n, int p);
+int calc_binom_coeff(int n, int k);
 
 /**
  * \brief Calculates the Kronecker Delta

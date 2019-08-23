@@ -1,6 +1,6 @@
 # configuration variables
 CC = gcc
-COMPILER_FLAGS = -Wall -Werror -fPIC
+COMPILER_FLAGS = -Wall -Werror -fpic
 LINKER_FLAGS = ../lib/libpontu.a -lm
 BIN_DIR = ../bin
 

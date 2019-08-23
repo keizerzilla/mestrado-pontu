@@ -10,9 +10,9 @@ uint calc_factorial(uint n)
 	return result;
 }
 
-int calc_combination(int n, int p)
+int calc_binom_coeff(int n, int k)
 {
-	return calc_factorial(n) / (calc_factorial(p) * calc_factorial(n - p));
+	return calc_factorial(n) / (calc_factorial(k) * calc_factorial(n - k));
 }
 
 int calc_kronecker(int i, int j)
