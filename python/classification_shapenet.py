@@ -4,14 +4,20 @@ from sklearn.decomposition import PCA
 from sklearn.ensemble import VotingClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import PowerTransformer
+from sklearn.feature_selection import VarianceThreshold
 from sklearn.neighbors import KNeighborsClassifier as KNN
 from sklearn.ensemble import RandomForestClassifier as RandomForest
 
 def single_committe():
 	# FILES
-	datFiles = ["../results/shapenet_zernike_even.dat",
-		        "../results/shapenet_zernike_mag.dat",
-		        "../results/shapenet_zernike_full.dat"]
+	datFiles = ["../results/shapenet/shapenet_zo.dat",
+		        #"../results/shapenet/shapenet_ze.dat",
+		        #"../results/shapenet/shapenet_zm.dat",
+		        #"../results/shapenet/shapenet_zf.dat",
+				"../results/shapenet/shapenet_so.dat",]
+		        #"../results/shapenet/shapenet_se.dat",
+		        #"../results/shapenet/shapenet_sm.dat",
+		        #"../results/shapenet/shapenet_sf.dat",]
 	splitFile = "../shapenet/all.csv"
 
 	# LOADING TRAIN_TEST_VALIDATION SPLIT FILE
@@ -202,9 +208,14 @@ def joining_results():
 	
 def single_results():
 	# FILES
-	datFiles = ["../results/shapenet_zernike_odd.dat",
-		        "../results/shapenet_zernike_even.dat",
-		        "../results/shapenet_zernike_mag.dat"]
+	datFiles = ["../results/shapenet/shapenet_zo.dat",
+		        #"../results/shapenet/shapenet_ze.dat",
+		        #"../results/shapenet/shapenet_zm.dat",
+		        #"../results/shapenet/shapenet_zf.dat",
+				"../results/shapenet/shapenet_so.dat",]
+		        #"../results/shapenet/shapenet_se.dat",
+		        #"../results/shapenet/shapenet_sm.dat",
+		        #"../results/shapenet/shapenet_sf.dat",]
 	splitFile = "../shapenet/all.csv"
 
 	# LOADING TRAIN_TEST_VALIDATION SPLIT FILE
@@ -236,6 +247,12 @@ def single_results():
 		y_test = test_set["class"]
 		X_val = val_set.drop(["sample", "class"], axis=1)
 		y_val = val_set["class"]
+		
+		# REMOVE ZERO VARIANCE
+		selector = VarianceThreshold()
+		X_train = selector.fit_transform(X_train)
+		X_test = selector.fit_transform(X_test)
+		X_val = selector.fit_transform(X_val)
 		
 		# STANDARDIZATION
 		scaler = StandardScaler()
@@ -276,7 +293,7 @@ def single_results():
 			print("{}\t{}\t{}".format(datFile, name, accuracy))
 
 if __name__ == "__main__":
-	single_committe()
+	single_results()
 	
 	
 	

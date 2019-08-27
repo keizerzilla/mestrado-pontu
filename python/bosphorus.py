@@ -39,18 +39,15 @@ from sklearn.model_selection import LeaveOneOut
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import PowerTransformer
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.feature_selection import VarianceThreshold
 from sklearn.neighbors import KNeighborsClassifier as KNN
 
 ### LISTA DE CLASSIFICADORES TESTADOS
 classifiers = {
-	"KNN_mht" : KNN(p=1, n_neighbors=1),
-	"KNN_ecd" : KNN(p=2, n_neighbors=1),
-	"SVM_rad" : SVM(kernel="rbf", C=8.0, gamma=0.125, probability=True),
-	"SVM_lin" : SVM(kernel="linear", C=8.0, gamma=0.125, probability=True),
-	"NvBayes" : GaussianNB(),
-	"RandFor" : RandomForestClassifier(n_estimators=100),
-	"AdBoost" : AdaBoostClassifier(),
-	"DecTree" : DecisionTreeClassifier()
+	"KNM" : KNN(p=1, n_neighbors=1),
+	"KNE" : KNN(p=2, n_neighbors=1),
+	"SVM" : SVM(kernel="rbf", C=8.0, gamma=0.125, probability=True),
+	"RFC" : RandomForestClassifier(n_estimators=500),
 }
 
 ### FORMATO DO ARQUIVO BOSPHORUS
@@ -199,6 +196,11 @@ def run_classification(X_train, y_train, X_test, y_test, do_voting=False):
 	X_test[X_test == np.inf] = 0
 	X_test[X_test == -np.inf] = 0
 	X_test[X_test == np.nan] = 0
+	
+	# REMOVE ZERO VARIANCE
+	selector = VarianceThreshold()
+	X_train = selector.fit_transform(X_train)
+	X_test = selector.fit_transform(X_test)
 	
 	try:
 		scaler = StandardScaler().fit(X_train)
@@ -413,7 +415,8 @@ def pipeline_classification(dataset, moments, cuts, outfolder="../results/{}/"):
 ### MAIN FUNCTION
 if __name__ == "__main__":
 	dataset = "../datasets/bs-out-d200-c80-icp/"
-	moments = ["zernike_odd"]
+	moments = ["zkodd", "zkeven", "zkmag", "zkfull",
+	           "sphodd", "spheven", "sphmag", "sphfull"]
 	cuts = ["w"]
 	
 	pipeline_extraction(dataset, moments, cuts)

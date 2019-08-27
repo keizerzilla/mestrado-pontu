@@ -13,9 +13,14 @@
 
 #define HUTUTU			"hututu"
 #define HU1980			"hu1980"
-#define ZERNIKE_ODD		"zernike_odd"
-#define ZERNIKE_EVEN	"zernike_even"
-#define ZERNIKE_MAG		"zernike_mag"
+#define ZERNIKE_ODD		"zkodd"
+#define ZERNIKE_EVEN	"zkeven"
+#define ZERNIKE_MAG		"zkmag"
+#define ZERNIKE_FULL	"zkfull"
+#define SPHARMON_ODD	"sphodd"
+#define SPHARMON_EVEN	"spheven"
+#define SPHARMON_MAG	"sphmag"
+#define SPHARMON_FULL	"sphfull"
 #define LEGENDRE		"legendre"
 #define CHEBYSHEV		"chebyshev"
 #define SPHERIC			"spheric"
@@ -135,10 +140,20 @@ int main(int argc, char** argv)
         mfunc = &zernike_cloud_moments_even;
     else if (!strcmp(moment, ZERNIKE_MAG))
         mfunc = &zernike_cloud_moments_mag;
+	else if (!strcmp(moment, ZERNIKE_FULL))
+        mfunc = &zernike_cloud_moments_full;
+	else if (!strcmp(moment, SPHARMON_ODD))
+        mfunc = &spharmonics_cloud_moments_odd;
+    else if (!strcmp(moment, SPHARMON_EVEN))
+        mfunc = &spharmonics_cloud_moments_even;
+    else if (!strcmp(moment, SPHARMON_MAG))
+        mfunc = &spharmonics_cloud_moments_mag;
+	else if (!strcmp(moment, SPHARMON_FULL))
+        mfunc = &spharmonics_cloud_moments_full;
     else if (!strcmp(moment, SPHERIC))
         mfunc = &spheric_cloud_moments;
     else
-    	mfunc = &hu_cloud_moments_hututu;
+    	mfunc = &hu_cloud_moments_hututu; // (:
 	
     struct cloud* cloud = cloud_load_xyz(input);
     if (input == NULL) {
