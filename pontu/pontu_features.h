@@ -10,6 +10,7 @@
 #include "include/spheric.h"
 #include "include/siqueira.h"
 #include "include/golden.h"
+#include "include/spharmonics.h"
 
 #endif // PONTU_FEATURES_H
 

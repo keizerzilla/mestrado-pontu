@@ -1,10 +1,10 @@
 #include "../include/calc.h"
 
-uint calc_factorial(uint n)
+int calc_factorial(int n)
 {
-	uint result = 1;
+	int result = 1;
 
-	for (uint c = 1; c <= n; c++)
+	for (int c = 1; c <= n; c++)
 		result *= c;
 
 	return result;

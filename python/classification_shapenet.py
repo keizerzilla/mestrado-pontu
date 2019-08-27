@@ -9,9 +9,9 @@ from sklearn.ensemble import RandomForestClassifier as RandomForest
 
 def single_committe():
 	# FILES
-	datFiles = ["../results/shapenet_zernike_odd.dat",
-		        "../results/shapenet_zernike_even.dat",
-		        "../results/shapenet_zernike_mag.dat"]
+	datFiles = ["../results/shapenet_zernike_even.dat",
+		        "../results/shapenet_zernike_mag.dat",
+		        "../results/shapenet_zernike_full.dat"]
 	splitFile = "../shapenet/all.csv"
 
 	# LOADING TRAIN_TEST_VALIDATION SPLIT FILE
@@ -66,7 +66,7 @@ def single_committe():
 		
 		classifiers = {
 			"hard" : VotingClassifier(estimators=estimators, voting="hard"),
-			"soft" : VotingClassifier(estimators=estimators, voting="soft"),
+			#"soft" : VotingClassifier(estimators=estimators, voting="soft"),
 		}
 		
 		ans = {

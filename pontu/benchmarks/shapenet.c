@@ -2,15 +2,20 @@
 #include "../pontu_features.h"
 #include "../pontu_sampling.h"
 
-#define ZERNIKE_ODD		"odd"
-#define ZERNIKE_EVEN	"even"
-#define ZERNIKE_MAG		"mag"
+#define ZERNIKE_ODD			"zo"
+#define ZERNIKE_EVEN		"ze"
+#define ZERNIKE_MAG			"zm"
+#define ZERNIKE_FULL		"zf"
+#define SPHARMONICS_ODD		"so"
+#define SPHARMONICS_EVEN	"se"
+#define SPHARMONICS_MAG		"sm"
+#define SPHARMONICS_FULL	"sf"
 
 int main(int argc, char** argv)
 {
 	if (argc != 3) {
 		printf("! numero de parametros incorreto !\n");
-		printf("uso: shapenet <arquivo_shape>");
+		printf("uso: shapenet <tipo_zernike>\n");
 		exit(1);
 	}
 	
@@ -27,8 +32,18 @@ int main(int argc, char** argv)
 		moments = zernike_cloud_moments_even(cloud);
 	else if (!strcmp(argv[2], ZERNIKE_MAG))
 		moments = zernike_cloud_moments_mag(cloud);
+	else if (!strcmp(argv[2], ZERNIKE_FULL))
+		moments = zernike_cloud_moments_full(cloud);
+	else if (!strcmp(argv[2], SPHARMONICS_ODD))
+		moments = spharmonics_cloud_moments_odd(cloud);
+	else if (!strcmp(argv[2], SPHARMONICS_EVEN))
+		moments = spharmonics_cloud_moments_even(cloud);
+	else if (!strcmp(argv[2], SPHARMONICS_MAG))
+		moments = spharmonics_cloud_moments_mag(cloud);
+	else if (!strcmp(argv[2], SPHARMONICS_FULL))
+		moments = spharmonics_cloud_moments_full(cloud);
 	else
-		moments = zernike_cloud_moments_mag(cloud);
+		moments = spharmonics_cloud_moments_full(cloud);
 	
 	if (moments == NULL) {
 		printf("! ops, momentos vazios !");
