@@ -1,8 +1,8 @@
 /**
- * \file shapenet.c
+ * \file bosphorus.c
  * \author Artur Rodrigues Rocha Neto
  * \date 2019
- * \brief Extrator de momentos de zernike para a base shapenet
+ * \brief Extrator de momentos de zernike para a base bosphorus
  */
 
 #include "../pontu_core.h"
@@ -19,11 +19,11 @@ int main(int argc, char** argv)
 {
 	if (argc != 3) {
 		printf("! numero de parametros incorreto !\n");
-		printf("uso: shapenet <arquivo_obj> <tipo_zernike>\n");
+		printf("uso: bosphorus <arquivo_xyz> <tipo_zernike>\n");
 		exit(1);
 	}
 	
-	struct cloud *cloud = cloud_load_obj(argv[1]); // Shapenet formato .obj
+	struct cloud *cloud = cloud_load_xyz(argv[1]); // Bosphorus formato .xyz
 	if (cloud == NULL) {
 		printf("! ops, kd a nuvem? !\n");
 		exit(1);

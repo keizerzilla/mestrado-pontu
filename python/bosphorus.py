@@ -44,8 +44,7 @@ from sklearn.neighbors import KNeighborsClassifier as KNN
 
 ### LISTA DE CLASSIFICADORES TESTADOS
 classifiers = {
-	"KNM" : KNN(p=1, n_neighbors=1),
-	"KNE" : KNN(p=2, n_neighbors=1),
+	"KNN" : KNN(p=2, n_neighbors=1),
 	"SVM" : SVM(kernel="rbf", C=8.0, gamma=0.125, probability=True),
 	"RFC" : RandomForestClassifier(n_estimators=500),
 }
@@ -377,7 +376,12 @@ def max_rate(ans):
 	lemax = max(rates.items(), key=operator.itemgetter(1))
 	
 	return lemax[0], round(lemax[1]*100, 2)
-	
+
+def summary(ans, moment):
+	for name, result in ans.items():
+		print("{}\t{}\t{}".format(moment, name, round(result["recog"]*100, 2)))
+	print()
+
 def pipeline_extraction(dataset, moments, cuts, outfolder="../results/{}/"):
 	"""Executa extração de atributos na base bosphorus
 	
@@ -409,17 +413,15 @@ def pipeline_classification(dataset, moments, cuts, outfolder="../results/{}/"):
 		for moment in moments:
 			outfile = folder + moment + ".dat"
 			ans = rank_neutral(outfile)
-			classifier, rate = max_rate(ans)
-			print("{}-{}\t{}\t{}".format(moment, cut, classifier, rate))
+			summary(ans, moment)
 
 ### MAIN FUNCTION
 if __name__ == "__main__":
 	dataset = "../datasets/bs-out-d200-c80-icp/"
-	moments = ["zkodd", "zkeven", "zkmag", "zkfull",
-	           "sphodd", "spheven", "sphmag", "sphfull"]
+	moments = ["sphmag", "zkodd", "zkeven", "zkmag", "zkfull"]
 	cuts = ["w"]
 	
-	pipeline_extraction(dataset, moments, cuts)
+	#pipeline_extraction(dataset, moments, cuts)
 	pipeline_classification(dataset, moments, cuts)
 	
 	

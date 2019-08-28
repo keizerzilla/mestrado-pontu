@@ -143,6 +143,13 @@ struct cloud *cloud_load_pcd(const char *filename);
 struct cloud *cloud_load_obj(const char *filename);
 
 /**
+ * \brief Loads cloud from an OFF file
+ * \param filename File name
+ * \return Cloud loaded from the file or NULL if it fails to allocate memory
+ */
+struct cloud *cloud_load_off(const char *filename);
+
+/**
  * \brief Saves a cloud in a XYZ file
  * \param cloud Cloud to be saved
  * \param filename Destination

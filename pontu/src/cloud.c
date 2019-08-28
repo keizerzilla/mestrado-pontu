@@ -141,6 +141,11 @@ struct cloud *cloud_load_csv(const char *filename)
 	rewind(file);
 
 	struct cloud *cloud = cloud_new(numpts);
+	if (cloud == NULL) {
+		fclose(file);
+		return NULL;
+	}
+	
 	real x = 0;
 	real y = 0;
 	real z = 0;
@@ -243,12 +248,10 @@ struct cloud *cloud_load_pcd(const char *filename)
 	real x = 0;
 	real y = 0;
 	real z = 0;
-	uint index = 0;
 	for (uint i = 0; i < numpts; i++) {
 		if (fgets(buffer, CLOUD_MAXBUFFER, file)) {
 			sscanf(buffer, "%le %le %le %*s\n", &x, &y, &z);
-			cloud_set_point_real(cloud, index, x, y, z);
-			index++;
+			cloud_set_point_real(cloud, i, x, y, z);
 		} else {
 			break;
 		}
@@ -271,12 +274,60 @@ struct cloud *cloud_load_obj(const char *filename)
 	real z = 0;
 
 	while (!feof(file)) {
-		char buffer[512];
-		fgets(buffer, 512, file);
+		char buffer[CLOUD_MAXBUFFER];
+		fgets(buffer, CLOUD_MAXBUFFER, file);
 
 		if (buffer[0] == 'v' && buffer[1] == ' ') {
 			sscanf(buffer, "v %lf %lf %lf\n", &x, &y, &z);
 			cloud_add_point_real(cloud, x, y, z);
+		}
+	}
+
+	fclose(file);
+
+	return cloud;
+}
+
+struct cloud *cloud_load_off(const char *filename) {
+	FILE *file = fopen(filename, "r");
+	if (file == NULL)
+		return NULL;
+	
+	uint numpts = 0;
+	char buffer[CLOUD_MAXBUFFER];
+	
+	if (fgets(buffer, CLOUD_MAXBUFFER, file)) {
+		if (strcmp(buffer, "OFF\n")) {
+			fclose(file);
+			return NULL;
+		}
+	} else {
+		fclose(file);
+		return NULL;
+	}
+	
+	if (fgets(buffer, CLOUD_MAXBUFFER, file)) {
+		sscanf(buffer, "%u %*u %*u\n", &numpts);
+	} else {
+		fclose(file);
+		return NULL;
+	}
+	
+	struct cloud *cloud = cloud_new(numpts);
+	if (cloud == NULL) {
+		fclose(file);
+		return NULL;
+	}
+	
+	real x = 0;
+	real y = 0;
+	real z = 0;
+	for (uint i = 0; i < numpts; i++) {
+		if (fgets(buffer, CLOUD_MAXBUFFER, file)) {
+			sscanf(buffer, "%le %le %le\n", &x, &y, &z);
+			cloud_set_point_real(cloud, i, x, y, z);
+		} else {
+			break;
 		}
 	}
 
@@ -1088,14 +1139,14 @@ void cloud_ritter(struct cloud *cloud, struct vector3 **center, real *radius)
 void cloud_debug(struct cloud *cloud, FILE *output)
 {
 	if (cloud == NULL) {
-		fprintf(output, "!!! cloud empty !!!");
+		fprintf(output, "!!! cloud empty !!!\n");
 		return;
 	}
 
 	for (uint i = 0; i < cloud->numpts; i++) {
-		fprintf(output, "%le %le %le", cloud->points[i].x,
-			                           cloud->points[i].y,
-			                           cloud->points[i].z);
+		fprintf(output, "%le %le %le\n", cloud->points[i].x,
+			                             cloud->points[i].y,
+			                             cloud->points[i].z);
 	}
 }
 

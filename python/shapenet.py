@@ -4,7 +4,7 @@ import subprocess
 dataset = "../datasets/SNCV2/"
 bindir = "../pontu/bin/shapenet"
 modelFile = "models/model_normalized.obj"
-moments = ["so", "se", "sm", "sf"]
+moments = ["sm", "zo", "ze", "zm", "zf"]
 
 count = 0
 for moment in moments:

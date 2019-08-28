@@ -1,0 +1,20 @@
+O conjunto Princeton Shape Benchmark \cite{shilane2004princeton} foi um das primeiras bases propostas para análise e classificação de objetos em imagens 3D. Ela possúi 1814 amostras sintéticas de diversos objetos, além de subconjuntos já separados para treinamento e teste. A padronização e simplicidade desse conjunto de dados dispensou a necessidade de quaisquer pré-processamentos nas nuvens.
+
+Assim como para a Princeton Shape Benchamark, nenhuma etapa de pré-processamento foi realizada nesse conjunto antes da extração de atributos.
+
+\begin{table}[!t]
+    \renewcommand{\arraystretch}{1.3}
+    \caption{Reconhecimento de Objetos: Princeton Shape Benchmark \cite{shilane2004princeton}}
+    \label{tab:resultados-reconhecimento-objetos-psb}
+    \centering
+    \begin{tabular}{c||c||c||c||c||c}
+        \hline
+        \bfseries Classif. & $REF_{nml}$ & $ZO_{nm}$ & $ZE_{nm}$ & $ZM_{nm}$ & $ZF_{nm}$\\
+        \hline
+        kNN & - & - & - & - & -\\
+        SVM & - & - & - & - & -\\
+        RFC & - & - & - & - & -\\
+        \hline
+    \end{tabular}
+\end{table}
+
