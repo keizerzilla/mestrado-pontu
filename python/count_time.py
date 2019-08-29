@@ -17,11 +17,11 @@ dump = {
 
 print("iniciando contagem de tempo (custo computacional)...")
 
-for i in range(2):
+for i in range(100):
 	for cloud in os.listdir(dataset):
 		fullPath = dataset + "/" + cloud
 		for moment in moments:
-			cmd = [bindir, cloud, moment]
+			cmd = [bindir, fullPath, moment]
 			
 			start = time.time()
 			ans = subprocess.run(cmd, stdout=subprocess.PIPE).stdout
