@@ -84,3 +84,24 @@ struct matrix *algebra_trans_mat(struct matrix *mat)
 
 	return mat_trans;
 }
+
+real algebra_det(struct matrix *mat)
+{
+    real det = 0;
+    struct matrix *aux;
+    int signal = 1;
+    if (mat->rows == 2 && mat->cols == 2) {
+        det += matrix_get(mat, 0, 0) * matrix_get(mat, 1, 1);
+        det -= matrix_get(mat, 0, 1) * matrix_get(mat, 1, 0);
+    } else if ((mat->rows == mat->cols) && (mat->rows > 2)) {
+        aux = matrix_remove_row(mat, 0);
+        for (uint i = 0; i < mat->cols; i++) {
+            det += signal * matrix_get(mat, 0, i) *
+                  algebra_det(matrix_remove_col(aux, i));
+            signal *= -1;
+        }
+    }
+
+    matrix_debug(mat, stdout);
+    return det;
+}

@@ -13,4 +13,3 @@
 #include "include/spharmonics.h"
 
 #endif // PONTU_FEATURES_H
-

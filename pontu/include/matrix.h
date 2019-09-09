@@ -51,6 +51,20 @@ int matrix_add_row(struct matrix *mat);
 int matrix_add_col(struct matrix *mat);
 
 /**
+ * \brief Removes a row from a matrix
+ * \param mat Target matrix
+ * \return New matrix with the row removed
+ */
+struct matrix *matrix_remove_row(struct matrix *mat, uint row);
+
+/**
+ * \brief Removes a column from a matrix
+ * \param mat Target matrix
+ * \return New matrix with the column removed
+ */
+struct matrix *matrix_remove_col(struct matrix *mat, uint col);
+
+/**
  * \brief Set a value on the matrix
  * \param mat Target matrix
  * \param i Row index

@@ -8,7 +8,7 @@
 #ifndef ALGEBRA_H
 #define ALGEBRA_H
 
-#include "clac.h"
+#include "calc.h"
 #include "matrix.h"
 #include "vector3.h"
 
@@ -50,5 +50,12 @@ struct matrix *algebra_mat_vs_scalar(struct matrix *mat, real scalar);
  * \return Matrix mat transposed, or NULL if it fails
  */
 struct matrix *algebra_trans_mat(struct matrix *mat);
+
+/**
+ * \brief Calculates the determinat of a square matrix
+ * \param mat The matrix
+ * \return The determinat of the matrix, or 0 if it fails
+ */
+real algebra_det(struct matrix *mat);
 
 #endif // ALGEBRA_H

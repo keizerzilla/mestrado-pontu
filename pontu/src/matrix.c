@@ -71,6 +71,50 @@ int matrix_add_col(struct matrix *mat)
 	return mat->cols;
 }
 
+struct matrix *matrix_remove_row(struct matrix *mat, uint row)
+{
+	if (row >= mat->rows) {
+		return NULL;
+	}
+
+	struct matrix *new_mat = matrix_new(mat->rows - 1, mat->cols);
+	if (new_mat == NULL)
+		return NULL;
+	
+	uint k = -1;
+
+	for (uint i = 0; i < new_mat->rows; i++) {
+		k += row == i ? 2 : 1;
+		for (uint j = 0; j < new_mat->cols; j++)
+			matrix_set(new_mat, i, j, matrix_get(mat, k, j));
+	}
+
+	return new_mat;
+}
+
+struct matrix *matrix_remove_col(struct matrix *mat, uint col)
+{
+	if (col >= mat->cols) {
+		return NULL;
+	}
+
+	struct matrix *new_mat = matrix_new(mat->rows, mat->cols - 1);
+	if (new_mat == NULL)
+		return NULL;
+	
+	uint k;
+
+	for (uint i = 0; i < new_mat->rows; i++) {
+		k = -1;
+		for (uint j = 0; j < new_mat->cols; j++) {
+			k += col == j ? 2 : 1;
+			matrix_set(new_mat, i, j, matrix_get(mat, i, k));
+		}
+	}
+
+	return new_mat;
+}
+
 real *matrix_set(struct matrix *mat, uint i, uint j, real value)
 {
 	if (i >= mat->rows || j >= mat->cols) {

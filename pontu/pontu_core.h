@@ -8,4 +8,3 @@
 #include "include/kdtree.h"
 
 #endif // PONTU_CORE_H
-
