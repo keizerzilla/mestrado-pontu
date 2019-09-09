@@ -102,6 +102,54 @@ real algebra_det(struct matrix *mat)
         }
     }
 
-    matrix_debug(mat, stdout);
     return det;
 }
+
+struct matrix *algebra_bhaskara(real a, real b, real c)
+{
+	struct matrix *roots = matrix_new(2, 2);
+	if (roots == NULL) {
+		return NULL;
+	}
+
+	real delta = pow(b, 2.0f) - (4 * a *c);
+	
+	if (delta > 0.0f) {
+		matrix_set(roots, 0, 1, 0.0f);
+		matrix_set(roots, 1, 1, 0.0f);
+
+		matrix_set(roots, 0, 0, (-b + sqrt(delta)) / (2 * a));
+		matrix_set(roots, 1, 0, (-b - sqrt(delta)) / (2 * a));
+	} else if (delta == 0.0f) {
+		matrix_set(roots, 0, 1, 0.0f);
+		matrix_set(roots, 1, 1, 0.0f);
+
+		matrix_set(roots, 0, 0, (-b) / (2 * a));
+		matrix_set(roots, 1, 0, matrix_get(roots, 0, 0));
+	} else {
+		matrix_set(roots, 0, 1, sqrt(fabs(delta))/(2 * a));
+		matrix_set(roots, 1, 1, - sqrt(fabs(delta))/(2 * a));
+		matrix_set(roots, 0, 0, -b/(2 * a));
+		matrix_set(roots, 1, 0, -b/(2 * a));
+	}
+
+	return roots;
+}
+
+// 3rd degree
+// 4th degree
+
+// struct matrix *algebra_eigen_val(struct matrix *mat)
+// {
+// 	if (matrix->rows != matrix->cols) {
+// 		return NULL;
+// 	}
+
+// 	switch (matrix->rows) {
+// 		case 2:
+
+// 			break;
+// 		default:
+// 			return NULL;
+// 	}
+// }

@@ -58,4 +58,17 @@ struct matrix *algebra_trans_mat(struct matrix *mat);
  */
 real algebra_det(struct matrix *mat);
 
+/**
+ *
+ *
+ */
+struct matrix *algebra_bhaskara(real a, real b, real c);
+
+/**
+ * \brief Calculates eigen values of a matrix
+ * \param mat The matrix
+ * \return A matrix Nx1 with the N eigen values calculated, or NULL if it fails
+ */
+struct matrix *algebra_eigen_val(struct matrix *mat);
+
 #endif // ALGEBRA_H
