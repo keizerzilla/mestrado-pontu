@@ -9,8 +9,7 @@
 #include "include/chebyshev.h"
 #include "include/spheric.h"
 #include "include/siqueira.h"
-#include "include/golden.h"
-#include "include/spharmonics.h"
+#include "include/harmonics.h"
 
 #endif // PONTU_FEATURES_H
 
