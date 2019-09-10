@@ -470,15 +470,16 @@ void cloud_scale(struct cloud *cloud, real f)
 }
 
 void cloud_translate_vector_dir(struct cloud *cloud,
-				                struct vector3 *origin,
-				                struct vector3 *dest)
+				                struct vector3 *source,
+				                struct vector3 *target)
 {
-	struct vector3 *t = vector3_sub(origin, dest);
-
+	struct vector3 *t = vector3_sub(target, source);
+	
 	for (uint i = 0; i < cloud->numpts; i++)
 		vector3_increase(&cloud->points[i], t);
-
+	
 	vector3_free(t);
+	
 	cloud_calc_center(cloud);
 }
 
@@ -778,13 +779,13 @@ struct cloud *cloud_segment(struct cloud *cloud,
 struct vector3 *cloud_closest_point(struct cloud *cloud, struct vector3 *point)
 {
 	uint index = 0;
-	real tempd = 0;
-	real d = vector3_distance(point, &cloud->points[0]);
+	real temp = 0;
+	real dist = vector3_squared_distance(point, &cloud->points[0]);
 
 	for (uint i = 1; i < cloud->numpts; i++) {
-		tempd = vector3_distance(point, &cloud->points[i]);
-		if (tempd < d) {
-			d = tempd;
+		temp = vector3_squared_distance(point, &cloud->points[i]);
+		if (temp < dist) {
+			dist = temp;
 			index = i;
 		}
 	}
@@ -795,6 +796,56 @@ struct vector3 *cloud_closest_point(struct cloud *cloud, struct vector3 *point)
 struct vector3 *cloud_closest_to_center(struct cloud *cloud)
 {
 	return cloud_closest_point(cloud, cloud_get_center(cloud));
+}
+
+real cloud_closest_to_cloud(struct cloud* source,
+                            struct cloud* target,
+                            struct vector3 **src_pt,
+                            struct vector3 **tgt_pt)
+{
+	*src_pt = &source->points[0];
+	*tgt_pt = &target->points[0];
+	real dist = vector3_squared_distance(*src_pt, *tgt_pt);
+	real temp = 0.0f;
+	
+	for (uint i = 0; i < source->numpts; i++) {
+		for (uint j = 0; j < target->numpts; j++) {
+			temp = vector3_squared_distance(&source->points[i],
+			                                &target->points[j]);
+			if (temp < dist) {
+				dist = temp;
+				*src_pt = &source->points[i];
+				*tgt_pt = &target->points[j];
+			}
+		}
+	}
+	
+	return vector3_distance(*src_pt, *tgt_pt);
+}
+
+real cloud_closest_to_cloud_kdtree(struct cloud* source,
+                                   struct cloud* target,
+                                   struct vector3 **src_pt,
+                                   struct vector3 **tgt_pt)
+{
+	*src_pt = &source->points[0];
+	*tgt_pt = &target->points[0];
+	real dist = vector3_squared_distance(*src_pt, *tgt_pt);
+	real temp = 0.0f;
+	
+	for (uint i = 0; i < source->numpts; i++) {
+		for (uint j = 0; j < target->numpts; j++) {
+			temp = vector3_squared_distance(&source->points[i],
+			                                &target->points[j]);
+			if (temp < dist) {
+				dist = temp;
+				*src_pt = &source->points[i];
+				*tgt_pt = &target->points[j];
+			}
+		}
+	}
+	
+	return vector3_distance(*src_pt, *tgt_pt);
 }
 
 struct vector3 *cloud_min_x(struct cloud *cloud)
@@ -889,17 +940,17 @@ struct vector3 *cloud_max_z(struct cloud *cloud)
 
 real cloud_max_distance(struct cloud *cloud, struct vector3 *p)
 {
-	real d = vector3_distance(p, &cloud->points[0]);
+	real dist = vector3_squared_distance(p, &cloud->points[0]);
 	real temp = 0.0f;
 
 	for (uint i = 1; i < cloud->numpts; i++) {
-		temp = vector3_distance(p, &cloud->points[i]);
+		temp = vector3_squared_distance(p, &cloud->points[i]);
 
-		if (temp > d)
-			d = temp;
+		if (temp > dist)
+			dist = temp;
 	}
 
-	return d;
+	return sqrt(dist);
 }
 
 real cloud_max_distance_from_center(struct cloud *cloud)
