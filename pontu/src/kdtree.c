@@ -10,21 +10,21 @@ struct kdtree *kdtree_new(struct vector3 *points, uint numpts, uint axis)
 	if (kdt->points == NULL)
 		return NULL;
 	
-	kdt->midpoint = vector3_zero();
-	if (kdt->midpoint == NULL)
+	kdt->midpnt = vector3_zero();
+	if (kdt->midpnt == NULL)
 		return NULL;
 	
 	for (uint i = 0; i < numpts; i++) {
 		kdt->points[i] = &points[i];
 		
-		kdt->midpoint->x += points[i].x;
-		kdt->midpoint->y += points[i].y;
-		kdt->midpoint->z += points[i].z;
+		kdt->midpnt->x += points[i].x;
+		kdt->midpnt->y += points[i].y;
+		kdt->midpnt->z += points[i].z;
 	}
 	
-	kdt->midpoint->x /= numpts;
-	kdt->midpoint->y /= numpts;
-	kdt->midpoint->z /= numpts;
+	kdt->midpnt->x /= numpts;
+	kdt->midpnt->y /= numpts;
+	kdt->midpnt->z /= numpts;
 	
 	kdt->numpts = numpts;
 	kdt->axis = axis;
@@ -39,26 +39,22 @@ void kdtree_free(struct kdtree *kdt)
 	if (kdt == NULL)
 		return;
 	
-	vector3_free(kdt->midpoint);
+	vector3_free(kdt->midpnt);
 	
-	if (kdt->points != NULL)
+	if (kdt->points != NULL) {
 		free(kdt->points);
+		kdt->points = NULL;
+	}
 	
 	kdtree_free(kdt->left);
 	kdtree_free(kdt->right);
 	
 	free(kdt);
-	
 	kdt = NULL;
 }
 
-void kdtree_partitionate(struct kdtree *kdt, uint axis, uint depth)
+void kdtree_partitionate(struct kdtree *kdt, uint axis)
 {
-	if (depth == 0) {
-		printf("fim do depth\n");
-		return;
-	}
-	
 	kdt->axis = axis % 3;
 	
 	size_t size_node = kdt->numpts * sizeof(struct vector3 *);
@@ -68,7 +64,7 @@ void kdtree_partitionate(struct kdtree *kdt, uint axis, uint depth)
 	uint num_right = 0;
 	
 	for (uint i = 0; i < kdt->numpts; i++) {
-		if (kdt->points[i]->coord[kdt->axis] < kdt->midpoint->coord[kdt->axis]) { // < ARRUMAR
+		if (kdt->points[i]->coord[kdt->axis] < kdt->midpnt->coord[kdt->axis]) { // < ARRUMAR
 			left_points[num_left] = kdt->points[i];
 			num_left++;
 		} else {
@@ -83,67 +79,40 @@ void kdtree_partitionate(struct kdtree *kdt, uint axis, uint depth)
 	free(left_points);
 	free(right_points);
 	
-	if (num_left <= 1) {
-		//printf("fim da esquerda\n");
-		return;
-	} else {
-		kdtree_partitionate(kdt->left, axis + 1, depth - 1);
-	}
+	if (num_left > 1)
+		kdtree_partitionate(kdt->left, axis + 1);
 	
-	if (num_right <= 1) {
-		//printf("fim da direita\n");
-		return;
-	} else {
-		kdtree_partitionate(kdt->right, axis + 1, depth - 1);
-	}
-	
-	// hmmm...
-	free(kdt->points);
-	kdt->points = NULL;
+	if (num_right > 1)
+		kdtree_partitionate(kdt->right, axis + 1);
 }
 
-struct vector3 *kdtree_nearest_point(struct kdtree *kdt, struct vector3* p)
+struct vector3 *kdtree_nearest_neighbor(struct kdtree *kdt, struct vector3 *p)
 {
-	if (kdt->numpts == 0) {
-		printf("pegou midpoint!\n");
-		return kdt->midpoint;
-	}
+	if (kdt->left == NULL && kdt->right == NULL)
+		return kdt->midpnt;
 	
-	if (p->coord[kdt->axis] < kdt->midpoint->coord[kdt->axis]) {
-		if (kdt->left != NULL)
-			return kdtree_nearest_point(kdt->left, p);
-		else
-			return vector3_closest_to_list(kdt->points, kdt->numpts, p);
-	} else {
-		if (kdt->right != NULL)
-			return kdtree_nearest_point(kdt->right, p);
-		else
-			return vector3_closest_to_list(kdt->points, kdt->numpts, p);
-	}
+	real left_d = vector3_squared_distance(kdt->left->midpnt, p);
+	real right_d = vector3_squared_distance(kdt->right->midpnt, p);
+	
+	if (left_d < right_d)
+		return kdtree_nearest_neighbor(kdt->left, p);
+	else
+		return kdtree_nearest_neighbor(kdt->right, p);
 }
 
-void kdtree_debug(struct kdtree *kdt, FILE *output, int *count)
+void kdtree_debug(struct kdtree *kdt, FILE *output)
 {
 	if (kdt == NULL)
 		return;
 	
 	if (kdt->left == NULL && kdt->right == NULL) {
-		//fprintf(output, "node (%.4f, %.4f, %.4f), size: %d\n", kdt->midpoint->x,
-		//                                                       kdt->midpoint->y,
-		//                                                       kdt->midpoint->z,
-		//                                                       kdt->numpts);
-		printf("size: %u | pts: ", kdt->numpts);
-		
-		for (uint j = 0; j < kdt->numpts; j++) {
-			printf("%.4f,%.4f,%.4f - ", kdt->points[j]->x,
-			                            kdt->points[j]->y,
-			                            kdt->points[j]->z);
-			*count = *count + 1;
-		}
-		printf("\n");
+		fprintf(output, "node (%.4f, %.4f, %.4f), size: %d\n", kdt->midpnt->x,
+		                                                       kdt->midpnt->y,
+		                                                       kdt->midpnt->z,
+		                                                       kdt->numpts);
 	}
-
-	kdtree_debug(kdt->left, output, count);
-	kdtree_debug(kdt->right, output, count);
+	
+	kdtree_debug(kdt->left, output);
+	kdtree_debug(kdt->right, output);
 }
 

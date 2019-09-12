@@ -16,7 +16,7 @@
 struct kdtree {
 	struct vector3 **points;
 	uint numpts;
-	struct vector3 *midpoint;
+	struct vector3 *midpnt;
 	uint axis;
 	struct kdtree *left;
 	struct kdtree *right;
@@ -40,10 +40,9 @@ void kdtree_free(struct kdtree *kdt);
 /**
  * \brief Partitionates the points of a cloud recursively
  * \param kdt Target kdtree
- * \param axis The first axis to partitionate
- * \param depth The depth to particionate (how many times to partitionate)
+ * \param axis The axis of separation
  */
-void kdtree_partitionate(struct kdtree *kdt, uint axis, uint depth);
+void kdtree_partitionate(struct kdtree *kdt, uint axis);
 
 /**
  * \brief Finds the point in the kdtree nearest to a target point
@@ -51,14 +50,14 @@ void kdtree_partitionate(struct kdtree *kdt, uint axis, uint depth);
  * \param p The target point
  * \return Address of the closest point to p in kdt
  */
-struct vector3 *kdtree_nearest_point(struct kdtree *kdt, struct vector3* p);
+struct vector3 *kdtree_nearest_neighbor(struct kdtree *kdt, struct vector3 *p);
 
 /**
  * \brief Debugs a kdtree (number of points in a leaf)
  * \param kdt Target kdtree
  * \param output File to output the debug in
  */
-void kdtree_debug(struct kdtree *kdt, FILE *output, int *count);
+void kdtree_debug(struct kdtree *kdt, FILE *output);
 
 #endif // KDTREE_H
 
