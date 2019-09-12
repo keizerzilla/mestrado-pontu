@@ -25,6 +25,7 @@ struct cloud {
 	struct vector3 *points;
 	struct vector3 *centroid;
 	uint numpts;
+	struct kdtree *kdt;
 };
 
 /**
@@ -102,11 +103,10 @@ struct vector3 *cloud_add_point_vector(struct cloud *cloud, struct vector3 *p);
 uint cloud_size(struct cloud *cloud);
 
 /**
- * \brief Copies a cloud
- * \param cloud Cloud to be copied
- * \return Copy of the cloud
+ * \brief Generates a spacial partition structure if it wasn't already
+ * \param cloud The cloud to be partitioned
  */
-struct cloud *cloud_cpy(struct cloud *cloud);
+void cloud_partitionate(struct cloud *cloud);
 
 /**
  * \brief Loads cloud from a XYZ file
@@ -424,23 +424,23 @@ struct vector3 *cloud_closest_to_center(struct cloud *cloud);
  * \param tgt_pt The point on target that yields the closest distance
  * \return The closest distance between source and target
  */
-real cloud_closest_to_cloud(struct cloud* source,
-                            struct cloud* target,
-                            struct vector3 **src_pt,
-                            struct vector3 **tgt_pt);
+real cloud_nearest_neighbors_bruteforce(struct cloud* source,
+                                        struct cloud* target,
+                                        struct vector3 **src_pt,
+                                        struct vector3 **tgt_pt);
 
 /**
- * \brief Finds the closest point of a cloud to another cloud using kdtree
+ * \brief Finds the closest point of a cloud to another cloud using partitioning
  * \param source Source cloud
  * \param target Target cloud (where I want to find the closest point)
  * \param src_pt The point on source that yields the closest distance
  * \param tgt_pt The point on target that yields the closest distance
  * \return The closest distance between source and target
  */
-real cloud_closest_to_cloud_kdtree(struct cloud* source,
-                                   struct cloud* target,
-                                   struct vector3 **src_pt,
-                                   struct vector3 **tgt_pt);
+real cloud_nearest_neighbors_partition(struct cloud* source,
+                                       struct cloud* target,
+                                       struct vector3 **src_pt,
+                                       struct vector3 **tgt_pt);
 
 /**
  * \brief Gets the point with the lesser coordinate x

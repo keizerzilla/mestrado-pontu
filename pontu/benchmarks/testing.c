@@ -26,7 +26,7 @@ void closest_testing(struct cloud *src,
 	total = (double)(end_t - start_t) / CLOCKS_PER_SEC;
 	
 	vector3_debug(src_pt, stdout);
-	vector3_debug(tgt_pt, stdout); // esse ponteiro tah sumindo kdtree_free
+	vector3_debug(tgt_pt, stdout);
 	
 	printf("%s closest distance:\t%lf\n", func_name, dist);
 	printf("%s CPU time:\t\t%lf\n", func_name, total);
@@ -62,14 +62,15 @@ void testing_know_point()
 
 int main()
 {
-	struct cloud *src = cloud_load_xyz("../samples/bunny.xyz");
-	//struct cloud *src = cloud_load_xyz("/home/artur/lucy.xyz");
+	//struct cloud *src = cloud_load_xyz("../samples/bunny.xyz");
+	struct cloud *src = cloud_load_xyz("/home/artur/lucy.xyz");
 	struct cloud *tgt = cloud_load_xyz("../samples/bunny_trans.xyz");
 	
 	printf("||src|| = %u\n||tgt|| = %u\n", src->numpts, tgt->numpts);
 	
-	//closest_testing(src, tgt, "bruteforce", &cloud_closest_to_cloud);
-	closest_testing(src, tgt, "kdtree", &cloud_closest_to_cloud_kdtree);
+	//closest_testing(src, tgt, "bruteforce", &cloud_nearest_neighbors_bruteforce);
+	closest_testing(src, tgt, "kdtree", &cloud_nearest_neighbors_partition);
+	closest_testing(src, tgt, "kdtree", &cloud_nearest_neighbors_partition);
 	
 	cloud_free(tgt);
 	cloud_free(src);

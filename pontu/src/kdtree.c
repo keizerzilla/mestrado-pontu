@@ -64,7 +64,7 @@ void kdtree_partitionate(struct kdtree *kdt, uint axis)
 	uint num_right = 0;
 	
 	for (uint i = 0; i < kdt->numpts; i++) {
-		if (kdt->points[i]->coord[kdt->axis] < kdt->midpnt->coord[kdt->axis]) { // < ARRUMAR
+		if (kdt->points[i]->coord[kdt->axis] < kdt->midpnt->coord[kdt->axis]) {
 			left_points[num_left] = kdt->points[i];
 			num_left++;
 		} else {

@@ -17,7 +17,8 @@ struct cloud *cloud_new(uint numpts)
 
 	cloud->centroid = NULL;
 	cloud->numpts = numpts;
-
+	cloud->kdt = NULL;
+	
 	return cloud;
 }
 
@@ -31,6 +32,8 @@ void cloud_free(struct cloud *cloud)
 	if (cloud != NULL) {
 		free(cloud->points);
 		vector3_free(cloud->centroid);
+		kdtree_free(cloud->kdt);
+		
 		free(cloud);
 		cloud = NULL;
 	}
@@ -86,19 +89,13 @@ uint cloud_size(struct cloud *cloud)
 	return cloud->numpts;
 }
 
-struct cloud *cloud_cpy(struct cloud *cloud)
+void cloud_partitionate(struct cloud *cloud)
 {
-	struct cloud *cpy = cloud_new(cloud->numpts);
-
-	for (uint index = 0; index < cloud->numpts; index++) {
-		cloud_set_point_real(cpy,
-				             index,
-				             cloud->points[index].x,
-				             cloud->points[index].y,
-				             cloud->points[index].z);
-	}
+	if (cloud->kdt != NULL)
+		return;
 	
-	return cpy;
+	cloud->kdt = kdtree_new(cloud->points, cloud->numpts, VECTOR3_AXIS_X);
+	kdtree_partitionate(cloud->kdt, VECTOR3_AXIS_X);
 }
 
 struct cloud *cloud_load_xyz(const char *filename)
@@ -430,8 +427,13 @@ struct cloud *cloud_copy(struct cloud *cloud)
 	if (cpy == NULL)
 		return NULL;
 	
-	for (uint i = 0; i < cloud->numpts; i++)
-		cloud_set_point_vector(cpy, i, &cloud->points[i]);
+	for (uint index = 0; index < cloud->numpts; index++) {
+		cloud_set_point_real(cpy,
+				             index,
+				             cloud->points[index].x,
+				             cloud->points[index].y,
+				             cloud->points[index].z);
+	}
 	
 	return cpy;
 }
@@ -778,6 +780,7 @@ struct cloud *cloud_segment(struct cloud *cloud,
 
 struct vector3 *cloud_closest_point(struct cloud *cloud, struct vector3 *point)
 {
+	/**
 	uint index = 0;
 	real temp = 0;
 	real dist = vector3_squared_distance(point, &cloud->points[0]);
@@ -791,6 +794,12 @@ struct vector3 *cloud_closest_point(struct cloud *cloud, struct vector3 *point)
 	}
 
 	return &cloud->points[index];
+	*/
+	
+	cloud_partitionate(cloud);
+	
+	return kdtree_nearest_neighbor(cloud->kdt, point);
+	
 }
 
 struct vector3 *cloud_closest_to_center(struct cloud *cloud)
@@ -798,10 +807,10 @@ struct vector3 *cloud_closest_to_center(struct cloud *cloud)
 	return cloud_closest_point(cloud, cloud_get_center(cloud));
 }
 
-real cloud_closest_to_cloud(struct cloud* source,
-                            struct cloud* target,
-                            struct vector3 **src_pt,
-                            struct vector3 **tgt_pt)
+real cloud_nearest_neighbors_bruteforce(struct cloud* source,
+                                        struct cloud* target,
+                                        struct vector3 **src_pt,
+                                        struct vector3 **tgt_pt)
 {
 	*src_pt = &source->points[0];
 	*tgt_pt = &target->points[0];
@@ -823,21 +832,21 @@ real cloud_closest_to_cloud(struct cloud* source,
 	return vector3_distance(*src_pt, *tgt_pt);
 }
 
-real cloud_closest_to_cloud_kdtree(struct cloud* source,
-                                   struct cloud* target,
-                                   struct vector3 **src_pt,
-                                   struct vector3 **tgt_pt)
+real cloud_nearest_neighbors_partition(struct cloud* source,
+                                       struct cloud* target,
+                                       struct vector3 **src_pt,
+                                       struct vector3 **tgt_pt)
 {
-	struct kdtree *kdt = kdtree_new(target->points, target->numpts, 0);
-	kdtree_partitionate(kdt, VECTOR3_AXIS_X);
+	cloud_partitionate(target);
 	
 	*src_pt = &source->points[0];
 	*tgt_pt = &target->points[0];
 	real dist = vector3_squared_distance(*src_pt, *tgt_pt);
 	real temp = 0.0f;
+	struct vector3 *nn = NULL;
 	
 	for (uint i = 0; i < source->numpts; i++) {
-		struct vector3 *nn = kdtree_nearest_neighbor(kdt, &source->points[i]);
+		nn = kdtree_nearest_neighbor(target->kdt, &source->points[i]);
 		temp = vector3_squared_distance(nn, &source->points[i]);
 		
 		if (temp < dist) {
@@ -846,10 +855,6 @@ real cloud_closest_to_cloud_kdtree(struct cloud* source,
 			*tgt_pt = nn;
 		}
 	}
-	
-	*tgt_pt = vector3_from_vector(*tgt_pt);
-	
-	kdtree_free(kdt);
 	
 	return vector3_distance(*src_pt, *tgt_pt);
 }
