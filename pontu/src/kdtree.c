@@ -90,26 +90,23 @@ void kdtree_partitionate(struct kdtree *kdt, int axis, int depth)
 
 struct vector3 *kdtree_nearest_point(struct kdtree *kdt, struct vector3* p)
 {
-	if (kdt->numpts == 0)
+	if (kdt->numpts == 0) {
+		printf("pegou median\n");
 		return kdt->median;
+	}
 	
 	if (p->coord[kdt->axis] < kdt->median->coord[kdt->axis]) {
-		if (kdt->left != NULL) {
+		if (kdt->left != NULL)
 			return kdtree_nearest_point(kdt->left, p);
-		} else if (kdt->right != NULL) {
-			return kdtree_nearest_point(kdt->right, p);
-		} else {
+		else
 			return vector3_closest_to_list(kdt->points, kdt->numpts, p);
-		}
 	} else {
-		if (kdt->right != NULL) {
+		if (kdt->right != NULL)
 			return kdtree_nearest_point(kdt->right, p);
-		} else if (kdt->left != NULL) {
-			return kdtree_nearest_point(kdt->left, p);
-		} else {
+		else
 			return vector3_closest_to_list(kdt->points, kdt->numpts, p);
-		}
 	}
+	
 }
 
 void kdtree_debug(struct kdtree *kdt, FILE *output)
