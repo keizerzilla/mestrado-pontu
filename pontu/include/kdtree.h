@@ -17,6 +17,7 @@ struct kdtree {
 	struct vector3 **points;
 	uint numpts;
 	struct vector3 *median;
+	int axis;
 	struct kdtree *left;
 	struct kdtree *right;
 };

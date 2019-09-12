@@ -42,7 +42,17 @@ real calc_length2(real x, real y)
 
 real calc_randr(real max)
 {
-	return (real) rand() / (real) (RAND_MAX / max);
+	return (real)rand() / (real)(RAND_MAX / max);
+}
+
+real calc_max2(real a, real b)
+{
+	return a > b ? a : b;
+}
+
+real calc_min2(real a, real b)
+{
+	return a < b ? a : b;
 }
 
 real calc_max3(real a, real b, real c)

@@ -26,6 +26,7 @@ struct kdtree *kdtree_new(struct vector3 *points, uint numpts)
 	kdt->median->y /= numpts;
 	kdt->median->z /= numpts;
 	kdt->numpts = numpts;
+	kdt->axis = 0;
 	kdt->left = NULL;
 	kdt->right = NULL;
 	
@@ -55,6 +56,8 @@ void kdtree_partitionate(struct kdtree *kdt, int axis, int depth)
 	if (depth <= 0)
 		return;
 	
+	kdt->axis = axis % 3;
+	
 	size_t size_node = kdt->numpts * sizeof(struct vector3 *);
 	struct vector3 **left_points = malloc(size_node);
 	struct vector3 **right_points = malloc(size_node);
@@ -62,7 +65,7 @@ void kdtree_partitionate(struct kdtree *kdt, int axis, int depth)
 	uint num_right = 0;
 	
 	for (uint i = 0; i < kdt->numpts; i++) {
-		if (kdt->points[i]->coord[axis] < kdt->median->coord[axis % 3]) {
+		if (kdt->points[i]->coord[kdt->axis] < kdt->median->coord[kdt->axis]) {
 			left_points[num_left] = kdt->points[i];
 			num_left++;
 		} else {
@@ -87,11 +90,26 @@ void kdtree_partitionate(struct kdtree *kdt, int axis, int depth)
 
 struct vector3 *kdtree_nearest_point(struct kdtree *kdt, struct vector3* p)
 {
-	kdtree_debug(kdt, stdout);
-	vector3_debug(p, stdout);
-	printf("!!! funcao incompleta !!!\n");
+	if (kdt->numpts == 0)
+		return kdt->median;
 	
-	return NULL;
+	if (p->coord[kdt->axis] < kdt->median->coord[kdt->axis]) {
+		if (kdt->left != NULL) {
+			return kdtree_nearest_point(kdt->left, p);
+		} else if (kdt->right != NULL) {
+			return kdtree_nearest_point(kdt->right, p);
+		} else {
+			return vector3_closest_to_list(kdt->points, kdt->numpts, p);
+		}
+	} else {
+		if (kdt->right != NULL) {
+			return kdtree_nearest_point(kdt->right, p);
+		} else if (kdt->left != NULL) {
+			return kdtree_nearest_point(kdt->left, p);
+		} else {
+			return vector3_closest_to_list(kdt->points, kdt->numpts, p);
+		}
+	}
 }
 
 void kdtree_debug(struct kdtree *kdt, FILE *output)

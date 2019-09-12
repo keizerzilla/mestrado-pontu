@@ -31,30 +31,44 @@ void closest_testing(struct cloud *src,
 	printf("%s CPU time:\t\t%lf\n", func_name, total);
 }
 
-int main()
+void testing_know_point()
 {
+	clock_t start_t;
+	clock_t end_t;
 	
 	struct cloud *src = cloud_load_xyz("../samples/bunny.xyz");
 	struct vector3 *p = vector3_new(5.9600, 5.9386, 5.9841);
 	struct kdtree *kdt = kdtree_new(src->points, src->numpts);
+	kdtree_partitionate(kdt, 0, 10);
 	
-	kdtree_partitionate(kdt, 0, 3);
-	kdtree_nearest_point(kdt, p);
+	start_t = clock();
+	struct vector3 *closest_bruteforce = cloud_closest_point(src, p);
+	end_t = clock();
+	printf("bruteforce:\t%lf\n", (double)(end_t - start_t) / CLOCKS_PER_SEC);
+	
+	start_t = clock();
+	struct vector3 *closest_kdtree = kdtree_nearest_point(kdt, p);
+	end_t = clock();
+	printf("kdtree:\t\t%lf\n", (double)(end_t - start_t) / CLOCKS_PER_SEC);
+	
+	vector3_debug(closest_kdtree, stdout);
+	vector3_debug(closest_bruteforce, stdout);
 	
 	kdtree_free(kdt);
 	vector3_free(p);
 	cloud_free(src);
-	
-	/**
+}
+
+int main()
+{
 	struct cloud *src = cloud_load_xyz("../samples/bunny.xyz");
 	struct cloud *tgt = cloud_load_xyz("../samples/bunny_trans.xyz");
 	
-	closest_testing(src, tgt, "bruteforce", &cloud_closest_to_cloud);
-	//closest_testing(src, tgt, "kdtree", &cloud_closest_to_cloud_kdtree);
+	//closest_testing(src, tgt, "bruteforce", &cloud_closest_to_cloud);
+	closest_testing(src, tgt, "kdtree", &cloud_closest_to_cloud_kdtree);
 	
 	cloud_free(tgt);
 	cloud_free(src);
-	*/
 	
 	return 0;
 }

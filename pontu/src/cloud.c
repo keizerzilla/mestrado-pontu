@@ -828,22 +828,26 @@ real cloud_closest_to_cloud_kdtree(struct cloud* source,
                                    struct vector3 **src_pt,
                                    struct vector3 **tgt_pt)
 {
+	struct kdtree *kdt = kdtree_new(target->points, target->numpts);
+	kdtree_partitionate(kdt, 0, 10); // hmm
+	
 	*src_pt = &source->points[0];
 	*tgt_pt = &target->points[0];
 	real dist = vector3_squared_distance(*src_pt, *tgt_pt);
 	real temp = 0.0f;
 	
 	for (uint i = 0; i < source->numpts; i++) {
-		for (uint j = 0; j < target->numpts; j++) {
-			temp = vector3_squared_distance(&source->points[i],
-			                                &target->points[j]);
-			if (temp < dist) {
-				dist = temp;
-				*src_pt = &source->points[i];
-				*tgt_pt = &target->points[j];
-			}
+		struct vector3 *closest = kdtree_nearest_point(kdt, &source->points[i]);
+		temp = vector3_squared_distance(closest, &source->points[i]);
+		
+		if (temp < dist) {
+			dist = temp;
+			*src_pt = &source->points[i];
+			*tgt_pt = closest;
 		}
 	}
+	
+	kdtree_free(kdt);
 	
 	return vector3_distance(*src_pt, *tgt_pt);
 }

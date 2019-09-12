@@ -14,6 +14,7 @@
 
 #include "vector3.h"
 #include "plane.h"
+#include "kdtree.h"
 
 #define CLOUD_MAXBUFFER 512
 
@@ -419,8 +420,8 @@ struct vector3 *cloud_closest_to_center(struct cloud *cloud);
  * \brief Finds the closest point of a cloud to another cloud
  * \param source Source cloud
  * \param target Target cloud (where I want to find the closest point)
- * \param src_pt The point on source that yelds the closest distance
- * \param tgt_pt The point on target that yelds the closest distance
+ * \param src_pt The point on source that yields the closest distance
+ * \param tgt_pt The point on target that yields the closest distance
  * \return The closest distance between source and target
  */
 real cloud_closest_to_cloud(struct cloud* source,
@@ -432,8 +433,8 @@ real cloud_closest_to_cloud(struct cloud* source,
  * \brief Finds the closest point of a cloud to another cloud using kdtree
  * \param source Source cloud
  * \param target Target cloud (where I want to find the closest point)
- * \param src_pt The point on source that yelds the closest distance
- * \param tgt_pt The point on target that yelds the closest distance
+ * \param src_pt The point on source that yields the closest distance
+ * \param tgt_pt The point on target that yields the closest distance
  * \return The closest distance between source and target
  */
 real cloud_closest_to_cloud_kdtree(struct cloud* source,

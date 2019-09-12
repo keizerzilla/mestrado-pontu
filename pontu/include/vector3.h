@@ -398,6 +398,17 @@ real vector3_menger_curvature(struct vector3 *a,
 struct vector3 *vector3_average(struct vector3 *a, struct vector3 *b);
 
 /**
+ * \brief Finds the closest element of a list to a point
+ * \param points A list of points
+ * \param numpts The size of the list of points
+ * \param p The point to find the closest to
+ * \return The addrees in points closest to p
+ */
+struct vector3 *vector3_closest_to_list(struct vector3 **points,
+                                        uint numpts,
+                                        struct vector3 *p);
+
+/**
  * \brief Displays coordinates of a vector (debug a vector)
  * \param v Vector to be debugged
  * \param output Output file
