@@ -828,8 +828,8 @@ real cloud_closest_to_cloud_kdtree(struct cloud* source,
                                    struct vector3 **src_pt,
                                    struct vector3 **tgt_pt)
 {
-	struct kdtree *kdt = kdtree_new(target->points, target->numpts);
-	kdtree_partitionate(kdt, 0, 10); // hmm
+	struct kdtree *kdt = kdtree_new(target->points, target->numpts, 0);
+	kdtree_partitionate(kdt, 0, target->numpts); // hmm
 	
 	*src_pt = &source->points[0];
 	*tgt_pt = &target->points[0];
@@ -846,6 +846,10 @@ real cloud_closest_to_cloud_kdtree(struct cloud* source,
 			*tgt_pt = closest;
 		}
 	}
+	
+	//int count = 0;
+	//kdtree_debug(kdt, stdout, &count);
+	//printf("final count: %d, cloud size: %u\n", count, target->numpts);
 	
 	kdtree_free(kdt);
 	

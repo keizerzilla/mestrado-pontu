@@ -13,6 +13,10 @@
 
 #include "calc.h"
 
+#define VECTOR3_AXIS_X 0
+#define VECTOR3_AXIS_Y 1
+#define VECTOR3_AXIS_Z 2
+
 /**
  * \brief Struct to store 3D points
  */
@@ -407,6 +411,14 @@ struct vector3 *vector3_average(struct vector3 *a, struct vector3 *b);
 struct vector3 *vector3_closest_to_list(struct vector3 **points,
                                         uint numpts,
                                         struct vector3 *p);
+
+/**
+ * \brief Sort a list of points by a axis
+ * \param points A list of points
+ * \param numpts The size of the list of points
+ * \param axis The axis of reference (x: 0, y: 1, z: 2)
+ */
+//void vector3_sort_by_axis(struct vector3 **points, uint numpts, uint axis);
 
 /**
  * \brief Displays coordinates of a vector (debug a vector)

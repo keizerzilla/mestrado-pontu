@@ -406,6 +406,8 @@ struct vector3 *vector3_closest_to_list(struct vector3 **points,
 	return points[index];
 }
 
+//void vector3_sort_by_axis(struct vector3 **points, uint numpts, uint axis){}
+
 void vector3_debug(struct vector3 *v, FILE * output)
 {
 	if (v == NULL) {

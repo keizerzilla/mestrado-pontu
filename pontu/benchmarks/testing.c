@@ -38,7 +38,7 @@ void testing_know_point()
 	
 	struct cloud *src = cloud_load_xyz("../samples/bunny.xyz");
 	struct vector3 *p = vector3_new(5.9600, 5.9386, 5.9841);
-	struct kdtree *kdt = kdtree_new(src->points, src->numpts);
+	struct kdtree *kdt = kdtree_new(src->points, src->numpts, 0);
 	kdtree_partitionate(kdt, 0, 10);
 	
 	start_t = clock();
@@ -62,7 +62,10 @@ void testing_know_point()
 int main()
 {
 	struct cloud *src = cloud_load_xyz("../samples/bunny.xyz");
+	//struct cloud *src = cloud_load_xyz("/home/artur/lucy.xyz");
 	struct cloud *tgt = cloud_load_xyz("../samples/bunny_trans.xyz");
+	
+	printf("||src|| = %u\n||tgt|| = %u\n", src->numpts, tgt->numpts);
 	
 	//closest_testing(src, tgt, "bruteforce", &cloud_closest_to_cloud);
 	closest_testing(src, tgt, "kdtree", &cloud_closest_to_cloud_kdtree);
@@ -72,4 +75,18 @@ int main()
 	
 	return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

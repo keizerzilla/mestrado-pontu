@@ -16,8 +16,8 @@
 struct kdtree {
 	struct vector3 **points;
 	uint numpts;
-	struct vector3 *median;
-	int axis;
+	struct vector3 *midpoint;
+	uint axis;
 	struct kdtree *left;
 	struct kdtree *right;
 };
@@ -26,9 +26,10 @@ struct kdtree {
  * \brief Initializes a kdtree
  * \param points Vector of points
  * \param numpts Size of the points vector
+ * \param axis The node's separation axis
  * \return NULL if it fails, or the pointer to the kdtree if it doesn't
  */
-struct kdtree *kdtree_new(struct vector3 *points, uint numpts);
+struct kdtree *kdtree_new(struct vector3 *points, uint numpts, uint axis);
 
 /**
  * \brief Frees a kdtree
@@ -42,7 +43,7 @@ void kdtree_free(struct kdtree *kdt);
  * \param axis The first axis to partitionate
  * \param depth The depth to particionate (how many times to partitionate)
  */
-void kdtree_partitionate(struct kdtree *kdt, int axis, int depth);
+void kdtree_partitionate(struct kdtree *kdt, uint axis, uint depth);
 
 /**
  * \brief Finds the point in the kdtree nearest to a target point
@@ -57,7 +58,7 @@ struct vector3 *kdtree_nearest_point(struct kdtree *kdt, struct vector3* p);
  * \param kdt Target kdtree
  * \param output File to output the debug in
  */
-void kdtree_debug(struct kdtree *kdt, FILE *output);
+void kdtree_debug(struct kdtree *kdt, FILE *output, int *count);
 
 #endif // KDTREE_H
 
