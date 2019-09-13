@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <float.h>
+#include <complex.h>
 
 #define CALC_E			2.7182818284590452353602874713527
 #define CALC_PHI		1.618033988749895
@@ -24,6 +25,12 @@
  * \brief Mask for the float point number most accurate available on the system
  */
 typedef double real;
+
+/**
+ * \var number
+ * \brief Mask for the float point complex number most accurate available on the system
+ */
+typedef double complex cnum;
 
 /**
  * \var uint

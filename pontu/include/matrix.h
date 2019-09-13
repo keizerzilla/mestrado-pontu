@@ -100,7 +100,7 @@ struct matrix *matrix_concat_hor(struct matrix *m1, struct matrix *m2);
 struct matrix *matrix_concat_ver(struct matrix *m1, struct matrix *m2);
 
 /**
- * \brief Saves a matrix in a fileSalva uma matriz em arquivo
+ * \brief Saves a matrix in a file
  * \param mat Matrix to be saved
  * \param filename File name
  * \param m Write mode on the file
