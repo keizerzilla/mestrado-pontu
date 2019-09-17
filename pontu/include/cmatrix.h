@@ -10,6 +10,7 @@
 
 #include <complex.h>
 
+#include "algebra.h"
 #include "calc.h"
 #include "matrix.h"
 #include "vector3.h"
@@ -141,6 +142,9 @@ struct cmatrix *cmatrix_transpose(struct cmatrix *mat);
  * \return The determinat of the complex matrix, or 0 if it fails
  */
  cnum cmatrix_det(struct cmatrix *mat);
+
+
+struct cmatrix *cmatrix_eigenvalues(struct cmatrix *mat);
 
 /**
  * \brief Saves a complex matrix in a file

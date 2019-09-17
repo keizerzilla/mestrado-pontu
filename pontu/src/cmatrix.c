@@ -282,6 +282,80 @@ cnum cmatrix_det(struct cmatrix *mat)
 	return det;
 }
 
+struct cmatrix *cmatrix_eigenvalues(struct cmatrix *mat)
+{
+	if (mat->rows != mat->cols && mat->rows > 4)
+		return NULL;
+
+	if (mat->rows == 2) {
+		real a = creal(cmatrix_get(mat, 0, 0));
+		real b = creal(cmatrix_get(mat, 0, 1));
+		real c = creal(cmatrix_get(mat, 1, 0));
+		real d = creal(cmatrix_get(mat, 1, 1));
+		return algebra_quadratic_roots(1.0f,-a - d, a * d - b * c);
+	} else if (mat->rows == 3) {
+		real a = creal(cmatrix_get(mat, 0, 0));
+		real b = creal(cmatrix_get(mat, 0, 1));
+		real c = creal(cmatrix_get(mat, 0, 2));
+		real d = creal(cmatrix_get(mat, 1, 0));
+		real e = creal(cmatrix_get(mat, 1, 1));
+		real f = creal(cmatrix_get(mat, 1, 2));
+		real g = creal(cmatrix_get(mat, 2, 0));
+		real h = creal(cmatrix_get(mat, 2, 1));
+		real i = creal(cmatrix_get(mat, 2, 2));
+
+		return algebra_cubic_roots(-1.0f,
+								  a + e + i,
+								  -a * e - a * i - e * i + f * h + b * d + c * g,
+								  a * e * i - a * f * h - b * d * i + b * g * f + c * d * h - c * g * e);
+	} else if (mat->rows == 4) {
+		real a = creal(cmatrix_get(mat, 0, 0));
+		real b = creal(cmatrix_get(mat, 0, 1));
+		real c = creal(cmatrix_get(mat, 0, 2));
+		real d = creal(cmatrix_get(mat, 0, 3));
+		real e = creal(cmatrix_get(mat, 1, 0));
+		real f = creal(cmatrix_get(mat, 1, 1));
+		real g = creal(cmatrix_get(mat, 1, 2));
+		real h = creal(cmatrix_get(mat, 1, 3));
+		real i = creal(cmatrix_get(mat, 2, 0));
+		real j = creal(cmatrix_get(mat, 2, 1));
+		real k = creal(cmatrix_get(mat, 2, 2));
+		real l = creal(cmatrix_get(mat, 2, 3));
+		real m = creal(cmatrix_get(mat, 3, 0));
+		real n = creal(cmatrix_get(mat, 3, 1));
+		real o = creal(cmatrix_get(mat, 3, 2));
+		real p = creal(cmatrix_get(mat, 3, 3));
+
+
+		real coefc = a * (k + f + p) - (-p * (k + f) -
+					 f * k + n * h + o * l + j * g) -
+					 b * e +
+					 c * (-i) -
+					 d * m;
+		real coefd = a * (-p * (k + f) - f * k + n * h + o * l + j * g) -
+					 (p * f * k + g * l * n + h * j * o - n * h * k -
+					 o * l * f - j * g * p) -
+					 b * (-e * (k + p) + m * h + i * g) +
+					 c * (-e * j - l * m + i * p + i * f) -
+					 d * (-m * f - m * k + n * e + o * i);
+		real coefe = a * (p * f * k + g * l * n + h * j * o - n * h * k -
+					 o * l * f - j * g * p) -
+					 b * (e * k * p + g * l * m + h * i * o -
+					 m * k * h - o * l * e - p * i * g) +
+					 c * (e * j * p + l * m * f + h * i * n -
+					 m * j * h - n * l * e - i * p * f) -
+					 d * (e * j * o + m * f * k + g * i * n - m * j * g - n * k * e - o * i * f);
+
+		return algebra_quartic_roots(1.0f,
+									-a - f - k - p,
+									coefc,
+									coefd,
+									coefe);
+	}
+
+	return NULL;
+}
+
 int cmatrix_save_to_file(struct cmatrix *mat, const char *filename, const char *m)
 {
 	FILE *file = fopen(filename, m);
