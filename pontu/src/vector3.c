@@ -196,7 +196,14 @@ real vector3_dot(struct vector3 *a, struct vector3 *b)
 
 real vector3_angle(struct vector3 *a, struct vector3 *b)
 {
-	return acos(vector3_dot(a, b) / vector3_length(a) * vector3_length(b));
+	real l1 = a->x*a->x + a->y*a->y + a->z*a->z;
+	real l2 = b->x*b->x + b->y*b->y + b->z*b->z;
+	real prod = vector3_dot(a, b) / sqrt(l1 * l2);
+	
+	prod = calc_max2(prod, -1.0f);
+	prod = calc_min2(prod, +1.0f);
+	
+	return acos(prod);
 }
 
 struct vector3 *vector3_cross(struct vector3 *a, struct vector3 *b)
@@ -379,6 +386,27 @@ struct vector3 *vector3_average(struct vector3 *a, struct vector3 *b)
 
 	return avg;
 }
+
+struct vector3 *vector3_closest_to_list(struct vector3 **points,
+                                        uint numpts,
+                                        struct vector3 *p)
+{
+	uint index = 0;
+	real temp = 0;
+	real dist = vector3_squared_distance(p, points[0]);
+
+	for (uint i = 1; i < numpts; i++) {
+		temp = vector3_squared_distance(p, points[i]);
+		if (temp < dist) {
+			dist = temp;
+			index = i;
+		}
+	}
+	
+	return points[index];
+}
+
+//void vector3_sort_by_axis(struct vector3 **points, uint numpts, uint axis){}
 
 void vector3_debug(struct vector3 *v, FILE * output)
 {

@@ -1,3 +1,6 @@
 - Estudar flags de warnings e errors que deixam o código o mais sólido possível:
 	- https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html
 
+- kdtree vs octree/quadtree:
+	- https://cstheory.stackexchange.com/questions/8470/why-would-one-ever-use-an-octree-over-a-kd-tree
+

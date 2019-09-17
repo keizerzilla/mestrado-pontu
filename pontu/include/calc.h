@@ -110,6 +110,22 @@ real calc_length2(real x, real y);
 real calc_randr(real max);
 
 /**
+ * \brief Gets the higher number out of 2 real numbers
+ * \param a The first real
+ * \param b The second real
+ * \return The greater value in (a, b)
+ */
+real calc_max2(real a, real b);
+
+/**
+ * \brief Gets the smallest number out of 2 real numbers
+ * \param a The first real
+ * \param b The second real
+ * \return The greater value in (a, b)
+ */
+real calc_min2(real a, real b);
+
+/**
  * \brief Gets the greater number out of 3 real numbers
  * \param a The first real
  * \param b The second real

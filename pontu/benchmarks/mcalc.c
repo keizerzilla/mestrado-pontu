@@ -17,10 +17,10 @@
 #define ZERNIKE_EVEN	"zkeven"
 #define ZERNIKE_MAG		"zkmag"
 #define ZERNIKE_FULL	"zkfull"
-#define SPHARMON_ODD	"sphodd"
-#define SPHARMON_EVEN	"spheven"
-#define SPHARMON_MAG	"sphmag"
-#define SPHARMON_FULL	"sphfull"
+#define HARMON_ODD		"sphodd"
+#define HARMON_EVEN		"spheven"
+#define HARMON_MAG		"sphmag"
+#define HARMON_FULL		"sphfull"
 #define LEGENDRE		"legendre"
 #define CHEBYSHEV		"chebyshev"
 #define SPHERIC			"spheric"
@@ -142,14 +142,14 @@ int main(int argc, char** argv)
         mfunc = &zernike_cloud_moments_mag;
 	else if (!strcmp(moment, ZERNIKE_FULL))
         mfunc = &zernike_cloud_moments_full;
-	else if (!strcmp(moment, SPHARMON_ODD))
-        mfunc = &spharmonics_cloud_moments_odd;
-    else if (!strcmp(moment, SPHARMON_EVEN))
-        mfunc = &spharmonics_cloud_moments_even;
-    else if (!strcmp(moment, SPHARMON_MAG))
-        mfunc = &spharmonics_cloud_moments_mag;
-	else if (!strcmp(moment, SPHARMON_FULL))
-        mfunc = &spharmonics_cloud_moments_full;
+	else if (!strcmp(moment, HARMON_ODD))
+        mfunc = &harmonics_cloud_moments_odd;
+    else if (!strcmp(moment, HARMON_EVEN))
+        mfunc = &harmonics_cloud_moments_even;
+    else if (!strcmp(moment, HARMON_MAG))
+        mfunc = &harmonics_cloud_moments_mag;
+	else if (!strcmp(moment, HARMON_FULL))
+        mfunc = &harmonics_cloud_moments_full;
     else if (!strcmp(moment, SPHERIC))
         mfunc = &spheric_cloud_moments;
     else

@@ -1,24 +1,24 @@
-#include "../include/spharmonics.h"
+#include "../include/harmonics.h"
 
-int spharmonics_conditions(int n, int m, int l)
+int harmonics_conditions(int n, int m, int l)
 {
 	return zernike_conditions(n, m) && l >= -m && l <= m;
 }
 
-int spharmonics_nummoments(int ord, int rep, int spin)
+int harmonics_nummoments(int ord, int rep, int spin)
 {
 	int count = 0;
 
 	for (int n = 0; n <= ord; n++)
 		for (int m = 0; m <= rep; m++)
 			for (int l = 0; l <= spin; l++)
-				if (spharmonics_conditions(n, m, l))
+				if (harmonics_conditions(n, m, l))
 					count++;
 
 	return count;
 }
 
-real spharmonics_norm(int m, int l)
+real harmonics_norm(int m, int l)
 {
 	real num = ((2.0f * m) + 1.0f) * calc_factorial(m - l);
 	real den = (4.0f * CALC_PI * calc_factorial(m + l));
@@ -27,7 +27,7 @@ real spharmonics_norm(int m, int l)
 	return norm;
 }
 
-real spharmonics_legendrepoly(int m, int l, real x)
+real harmonics_legendrepoly(int m, int l, real x)
 {
 	real p1 = pow(-1.0f, l) * pow(2.0f, m) * pow(1.0f - x*x, l/2.0f);
 	real p2 = 0.0f;
@@ -46,42 +46,42 @@ real spharmonics_legendrepoly(int m, int l, real x)
 	return p1 * p2;
 }
 
-real spharmonics_harmonic_odd(int m, int l, real theta, real phi)
+real harmonics_harmonic_odd(int m, int l, real theta, real phi)
 {
-	real sh = spharmonics_norm(m, l) *
-	          spharmonics_legendrepoly(m, l, cos(theta)) *
+	real sh = harmonics_norm(m, l) *
+	          harmonics_legendrepoly(m, l, cos(theta)) *
 	          sin(l * phi);
 	
 	return sh;
 }
 
-real spharmonics_harmonic_even(int m, int l, real theta, real phi)
+real harmonics_harmonic_even(int m, int l, real theta, real phi)
 {
-	real sh = spharmonics_norm(m, l) *
-	          spharmonics_legendrepoly(m, l, cos(theta)) *
+	real sh = harmonics_norm(m, l) *
+	          harmonics_legendrepoly(m, l, cos(theta)) *
 	          cos(l * phi);
 	
 	return sh;
 }
 
-real spharmonics_harmonic_mag(int m, int l, real theta)
+real harmonics_harmonic_mag(int m, int l, real theta)
 {
-	real sh = spharmonics_norm(m, l) *
-	          spharmonics_legendrepoly(m, l, cos(theta));
+	real sh = harmonics_norm(m, l) *
+	          harmonics_legendrepoly(m, l, cos(theta));
 	
 	return sh;
 }
 
-real spharmonics_harmonic_full(int m, int l, real theta, real phi)
+real harmonics_harmonic_full(int m, int l, real theta, real phi)
 {
-	real sh = spharmonics_norm(m, l) *
-	          spharmonics_legendrepoly(m, l, cos(theta)) *
+	real sh = harmonics_norm(m, l) *
+	          harmonics_legendrepoly(m, l, cos(theta)) *
 	          (cos(l * phi) + sin(l * phi));
 	
 	return sh;
 }
 
-real spharmonics_moment_odd(int n, int m, int l, real r, struct cloud *cloud)
+real harmonics_moment_odd(int n, int m, int l, real r, struct cloud *cloud)
 {
 	struct vector3 *center = cloud_get_center(cloud);
 	
@@ -105,7 +105,7 @@ real spharmonics_moment_odd(int n, int m, int l, real r, struct cloud *cloud)
 		theta = zernike_azimuth(cy, cx);
 		phi = zernike_zenith(cz, r);
 		radpoly = zernike_radpoly(n, m, dist);
-		harmonic = spharmonics_harmonic_odd(m, l, theta, phi);
+		harmonic = harmonics_harmonic_odd(m, l, theta, phi);
 		
 		moment += radpoly * harmonic;
 	}
@@ -115,7 +115,7 @@ real spharmonics_moment_odd(int n, int m, int l, real r, struct cloud *cloud)
 	return (3.0f * moment) / (4.0f * CALC_PI);
 }
 
-real spharmonics_moment_even(int n, int m, int l, real r, struct cloud *cloud)
+real harmonics_moment_even(int n, int m, int l, real r, struct cloud *cloud)
 {
 	struct vector3 *center = cloud_get_center(cloud);
 	
@@ -139,7 +139,7 @@ real spharmonics_moment_even(int n, int m, int l, real r, struct cloud *cloud)
 		theta = zernike_azimuth(cy, cx);
 		phi = zernike_zenith(cz, r);
 		radpoly = zernike_radpoly(n, m, dist);
-		harmonic = spharmonics_harmonic_even(m, l, theta, phi);
+		harmonic = harmonics_harmonic_even(m, l, theta, phi);
 		
 		moment += radpoly * harmonic;
 	}
@@ -149,7 +149,7 @@ real spharmonics_moment_even(int n, int m, int l, real r, struct cloud *cloud)
 	return (3.0f * moment) / (4.0f * CALC_PI);
 }
 
-real spharmonics_moment_mag(int n, int m, int l, real r, struct cloud *cloud)
+real harmonics_moment_mag(int n, int m, int l, real r, struct cloud *cloud)
 {
 	struct vector3 *center = cloud_get_center(cloud);
 	
@@ -169,7 +169,7 @@ real spharmonics_moment_mag(int n, int m, int l, real r, struct cloud *cloud)
 		dist = d / r;
 		theta = zernike_azimuth(cy, cx);
 		radpoly = zernike_radpoly(n, m, dist);
-		harmonic = spharmonics_harmonic_mag(m, l, theta);
+		harmonic = harmonics_harmonic_mag(m, l, theta);
 		
 		moment += radpoly * harmonic;
 	}
@@ -179,7 +179,7 @@ real spharmonics_moment_mag(int n, int m, int l, real r, struct cloud *cloud)
 	return (3.0f * moment) / (4.0f * CALC_PI);
 }
 
-real spharmonics_moment_full(int n, int m, int l, real r, struct cloud *cloud)
+real harmonics_moment_full(int n, int m, int l, real r, struct cloud *cloud)
 {
 	struct vector3 *center = cloud_get_center(cloud);
 	
@@ -203,7 +203,7 @@ real spharmonics_moment_full(int n, int m, int l, real r, struct cloud *cloud)
 		theta = zernike_azimuth(cy, cx);
 		phi = zernike_zenith(cz, r);
 		radpoly = zernike_radpoly(n, m, dist);
-		harmonic = spharmonics_harmonic_full(m, l, theta, phi);
+		harmonic = harmonics_harmonic_full(m, l, theta, phi);
 		
 		moment += radpoly * harmonic;
 	}
@@ -213,19 +213,19 @@ real spharmonics_moment_full(int n, int m, int l, real r, struct cloud *cloud)
 	return (3.0f * moment) / (4.0f * CALC_PI);
 }
 
-struct matrix *spharmonics_cloud_moments_odd(struct cloud *cloud)
+struct matrix *harmonics_cloud_moments_odd(struct cloud *cloud)
 {
-	int s = spharmonics_nummoments(SPHARM_ORD, SPHARM_REP, SPHARM_SPIN);
+	int s = harmonics_nummoments(HARMON_ORD, HARMON_REP, HARMON_SPIN);
 	struct matrix *results = matrix_new(1, s);
 	real r = cloud_max_distance_from_center(cloud);
 	real moment = 0.0f;
 	
 	int col = 0;
-	for (int n = 0; n <= SPHARM_ORD; n++) {
-		for (int m = 0; m <= SPHARM_REP; m++) {
-			for (int l = 0; l <= SPHARM_SPIN; l++) {
-				if (spharmonics_conditions(n, m, l)) {
-					moment = spharmonics_moment_odd(n, m, l, r, cloud);
+	for (int n = 0; n <= HARMON_ORD; n++) {
+		for (int m = 0; m <= HARMON_REP; m++) {
+			for (int l = 0; l <= HARMON_SPIN; l++) {
+				if (harmonics_conditions(n, m, l)) {
+					moment = harmonics_moment_odd(n, m, l, r, cloud);
 					matrix_set(results, 0, col, moment);
 					col++;
 				}
@@ -236,19 +236,19 @@ struct matrix *spharmonics_cloud_moments_odd(struct cloud *cloud)
 	return results;
 }
 
-struct matrix *spharmonics_cloud_moments_even(struct cloud *cloud)
+struct matrix *harmonics_cloud_moments_even(struct cloud *cloud)
 {
-	int s = spharmonics_nummoments(SPHARM_ORD, SPHARM_REP, SPHARM_SPIN);
+	int s = harmonics_nummoments(HARMON_ORD, HARMON_REP, HARMON_SPIN);
 	struct matrix *results = matrix_new(1, s);
 	real r = cloud_max_distance_from_center(cloud);
 	real moment = 0.0f;
 	
 	int col = 0;
-	for (int n = 0; n <= SPHARM_ORD; n++) {
-		for (int m = 0; m <= SPHARM_REP; m++) {
-			for (int l = 0; l <= SPHARM_SPIN; l++) {
-				if (spharmonics_conditions(n, m, l)) {
-					moment = spharmonics_moment_even(n, m, l, r, cloud);
+	for (int n = 0; n <= HARMON_ORD; n++) {
+		for (int m = 0; m <= HARMON_REP; m++) {
+			for (int l = 0; l <= HARMON_SPIN; l++) {
+				if (harmonics_conditions(n, m, l)) {
+					moment = harmonics_moment_even(n, m, l, r, cloud);
 					matrix_set(results, 0, col, moment);
 					col++;
 				}
@@ -259,19 +259,19 @@ struct matrix *spharmonics_cloud_moments_even(struct cloud *cloud)
 	return results;
 }
 
-struct matrix *spharmonics_cloud_moments_mag(struct cloud *cloud)
+struct matrix *harmonics_cloud_moments_mag(struct cloud *cloud)
 {
-	int s = spharmonics_nummoments(SPHARM_ORD, SPHARM_REP, SPHARM_SPIN);
+	int s = harmonics_nummoments(HARMON_ORD, HARMON_REP, HARMON_SPIN);
 	struct matrix *results = matrix_new(1, s);
 	real r = cloud_max_distance_from_center(cloud);
 	real moment = 0.0f;
 	
 	int col = 0;
-	for (int n = 0; n <= SPHARM_ORD; n++) {
-		for (int m = 0; m <= SPHARM_REP; m++) {
-			for (int l = 0; l <= SPHARM_SPIN; l++) {
-				if (spharmonics_conditions(n, m, l)) {
-					moment = spharmonics_moment_mag(n, m, l, r, cloud);
+	for (int n = 0; n <= HARMON_ORD; n++) {
+		for (int m = 0; m <= HARMON_REP; m++) {
+			for (int l = 0; l <= HARMON_SPIN; l++) {
+				if (harmonics_conditions(n, m, l)) {
+					moment = harmonics_moment_mag(n, m, l, r, cloud);
 					matrix_set(results, 0, col, moment);
 					col++;
 				}
@@ -282,19 +282,19 @@ struct matrix *spharmonics_cloud_moments_mag(struct cloud *cloud)
 	return results;
 }
 
-struct matrix *spharmonics_cloud_moments_full(struct cloud *cloud)
+struct matrix *harmonics_cloud_moments_full(struct cloud *cloud)
 {
-	int s = spharmonics_nummoments(SPHARM_ORD, SPHARM_REP, SPHARM_SPIN);
+	int s = harmonics_nummoments(HARMON_ORD, HARMON_REP, HARMON_SPIN);
 	struct matrix *results = matrix_new(1, s);
 	real r = cloud_max_distance_from_center(cloud);
 	real moment = 0.0f;
 	
 	int col = 0;
-	for (int n = 0; n <= SPHARM_ORD; n++) {
-		for (int m = 0; m <= SPHARM_REP; m++) {
-			for (int l = 0; l <= SPHARM_SPIN; l++) {
-				if (spharmonics_conditions(n, m, l)) {
-					moment = spharmonics_moment_full(n, m, l, r, cloud);
+	for (int n = 0; n <= HARMON_ORD; n++) {
+		for (int m = 0; m <= HARMON_REP; m++) {
+			for (int l = 0; l <= HARMON_SPIN; l++) {
+				if (harmonics_conditions(n, m, l)) {
+					moment = harmonics_moment_full(n, m, l, r, cloud);
 					matrix_set(results, 0, col, moment);
 					col++;
 				}
