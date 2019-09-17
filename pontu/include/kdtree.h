@@ -11,13 +11,13 @@
 #include "vector3.h"
 
 /**
- * \brief Struct to store a kdtree node
+ * \brief Structure to store a kdtree node
  */
 struct kdtree {
 	struct vector3 **points;
 	uint numpts;
 	struct vector3 *midpnt;
-	uint axis;
+	int axis;
 	struct kdtree *left;
 	struct kdtree *right;
 };
@@ -29,7 +29,7 @@ struct kdtree {
  * \param axis The node's separation axis
  * \return NULL if it fails, or the pointer to the kdtree if it doesn't
  */
-struct kdtree *kdtree_new(struct vector3 *points, uint numpts, uint axis);
+struct kdtree *kdtree_new(struct vector3 *points, uint numpts, int axis);
 
 /**
  * \brief Frees a kdtree
@@ -42,7 +42,7 @@ void kdtree_free(struct kdtree *kdt);
  * \param kdt Target kdtree
  * \param axis The axis of separation
  */
-void kdtree_partitionate(struct kdtree *kdt, uint axis);
+void kdtree_partitionate(struct kdtree *kdt, int axis);
 
 /**
  * \brief Finds the point in the kdtree nearest to a target point

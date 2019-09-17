@@ -1,6 +1,6 @@
 #include "../include/kdtree.h"
 
-struct kdtree *kdtree_new(struct vector3 *points, uint numpts, uint axis)
+struct kdtree *kdtree_new(struct vector3 *points, uint numpts, int axis)
 {
 	struct kdtree *kdt = malloc(sizeof(struct kdtree));
 	if (kdt == NULL)
@@ -53,7 +53,7 @@ void kdtree_free(struct kdtree *kdt)
 	kdt = NULL;
 }
 
-void kdtree_partitionate(struct kdtree *kdt, uint axis)
+void kdtree_partitionate(struct kdtree *kdt, int axis)
 {
 	kdt->axis = axis % 3;
 	

@@ -780,7 +780,6 @@ struct cloud *cloud_segment(struct cloud *cloud,
 
 struct vector3 *cloud_closest_point(struct cloud *cloud, struct vector3 *point)
 {
-	/**
 	uint index = 0;
 	real temp = 0;
 	real dist = vector3_squared_distance(point, &cloud->points[0]);
@@ -794,12 +793,6 @@ struct vector3 *cloud_closest_point(struct cloud *cloud, struct vector3 *point)
 	}
 
 	return &cloud->points[index];
-	*/
-	
-	cloud_partitionate(cloud);
-	
-	return kdtree_nearest_neighbor(cloud->kdt, point);
-	
 }
 
 struct vector3 *cloud_closest_to_center(struct cloud *cloud)

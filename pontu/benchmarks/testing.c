@@ -62,33 +62,17 @@ void testing_know_point()
 
 int main()
 {
-	//struct cloud *src = cloud_load_xyz("../samples/bunny.xyz");
-	struct cloud *src = cloud_load_xyz("/home/artur/lucy.xyz");
+	struct cloud *src = cloud_load_xyz("../samples/bunny.xyz");
 	struct cloud *tgt = cloud_load_xyz("../samples/bunny_trans.xyz");
 	
 	printf("||src|| = %u\n||tgt|| = %u\n", src->numpts, tgt->numpts);
 	
-	//closest_testing(src, tgt, "bruteforce", &cloud_nearest_neighbors_bruteforce);
-	closest_testing(src, tgt, "kdtree", &cloud_nearest_neighbors_partition);
-	closest_testing(src, tgt, "kdtree", &cloud_nearest_neighbors_partition);
+	closest_testing(src, tgt, "bforce", &cloud_nearest_neighbors_bruteforce);
+	closest_testing(src, tgt, "tree", &cloud_nearest_neighbors_partition);
 	
 	cloud_free(tgt);
 	cloud_free(src);
 	
 	return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
