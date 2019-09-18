@@ -67,9 +67,42 @@ int main()
 	
 	printf("||src|| = %u\n||tgt|| = %u\n", src->numpts, tgt->numpts);
 	
-	closest_testing(src, tgt, "bforce", &cloud_nearest_neighbors_bruteforce);
-	closest_testing(src, tgt, "tree", &cloud_nearest_neighbors_partition);
+	struct octree *oct = octree_new(src->points, src->numpts, 5);
+	octree_partitionate(oct, 5);
 	
+	struct kdtree *kdt = kdtree_new(src->points, src->numpts, 0);
+	kdtree_partitionate(kdt, 0);
+	
+	struct vector3 *p = vector3_new(7.0f, 6.0f, -50.0f);
+	clock_t bf_t, ot_t, kd_t;
+	
+	// bruteforce
+	bf_t = clock();
+	struct vector3 *bf = cloud_closest_point(src, p);
+	bf_t = clock() - bf_t;
+	
+	// octree
+	ot_t = clock();
+	struct vector3 *ot = octree_nearest_neighbor(oct, p);
+	ot_t = clock() - ot_t;
+	
+	// kdtree
+	kd_t = clock();
+	struct vector3 *kd = kdtree_nearest_neighbor(kdt, p);
+	kd_t = clock() - kd_t;
+	
+	printf("bf_d = %f | bf_ticks = %ld | ", vector3_distance(p, bf), bf_t);
+	vector3_debug(bf, stdout);
+	
+	printf("ot_d = %f | ot_ticks = %ld | ", vector3_distance(p, ot), ot_t);
+	vector3_debug(ot, stdout);
+	
+	printf("kd_d = %f | kd_ticks = %ld | ", vector3_distance(p, kd), kd_t);
+	vector3_debug(kd, stdout);
+	
+	vector3_free(p);
+	kdtree_free(kdt);
+	octree_free(oct);
 	cloud_free(tgt);
 	cloud_free(src);
 	

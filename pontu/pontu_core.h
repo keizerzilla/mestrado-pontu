@@ -6,6 +6,7 @@
 #include "include/plane.h"
 #include "include/cloud.h"
 #include "include/kdtree.h"
+#include "include/octree.h"
 
 #endif // PONTU_CORE_H
 

@@ -8,6 +8,10 @@
 #ifndef OCTREE_H
 #define OCTREE_H
 
+#define OCTREE_AXIS_X 2
+#define OCTREE_AXIS_Y 1
+#define OCTREE_AXIS_Z 0
+
 #include "vector3.h"
 
 /**
@@ -37,11 +41,24 @@ struct octree *octree_new(struct vector3 *points, uint numpts, int depth);
 void octree_free(struct octree *oct);
 
 /**
+ * \brief Calculates the quadrant of a point by the node's midpoint
+ * \param oct The octree node
+ * \param p The target point
+ * \return Integer between 0 and 7
+ */
+int octree_quadrant(struct octree *oct, struct vector3 *p);
+
+/**
  * \brief Partitionates the points of a cloud recursively
  * \param oct Target octree
  * \param depth The depth of the node
  */
 void octree_partitionate(struct octree *oct, int depth);
+
+/**
+ * \brief Bruteforce search of the closest point in a quadrant
+ */
+struct vector3 *octree_closest(struct octree *oct, struct vector3 *p);
 
 /**
  * \brief Finds the point in the octree nearest to a target point

@@ -74,9 +74,8 @@ void kdtree_partitionate(struct kdtree *kdt, int axis)
 	}
 	
 	kdt->left = kdtree_new(*left_points, num_left, axis + 1);
-	kdt->right = kdtree_new(*right_points, num_right, axis + 1);
-	
 	free(left_points);
+	kdt->right = kdtree_new(*right_points, num_right, axis + 1);
 	free(right_points);
 	
 	if (num_left > 1)
