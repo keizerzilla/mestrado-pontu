@@ -63,12 +63,12 @@ void testing_know_point()
 int main()
 {
 	struct cloud *src = cloud_load_xyz("../samples/bunny.xyz");
-	struct cloud *tgt = cloud_load_xyz("../samples/bunny_trans.xyz");
+	//struct cloud *tgt = cloud_load_xyz("../samples/bunny_trans.xyz");
 	
-	printf("||src|| = %u\n||tgt|| = %u\n", src->numpts, tgt->numpts);
+	//printf("||src|| = %u\n||tgt|| = %u\n", src->numpts, tgt->numpts);
 	
-	struct octree *oct = octree_new(src->points, src->numpts, 5);
-	octree_partitionate(oct, 5);
+	struct octree *oct = octree_new(src->points, src->numpts, 7);
+	octree_partitionate(oct, 7);
 	
 	struct kdtree *kdt = kdtree_new(src->points, src->numpts, 0);
 	kdtree_partitionate(kdt, 0);
@@ -103,7 +103,7 @@ int main()
 	vector3_free(p);
 	kdtree_free(kdt);
 	octree_free(oct);
-	cloud_free(tgt);
+	//cloud_free(tgt);
 	cloud_free(src);
 	
 	return 0;

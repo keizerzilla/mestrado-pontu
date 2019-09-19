@@ -67,8 +67,6 @@ int octree_quadrant(struct octree *oct, struct vector3 *p)
 
 void octree_partitionate(struct octree *oct, int depth)
 {
-	// @TODO
-	
 	if (depth <= 0 || oct->numpts <= 1)
 		return;
 	
@@ -126,10 +124,18 @@ struct vector3 *octree_closest(struct octree *oct, struct vector3 *p)
 
 struct vector3 *octree_nearest_neighbor(struct octree *oct, struct vector3 *p)
 {
-	if (oct == NULL || oct->depth <= 0)
+	// @TODO
+	
+	if (oct->depth <= 0) {
 		return octree_closest(oct, p);
-	else
-		return octree_nearest_neighbor(oct->child[octree_quadrant(oct, p)], p);
+	} else {
+		int q = octree_quadrant(oct, p);
+		
+		if (oct->child[q] != NULL)
+			return octree_nearest_neighbor(oct->child[q], p);
+		else
+			return octree_closest(oct, p);
+	}
 }
 
 void octree_debug(struct octree *oct, FILE *output)
