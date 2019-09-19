@@ -99,12 +99,8 @@ void octree_partitionate(struct octree *oct, int depth)
 
 struct vector3 *octree_closest(struct octree *oct, struct vector3 *p)
 {
-	// @TODO
-	
-	if (oct->numpts == 1) {
-		printf("vruco!\n");
+	if (oct->numpts == 1)
 		return oct->points[0];
-	}
 	
 	struct vector3 *closest = oct->points[0];
 	real dist = vector3_squared_distance(p, closest);
@@ -124,8 +120,6 @@ struct vector3 *octree_closest(struct octree *oct, struct vector3 *p)
 
 struct vector3 *octree_nearest_neighbor(struct octree *oct, struct vector3 *p)
 {
-	// @TODO
-	
 	if (oct->depth <= 0) {
 		return octree_closest(oct, p);
 	} else {

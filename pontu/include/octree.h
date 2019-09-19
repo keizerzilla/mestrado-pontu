@@ -57,6 +57,9 @@ void octree_partitionate(struct octree *oct, int depth);
 
 /**
  * \brief Bruteforce search of the closest point in a quadrant
+ * \param oct The octree node to search the points
+ * \param p The point to look the closest
+ * \return The address of the nearest point to p
  */
 struct vector3 *octree_closest(struct octree *oct, struct vector3 *p);
 
