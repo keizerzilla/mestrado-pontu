@@ -3,75 +3,76 @@
 #include "../pontu_features.h"
 #include "../pontu_sampling.h"
 
-void closest_testing(struct cloud *src,
-                     struct cloud *tgt,
-                     const char *func_name,
-                     real (*func)(struct cloud*,
-                                  struct cloud *,
-                                  struct vector3 **,
-                                  struct vector3 **))
+int has_point(struct vector3 **points, uint n, struct vector3 *p)
 {
-	clock_t start_t;
-	clock_t end_t;
-	double total;
-	struct vector3 *src_pt = NULL;
-	struct vector3 *tgt_pt = NULL;
+	if (p == NULL)
+		return 0;
 	
-	printf("%s testing...\n", func_name);
-	start_t = clock();
+	for (uint i = 0; i < n; i++)
+		if (p == points[i])
+			return 1;
 	
-	real dist = (*func)(src, tgt, &src_pt, &tgt_pt);
-	
-	end_t = clock();
-	total = (double)(end_t - start_t) / CLOCKS_PER_SEC;
-	
-	vector3_debug(src_pt, stdout);
-	vector3_debug(tgt_pt, stdout);
-	
-	printf("%s closest distance:\t%lf\n", func_name, dist);
-	printf("%s CPU time:\t\t%lf\n", func_name, total);
+	return 0;
 }
 
-void testing_know_point()
+struct cloud *neighbors(struct cloud *source, struct cloud *target)
 {
-	clock_t start_t;
-	clock_t end_t;
+	struct cloud *ans = cloud_empty();
+	struct vector3 *srcpt = NULL;
+	struct vector3 *tgtpt = NULL;
+	struct vector3 **points = malloc(target->numpts * sizeof(struct vector3 *));
+	int n = 0;
 	
-	struct cloud *src = cloud_load_xyz("../samples/bunny.xyz");
-	struct vector3 *p = vector3_new(5.9600, 5.9386, 5.9841);
-	struct kdtree *kdt = kdtree_new(src->points, src->numpts, 0);
-	kdtree_partitionate(kdt, 0);
+	real d = 0.0f;
+	for (uint i = 0; i < source->numpts; i++) {
+		d = cloud_nearest_neighbors_bruteforce(source, target, &srcpt, &tgtpt);
+		vector3_debug(srcpt, stdout);
+		vector3_debug(tgtpt, stdout);
+		printf("d = %f\n", d);		
+	}
 	
-	start_t = clock();
-	struct vector3 *closest_bruteforce = cloud_closest_point(src, p);
-	end_t = clock();
-	printf("bruteforce:\t%lf\n", (double)(end_t - start_t) / CLOCKS_PER_SEC);
+	free(points);
 	
-	start_t = clock();
-	struct vector3 *closest_kdtree = kdtree_nearest_neighbor(kdt, p);
-	end_t = clock();
-	printf("kdtree:\t\t%lf\n", (double)(end_t - start_t) / CLOCKS_PER_SEC);
-	
-	vector3_debug(closest_kdtree, stdout);
-	vector3_debug(closest_bruteforce, stdout);
-	
-	kdtree_free(kdt);
-	vector3_free(p);
-	cloud_free(src);
+	return ans;
 }
 
 int main()
 {
-	struct cloud *src = cloud_load_xyz("../samples/bunny.xyz");
-	struct cloud *tgt = cloud_load_xyz("../samples/bunny_trans.xyz");
+	struct cloud *source = cloud_load_ply("../samples/bun045.ply");
+	struct cloud *target = cloud_load_ply("../samples/bun000.ply");
 	
-	printf("||src|| = %u\n||tgt|| = %u\n", src->numpts, tgt->numpts);
+	struct cloud *ans = neighbors(source, target);
+	cloud_free(ans);
 	
-	closest_testing(src, tgt, "bforce", &cloud_nearest_neighbors_bruteforce);
-	closest_testing(src, tgt, "tree", &cloud_nearest_neighbors_partition);
 	
-	cloud_free(tgt);
-	cloud_free(src);
+	
+	/**
+	struct vector3 *src_bf;
+	struct vector3 *tgt_bf;
+	clock_t time_bf = clock();
+	real d_bf = cloud_nearest_neighbors_bruteforce(src, tgt, &src_bf, &tgt_bf);
+	time_bf = clock() - time_bf;
+	
+	printf("bruteforce:\n");
+	vector3_debug(src_bf, stdout);
+	vector3_debug(tgt_bf, stdout);
+	printf("d_bf = %f | time_bf = %ld\n", d_bf, time_bf);
+	
+	struct vector3 *src_kd;
+	struct vector3 *tgt_kd;
+	clock_t time_kd = clock();
+	real d_kd = cloud_nearest_neighbors_partition(src, tgt, &src_kd, &tgt_kd);
+	time_kd = clock() - time_kd;
+	
+	printf("kdtree:\n");
+	vector3_debug(src_kd, stdout);
+	vector3_debug(tgt_kd, stdout);
+	printf("d_kd = %f | time_kd = %ld\n", d_kd, time_kd);
+	*/
+	
+	
+	cloud_free(target);
+	cloud_free(source);
 	
 	return 0;
 }
