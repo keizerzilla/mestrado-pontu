@@ -10,14 +10,32 @@
 
 #include "./cloud.h"
 
+/**
+ * \brief Finds a equivalence cloud with closest points of source in target
+ * \param source The source cloud
+ * \param target The target cloud
+ * \return The equivalence cloud
+ */
 struct cloud *registration_closest_points_bf(struct cloud *source,
                                              struct cloud *target);
 
-struct cloud *registration_unique_closest_points_bf(struct cloud *source,
-                                                    struct cloud *target);
-
+/**
+ * \brief Finds the transformation matrix 4x4 (rotation + translation)
+ * \param source The source cloud
+ * \param target The target cloud
+ * \return The transformation matrix 4x4
+ */
 struct cmatrix *registration_align(struct cloud *source, struct cloud *target);
 
+/**
+ * \brief Applies the ICP algorithm to register source with target
+ * \param source The source cloud
+ * \param target The target cloud
+ * \param aligned Pointer to the output cloud registered
+ * \param t Stop criteria
+ * \param k Maximun number of iterations
+ * \return The transformation matrix 4x4
+ */
 struct cmatrix *registration_icp(struct cloud *source,
                                  struct cloud *target,
                                  struct cloud **aligned,
