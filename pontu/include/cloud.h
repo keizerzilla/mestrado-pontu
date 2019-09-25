@@ -15,6 +15,7 @@
 #include "vector3.h"
 #include "plane.h"
 #include "kdtree.h"
+#include "algebra.h"
 
 #define CLOUD_MAXBUFFER 512
 
@@ -259,6 +260,13 @@ void cloud_rotate_y(struct cloud *cloud, real d);
 void cloud_rotate_z(struct cloud *cloud, real d);
 
 /**
+ * \brief Transform a cloud with a matrix 4x4 (rotation and translation)
+ * \param cloud Target cloud
+ * \param rt Transformation matrix 4x4
+ */
+void cloud_transform(struct cloud *cloud, struct cmatrix* rt);
+
+/**
  * \brief Gets the mean value of the coordinate x in a cloud
  * \param cloud Target cloud
  * \return Mean value of x in the cloud
@@ -410,6 +418,15 @@ struct cloud *cloud_segment(struct cloud *cloud,
 struct vector3 *cloud_closest_point(struct cloud *cloud, struct vector3 *point);
 
 /**
+ * \brief Gets the closest point of the cloud to an point
+ * \param cloud Target cloud
+ * \param point Target point
+ * \return Index to the closest point
+ */
+uint cloud_closest_point_idx(struct cloud *cloud, struct vector3 *point);
+
+
+/**
  * \brief Gets point closest to a cloud centroid
  * \param cloud Target cloud
  * \return Closest point
@@ -548,6 +565,14 @@ struct vector3 *cloud_point_faraway_bestfit(struct cloud *cloud);
  * \return Fits the cloud in a sphere and returns 1/R (R = radius of the sphere)
  */
 real cloud_curvature(struct cloud *cloud);
+
+/**
+ * \brief Calculates the rooted mean square error between two clouds
+ * \param source Source cloud
+ * \param target Target cloud
+ * \return A real with the rmse value.
+ */
+real cloud_rmse(struct cloud *source, struct cloud *target);
 
 /**
  * \brief Removes a point from the cloud

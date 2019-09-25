@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <float.h>
+#include <complex.h>
 
 #define CALC_E			2.7182818284590452353602874713527
 #define CALC_PHI		1.618033988749895
@@ -18,12 +19,19 @@
 #define CALC_PI_2		1.57079632679489661923132169163975144
 #define CALC_DEG2RAD	CALC_PI / 180.0
 #define CALC_RAD2DEG	180.0 / CALC_PI
+#define CALC_SQRT_3     1.73205080756887729352744634150587237
 
 /**
  * \var real
  * \brief Mask for the float point number most accurate available on the system
  */
 typedef double real;
+
+/**
+ * \var number
+ * \brief Mask for the float point complex number most accurate available on the system
+ */
+typedef double complex cnum;
 
 /**
  * \var uint

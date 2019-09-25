@@ -51,6 +51,20 @@ int matrix_add_row(struct matrix *mat);
 int matrix_add_col(struct matrix *mat);
 
 /**
+ * \brief Removes a row from a matrix
+ * \param mat Target matrix
+ * \return New matrix with the row removed
+ */
+struct matrix *matrix_remove_row(struct matrix *mat, uint row);
+
+/**
+ * \brief Removes a column from a matrix
+ * \param mat Target matrix
+ * \return New matrix with the column removed
+ */
+struct matrix *matrix_remove_col(struct matrix *mat, uint col);
+
+/**
  * \brief Set a value on the matrix
  * \param mat Target matrix
  * \param i Row index
@@ -86,7 +100,7 @@ struct matrix *matrix_concat_hor(struct matrix *m1, struct matrix *m2);
 struct matrix *matrix_concat_ver(struct matrix *m1, struct matrix *m2);
 
 /**
- * \brief Saves a matrix in a fileSalva uma matriz em arquivo
+ * \brief Saves a matrix in a file
  * \param mat Matrix to be saved
  * \param filename File name
  * \param m Write mode on the file

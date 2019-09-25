@@ -12,4 +12,3 @@
 #include "include/harmonics.h"
 
 #endif // PONTU_FEATURES_H
-
