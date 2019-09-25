@@ -535,6 +535,41 @@ void cloud_rotate_z(struct cloud *cloud, real d)
 		vector3_rotate_z(&cloud->points[i], d);
 }
 
+void cloud_transform(struct cloud *cloud, struct cmatrix* rt)
+{
+	struct cmatrix *cloud_mat = cmatrix_new(4, cloud->numpts);
+	if (cloud_mat == NULL) {
+		cloud_free(cloud);
+		return;
+	}
+
+	struct cmatrix *output_mat = cmatrix_new(4, cloud->numpts);
+	if (output_mat == NULL) {
+		cmatrix_free(cloud_mat);
+		cloud_free(cloud);
+		return;
+	}
+
+	for (uint i = 0; i < cloud->numpts; i++) {
+		cmatrix_set(cloud_mat, 0, i, cloud->points[i].x);
+		cmatrix_set(cloud_mat, 1, i, cloud->points[i].y);
+		cmatrix_set(cloud_mat, 2, i, cloud->points[i].z);
+		cmatrix_set(cloud_mat, 3, i, 1.0f);
+	}
+
+	output_mat = algebra_mat_prod(rt, cloud_mat);
+
+	cmatrix_free(cloud_mat);
+
+	for (uint i = 0; i < cloud->numpts; i++) {
+		cloud->points[i].x = cmatrix_get(output_mat, 0, i);
+		cloud->points[i].y = cmatrix_get(output_mat, 1, i);
+		cloud->points[i].z = cmatrix_get(output_mat, 2, i);
+	}
+
+	cmatrix_free(output_mat);
+}
+
 real cloud_mean_x(struct cloud *cloud)
 {
 	real mx = 0.0f;
@@ -793,6 +828,23 @@ struct vector3 *cloud_closest_point(struct cloud *cloud, struct vector3 *point)
 	}
 
 	return &cloud->points[index];
+}
+
+uint cloud_closest_point_idx(struct cloud *cloud, struct vector3 *point)
+{
+	uint index = 0;
+	real temp = 0;
+	real dist = vector3_squared_distance(point, &cloud->points[0]);
+
+	for (uint i = 1; i < cloud->numpts; i++) {
+		temp = vector3_squared_distance(point, &cloud->points[i]);
+		if (temp < dist) {
+			dist = temp;
+			index = i;
+		}
+	}
+
+	return index;
 }
 
 struct vector3 *cloud_closest_to_center(struct cloud *cloud)
@@ -1104,6 +1156,24 @@ real cloud_curvature(struct cloud *cloud)
 	vector3_free(center);
 
 	return 1.0f / radius;
+}
+
+real cloud_rmse(struct cloud *source, struct cloud *target)
+{
+	if (source->numpts < target->numpts)
+		return -1.0f;
+
+	real rmse = 0.0f;
+	for (uint i = 0; i < source->numpts; i++) {
+		rmse += sqrt((source->points[i].x - target->points[i].x) *
+					 (source->points[i].x - target->points[i].x) +
+					 (source->points[i].y - target->points[i].y) *
+					 (source->points[i].y - target->points[i].y) +
+					 (source->points[i].z - target->points[i].z) *
+					 (source->points[i].z - target->points[i].z));
+	}
+
+	return rmse / (double) source->numpts;
 }
 
 struct vector3 *cloud_remove_point(struct cloud *cloud, uint idx)

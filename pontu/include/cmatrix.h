@@ -10,11 +10,11 @@
 
 #include <complex.h>
 
-#include "algebra.h"
-#include "calc.h"
-#include "matrix.h"
 #include "vector3.h"
 
+/**
+ * \brief Struct to store complex matrices
+ */
 struct cmatrix {
     uint rows;
     uint cols;
@@ -34,6 +34,13 @@ struct cmatrix *cmatrix_new(uint rows, uint cols);
  * \param mat Complex Matrix to be freed
  */
 void cmatrix_free(struct cmatrix *mat);
+
+/**
+ * \brief Copies a matrix
+ * \param mat Target matrix
+ * \return Pointer to the new copy of mat
+ */
+struct cmatrix *cmatrix_copy(struct cmatrix *mat);
 
 /**
  * \brief Adds a new row into a complex matrix
@@ -97,54 +104,6 @@ struct cmatrix *cmatrix_concat_hor(struct cmatrix *m1, struct cmatrix *m2);
  * \return Complex matrix of m1 and m2 concatenated
  */
 struct cmatrix *cmatrix_concat_ver(struct cmatrix *m1, struct cmatrix *m2);
-
-/**
- * \brief Sum two complex matrices
- * \param a First complex matrix
- * \param b Second complex matrix
- * \return Complex matrix sum of a and b, or NULL if it fails
- */
-struct cmatrix *cmatrix_sum(struct cmatrix *a, struct cmatrix *b);
-
-/**
- * \brief Subtraction between two complex matrices
- * \param a First complex matrix
- * \param b Second complex matrix
- * \return Copmlex matrix result of subtraction of b in a, or NULL if it fails
- */
-struct cmatrix *cmatrix_sub(struct cmatrix *a, struct cmatrix *b);
-
-/**
- * \brief Calculates the product between two complex matrices
- * \param a First complex matrix
- * \param b Second complex matrix
- * \return Complex matrix product between a and b, or NULL if it fails
- */
-struct cmatrix *cmatrix_prod(struct cmatrix *a, struct cmatrix *b);
-
-/**
- * \brief Multiplies a complex matrix by a scalar
- * \param mat The complex matrix
- * \param scalar The scalar
- */
-struct cmatrix *cmatrix_vs_scalar(struct cmatrix *mat, cnum scalar);
-
-/**
- * \brief Transposes a complex matrix
- * \param mat The complex matrix
- * \return Complex matrix mat transposed, or NULL if it fails
- */
-struct cmatrix *cmatrix_transpose(struct cmatrix *mat);
-
-/**
- * \brief Calculates the determinat of a complex square matrix
- * \param mat The complex matrix
- * \return The determinat of the complex matrix, or 0 if it fails
- */
- cnum cmatrix_det(struct cmatrix *mat);
-
-
-struct cmatrix *cmatrix_eigenvalues(struct cmatrix *mat);
 
 /**
  * \brief Saves a complex matrix in a file

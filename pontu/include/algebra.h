@@ -9,9 +9,8 @@
 #define ALGEBRA_H
 
 #include "cmatrix.h"
-#include "calc.h"
-#include "matrix.h"
-#include "vector3.h"
+
+#define ALGEBRA_NUM_ERR 0.0000001
 
 /**
  * \brief Finds the root of a affine equation
@@ -50,5 +49,89 @@ struct cmatrix *algebra_cubic_roots(real a, real b, real c, real d);
  * \return A complex matrix 4x1 with the roots of the equation
  */
 struct cmatrix *algebra_quartic_roots(real a, real b, real c, real d, real e);
+
+/**
+ * \brief Applies the Gauss elimination method to solve a system from a matrix 
+ * Nx(N+1)
+ * \param mat Target matrix
+ * \return A vector Nx1 with the solutions of the system
+ */
+struct cmatrix *algebra_gauss_elim(struct cmatrix *mat);
+
+/**
+ * \brief Applies the Gauss elimination method to reduce a square matrix
+ * \param mat Target matrix
+ * \return The matrix reduced
+ */
+struct cmatrix *algebra_gauss_elim_pivot(struct cmatrix *mat);
+
+/**
+ * \brief Sum two complex matrices
+ * \param a First complex matrix
+ * \param b Second complex matrix
+ * \return Complex matrix sum of a and b, or NULL if it fails
+ */
+struct cmatrix *algebra_mat_sum(struct cmatrix *a, struct cmatrix *b);
+
+/**
+ * \brief Subtraction between two complex matrices
+ * \param a First complex matrix
+ * \param b Second complex matrix
+ * \return Copmlex matrix result of subtraction of b in a, or NULL if it fails
+ */
+struct cmatrix *algebra_mat_sub(struct cmatrix *a, struct cmatrix *b);
+
+/**
+ * \brief Calculates the product between two complex matrices
+ * \param a First complex matrix
+ * \param b Second complex matrix
+ * \return Complex matrix product between a and b, or NULL if it fails
+ */
+struct cmatrix *algebra_mat_prod(struct cmatrix *a, struct cmatrix *b);
+
+/**
+ * \brief Multiplies a complex matrix by a scalar
+ * \param mat The complex matrix
+ * \param scalar The scalar
+ */
+struct cmatrix *algebra_mat_vs_scalar(struct cmatrix *mat, cnum scalar);
+
+/**
+ * \brief Transposes a complex matrix
+ * \param mat The complex matrix
+ * \return Complex matrix mat transposed, or NULL if it fails
+ */
+struct cmatrix *algebra_mat_transpose(struct cmatrix *mat);
+
+/**
+ * \brief Sums elements of the main diagonal of a matrix
+ * \param mat The complex matrix
+ * \return The trace of a matrix
+ */
+cnum algebra_mat_trace(struct cmatrix *mat);
+
+/**
+ * \brief Calculates the determinat of a complex square matrix
+ * \param mat The complex matrix
+ * \return The determinat of the complex matrix, or 0 if it fails
+ */
+cnum algebra_mat_det(struct cmatrix *mat);
+
+/**
+ * \brief Finds the eigen values of a square matrix NxN
+ * \param mat Target matrix
+ * \return A vector Nx1 with the eigen values of mat
+ */
+struct cmatrix *algebra_mat_eigen_val(struct cmatrix *mat);
+
+/**
+ * \brief Finds the eigen vector of a square matrix NxN
+ * \param mat Target matrix
+ * \param eig_val Eigen values of mat
+ * \return A matrix NxN, where each column is a eigen vector
+ */
+struct cmatrix *algebra_mat_eigen_vec(struct cmatrix *mat,
+                                      struct cmatrix *eig_val);
+
 
 #endif // ALGEBRA_H

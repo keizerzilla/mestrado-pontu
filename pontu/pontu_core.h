@@ -7,5 +7,6 @@
 #include "include/cloud.h"
 #include "include/kdtree.h"
 #include "include/cmatrix.h"
+#include "include/algebra.h"
 
 #endif // PONTU_CORE_H

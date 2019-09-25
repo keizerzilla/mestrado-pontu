@@ -51,7 +51,7 @@ int matrix_add_row(struct matrix *mat)
 int matrix_add_col(struct matrix *mat)
 {
 	real *new_mat = malloc(mat->rows * (mat->cols + 1) * sizeof(real));
-	if (new_mat != NULL)
+	if (new_mat == NULL)
 		return 0;
 
 	for (uint i = 0; i < mat->rows; i++)
