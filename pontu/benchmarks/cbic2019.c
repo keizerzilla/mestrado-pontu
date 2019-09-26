@@ -67,7 +67,7 @@ int main(int argc, char** argv)
 	matrix_debug(moments, stdout);
 	
 	matrix_free(moments);
-	cloud_free(cloud);
+	cloud_free(&cloud);
 	
 	return 0;
 }

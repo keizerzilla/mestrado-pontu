@@ -20,8 +20,8 @@
 #define CHEBYSHEV_ORDER_Z 2
 #endif
 
-#include "cloud.h"
-#include "matrix.h"
+#include "./cloud.h"
+#include "./dataframe.h"
 
 /**
  * \brief Calculates chebyshev polynomial
@@ -47,7 +47,7 @@ real chebyshev_moment(int p, int q, int r, struct cloud *cloud);
  * \param cloud Target cloud
  * \return Matrix with moments of the cloud
  */
-struct matrix *chebyshev_cloud_moments(struct cloud *cloud);
+struct dataframe *chebyshev_cloud_moments(struct cloud *cloud);
 
 #endif // CHEBYSHEV_H
 

@@ -10,7 +10,7 @@
 
 #include <stdlib.h>
 
-#include "vector3.h"
+#include "./vector3.h"
 
 /**
  * \brief Struct to store a plane with 3 dimensions
@@ -33,7 +33,7 @@ struct plane *plane_new(struct vector3 *normal, struct vector3 *point);
  * \brief Frees a plane
  * \param plane Plane to be freed
  */
-void plane_free(struct plane *plane);
+void plane_free(struct plane **plane);
 
 /**
  * \brief Calculates the absolute distance between a plane and a point

@@ -27,16 +27,16 @@ struct cloud *cloud_empty()
 	return cloud_new(0);
 }
 
-void cloud_free(struct cloud *cloud)
+void cloud_free(struct cloud **cloud)
 {
-	if (cloud != NULL) {
-		free(cloud->points);
-		vector3_free(cloud->centroid);
-		kdtree_free(cloud->kdt);
-		
-		free(cloud);
-		cloud = NULL;
-	}
+	if (*cloud == NULL)
+		return;
+	
+	free((*cloud)->points);
+	vector3_free(&(*cloud)->centroid);
+	kdtree_free(&(*cloud)->kdt);
+	free(*cloud);
+	*cloud = NULL;
 }
 
 struct vector3 *cloud_set_point_real(struct cloud *cloud,
@@ -440,7 +440,7 @@ struct cloud *cloud_copy(struct cloud *cloud)
 
 struct vector3 *cloud_calc_center(struct cloud *cloud)
 {
-	vector3_free(cloud->centroid);
+	vector3_free(&cloud->centroid);
 
 	cloud->centroid = vector3_zero();
 
@@ -480,7 +480,7 @@ void cloud_translate_vector_dir(struct cloud *cloud,
 	for (uint i = 0; i < cloud->numpts; i++)
 		vector3_increase(&cloud->points[i], t);
 	
-	vector3_free(t);
+	vector3_free(&t);
 	
 	cloud_calc_center(cloud);
 }
@@ -493,8 +493,8 @@ void cloud_translate_vector(struct cloud *cloud, struct vector3 *dest)
 	for (uint i = 0; i < cloud->numpts; i++)
 		vector3_increase(&cloud->points[i], t);
 
-	vector3_free(t);
-	vector3_free(center);
+	vector3_free(&t);
+	vector3_free(&center);
 	cloud_calc_center(cloud);
 }
 
@@ -506,8 +506,8 @@ void cloud_translate_real(struct cloud *cloud, real x, real y, real z)
 	for (uint i = 0; i < cloud->numpts; i++)
 		vector3_increase(&cloud->points[i], t);
 
-	vector3_free(dest);
-	vector3_free(t);
+	vector3_free(&dest);
+	vector3_free(&t);
 	cloud_calc_center(cloud);
 }
 
@@ -535,39 +535,39 @@ void cloud_rotate_z(struct cloud *cloud, real d)
 		vector3_rotate_z(&cloud->points[i], d);
 }
 
-void cloud_transform(struct cloud *cloud, struct cmatrix* rt)
+void cloud_transform(struct cloud *cloud, struct matrix* rt)
 {
-	struct cmatrix *cloud_mat = cmatrix_new(4, cloud->numpts);
+	struct matrix *cloud_mat = matrix_new(4, cloud->numpts);
 	if (cloud_mat == NULL) {
-		cloud_free(cloud);
+		cloud_free(&cloud);
 		return;
 	}
 
-	struct cmatrix *output_mat = cmatrix_new(4, cloud->numpts);
+	struct matrix *output_mat = matrix_new(4, cloud->numpts);
 	if (output_mat == NULL) {
-		cmatrix_free(cloud_mat);
-		cloud_free(cloud);
+		matrix_free(&cloud_mat);
+		cloud_free(&cloud);
 		return;
 	}
 
 	for (uint i = 0; i < cloud->numpts; i++) {
-		cmatrix_set(cloud_mat, 0, i, cloud->points[i].x);
-		cmatrix_set(cloud_mat, 1, i, cloud->points[i].y);
-		cmatrix_set(cloud_mat, 2, i, cloud->points[i].z);
-		cmatrix_set(cloud_mat, 3, i, 1.0f);
+		matrix_set(cloud_mat, 0, i, cloud->points[i].x);
+		matrix_set(cloud_mat, 1, i, cloud->points[i].y);
+		matrix_set(cloud_mat, 2, i, cloud->points[i].z);
+		matrix_set(cloud_mat, 3, i, 1.0f);
 	}
 
 	output_mat = algebra_mat_prod(rt, cloud_mat);
 
-	cmatrix_free(cloud_mat);
+	matrix_free(&cloud_mat);
 
 	for (uint i = 0; i < cloud->numpts; i++) {
-		cloud->points[i].x = cmatrix_get(output_mat, 0, i);
-		cloud->points[i].y = cmatrix_get(output_mat, 1, i);
-		cloud->points[i].z = cmatrix_get(output_mat, 2, i);
+		cloud->points[i].x = matrix_get(output_mat, 0, i);
+		cloud->points[i].y = matrix_get(output_mat, 1, i);
+		cloud->points[i].z = matrix_get(output_mat, 2, i);
 	}
 
-	cmatrix_free(output_mat);
+	matrix_free(&output_mat);
 }
 
 real cloud_mean_x(struct cloud *cloud)
@@ -669,7 +669,7 @@ real cloud_boundingbox_area(struct cloud *cloud)
 	            (2.0f * axis->y * axis->z) +
 	            (2.0f * axis->x * axis->z);
 	
-	vector3_free(axis);
+	vector3_free(&axis);
 
 	return area;
 }
@@ -679,7 +679,7 @@ real cloud_boundingbox_volume(struct cloud *cloud)
 	struct vector3 *axis = cloud_axis_size(cloud);
 	real vol = vector3_volume(axis);
 	
-	vector3_free(axis);
+	vector3_free(&axis);
 
 	return vol;
 }
@@ -692,7 +692,7 @@ real cloud_function_volume(struct cloud *cloud)
 	for (uint i = 0; i < cloud->numpts; i++)
 		vol += vector3_distance(center, &cloud->points[i]);
 
-	vector3_free(center);
+	vector3_free(&center);
 
 	return vol;
 }
@@ -719,7 +719,7 @@ struct cloud *cloud_cut_center(struct cloud *cloud, real cut)
 			cloud_add_point_vector(sub, &cloud->points[i]);
 	}
 	
-	vector3_free(center);
+	vector3_free(&center);
 	
 	return sub;
 }
@@ -789,8 +789,8 @@ struct cloud *cloud_cut_cylinder(struct cloud *cloud,
 		if (dist <= radius)
 			cloud_add_point_vector(sub, &cloud->points[i]);
 
-		vector3_free(dot);
-		vector3_free(cross);
+		vector3_free(&dot);
+		vector3_free(&cross);
 	}
 
 	return sub;
@@ -808,7 +808,7 @@ struct cloud *cloud_segment(struct cloud *cloud,
 		if (plane_distance2point(plane, &cloud->points[i]) <= epslon)
 			cloud_add_point_vector(sub, &cloud->points[i]);
 
-	plane_free(plane);
+	plane_free(&plane);
 
 	return sub;
 }
@@ -1014,7 +1014,7 @@ real cloud_max_distance_from_center(struct cloud *cloud)
 	struct vector3 *center = cloud_get_center(cloud);
 	real d = cloud_max_distance(cloud, center);
 
-	vector3_free(center);
+	vector3_free(&center);
 
 	return d;
 }
@@ -1053,7 +1053,7 @@ struct plane *cloud_dispersion_plane(struct cloud *cloud, struct vector3 *ref)
 		yz += r->y * r->z;
 		zz += r->z * r->z;
 
-		vector3_free(r);
+		vector3_free(&r);
 	}
 
 	real det_x = yy * zz - yz * yz;
@@ -1088,7 +1088,7 @@ struct plane *cloud_dispersion_plane(struct cloud *cloud, struct vector3 *ref)
 
 	struct plane *plane = plane_new(normal, ref);
 
-	vector3_free(normal);
+	vector3_free(&normal);
 
 	return plane;
 }
@@ -1098,7 +1098,7 @@ struct vector3 *cloud_normal(struct cloud *cloud, struct vector3 *ref)
 	struct plane *bestfit = cloud_dispersion_plane(cloud, ref);
 	struct vector3 *normal = vector3_from_vector(bestfit->normal);
 
-	plane_free(bestfit);
+	plane_free(&bestfit);
 
 	return normal;
 }
@@ -1108,7 +1108,7 @@ struct plane *cloud_plane_fitting(struct cloud *cloud)
 	struct vector3 *center = cloud_get_center(cloud);
 	struct plane *plane = cloud_dispersion_plane(cloud, center);
 
-	vector3_free(center);
+	vector3_free(&center);
 
 	return plane;
 }
@@ -1118,7 +1118,7 @@ struct vector3 *cloud_point_faraway_bestfit(struct cloud *cloud)
 	struct plane *bestfit = cloud_plane_fitting(cloud);
 	struct vector3 *faraway = cloud_max_distance_from_plane(cloud, bestfit);
 
-	plane_free(bestfit);
+	plane_free(&bestfit);
 
 	return faraway;
 }
@@ -1153,7 +1153,7 @@ real cloud_curvature(struct cloud *cloud)
 
 	radius /= size;
 
-	vector3_free(center);
+	vector3_free(&center);
 
 	return 1.0f / radius;
 }
@@ -1186,7 +1186,7 @@ struct vector3 *cloud_remove_point(struct cloud *cloud, uint idx)
 	removed_point = vector3_from_vector(&cloud->points[idx]);
 
 	if (cloud->numpts == 1) {
-		cloud_free(cloud);
+		cloud_free(&cloud);
 		cloud = cloud_empty();
 	} else {
 		cloud->numpts--;
@@ -1257,7 +1257,7 @@ void cloud_ritter(struct cloud *cloud, struct vector3 **center, real *radius)
 			vector3_increase(*center, direction);
 		}
 		
-		vector3_free(direction);
+		vector3_free(&direction);
 	}
 }
 

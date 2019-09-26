@@ -110,7 +110,7 @@ real harmonics_moment_odd(int n, int m, int l, real r, struct cloud *cloud)
 		moment += radpoly * harmonic;
 	}
 	
-	vector3_free(center);
+	vector3_free(&center);
 	
 	return (3.0f * moment) / (4.0f * CALC_PI);
 }
@@ -144,7 +144,7 @@ real harmonics_moment_even(int n, int m, int l, real r, struct cloud *cloud)
 		moment += radpoly * harmonic;
 	}
 	
-	vector3_free(center);
+	vector3_free(&center);
 	
 	return (3.0f * moment) / (4.0f * CALC_PI);
 }
@@ -174,7 +174,7 @@ real harmonics_moment_mag(int n, int m, int l, real r, struct cloud *cloud)
 		moment += radpoly * harmonic;
 	}
 	
-	vector3_free(center);
+	vector3_free(&center);
 	
 	return (3.0f * moment) / (4.0f * CALC_PI);
 }
@@ -208,15 +208,15 @@ real harmonics_moment_full(int n, int m, int l, real r, struct cloud *cloud)
 		moment += radpoly * harmonic;
 	}
 	
-	vector3_free(center);
+	vector3_free(&center);
 	
 	return (3.0f * moment) / (4.0f * CALC_PI);
 }
 
-struct matrix *harmonics_cloud_moments_odd(struct cloud *cloud)
+struct dataframe *harmonics_cloud_moments_odd(struct cloud *cloud)
 {
 	int s = harmonics_nummoments(HARMON_ORD, HARMON_REP, HARMON_SPIN);
-	struct matrix *results = matrix_new(1, s);
+	struct dataframe *results = dataframe_new(1, s);
 	real r = cloud_max_distance_from_center(cloud);
 	real moment = 0.0f;
 	
@@ -226,7 +226,7 @@ struct matrix *harmonics_cloud_moments_odd(struct cloud *cloud)
 			for (int l = 0; l <= HARMON_SPIN; l++) {
 				if (harmonics_conditions(n, m, l)) {
 					moment = harmonics_moment_odd(n, m, l, r, cloud);
-					matrix_set(results, 0, col, moment);
+					dataframe_set(results, 0, col, moment);
 					col++;
 				}
 			}
@@ -236,10 +236,10 @@ struct matrix *harmonics_cloud_moments_odd(struct cloud *cloud)
 	return results;
 }
 
-struct matrix *harmonics_cloud_moments_even(struct cloud *cloud)
+struct dataframe *harmonics_cloud_moments_even(struct cloud *cloud)
 {
 	int s = harmonics_nummoments(HARMON_ORD, HARMON_REP, HARMON_SPIN);
-	struct matrix *results = matrix_new(1, s);
+	struct dataframe *results = dataframe_new(1, s);
 	real r = cloud_max_distance_from_center(cloud);
 	real moment = 0.0f;
 	
@@ -249,7 +249,7 @@ struct matrix *harmonics_cloud_moments_even(struct cloud *cloud)
 			for (int l = 0; l <= HARMON_SPIN; l++) {
 				if (harmonics_conditions(n, m, l)) {
 					moment = harmonics_moment_even(n, m, l, r, cloud);
-					matrix_set(results, 0, col, moment);
+					dataframe_set(results, 0, col, moment);
 					col++;
 				}
 			}
@@ -259,10 +259,10 @@ struct matrix *harmonics_cloud_moments_even(struct cloud *cloud)
 	return results;
 }
 
-struct matrix *harmonics_cloud_moments_mag(struct cloud *cloud)
+struct dataframe *harmonics_cloud_moments_mag(struct cloud *cloud)
 {
 	int s = harmonics_nummoments(HARMON_ORD, HARMON_REP, HARMON_SPIN);
-	struct matrix *results = matrix_new(1, s);
+	struct dataframe *results = dataframe_new(1, s);
 	real r = cloud_max_distance_from_center(cloud);
 	real moment = 0.0f;
 	
@@ -272,7 +272,7 @@ struct matrix *harmonics_cloud_moments_mag(struct cloud *cloud)
 			for (int l = 0; l <= HARMON_SPIN; l++) {
 				if (harmonics_conditions(n, m, l)) {
 					moment = harmonics_moment_mag(n, m, l, r, cloud);
-					matrix_set(results, 0, col, moment);
+					dataframe_set(results, 0, col, moment);
 					col++;
 				}
 			}
@@ -282,10 +282,10 @@ struct matrix *harmonics_cloud_moments_mag(struct cloud *cloud)
 	return results;
 }
 
-struct matrix *harmonics_cloud_moments_full(struct cloud *cloud)
+struct dataframe *harmonics_cloud_moments_full(struct cloud *cloud)
 {
 	int s = harmonics_nummoments(HARMON_ORD, HARMON_REP, HARMON_SPIN);
-	struct matrix *results = matrix_new(1, s);
+	struct dataframe *results = dataframe_new(1, s);
 	real r = cloud_max_distance_from_center(cloud);
 	real moment = 0.0f;
 	
@@ -295,7 +295,7 @@ struct matrix *harmonics_cloud_moments_full(struct cloud *cloud)
 			for (int l = 0; l <= HARMON_SPIN; l++) {
 				if (harmonics_conditions(n, m, l)) {
 					moment = harmonics_moment_full(n, m, l, r, cloud);
-					matrix_set(results, 0, col, moment);
+					dataframe_set(results, 0, col, moment);
 					col++;
 				}
 			}

@@ -8,7 +8,7 @@
 #ifndef KDTREE_H
 #define KDTREE_H
 
-#include "vector3.h"
+#include "./vector3.h"
 
 /**
  * \brief Structure to store a kdtree node
@@ -35,7 +35,7 @@ struct kdtree *kdtree_new(struct vector3 *points, uint numpts, int axis);
  * \brief Frees a kdtree
  * \param kdt Kdtree to be freed
  */
-void kdtree_free(struct kdtree *kdt);
+void kdtree_free(struct kdtree **kdt);
 
 /**
  * \brief Partitionates the points of a cloud recursively

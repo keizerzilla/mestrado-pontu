@@ -16,8 +16,8 @@
 #define ZERNIKE_REP 13
 #endif
 
-#include "cloud.h"
-#include "matrix.h"
+#include "./cloud.h"
+#include "./dataframe.h"
 
 /**
  * \brief Zernike polynomial boundary conditions
@@ -105,28 +105,28 @@ real zernike_moment_full(int n, int m, real r, struct cloud *cloud);
  * \param cloud Target cloud
  * \return Matrix with the moments
  */
-struct matrix *zernike_cloud_moments_odd(struct cloud *cloud);
+struct dataframe *zernike_cloud_moments_odd(struct cloud *cloud);
 
 /**
  * \brief Calculates Zernike even moments of a cloud
  * \param cloud Target cloud
  * \return Matrix with the moments
  */
-struct matrix *zernike_cloud_moments_even(struct cloud *cloud);
+struct dataframe *zernike_cloud_moments_even(struct cloud *cloud);
 
 /**
  * \brief Calculates the magnitude of Zernike moments of a cloud
  * \param cloud Target cloud
  * \return Matrix with the moments
  */
-struct matrix *zernike_cloud_moments_mag(struct cloud *cloud);
+struct dataframe *zernike_cloud_moments_mag(struct cloud *cloud);
 
 /**
  * \brief Calculates full form Zernike moments of a cloud
  * \param cloud Target cloud
  * \return Matrix with the moments
  */
-struct matrix *zernike_cloud_moments_full(struct cloud *cloud);
+struct dataframe *zernike_cloud_moments_full(struct cloud *cloud);
 
 #endif // ZERNIKE_H
 

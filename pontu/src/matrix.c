@@ -9,7 +9,7 @@ struct matrix *matrix_new(uint rows, uint cols)
 	mat->rows = rows;
 	mat->cols = cols;
 	
-	mat->data = malloc(rows * cols * sizeof(real));
+	mat->data = malloc(rows * cols * sizeof(cnum));
 	if (mat->data == NULL)
 		return NULL;
 
@@ -20,20 +20,34 @@ struct matrix *matrix_new(uint rows, uint cols)
 	return mat;
 }
 
-void matrix_free(struct matrix *mat)
+void matrix_free(struct matrix **mat)
 {
-	if (mat == NULL)
+	if (*mat == NULL)
 		return;
 
-	free(mat->data);
-	mat->data = NULL;
-	free(mat);
-	mat = NULL;
+	free((*mat)->data);
+	(*mat)->data = NULL;
+	free(*mat);
+	*mat = NULL;
+}
+
+struct matrix *matrix_copy(struct matrix *mat)
+{
+	struct matrix *mat_cpy = matrix_new(mat->rows, mat->cols);
+
+	if (mat_cpy == NULL)
+		return NULL;
+
+	for (uint i = 0; i < mat->rows; i++)
+		for (uint j = 0; j < mat->cols; j++)
+			matrix_set(mat_cpy, i, j, matrix_get(mat, i, j));
+
+	return mat_cpy;
 }
 
 int matrix_add_row(struct matrix *mat)
 {
-	real *row = realloc(mat->data, mat->cols * (mat->rows + 1) * sizeof(real));
+	cnum *row = realloc(mat->data, mat->cols * (mat->rows + 1) * sizeof(cnum));
 
 	if (row != NULL) {
 		mat->data = row;
@@ -50,7 +64,7 @@ int matrix_add_row(struct matrix *mat)
 
 int matrix_add_col(struct matrix *mat)
 {
-	real *new_mat = malloc(mat->rows * (mat->cols + 1) * sizeof(real));
+	cnum *new_mat = malloc(mat->rows * (mat->cols + 1) * sizeof(cnum));
 	if (new_mat == NULL)
 		return 0;
 
@@ -115,7 +129,7 @@ struct matrix *matrix_remove_col(struct matrix *mat, uint col)
 	return new_mat;
 }
 
-real *matrix_set(struct matrix *mat, uint i, uint j, real value)
+cnum *matrix_set(struct matrix *mat, uint i, uint j, cnum value)
 {
 	if (i >= mat->rows || j >= mat->cols) {
 		return NULL;
@@ -125,7 +139,7 @@ real *matrix_set(struct matrix *mat, uint i, uint j, real value)
 	}
 }
 
-real matrix_get(struct matrix *mat, uint i, uint j)
+cnum matrix_get(struct matrix *mat, uint i, uint j)
 {
 	if (i >= mat->rows || j >= mat->cols)
 		return 0.0f;
@@ -177,7 +191,9 @@ struct matrix *matrix_concat_ver(struct matrix *m1, struct matrix *m2)
 	return ans;
 }
 
-int matrix_save_to_file(struct matrix *mat, const char *filename, const char *m)
+int matrix_save_to_file(struct matrix *mat,
+                         const char *filename,
+                         const char *m)
 {
 	FILE *file = fopen(filename, m);
 	if (file == NULL) {
@@ -187,7 +203,8 @@ int matrix_save_to_file(struct matrix *mat, const char *filename, const char *m)
 
 	for (uint row = 0; row < mat->rows; row++) {
 		for (uint col = 0; col < mat->cols; col++) {
-			fprintf(file, "%le", matrix_get(mat, row, col));
+			fprintf(file, "%le + (%le * I)", creal(matrix_get(mat, row, col)), 
+                                      cimag(matrix_get(mat, row, col)));
 			if (col + 1 < mat->cols)
 				fprintf(file, "%c", ',');
 		}
@@ -209,10 +226,17 @@ void matrix_debug(struct matrix *mat, FILE *output)
 
 	for (uint i = 0; i < mat->rows; i++) {
 		for (uint j = 0; j < mat->cols; j++) {
-			if (j == mat->cols - 1)
-				fprintf(output, "%le", mat->data[(i * mat->cols) + j]);
-			else
-				fprintf(output, "%le ", mat->data[(i * mat->cols) + j]);
+			if (j == mat->cols - 1) {
+				fprintf(output,
+				        "%le + (%le * I)",
+				        creal(mat->data[(i * mat->cols) + j]),
+                        cimag(mat->data[(i * mat->cols) + j]));
+			} else {
+				fprintf(output,
+				        "%le + (%le * I), ",
+				        creal(mat->data[(i * mat->cols) + j]),
+                        cimag(mat->data[(i * mat->cols) + j]));
+			}
 		}
 
 		fprintf(output, "\n");

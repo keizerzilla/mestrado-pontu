@@ -34,23 +34,23 @@ struct kdtree *kdtree_new(struct vector3 *points, uint numpts, int axis)
 	return kdt;
 }
 
-void kdtree_free(struct kdtree *kdt)
+void kdtree_free(struct kdtree **kdt)
 {
-	if (kdt == NULL)
+	if (*kdt == NULL)
 		return;
 	
-	vector3_free(kdt->midpnt);
+	vector3_free(&(*kdt)->midpnt);
 	
-	if (kdt->points != NULL) {
-		free(kdt->points);
-		kdt->points = NULL;
+	if ((*kdt)->points != NULL) {
+		free((*kdt)->points);
+		(*kdt)->points = NULL;
 	}
 	
-	kdtree_free(kdt->left);
-	kdtree_free(kdt->right);
+	kdtree_free(&(*kdt)->left);
+	kdtree_free(&(*kdt)->right);
 	
-	free(kdt);
-	kdt = NULL;
+	free(*kdt);
+	*kdt = NULL;
 }
 
 void kdtree_partitionate(struct kdtree *kdt, int axis)

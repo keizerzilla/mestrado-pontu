@@ -35,23 +35,23 @@ struct octree *octree_new(struct vector3 *points, uint numpts, int depth)
 	return oct;
 }
 
-void octree_free(struct octree *oct)
+void octree_free(struct octree **oct)
 {
-	if (oct == NULL)
+	if (*oct == NULL)
 		return;
 	
-	vector3_free(oct->midpnt);
+	vector3_free(&(*oct)->midpnt);
 	
-	if (oct->points != NULL) {
-		free(oct->points);
-		oct->points = NULL;
+	if ((*oct)->points != NULL) {
+		free((*oct)->points);
+		(*oct)->points = NULL;
 	}
 	
 	for (uint i = 0; i < 8; i++)
-		octree_free(oct->child[i]);
+		octree_free(&(*oct)->child[i]);
 	
-	free(oct);
-	oct = NULL;
+	free(*oct);
+	*oct = NULL;
 }
 
 int octree_quadrant(struct octree *oct, struct vector3 *p)

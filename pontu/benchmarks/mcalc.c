@@ -202,7 +202,7 @@ int main(int argc, char** argv)
 	}
 	
     matrix_free(results);
-    cloud_free(cloud);
+    cloud_free(&cloud);
     
     return 0;
 }

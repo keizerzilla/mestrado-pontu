@@ -12,7 +12,7 @@
 #define OCTREE_AXIS_Y 1
 #define OCTREE_AXIS_Z 0
 
-#include "vector3.h"
+#include "./vector3.h"
 
 /**
  * \brief Structure to store a octree node
@@ -38,7 +38,7 @@ struct octree *octree_new(struct vector3 *points, uint numpts, int depth);
  * \brief Frees a octree
  * \param oct octree to be freed
  */
-void octree_free(struct octree *oct);
+void octree_free(struct octree **oct);
 
 /**
  * \brief Calculates the quadrant of a point by the node's midpoint

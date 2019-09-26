@@ -20,9 +20,9 @@
 #define HARMON_SPIN 7
 #endif
 
-#include "cloud.h"
-#include "matrix.h"
-#include "zernike.h"
+#include "./cloud.h"
+#include "./dataframe.h"
+#include "./zernike.h"
 
 /**
  * \brief
@@ -113,28 +113,28 @@ real harmonics_moment_full(int n, int m, int l, real r, struct cloud *cloud);
  * \param
  * \return
  */
-struct matrix *harmonics_cloud_moments_odd(struct cloud *cloud);
+struct dataframe *harmonics_cloud_moments_odd(struct cloud *cloud);
 
 /**
  * \brief
  * \param
  * \return
  */
-struct matrix *harmonics_cloud_moments_even(struct cloud *cloud);
+struct dataframe *harmonics_cloud_moments_even(struct cloud *cloud);
 
 /**
  * \brief
  * \param
  * \return
  */
-struct matrix *harmonics_cloud_moments_mag(struct cloud *cloud);
+struct dataframe *harmonics_cloud_moments_mag(struct cloud *cloud);
 
 /**
  * \brief
  * \param
  * \return
  */
-struct matrix *harmonics_cloud_moments_full(struct cloud *cloud);
+struct dataframe *harmonics_cloud_moments_full(struct cloud *cloud);
 
 #endif // HARMONICS_H
 

@@ -25,7 +25,7 @@ real hu_central_moment(int p, int q, int r, struct cloud *cloud)
 		          vector3_distance(&cloud->points[i], center);
 	}
 
-	vector3_free(center);
+	vector3_free(&center);
 
 	return moment;
 }
@@ -46,9 +46,9 @@ real hu_refined_moment(int p, int q, int r, struct cloud *cloud)
 	return central / pow(zero, 3);
 }
 
-struct matrix *hu_cloud_moments_hu1980(struct cloud *cloud)
+struct dataframe *hu_cloud_moments_hu1980(struct cloud *cloud)
 {
-	struct matrix *results = matrix_new(1, 3);
+	struct dataframe *results = dataframe_new(1, 3);
 
 	real hu200 = hu_refined_moment(2, 0, 0, cloud);
 	real hu020 = hu_refined_moment(0, 2, 0, cloud);
@@ -64,22 +64,25 @@ struct matrix *hu_cloud_moments_hu1980(struct cloud *cloud)
 	          (hu002 * hu110 * hu110) - (hu020 * hu101 * hu101) -
 	          (hu200 * hu011 * hu011);
 
-	matrix_set(results, 0, 0, j1);
-	matrix_set(results, 0, 1, j2);
-	matrix_set(results, 0, 2, j3);
+	dataframe_set(results, 0, 0, j1);
+	dataframe_set(results, 0, 1, j2);
+	dataframe_set(results, 0, 2, j3);
 
 	return results;
 }
 
-struct matrix *hu_cloud_raw_moments(struct cloud *cloud, int p, int q, int r)
+struct dataframe *hu_cloud_raw_moments(struct cloud *cloud, int p, int q, int r)
 {
-	struct matrix *ans = matrix_new(1, (p + 1) * (q + 1) * (r + 1));
+	struct dataframe *ans = dataframe_new(1, (p + 1) * (q + 1) * (r + 1));
 	
 	int col = 0;
 	for (int i = 0; i <= p; i++) {
 		for (int j = 0; j <= q; j++) {
 			for (int k = 0; k <= r; k++) {
-				matrix_set(ans, 0, col, hu_normalized_moment(i, j, k, cloud));
+				dataframe_set(ans,
+				              0,
+				              col,
+				              hu_normalized_moment(i, j, k, cloud));
 				col++;
 			}
 		}
@@ -88,9 +91,9 @@ struct matrix *hu_cloud_raw_moments(struct cloud *cloud, int p, int q, int r)
 	return ans;
 }
 
-struct matrix *hu_cloud_moments_hututu(struct cloud *cloud)
+struct dataframe *hu_cloud_moments_hututu(struct cloud *cloud)
 {
-	struct matrix *results = matrix_new(1, HU_MOMENTS);
+	struct dataframe *results = dataframe_new(1, HU_MOMENTS);
 	real i1;
 	real i2;
 	real i3;
@@ -131,13 +134,13 @@ struct matrix *hu_cloud_moments_hututu(struct cloud *cloud)
 	i7 = (3 * f - b) * (f + b) * (3 * pow((g + d), 2) - pow((f + b), 2)) -
 	     (g - 3 * d) * (f + b) * (3 * pow((g + d), 2) - pow((f + b), 2));
 
-	matrix_set(results, 0, 0, i1);
-	matrix_set(results, 0, 1, i2);
-	matrix_set(results, 0, 2, i3);
-	matrix_set(results, 0, 3, i4);
-	matrix_set(results, 0, 4, i5);
-	matrix_set(results, 0, 5, i6);
-	matrix_set(results, 0, 6, i7);
+	dataframe_set(results, 0, 0, i1);
+	dataframe_set(results, 0, 1, i2);
+	dataframe_set(results, 0, 2, i3);
+	dataframe_set(results, 0, 3, i4);
+	dataframe_set(results, 0, 4, i5);
+	dataframe_set(results, 0, 5, i6);
+	dataframe_set(results, 0, 6, i7);
 
 	a = hu_normalized_moment(0, 0, 2, cloud);
 	b = hu_normalized_moment(0, 0, 3, cloud);
@@ -164,13 +167,13 @@ struct matrix *hu_cloud_moments_hututu(struct cloud *cloud)
 	i7 = (3 * f - b) * (f + b) * (3 * pow((g + d), 2) - pow((f + b), 2)) -
 	     (g - 3 * d) * (f + b) * (3 * pow((g + d), 2) - pow((f + b), 2));
 
-	matrix_set(results, 0, 7, i1);
-	matrix_set(results, 0, 8, i2);
-	matrix_set(results, 0, 9, i3);
-	matrix_set(results, 0, 10, i4);
-	matrix_set(results, 0, 11, i5);
-	matrix_set(results, 0, 12, i6);
-	matrix_set(results, 0, 13, i7);
+	dataframe_set(results, 0, 7, i1);
+	dataframe_set(results, 0, 8, i2);
+	dataframe_set(results, 0, 9, i3);
+	dataframe_set(results, 0, 10, i4);
+	dataframe_set(results, 0, 11, i5);
+	dataframe_set(results, 0, 12, i6);
+	dataframe_set(results, 0, 13, i7);
 
 	a = hu_normalized_moment(0, 0, 2, cloud);
 	b = hu_normalized_moment(0, 0, 3, cloud);
@@ -197,13 +200,13 @@ struct matrix *hu_cloud_moments_hututu(struct cloud *cloud)
 	i7 = (3 * f - b) * (f + b) * (3 * pow((g + d), 2) - pow((f + b), 2)) -
 	     (g - 3 * d) * (f + b) * (3 * pow((g + d), 2) - pow((f + b), 2));
 
-	matrix_set(results, 0, 14, i1);
-	matrix_set(results, 0, 15, i2);
-	matrix_set(results, 0, 16, i3);
-	matrix_set(results, 0, 17, i4);
-	matrix_set(results, 0, 18, i5);
-	matrix_set(results, 0, 19, i6);
-	matrix_set(results, 0, 20, i7);
+	dataframe_set(results, 0, 14, i1);
+	dataframe_set(results, 0, 15, i2);
+	dataframe_set(results, 0, 16, i3);
+	dataframe_set(results, 0, 17, i4);
+	dataframe_set(results, 0, 18, i5);
+	dataframe_set(results, 0, 19, i6);
+	dataframe_set(results, 0, 20, i7);
 
 	return results;
 }

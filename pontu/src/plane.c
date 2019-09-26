@@ -15,15 +15,15 @@ struct plane *plane_new(struct vector3 *normal, struct vector3 *point)
 	return plane;
 }
 
-void plane_free(struct plane *plane)
+void plane_free(struct plane **plane)
 {
-	if (plane == NULL)
+	if (*plane == NULL)
 		return;
 
-	vector3_free(plane->normal);
-	vector3_free(plane->point);
-	free(plane);
-	plane = NULL;
+	vector3_free(&(*plane)->normal);
+	vector3_free(&(*plane)->point);
+	free(*plane);
+	*plane = NULL;
 }
 
 real plane_distance2point(struct plane *plane, struct vector3 *point)
@@ -31,7 +31,7 @@ real plane_distance2point(struct plane *plane, struct vector3 *point)
 	struct vector3 *proj = vector3_sub(point, plane->point);
 	real d = vector3_dot(proj, plane->normal) / vector3_length(plane->normal);
 	
-	vector3_free(proj);
+	vector3_free(&proj);
 	
 	return fabs(d);
 }
@@ -41,7 +41,7 @@ uint plane_on_direction(struct plane *plane, struct vector3 *point)
 	struct vector3 *proj = vector3_sub(point, plane->point);
 	real d = vector3_dot(proj, plane->normal);
 	
-	vector3_free(proj);
+	vector3_free(&proj);
 	
 	return (d >= 0.0f) ? 1 : 0;
 }

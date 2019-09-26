@@ -44,17 +44,17 @@ real legendre_moment(int p, int q, int r, struct cloud *cloud)
 		          legendre_poly(r, center_z) *
 		          vector3_distance(point, center);
 
-		vector3_free(point);
+		vector3_free(&point);
 	}
 
-	vector3_free(center);
+	vector3_free(&center);
 
 	return legendre_norm(p, q, r, cloud) * moment;
 }
 
-struct matrix *legendre_cloud_moments(struct cloud *cloud)
+struct dataframe *legendre_cloud_moments(struct cloud *cloud)
 {
-	struct matrix *results = matrix_new(1, LEGENDRE_MOMENTS);
+	struct dataframe *results = dataframe_new(1, LEGENDRE_MOMENTS);
 
 	int p = 0;
 	int q = 0;
@@ -64,7 +64,7 @@ struct matrix *legendre_cloud_moments(struct cloud *cloud)
 	for (p = 0; p <= LEGENDRE_ORDER; p++) {
 		for (q = 0; q <= LEGENDRE_ORDER; q++) {
 			for (r = 0; r <= LEGENDRE_ORDER; r++) {
-				matrix_set(results, 0, col, legendre_moment(p, q, r, cloud));
+				dataframe_set(results, 0, col, legendre_moment(p, q, r, cloud));
 				col++;
 			}
 		}

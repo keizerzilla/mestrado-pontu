@@ -25,7 +25,7 @@ struct cloud *registration_closest_points_bf(struct cloud *source,
  * \param target The target cloud
  * \return The transformation matrix 4x4
  */
-struct cmatrix *registration_align(struct cloud *source, struct cloud *target);
+struct matrix *registration_align(struct cloud *source, struct cloud *target);
 
 /**
  * \brief Applies the ICP algorithm to register source with target
@@ -36,10 +36,11 @@ struct cmatrix *registration_align(struct cloud *source, struct cloud *target);
  * \param k Maximun number of iterations
  * \return The transformation matrix 4x4
  */
-struct cmatrix *registration_icp(struct cloud *source,
+struct matrix *registration_icp(struct cloud *source,
                                  struct cloud *target,
                                  struct cloud **aligned,
                                  real t,
                                  uint k);
 
 #endif // REGISTRATION_H
+

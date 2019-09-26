@@ -8,8 +8,8 @@
 #ifndef VOXELGRID_H
 #define VOXELGRID_H
 
-#include "vector3.h"
-#include "cloud.h"
+#include "./vector3.h"
+#include "./cloud.h"
 
 /**
  * \brief Fast offset calculation
@@ -20,7 +20,7 @@
  * \param size_y The y size of the cube
  * \return The disired offset
  */
-uint idx_offset(uint i, uint j, uint k, uint size_x, uint size_y);
+uint voxelgrid_idx_offset(uint i, uint j, uint k, uint size_x, uint size_y);
 
 /**
  * \brief Executes voxegrid subsampling
@@ -28,7 +28,7 @@ uint idx_offset(uint i, uint j, uint k, uint size_x, uint size_y);
  * \param leafsize The size of the sliding cube
  * \return The src cloud with reduced density
  */
-struct cloud* cubic_voxel_grid(struct cloud *src, real leafsize);
+struct cloud* voxelgrid_sampling(struct cloud *src, real leafsize);
 
 #endif // VOXELGRID_H
 

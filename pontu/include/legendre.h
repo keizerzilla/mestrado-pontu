@@ -11,8 +11,8 @@
 #define LEGENDRE_ORDER 2
 #define LEGENDRE_MOMENTS 27
 
-#include "cloud.h"
-#include "matrix.h"
+#include "./cloud.h"
+#include "./dataframe.h"
 
 /**
  * \brief Calculates Legendre polynomial
@@ -55,7 +55,7 @@ real legendre_moment(int p, int q, int r, struct cloud *cloud);
  * \param cloud Target cloud
  * \return Matrix with the moments
  */
-struct matrix *legendre_cloud_moments(struct cloud *cloud);
+struct dataframe *legendre_cloud_moments(struct cloud *cloud);
 
 #endif // LEGENDRE_H
 

@@ -8,19 +8,19 @@
 #ifndef EXTRACTION_H
 #define EXTRACTION_H
 
-#include "cloud.h"
-#include "matrix.h"
+#include "./cloud.h"
+#include "./dataframe.h"
 
 /**
  * \brief Extracts moments using cuts from a plane
  * \param cloud Target cloud
  * \param mfunc Function to extract moments
  * \param norm Normal vector of the plane
- * \return A matrix com os momentos extraídos
+ * \return A dataframe com os momentos extraídos
  */
-struct matrix *extraction_plane(struct cloud *cloud,
-				                struct matrix *(*mfunc) (struct cloud *),
-				                struct vector3 *norm);
+struct dataframe *extraction_plane(struct cloud *cloud,
+				                   struct dataframe *(*mfunc) (struct cloud *),
+				                   struct vector3 *norm);
 /**
  * \brief Extracts moments using cuts from recursive planes
  * \param cloud Target cloud
@@ -28,8 +28,8 @@ struct matrix *extraction_plane(struct cloud *cloud,
  * \param norm Normal vector of the plane
  * \return Matrix with extracted moments
  */
-struct matrix *extraction_recursive(struct cloud *cloud,
-				                    struct matrix *(*mfunc) (struct cloud *),
+struct dataframe *extraction_recursive(struct cloud *cloud,
+				                    struct dataframe *(*mfunc) (struct cloud *),
 				                    struct vector3 *norm);
 
 /**
@@ -38,8 +38,8 @@ struct matrix *extraction_recursive(struct cloud *cloud,
  * \param mfunc Function to extract moments
  * \return Matrix with extracted moments
  */
-struct matrix *extraction_sagittal(struct cloud *cloud,
-				                   struct matrix *(*mfunc) (struct cloud *));
+struct dataframe *extraction_sagittal(struct cloud *cloud,
+				                   struct dataframe *(*mfunc) (struct cloud *));
 
 /**
  * \brief Extracts moments using transversal cuts
@@ -47,8 +47,8 @@ struct matrix *extraction_sagittal(struct cloud *cloud,
  * \param mfunc Function to extract moments
  * \return Matrix with extracted moments
  */
-struct matrix *extraction_transversal(struct cloud *cloud,
-				                      struct matrix *(*mfunc) (struct cloud *));
+struct dataframe *extraction_transversal(struct cloud *cloud,
+				                   struct dataframe *(*mfunc) (struct cloud *));
 
 /**
  * \brief Extracts moments using front cuts
@@ -56,8 +56,8 @@ struct matrix *extraction_transversal(struct cloud *cloud,
  * \param mfunc Function to extract moments
  * \return Matrix with extracted moments
  */
-struct matrix *extraction_frontal(struct cloud *cloud,
-				                  struct matrix *(*mfunc) (struct cloud *));
+struct dataframe *extraction_frontal(struct cloud *cloud,
+				                  struct dataframe *(*mfunc) (struct cloud *));
 
 /**
  * \brief Extracts moments using only radial cuts
@@ -65,24 +65,24 @@ struct matrix *extraction_frontal(struct cloud *cloud,
  * \param mfunc Function to extract moments
  * \return Matrix with extracted moments
  */
-struct matrix *extraction_radial(struct cloud *cloud,
-				                 struct matrix *(*mfunc) (struct cloud *));
+struct dataframe *extraction_radial(struct cloud *cloud,
+				                 struct dataframe *(*mfunc) (struct cloud *));
 /**
  * \brief Extracts moments using only the superior area of the cloud
  * \param cloud Target cloud
  * \param mfunc Function to extract moments
  * \return Matrix with the extracted moments
  */
-struct matrix *extraction_upper(struct cloud *cloud,
-				                struct matrix *(*mfunc) (struct cloud *));
+struct dataframe *extraction_upper(struct cloud *cloud,
+				                struct dataframe *(*mfunc) (struct cloud *));
 /**
  * \brief Extracts moments using only the inferior area of the cloud
  * \param cloud Target cloud
  * \param mfunc Function to extract moments
  * \return Matrix with the extracted moments
  */
-struct matrix *extraction_lower(struct cloud *cloud,
-				                struct matrix *(*mfunc) (struct cloud *));
+struct dataframe *extraction_lower(struct cloud *cloud,
+				                struct dataframe *(*mfunc) (struct cloud *));
 
 /**
  * \brief Extracts moments using only the nose
@@ -90,8 +90,8 @@ struct matrix *extraction_lower(struct cloud *cloud,
  * \param mfunc Function to extract moments
  * \return Matrix with the extracted moments
  */
-struct matrix *extraction_manhattan(struct cloud *cloud,
-				                    struct matrix *(*mfunc) (struct cloud *));
+struct dataframe *extraction_manhattan(struct cloud *cloud,
+				                   struct dataframe *(*mfunc) (struct cloud *));
 
 /**
  * \brief The 4 tutu sections
@@ -99,8 +99,8 @@ struct matrix *extraction_manhattan(struct cloud *cloud,
  * \param mfunc Function to extract moments
  * \return 4 sections
  */
-struct matrix *extraction_4(struct cloud *cloud,
-			                struct matrix *(*mfunc) (struct cloud *));
+struct dataframe *extraction_4(struct cloud *cloud,
+			                struct dataframe *(*mfunc) (struct cloud *));
 
 /**
  * \brief The 6 tutu sections
@@ -108,16 +108,16 @@ struct matrix *extraction_4(struct cloud *cloud,
  * \param mfunc Function to extract moments
  * \return 6 sections
  */
-struct matrix *extraction_6(struct cloud *cloud,
-			                struct matrix *(*mfunc) (struct cloud *));
+struct dataframe *extraction_6(struct cloud *cloud,
+			                struct dataframe *(*mfunc) (struct cloud *));
 /**
  * \brief The 7 iranians sections
  * \param cloud Target cloud
  * \param mfunc Function to extract moments
  * \return 7 sections
  */
-struct matrix *extraction_7(struct cloud *cloud,
-			                struct matrix *(*mfunc) (struct cloud *));
+struct dataframe *extraction_7(struct cloud *cloud,
+			                struct dataframe *(*mfunc) (struct cloud *));
 
 /**
  * \brief Cuts a face (T shape) (nose, eyes, forehead)
@@ -132,8 +132,8 @@ struct cloud *extraction_vshape_base(struct cloud *cloud);
  * \param mfunc Function to extract moments
  * \return Moments of the cut T
  */
-struct matrix *extraction_vshape(struct cloud *cloud,
-				                 struct matrix *(*mfunc) (struct cloud *));
+struct dataframe *extraction_vshape(struct cloud *cloud,
+				                 struct dataframe *(*mfunc) (struct cloud *));
 
 /**
  * \brief Cuts a face (T shape) frontally
@@ -141,8 +141,8 @@ struct matrix *extraction_vshape(struct cloud *cloud,
  * \param mfunc Function to extract moments
  * \return Moments of the cut T
  */
-struct matrix *extraction_vshape_f(struct cloud *cloud,
-				                   struct matrix *(*mfunc) (struct cloud *));
+struct dataframe *extraction_vshape_f(struct cloud *cloud,
+				                   struct dataframe *(*mfunc) (struct cloud *));
 
 /**
  * \brief Cuts a face (T shape) sagittally
@@ -150,8 +150,8 @@ struct matrix *extraction_vshape_f(struct cloud *cloud,
  * \param mfunc Function to extract moments
  * \return Moments of the cut T
  */
-struct matrix *extraction_vshape_s(struct cloud *cloud,
-				                   struct matrix *(*mfunc) (struct cloud *));
+struct dataframe *extraction_vshape_s(struct cloud *cloud,
+				                   struct dataframe *(*mfunc) (struct cloud *));
 
 /**
  * \brief Cuts a face (T shape) transversaly
@@ -159,8 +159,8 @@ struct matrix *extraction_vshape_s(struct cloud *cloud,
  * \param mfunc Function to extract moments
  * \return Moments of the cut T
  */
-struct matrix *extraction_vshape_t(struct cloud *cloud,
-				                   struct matrix *(*mfunc) (struct cloud *));
+struct dataframe *extraction_vshape_t(struct cloud *cloud,
+				                   struct dataframe *(*mfunc) (struct cloud *));
 
 #endif // EXTRACTION_H
 

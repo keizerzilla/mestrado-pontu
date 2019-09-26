@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "calc.h"
+#include "./calc.h"
 
 #define VECTOR3_AXIS_X 0
 #define VECTOR3_AXIS_Y 1
@@ -67,7 +67,7 @@ void vector3_copy(struct vector3 *dst, struct vector3 *src);
  * \brief Frees memory allocated by a vector
  * \param v The vector to be freed
  */
-void vector3_free(struct vector3 *v);
+void vector3_free(struct vector3 **v);
 
 /**
  * \brief Sums 2 vectors generating a new one

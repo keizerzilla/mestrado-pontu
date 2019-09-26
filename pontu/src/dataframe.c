@@ -1,15 +1,15 @@
-#include "../include/cmatrix.h"
+#include "../include/dataframe.h"
 
-struct cmatrix *cmatrix_new(uint rows, uint cols)
+struct dataframe *dataframe_new(uint rows, uint cols)
 {
-	struct cmatrix *mat = malloc(sizeof(struct cmatrix));
+	struct dataframe *mat = malloc(sizeof(struct dataframe));
 	if (mat == NULL)
 		return NULL;
 
 	mat->rows = rows;
 	mat->cols = cols;
 	
-	mat->data = malloc(rows * cols * sizeof(cnum));
+	mat->data = malloc(rows * cols * sizeof(real));
 	if (mat->data == NULL)
 		return NULL;
 
@@ -20,34 +20,20 @@ struct cmatrix *cmatrix_new(uint rows, uint cols)
 	return mat;
 }
 
-void cmatrix_free(struct cmatrix *mat)
+void dataframe_free(struct dataframe **mat)
 {
-	if (mat == NULL)
+	if (*mat == NULL)
 		return;
 
-	free(mat->data);
-	mat->data = NULL;
-	free(mat);
-	mat = NULL;
+	free((*mat)->data);
+	(*mat)->data = NULL;
+	free(*mat);
+	*mat = NULL;
 }
 
-struct cmatrix *cmatrix_copy(struct cmatrix *mat)
+int dataframe_add_row(struct dataframe *mat)
 {
-	struct cmatrix *mat_cpy = cmatrix_new(mat->rows, mat->cols);
-
-	if (mat_cpy == NULL)
-		return NULL;
-
-	for (uint i = 0; i < mat->rows; i++)
-		for (uint j = 0; j < mat->cols; j++)
-			cmatrix_set(mat_cpy, i, j, cmatrix_get(mat, i, j));
-
-	return mat_cpy;
-}
-
-int cmatrix_add_row(struct cmatrix *mat)
-{
-	cnum *row = realloc(mat->data, mat->cols * (mat->rows + 1) * sizeof(cnum));
+	real *row = realloc(mat->data, mat->cols * (mat->rows + 1) * sizeof(real));
 
 	if (row != NULL) {
 		mat->data = row;
@@ -62,9 +48,9 @@ int cmatrix_add_row(struct cmatrix *mat)
 	}
 }
 
-int cmatrix_add_col(struct cmatrix *mat)
+int dataframe_add_col(struct dataframe *mat)
 {
-	cnum *new_mat = malloc(mat->rows * (mat->cols + 1) * sizeof(cnum));
+	real *new_mat = malloc(mat->rows * (mat->cols + 1) * sizeof(real));
 	if (new_mat == NULL)
 		return 0;
 
@@ -85,13 +71,13 @@ int cmatrix_add_col(struct cmatrix *mat)
 	return mat->cols;
 }
 
-struct cmatrix *cmatrix_remove_row(struct cmatrix *mat, uint row)
+struct dataframe *dataframe_remove_row(struct dataframe *mat, uint row)
 {
 	if (row >= mat->rows) {
 		return NULL;
 	}
 
-	struct cmatrix *new_mat = cmatrix_new(mat->rows - 1, mat->cols);
+	struct dataframe *new_mat = dataframe_new(mat->rows - 1, mat->cols);
 	if (new_mat == NULL)
 		return NULL;
 	
@@ -100,19 +86,19 @@ struct cmatrix *cmatrix_remove_row(struct cmatrix *mat, uint row)
 	for (uint i = 0; i < new_mat->rows; i++) {
 		k += row == i ? 2 : 1;
 		for (uint j = 0; j < new_mat->cols; j++)
-			cmatrix_set(new_mat, i, j, cmatrix_get(mat, k, j));
+			dataframe_set(new_mat, i, j, dataframe_get(mat, k, j));
 	}
 
 	return new_mat;
 }
 
-struct cmatrix *cmatrix_remove_col(struct cmatrix *mat, uint col)
+struct dataframe *dataframe_remove_col(struct dataframe *mat, uint col)
 {
 	if (col >= mat->cols) {
 		return NULL;
 	}
 
-	struct cmatrix *new_mat = cmatrix_new(mat->rows, mat->cols - 1);
+	struct dataframe *new_mat = dataframe_new(mat->rows, mat->cols - 1);
 	if (new_mat == NULL)
 		return NULL;
 	
@@ -122,14 +108,14 @@ struct cmatrix *cmatrix_remove_col(struct cmatrix *mat, uint col)
 		k = -1;
 		for (uint j = 0; j < new_mat->cols; j++) {
 			k += col == j ? 2 : 1;
-			cmatrix_set(new_mat, i, j, cmatrix_get(mat, i, k));
+			dataframe_set(new_mat, i, j, dataframe_get(mat, i, k));
 		}
 	}
 
 	return new_mat;
 }
 
-cnum *cmatrix_set(struct cmatrix *mat, uint i, uint j, cnum value)
+real *dataframe_set(struct dataframe *mat, uint i, uint j, real value)
 {
 	if (i >= mat->rows || j >= mat->cols) {
 		return NULL;
@@ -139,7 +125,7 @@ cnum *cmatrix_set(struct cmatrix *mat, uint i, uint j, cnum value)
 	}
 }
 
-cnum cmatrix_get(struct cmatrix *mat, uint i, uint j)
+real dataframe_get(struct dataframe *mat, uint i, uint j)
 {
 	if (i >= mat->rows || j >= mat->cols)
 		return 0.0f;
@@ -147,67 +133,55 @@ cnum cmatrix_get(struct cmatrix *mat, uint i, uint j)
 		return mat->data[(i * mat->cols) + j];
 }
 
-struct cmatrix *cmatrix_concat_hor(struct cmatrix *m1, struct cmatrix *m2)
+struct dataframe *dataframe_concat_hor(struct dataframe *m1,
+                                       struct dataframe *m2)
 {
 	if (m1->rows != m2->rows)
 		return NULL;
 
 	uint ncols = m1->cols + m2->cols;
 
-	struct cmatrix *ans = cmatrix_new(m1->rows, ncols);
+	struct dataframe *ans = dataframe_new(m1->rows, ncols);
 	if (ans == NULL)
 		return NULL;
 
 	for (uint i = 0; i < m1->rows; i++)
 		for (uint j = 0; j < m1->cols; j++)
-			cmatrix_set(ans, i, j, cmatrix_get(m1, i, j));
+			dataframe_set(ans, i, j, dataframe_get(m1, i, j));
 
 	for (uint i = 0; i < m2->rows; i++)
 		for (uint j = m1->cols; j < ncols; j++)
-			cmatrix_set(ans, i, j, cmatrix_get(m2, i, j - m1->cols));
+			dataframe_set(ans, i, j, dataframe_get(m2, i, j - m1->cols));
 
 	return ans;
 }
 
-struct cmatrix *cmatrix_concat_ver(struct cmatrix *m1, struct cmatrix *m2)
+struct dataframe *dataframe_concat_ver(struct dataframe *m1,
+                                       struct dataframe *m2)
 {
 	if (m1->cols != m2->cols)
 		return NULL;
 
 	uint nrows = m1->rows + m2->rows;
 
-	struct cmatrix *ans = cmatrix_new(nrows, m1->cols);
+	struct dataframe *ans = dataframe_new(nrows, m1->cols);
 	if (ans == NULL)
 		return NULL;
 
 	for (uint i = 0; i < m1->rows; i++)
 		for (uint j = 0; j < m1->cols; j++)
-			cmatrix_set(ans, i, j, cmatrix_get(m1, i, j));
+			dataframe_set(ans, i, j, dataframe_get(m1, i, j));
 
 	for (uint i = m1->rows; i < nrows; i++)
 		for (uint j = 0; j < m2->cols; j++)
-			cmatrix_set(ans, i, j, cmatrix_get(m2, i - m1->rows, j));
+			dataframe_set(ans, i, j, dataframe_get(m2, i - m1->rows, j));
 
 	return ans;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-int cmatrix_save_to_file(struct cmatrix *mat, const char *filename, const char *m)
+int dataframe_save_to_file(struct dataframe *mat,
+                           const char *filename,
+                           const char *m)
 {
 	FILE *file = fopen(filename, m);
 	if (file == NULL) {
@@ -217,8 +191,7 @@ int cmatrix_save_to_file(struct cmatrix *mat, const char *filename, const char *
 
 	for (uint row = 0; row < mat->rows; row++) {
 		for (uint col = 0; col < mat->cols; col++) {
-			fprintf(file, "%le + (%le * I)", creal(cmatrix_get(mat, row, col)), 
-                                      cimag(cmatrix_get(mat, row, col)));
+			fprintf(file, "%le", dataframe_get(mat, row, col));
 			if (col + 1 < mat->cols)
 				fprintf(file, "%c", ',');
 		}
@@ -231,23 +204,22 @@ int cmatrix_save_to_file(struct cmatrix *mat, const char *filename, const char *
 	return 1;
 }
 
-void cmatrix_debug(struct cmatrix *mat, FILE *output)
+void dataframe_debug(struct dataframe *mat, FILE *output)
 {
 	if (mat == NULL) {
-		fprintf(output, "!!! matrix empty !!!\n");
+		fprintf(output, "!!! dataframe empty !!!\n");
 		return;
 	}
 
 	for (uint i = 0; i < mat->rows; i++) {
 		for (uint j = 0; j < mat->cols; j++) {
 			if (j == mat->cols - 1)
-				fprintf(output, "%le + (%le * I)", creal(mat->data[(i * mat->cols) + j]),
-                                                   cimag(mat->data[(i * mat->cols) + j]));
+				fprintf(output, "%le", mat->data[(i * mat->cols) + j]);
 			else
-				fprintf(output, "%le + (%le * I), ", creal(mat->data[(i * mat->cols) + j]),
-                                                    cimag(mat->data[(i * mat->cols) + j]));
+				fprintf(output, "%le ", mat->data[(i * mat->cols) + j]);
 		}
 
 		fprintf(output, "\n");
 	}
 }
+

@@ -3,10 +3,12 @@
 
 #include "include/calc.h"
 #include "include/vector3.h"
+#include "include/matrix.h"
+#include "include/algebra.h"
 #include "include/plane.h"
 #include "include/cloud.h"
 #include "include/kdtree.h"
-#include "include/algebra.h"
 #include "include/octree.h"
 
 #endif // PONTU_CORE_H
+

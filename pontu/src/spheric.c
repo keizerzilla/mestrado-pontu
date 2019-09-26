@@ -24,7 +24,7 @@ real spheric_moment(int p, int q, int r, struct cloud *cloud)
 		          spheric_quad(center_x, center_y, center_z, p, q, r);
 	}
 
-	vector3_free(center);
+	vector3_free(&center);
 
 	return moment / cloud_boundingbox_volume(cloud);
 }
@@ -37,12 +37,12 @@ real spheric_normalized_moment(int p, int q, int r, struct cloud *cloud)
 	return central / pow(zero, ((p + q + r) / 3.0f) + 1.0f);
 }
 
-struct matrix *spheric_cloud_moments(struct cloud *cloud)
+struct dataframe *spheric_cloud_moments(struct cloud *cloud)
 {
 	int m = (SPHERIC_ORDER_X + 1) *
 	        (SPHERIC_ORDER_Y + 1) *
 	        (SPHERIC_ORDER_Z + 1);
-	struct matrix *results = matrix_new(1, m);
+	struct dataframe *results = dataframe_new(1, m);
 
 	int p = 0;
 	int q = 0;
@@ -52,7 +52,7 @@ struct matrix *spheric_cloud_moments(struct cloud *cloud)
 	for (p = 0; p <= SPHERIC_ORDER_X; p++) {
 		for (q = 0; q <= SPHERIC_ORDER_Y; q++) {
 			for (r = 0; r <= SPHERIC_ORDER_Z; r++) {
-				matrix_set(results, 0, col, spheric_moment(p, q, r, cloud));
+				dataframe_set(results, 0, col, spheric_moment(p, q, r, cloud));
 				col++;
 			}
 		}

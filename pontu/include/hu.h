@@ -12,8 +12,8 @@
 #define HU_SUPERSET_MOMENTS 8
 #define HU_MOMENTS 21
 
-#include "cloud.h"
-#include "matrix.h"
+#include "./cloud.h"
+#include "./dataframe.h"
 
 /**
  * \brief Calculates regular Hu 3D moment
@@ -60,7 +60,7 @@ real hu_refined_moment(int p, int q, int r, struct cloud *cloud);
  * \param cloud Target cloud
  * \return Matrix with the moments
  */
-struct matrix *hu_cloud_moments_hu1980(struct cloud *cloud);
+struct dataframe *hu_cloud_moments_hu1980(struct cloud *cloud);
 
 /**
  * \brief Calculates a set of central raw moment of Hu 3D
@@ -70,14 +70,14 @@ struct matrix *hu_cloud_moments_hu1980(struct cloud *cloud);
  * \param cloud Target cloud
  * \return Orders up to p, q, r of cloud
  */
-struct matrix *hu_cloud_raw_moments(struct cloud *cloud, int p, int q, int r);
+struct dataframe *hu_cloud_raw_moments(struct cloud *cloud, int p, int q, int r);
 
 /**
  * \brief Calculates invariants moments of Hu (Rocha Neto - 2017)
  * \param cloud Target cloud
  * \return Matrix with the moments
  */
-struct matrix *hu_cloud_moments_hututu(struct cloud *cloud);
+struct dataframe *hu_cloud_moments_hututu(struct cloud *cloud);
 
 #endif // HU_H
 

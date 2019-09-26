@@ -20,8 +20,8 @@
 #define SPHERIC_ORDER_Z 5
 #endif
 
-#include "cloud.h"
-#include "matrix.h"
+#include "./cloud.h"
+#include "./dataframe.h"
 
 /**
  * \brief Image function from the spheric equation
@@ -60,7 +60,7 @@ real spheric_normalized_moment(int p, int q, int r, struct cloud *cloud);
  * \param cloud Target cloud
  * \return Matrix with the moments
  */
-struct matrix *spheric_cloud_moments(struct cloud *cloud);
+struct dataframe *spheric_cloud_moments(struct cloud *cloud);
 
 #endif // SPHERIC_H
 

@@ -1,10 +1,10 @@
 #include "../include/voxelgrid.h"
 
-uint idx_offset(uint i, uint j, uint k, uint size_x, uint size_y) {
+uint voxelgrid_idx_offset(uint i, uint j, uint k, uint size_x, uint size_y) {
     return (k * size_x * size_y) + (j * size_x) + i;
 }
 
-struct cloud *cubic_voxel_grid(struct cloud *src, real leafsize) {
+struct cloud *voxelgrid_sampling(struct cloud *src, real leafsize) {
     if (leafsize <= 0.0) {
         return NULL;
     }
@@ -111,7 +111,7 @@ struct cloud *cubic_voxel_grid(struct cloud *src, real leafsize) {
             }
         }
 
-        idx_aux = idx_offset(pos_x, pos_y, pos_z, num_voxels_x, num_voxels_y);
+        idx_aux = voxelgrid_idx_offset(pos_x, pos_y, pos_z, num_voxels_x, num_voxels_y);
 
         if (clouds[idx_aux] == 0) {
             clouds[idx_aux] = cloud_empty();
@@ -123,11 +123,11 @@ struct cloud *cubic_voxel_grid(struct cloud *src, real leafsize) {
     for (uint i = 0; i < num_voxels_x; i++) {
         for (uint j = 0; j < num_voxels_y; j++) {
             for (uint k = 0; k < num_voxels_z; k++) {
-                idx_aux = idx_offset(i, j, k, num_voxels_x, num_voxels_y);
+                idx_aux = voxelgrid_idx_offset(i, j, k, num_voxels_x, num_voxels_y);
                 if (clouds[idx_aux] != 0) {
                     cloud_add_point_vector(output, 
                                            cloud_calc_center(clouds[idx_aux]));
-                    cloud_free(clouds[idx_aux]);
+                    cloud_free(&clouds[idx_aux]);
                 }
             }
         }

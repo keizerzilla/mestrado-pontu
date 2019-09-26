@@ -30,12 +30,13 @@ void vector3_copy(struct vector3 *dst, struct vector3 *src)
 	dst->z = src->z;
 }
 
-void vector3_free(struct vector3 *v)
+void vector3_free(struct vector3 **v)
 {
-	if (v != NULL) {
-		free(v);
-		v = NULL;
-	}
+	if (v == NULL)
+		return;
+	
+	free(*v);
+	*v = NULL;
 }
 
 struct vector3 *vector3_add(struct vector3 *a, struct vector3 *b)
@@ -342,8 +343,8 @@ struct vector3 *vector3_normal(struct vector3 *a,
 	struct vector3 *v2 = vector3_sub(c, a);
 	struct vector3 *ret = vector3_cross(v1, v2);
 
-	vector3_free(v1);
-	vector3_free(v2);
+	vector3_free(&v1);
+	vector3_free(&v2);
 
 	return ret;
 }
@@ -353,7 +354,7 @@ real vector3_area(struct vector3 *a, struct vector3 *b, struct vector3 *c)
 	struct vector3 *n = vector3_normal(a, b, c);
 	real ret = 0.5f * vector3_length(n);
 	
-	vector3_free(n);
+	vector3_free(&n);
 
 	return ret;
 }
@@ -369,9 +370,9 @@ real vector3_menger_curvature(struct vector3 *a,
 	real num = 4 * vector3_area(a, b, c);
 	real den = vector3_length(s1) * vector3_length(s2) * vector3_length(s3);
 
-	vector3_free(s1);
-	vector3_free(s2);
-	vector3_free(s3);
+	vector3_free(&s1);
+	vector3_free(&s2);
+	vector3_free(&s3);
 
 	return num / den;
 }
@@ -405,8 +406,6 @@ struct vector3 *vector3_closest_to_list(struct vector3 **points,
 	
 	return points[index];
 }
-
-//void vector3_sort_by_axis(struct vector3 **points, uint numpts, uint axis){}
 
 void vector3_debug(struct vector3 *v, FILE * output)
 {

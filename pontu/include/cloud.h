@@ -12,10 +12,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "vector3.h"
-#include "plane.h"
-#include "kdtree.h"
-#include "algebra.h"
+#include "./vector3.h"
+#include "./plane.h"
+#include "./algebra.h"
+#include "./kdtree.h"
 
 #define CLOUD_MAXBUFFER 512
 
@@ -46,7 +46,7 @@ struct cloud *cloud_empty();
  * \brief Frees a cloud
  * \param cloud Cloud to be freed
  */
-void cloud_free(struct cloud *cloud);
+void cloud_free(struct cloud **cloud);
 
 /**
  * \brief Set values of a point of the cloud
@@ -264,7 +264,7 @@ void cloud_rotate_z(struct cloud *cloud, real d);
  * \param cloud Target cloud
  * \param rt Transformation matrix 4x4
  */
-void cloud_transform(struct cloud *cloud, struct cmatrix* rt);
+void cloud_transform(struct cloud *cloud, struct matrix* rt);
 
 /**
  * \brief Gets the mean value of the coordinate x in a cloud
