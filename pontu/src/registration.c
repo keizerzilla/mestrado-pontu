@@ -8,7 +8,7 @@ struct cloud *registration_closest_points_bf(struct cloud *source,
     if (closest_points == NULL)
         return NULL;
 
-    uint idx;
+    uint idx = 0;
 
     for (uint i = 0; i < source->numpts; i++) {
         idx = cloud_closest_point_idx(target, &source->points[i]);
@@ -16,7 +16,7 @@ struct cloud *registration_closest_points_bf(struct cloud *source,
         closest_points->points[i].x = target->points[idx].x;
         closest_points->points[i].y = target->points[idx].y;
         closest_points->points[i].z = target->points[idx].z;
-    }       
+    }
 
     return closest_points;
 }

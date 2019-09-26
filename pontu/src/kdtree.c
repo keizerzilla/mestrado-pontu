@@ -84,6 +84,24 @@ void kdtree_partitionate(struct kdtree *kdt, int axis)
 	if (num_right > 1)
 		kdtree_partitionate(kdt->right, axis + 1);
 }
+//https://christopherstoll.org/2011/09/k-d-tree-nearest-neighbor-search.html
+struct kdtree *kdtree_closest_node(struct kdtree *kdt,
+                                   struct vector3 *p,
+                                   real *d)
+{
+	if (kdt->left == NULL && kdt->right == NULL)
+		return kdt;
+	
+	if (p->coord[kdt->axis] < kdt->midpnt->coord[kdt->axis]) {
+		// left
+		*d = vector3_squared_distance(p, kdt->left->midpnt);
+		return kdtree_closest_node(kdt->left, p, d);
+	} else {
+		// right
+		*d = vector3_squared_distance(p, kdt->right->midpnt);
+		return kdtree_closest_node(kdt->right, p, d);
+	}
+}
 
 struct vector3 *kdtree_nearest_neighbor(struct kdtree *kdt, struct vector3 *p)
 {

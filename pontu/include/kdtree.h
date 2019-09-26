@@ -45,6 +45,13 @@ void kdtree_free(struct kdtree **kdt);
 void kdtree_partitionate(struct kdtree *kdt, int axis);
 
 /**
+ * @TODO
+ */
+struct kdtree *kdtree_closest_node(struct kdtree *kdt,
+                                   struct vector3 *p,
+                                   real *d);
+
+/**
  * \brief Finds the point in the kdtree nearest to a target point
  * \param kdt The target kdtree
  * \param p The target point

@@ -413,7 +413,7 @@ struct cloud *cloud_segment(struct cloud *cloud,
  * \brief Gets the closest point of the cloud to an point
  * \param cloud Target cloud
  * \param point Target point
- * \return Closest point
+ * \return Address to the closest point
  */
 struct vector3 *cloud_closest_point(struct cloud *cloud, struct vector3 *point);
 
@@ -424,7 +424,6 @@ struct vector3 *cloud_closest_point(struct cloud *cloud, struct vector3 *point);
  * \return Index to the closest point
  */
 uint cloud_closest_point_idx(struct cloud *cloud, struct vector3 *point);
-
 
 /**
  * \brief Gets point closest to a cloud centroid
