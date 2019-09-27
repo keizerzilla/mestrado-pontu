@@ -5,7 +5,7 @@
 
 int main()
 {
-	/* Teste kd-tree */
+	/* Teste kdTree */
 	struct cloud *target = cloud_load_ply("../samples/bun000.ply");
 	struct cloud *source = cloud_load_ply("../samples/bun045.ply");
 	
@@ -13,19 +13,26 @@ int main()
 	if (closest_points == NULL)
         return 1;
 	
-	cloud_partitionate(target);
+	struct kdtree *kdt = kdtree_new(NULL, target->points, target->numpts, 0);
+	kdtree_partitionate(kdt);
 	
 	struct vector3 *closest = NULL;
 	for (uint i = 0; i < source->numpts; i++) {
-		closest = kdtree_nearest_neighbor(target->kdt, &source->points[i]);
+		closest = kdtree_nearest_neighbor(kdt, &source->points[i]);
+		
+		if (closest == NULL)
+			printf("CLOSEST NULL!!!\n");
+		
 		cloud_set_point_vector(closest_points, i, closest);
 	}
 	
-	cloud_save_xyz(closest_points, "../samples/bun_closest_kdtutu.xyz");
+	cloud_save_xyz(closest_points, "../samples/KDTUTU.xyz");
 	
+	kdtree_free(&kdt);
 	cloud_free(&closest_points);
 	cloud_free(&source);
 	cloud_free(&target);
+	
 	
 	/** Teste ICP
 	struct cloud *target = cloud_load_ply("../samples/bun000.ply");

@@ -94,8 +94,8 @@ void cloud_partitionate(struct cloud *cloud)
 	if (cloud->kdt != NULL)
 		return;
 	
-	cloud->kdt = kdtree_new(cloud->points, cloud->numpts, VECTOR3_AXIS_X);
-	kdtree_partitionate(cloud->kdt, VECTOR3_AXIS_X);
+	cloud->kdt = kdtree_new(NULL, cloud->points, cloud->numpts, VECTOR3_AXIS_X);
+	kdtree_partitionate(cloud->kdt);
 }
 
 struct cloud *cloud_load_xyz(const char *filename)

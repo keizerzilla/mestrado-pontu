@@ -18,6 +18,7 @@ struct kdtree {
 	uint numpts;
 	struct vector3 *midpnt;
 	int axis;
+	struct kdtree *parent;
 	struct kdtree *left;
 	struct kdtree *right;
 };
@@ -29,7 +30,10 @@ struct kdtree {
  * \param axis The node's separation axis
  * \return NULL if it fails, or the pointer to the kdtree if it doesn't
  */
-struct kdtree *kdtree_new(struct vector3 *points, uint numpts, int axis);
+struct kdtree *kdtree_new(struct kdtree *parent,
+                          struct vector3 *points,
+                          uint numpts,
+                          int axis);
 
 /**
  * \brief Frees a kdtree
@@ -40,22 +44,32 @@ void kdtree_free(struct kdtree **kdt);
 /**
  * \brief Partitionates the points of a cloud recursively
  * \param kdt Target kdtree
- * \param axis The axis of separation
  */
-void kdtree_partitionate(struct kdtree *kdt, int axis);
+void kdtree_partitionate(struct kdtree *kdt);
+
+/**
+ * @TODO
+ */
+real kdtree_dist_hyperplane(struct kdtree *k1, struct kdtree *k2);
 
 /**
  * @TODO
  */
 struct kdtree *kdtree_closest_node(struct kdtree *kdt,
                                    struct vector3 *p,
-                                   real *d);
+                                   real *r);
 
 /**
- * \brief Finds the point in the kdtree nearest to a target point
- * \param kdt The target kdtree
- * \param p The target point
- * \return Address of the closest point to p in kdt
+ * @TODO
+ */
+void kdtree_closest_point(struct kdtree *node,
+                          struct kdtree* current,
+                          struct vector3 *p,
+                          struct vector3 *b,
+                          real *r);
+
+/**
+ * @TODO
  */
 struct vector3 *kdtree_nearest_neighbor(struct kdtree *kdt, struct vector3 *p);
 

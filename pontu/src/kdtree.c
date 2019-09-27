@@ -1,6 +1,9 @@
 #include "../include/kdtree.h"
 
-struct kdtree *kdtree_new(struct vector3 *points, uint numpts, int axis)
+struct kdtree *kdtree_new(struct kdtree *parent,
+                          struct vector3 *points,
+                          uint numpts,
+                          int axis)
 {
 	struct kdtree *kdt = malloc(sizeof(struct kdtree));
 	if (kdt == NULL)
@@ -26,8 +29,9 @@ struct kdtree *kdtree_new(struct vector3 *points, uint numpts, int axis)
 	kdt->midpnt->y /= numpts;
 	kdt->midpnt->z /= numpts;
 	
+	kdt->parent = parent;
 	kdt->numpts = numpts;
-	kdt->axis = axis;
+	kdt->axis = axis % 3;
 	kdt->left = NULL;
 	kdt->right = NULL;
 	
@@ -53,68 +57,114 @@ void kdtree_free(struct kdtree **kdt)
 	*kdt = NULL;
 }
 
-void kdtree_partitionate(struct kdtree *kdt, int axis)
+void kdtree_partitionate(struct kdtree *kdt)
 {
-	kdt->axis = axis % 3;
-	
 	size_t size_node = kdt->numpts * sizeof(struct vector3 *);
 	struct vector3 **left_points = malloc(size_node);
 	struct vector3 **right_points = malloc(size_node);
-	uint num_left = 0;
-	uint num_right = 0;
+	uint nleft = 0;
+	uint nright = 0;
 	
 	for (uint i = 0; i < kdt->numpts; i++) {
 		if (kdt->points[i]->coord[kdt->axis] < kdt->midpnt->coord[kdt->axis]) {
-			left_points[num_left] = kdt->points[i];
-			num_left++;
+			left_points[nleft] = kdt->points[i];
+			nleft++;
 		} else {
-			right_points[num_right] = kdt->points[i];
-			num_right++;
+			right_points[nright] = kdt->points[i];
+			nright++;
 		}
 	}
 	
-	kdt->left = kdtree_new(*left_points, num_left, axis + 1);
+	if (nleft != 0)
+		kdt->left = kdtree_new(kdt, *left_points, nleft, kdt->axis + 1);
+	
 	free(left_points);
-	kdt->right = kdtree_new(*right_points, num_right, axis + 1);
+	
+	if (nright != 0)
+		kdt->right = kdtree_new(kdt, *right_points, nright, kdt->axis + 1);
+	
 	free(right_points);
 	
-	if (num_left > 1)
-		kdtree_partitionate(kdt->left, axis + 1);
+	if (nleft > 1)
+		kdtree_partitionate(kdt->left);
 	
-	if (num_right > 1)
-		kdtree_partitionate(kdt->right, axis + 1);
+	if (nright > 1)
+		kdtree_partitionate(kdt->right);
 }
-//https://christopherstoll.org/2011/09/k-d-tree-nearest-neighbor-search.html
+
+// @TODO
 struct kdtree *kdtree_closest_node(struct kdtree *kdt,
                                    struct vector3 *p,
-                                   real *d)
+                                   real *r)
 {
 	if (kdt->left == NULL && kdt->right == NULL)
 		return kdt;
 	
 	if (p->coord[kdt->axis] < kdt->midpnt->coord[kdt->axis]) {
-		// left
-		*d = vector3_squared_distance(p, kdt->left->midpnt);
-		return kdtree_closest_node(kdt->left, p, d);
+		*r = vector3_squared_distance(p, kdt->left->midpnt);
+		return kdtree_closest_node(kdt->left, p, r);
 	} else {
-		// right
-		*d = vector3_squared_distance(p, kdt->right->midpnt);
-		return kdtree_closest_node(kdt->right, p, d);
+		*r = vector3_squared_distance(p, kdt->right->midpnt);
+		return kdtree_closest_node(kdt->right, p, r);
 	}
 }
 
+// @TODO
+real kdtree_dist_hyperplane(struct kdtree *k1, struct kdtree *k2)
+{
+	return fabs(k1->midpnt->coord[k1->axis] - k2->midpnt->coord[k1->axis]);
+}
+
+// @TODO
+void kdtree_closest_point(struct kdtree *node,
+                          struct kdtree* current,
+                          struct vector3 *p,
+                          struct vector3 *b,
+                          real *r)
+{
+	printf(">>>DEBUG 00\n");
+	if (current == NULL)
+		return;
+	
+	printf(">>>DEBUG 01\n");
+	if (kdtree_dist_hyperplane(node, current) <= *r) {
+		printf(">>>DEBUG 02\n");
+		real d = vector3_squared_distance(p, current->midpnt);
+		
+		printf(">>>DEBUG 03\n");
+		if (d < *r) {
+			b = current->midpnt;
+			*r = d;
+		}
+		
+		printf(">>>DEBUG 04\n");
+		kdtree_closest_point(node, current->left, p, b, r);
+		printf(">>>DEBUG 05\n");
+		kdtree_closest_point(node, current->right, p, b, r);
+		
+		printf(">>>DEBUG 06\n");
+		if (current->left == NULL && current->right == NULL) {
+			b = current->midpnt;
+			printf(">>>DEBUG 07\n");
+			return;
+		}
+		
+	} else {
+		printf(">>>DEBUG 08\n");
+		return;
+	}
+}
+
+// @TODO
 struct vector3 *kdtree_nearest_neighbor(struct kdtree *kdt, struct vector3 *p)
 {
-	if (kdt->left == NULL && kdt->right == NULL)
-		return kdt->midpnt;
+	real r = 0.0f;
+	struct kdtree *node = kdtree_closest_node(kdt, p, &r);
+	struct vector3 *b = node->midpnt;
 	
-	real left_d = vector3_squared_distance(kdt->left->midpnt, p);
-	real right_d = vector3_squared_distance(kdt->right->midpnt, p);
+	kdtree_closest_point(node, kdt, p, b, &r);
 	
-	if (left_d < right_d)
-		return kdtree_nearest_neighbor(kdt->left, p);
-	else
-		return kdtree_nearest_neighbor(kdt->right, p);
+	return b;
 }
 
 void kdtree_debug(struct kdtree *kdt, FILE *output)
