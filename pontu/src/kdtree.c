@@ -92,7 +92,20 @@ void kdtree_partitionate(struct kdtree *kdt)
 		kdtree_partitionate(kdt->right);
 }
 
+// -----------------------------------------------------------------------------
+
 // @TODO
+struct kdtree *kdtree_unwind(struct kdtree *node)
+{
+	if (node->parent->parent == NULL)
+		return node;
+	
+	return kdtree_unwind(node->parent);
+}
+
+// @TODO
+// ESSE CARA ERA A ORIGEM DOS ERROS ANTERIORES
+// PROBLEMA: CONTROLANDO ERRADO A RECURSAO
 struct kdtree *kdtree_closest_node(struct kdtree *kdt,
                                    struct vector3 *p,
                                    real *r)
@@ -101,70 +114,82 @@ struct kdtree *kdtree_closest_node(struct kdtree *kdt,
 		return kdt;
 	
 	if (p->coord[kdt->axis] < kdt->midpnt->coord[kdt->axis]) {
-		*r = vector3_squared_distance(p, kdt->left->midpnt);
-		return kdtree_closest_node(kdt->left, p, r);
+		if (kdt->left != NULL) {
+			*r = vector3_squared_distance(p, kdt->left->midpnt);
+			return kdtree_closest_node(kdt->left, p, r);
+		} else {
+			return kdt;
+		}
 	} else {
-		*r = vector3_squared_distance(p, kdt->right->midpnt);
-		return kdtree_closest_node(kdt->right, p, r);
+		if (kdt->right != NULL) {
+			*r = vector3_squared_distance(p, kdt->right->midpnt);
+			return kdtree_closest_node(kdt->right, p, r);
+		} else {
+			return kdt;
+		}
 	}
 }
 
 // @TODO
+// PARECE OK POR ENQUANTO
 real kdtree_dist_hyperplane(struct kdtree *k1, struct kdtree *k2)
 {
 	return fabs(k1->midpnt->coord[k1->axis] - k2->midpnt->coord[k1->axis]);
 }
 
 // @TODO
+// ACHO QUE ESSA RECURSAO NAO TAH LEGAL
+// ACHEI O ERRO (mas agora tah um loop infinito)
+// ACHEI FOI PORRA...
+// EU NAO QUERO VOLTAR PRA NODE!!!
 void kdtree_closest_point(struct kdtree *node,
                           struct kdtree* current,
-                          struct vector3 *p,
-                          struct vector3 *b,
-                          real *r)
+                          struct vector3 *point,
+                          struct vector3 **best,
+                          real *radius,
+                          real *dist)
 {
-	printf(">>>DEBUG 00\n");
 	if (current == NULL)
 		return;
 	
-	printf(">>>DEBUG 01\n");
-	if (kdtree_dist_hyperplane(node, current) <= *r) {
-		printf(">>>DEBUG 02\n");
-		real d = vector3_squared_distance(p, current->midpnt);
-		
-		printf(">>>DEBUG 03\n");
-		if (d < *r) {
-			b = current->midpnt;
-			*r = d;
+	if (kdtree_dist_hyperplane(node, current) < *radius) {
+		real d = vector3_squared_distance(point, current->midpnt);
+		if (d < *dist) {
+			*best = current->midpnt;
+			*dist = d;
 		}
-		
-		printf(">>>DEBUG 04\n");
-		kdtree_closest_point(node, current->left, p, b, r);
-		printf(">>>DEBUG 05\n");
-		kdtree_closest_point(node, current->right, p, b, r);
-		
-		printf(">>>DEBUG 06\n");
-		if (current->left == NULL && current->right == NULL) {
-			b = current->midpnt;
-			printf(">>>DEBUG 07\n");
-			return;
-		}
-		
-	} else {
-		printf(">>>DEBUG 08\n");
-		return;
 	}
+	
+	kdtree_closest_point(node, current->left, point, best, radius, dist);
+	kdtree_closest_point(node, current->right, point, best, radius, dist);
 }
 
 // @TODO
-struct vector3 *kdtree_nearest_neighbor(struct kdtree *kdt, struct vector3 *p)
+// ESSE CARA ""PROVAVELMENTE"" TAH OK (mas verificar mesmo assim)
+struct vector3 *kdtree_nearest_neighbor(struct kdtree *kdt,
+                                        struct vector3 *point)
 {
-	real r = 0.0f;
-	struct kdtree *node = kdtree_closest_node(kdt, p, &r);
-	struct vector3 *b = node->midpnt;
+	real radius = 0.0f;
+	struct kdtree *node = kdtree_closest_node(kdt, point, &radius);
+	struct vector3 *best = node->midpnt;
+	real dist = radius;
 	
-	kdtree_closest_point(node, kdt, p, b, &r);
+	//kdtree_closest_point(node, kdt, point, &best, &radius, &dist);
+	//return best;
 	
-	return b;
+	struct kdtree *branch = kdtree_unwind(node);
+	
+	printf("uwind ok!\n");
+	
+	if (kdt->left == branch) {
+		printf("bora right\n");
+		kdtree_closest_point(node, kdt->right, point, &best, &radius, &dist);
+	} else {
+	printf("bora left\n");
+		kdtree_closest_point(node, kdt->left, point, &best, &radius, &dist);
+	}
+	
+	return best;
 }
 
 void kdtree_debug(struct kdtree *kdt, FILE *output)

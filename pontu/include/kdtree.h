@@ -55,6 +55,11 @@ real kdtree_dist_hyperplane(struct kdtree *k1, struct kdtree *k2);
 /**
  * @TODO
  */
+struct kdtree *kdtree_unwind(struct kdtree *node);
+
+/**
+ * @TODO
+ */
 struct kdtree *kdtree_closest_node(struct kdtree *kdt,
                                    struct vector3 *p,
                                    real *r);
@@ -64,14 +69,16 @@ struct kdtree *kdtree_closest_node(struct kdtree *kdt,
  */
 void kdtree_closest_point(struct kdtree *node,
                           struct kdtree* current,
-                          struct vector3 *p,
-                          struct vector3 *b,
-                          real *r);
+                          struct vector3 *point,
+                          struct vector3 **best,
+                          real *radius,
+                          real *dist);
 
 /**
  * @TODO
  */
-struct vector3 *kdtree_nearest_neighbor(struct kdtree *kdt, struct vector3 *p);
+struct vector3 *kdtree_nearest_neighbor(struct kdtree *kdt,
+                                        struct vector3 *point);
 
 /**
  * \brief Debugs a kdtree (number of points in a leaf)

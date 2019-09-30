@@ -3,9 +3,37 @@
 #include "../pontu_sampling.h"
 #include "../pontu_registration.h"
 
+void to_cloud(struct kdtree *kdt, struct cloud *cloud)
+{
+	if (kdt == NULL)
+		return;
+	
+	if (kdt->left == NULL && kdt->right == NULL) {
+		cloud_add_point_vector(cloud, kdt->midpnt);
+		return;
+	}
+	
+	to_cloud(kdt->left, cloud);
+	to_cloud(kdt->right, cloud);
+}
+
 int main()
 {
-	/* Teste kdTree */
+	struct cloud *target = cloud_load_ply("../samples/bun000.ply");
+	struct kdtree *kdt = kdtree_new(NULL, target->points, target->numpts, 0);
+	kdtree_partitionate(kdt);
+	
+	struct cloud *cloud = cloud_empty();
+	
+	to_cloud(kdt, cloud);
+	
+	cloud_save_xyz(cloud, "../samples/to_cloud.xyz");
+	
+	cloud_free(&cloud);
+	kdtree_free(&kdt);
+	cloud_free(&target);
+	
+	/**
 	struct cloud *target = cloud_load_ply("../samples/bun000.ply");
 	struct cloud *source = cloud_load_ply("../samples/bun045.ply");
 	
@@ -30,18 +58,6 @@ int main()
 	
 	kdtree_free(&kdt);
 	cloud_free(&closest_points);
-	cloud_free(&source);
-	cloud_free(&target);
-	
-	
-	/** Teste ICP
-	struct cloud *target = cloud_load_ply("../samples/bun000.ply");
-	struct cloud *source = cloud_load_ply("../samples/bun045.ply");
-	
-	struct cloud *correspond = registration_closest_points_bf(source, target);
-	cloud_save_ply(correspond, "../samples/bun_correspond_tutu.ply");
-	
-	cloud_free(&correspond);
 	cloud_free(&source);
 	cloud_free(&target);
 	*/
