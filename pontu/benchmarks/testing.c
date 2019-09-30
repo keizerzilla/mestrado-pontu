@@ -1,3 +1,4 @@
+#include <time.h>
 #include "../pontu_core.h"
 #include "../pontu_features.h"
 #include "../pontu_sampling.h"
@@ -19,18 +20,19 @@ void to_cloud(struct kdtree *kdt, struct cloud *cloud)
 
 int main()
 {
+	srand(time(NULL));
+	
 	struct pointset *set = pointset_new();
 	
-	pointset_add(&set, 0, 0, 0);
-	pointset_add(&set, 1, 1, 1);
-	pointset_add(&set, 2, 2, 2);
-	pointset_add(&set, 3, 3, 3);
-	pointset_add(&set, 4, 4, 4);
-	pointset_add(&set, 5, 5, 5);
-	pointset_add(&set, 6, 6, 6);
+	for (int i = 0; i < 5; i++) {
+		//pointset_add(&set, rand() % 10, rand() % 10, rand() % 10);
+		pointset_add(&set, i, i, i);
+	}
 	
+	pointset_sort(&set, VECTOR3_AXIS_X);
 	pointset_debug(set, stdout);
-	
+	printf("--------------------------\n");
+	pointset_debug_reverse(set, stdout);
 	pointset_free(&set);
 	
 	/**
