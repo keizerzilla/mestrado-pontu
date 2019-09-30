@@ -22,17 +22,17 @@ void pointset_add(struct pointset **set, real x, real y, real z);
 
 struct pointset *pointset_tail(struct pointset *set);
 
+void pointset_swap(struct vector3 **a, struct vector3 **b);
+
 struct pointset *pointset_partition(struct pointset *head,
                                     struct pointset *end,
-                                    struct pointset **newhead,
-                                    struct pointset **newend,
                                     int axis);
 
-struct pointset *pointset_recursive_sort(struct pointset *head,
-                                         struct pointset *end,
-                                         int axis);
+void pointset_recursive_sort(struct pointset *head,
+                             struct pointset *end,
+                             int axis);
 
-void pointset_sort(struct pointset **set, int axis);
+void pointset_sort(struct pointset *set, int axis);
 
 void pointset_debug(struct pointset *set, FILE *out);
 

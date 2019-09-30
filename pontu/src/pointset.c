@@ -32,84 +32,52 @@ struct pointset *pointset_tail(struct pointset *set)
 	return temp;
 }
 
+void pointset_swap(struct vector3 **a, struct vector3 **b)
+{
+	struct vector3 *tmp = *a;
+	
+	*a = *b;
+	*b = tmp;
+}
+
 struct pointset *pointset_partition(struct pointset *head,
                                     struct pointset *end,
-                                    struct pointset **newhead,
-                                    struct pointset **newend,
                                     int axis)
 {
-	struct pointset *pivot = end;
-	struct pointset *prev = NULL;
-	struct pointset *cur = head;
-	struct pointset *tail = pivot;
+	real x = end->point->coord[axis];
 	
-	while (cur != pivot) {
-		if (cur->point->coord[axis] < pivot->point->coord[axis]) {
-			if ((*newhead) == NULL)
-				(*newhead) = cur;
+	struct pointset *i = head->prev;
+	
+	for (struct pointset *j = head; j != end; j = j->next) {
+		if (j->point->coord[axis] <= x) {
+			i = (i == NULL) ? head : i->next;
 			
-			prev = cur;
-			cur = cur->next;
-		} else {
-			if (prev != NULL)
-				prev->next = cur->next;
-			
-			struct pointset *tmp = cur->next;
-			cur->next = NULL;
-			tail->next = cur;
-			tail = cur;
-			cur = tmp;
+			pointset_swap(&(i->point), &(j->point));
 		}
 	}
 	
-	if ((*newhead) == NULL)
-		(*newhead) = pivot;
+	i = (i == NULL) ? head : i->next;
+	pointset_swap(&(i->point), &(end->point));
 	
-	(*newend) = tail;
-	
-	return pivot;
-	
+	return i;
 }
 
-struct pointset *pointset_recursive_sort(struct pointset *head,
-                                         struct pointset *end,
-                                         int axis)
+void pointset_recursive_sort(struct pointset *head,
+                             struct pointset *end,
+                             int axis)
 {
-	if (head == NULL || (head == end))
-		return head;
-	
-	struct pointset *newhead = NULL;
-	struct pointset *newend = NULL;
-	
-	struct pointset *pivot = pointset_partition(head,
-	                                            end,
-	                                            &newhead,
-	                                            &newend,
-	                                            axis);
-	
-	if (newhead != pivot) {
-		struct pointset *temp = newhead;
+	if (end != NULL && head != end && head != end->next) {
+		struct pointset *p = pointset_partition(head, end, axis);
 		
-		while (temp->next != pivot)
-			temp = temp->next;
-		
-		temp->next = NULL;
-		
-		newhead = pointset_recursive_sort(newhead, temp, axis);
-		temp = pointset_tail(newhead);
-		
-		temp->next = pivot;
+		pointset_recursive_sort(head, p->prev, axis);
+		pointset_recursive_sort(p->next, end, axis);
 	}
-	
-	pivot->next = pointset_recursive_sort(pivot->next, newend, axis);
-	
-	return newhead;
 }
 
-void pointset_sort(struct pointset **set, int axis)
+void pointset_sort(struct pointset *set, int axis)
 {
-	axis = axis % 3;
-	(*set) = pointset_recursive_sort(*set, pointset_tail(*set), axis);
+	struct pointset *end = pointset_tail(set);
+	pointset_recursive_sort(set, end, axis);
 }
 
 void pointset_debug(struct pointset *set, FILE *out)

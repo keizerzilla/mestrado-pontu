@@ -25,11 +25,11 @@ int main()
 	struct pointset *set = pointset_new();
 	
 	for (int i = 0; i < 5; i++) {
-		//pointset_add(&set, rand() % 10, rand() % 10, rand() % 10);
-		pointset_add(&set, i, i, i);
+		pointset_add(&set, rand() % 10, rand() % 10, rand() % 10);
+		//pointset_add(&set, i, i, i);
 	}
 	
-	pointset_sort(&set, VECTOR3_AXIS_X);
+	pointset_sort(set, VECTOR3_AXIS_X);
 	pointset_debug(set, stdout);
 	printf("--------------------------\n");
 	pointset_debug_reverse(set, stdout);
