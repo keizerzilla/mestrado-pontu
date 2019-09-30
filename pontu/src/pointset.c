@@ -5,7 +5,7 @@ struct pointset *pointset_new()
 	return NULL;
 }
 
-void pointset_add(struct pointset **set, real x, real y, real z)
+void pointset_insert_real(struct pointset **set, real x, real y, real z)
 {
 	struct pointset *new = malloc(sizeof(struct pointset));
 	if (new == NULL)
@@ -20,6 +20,11 @@ void pointset_add(struct pointset **set, real x, real y, real z)
 		(*set)->prev = new;
 	
 	*set = new;
+}
+
+void pointset_insert_vector3(struct pointset **set, struct vector3 *v)
+{
+	pointset_insert_real(set, v->x, v->y, v->z);
 }
 
 struct pointset *pointset_tail(struct pointset *set)
