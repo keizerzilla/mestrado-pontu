@@ -125,7 +125,7 @@ int main(int argc, char** argv)
         return 1;
     }
 	
-    struct matrix* (*mfunc)(struct cloud*) = &hu_cloud_moments_hututu;
+    struct dataframe* (*mfunc)(struct cloud*) = &hu_cloud_moments_hututu;
     if (!strcmp(moment, HUTUTU))
         mfunc = &hu_cloud_moments_hututu;
     else if (!strcmp(moment, HU1980))
@@ -161,7 +161,7 @@ int main(int argc, char** argv)
         exit(1);
     }
 	
-	struct matrix* results = NULL;
+	struct dataframe* results = NULL;
 	if (!strcmp(cut, CUT_WHOLE))
 		results = (*mfunc)(cloud);
 	else if (!strcmp(cut, CUT_SAGITTAL))
@@ -196,12 +196,12 @@ int main(int argc, char** argv)
 		results = (*mfunc)(cloud);
 	
 	if (!strcmp(output, "stdout")) {
-		matrix_debug(results, stdout);
+		dataframe_debug(results, stdout);
 	} else {
-		matrix_save_to_file(results, output, "w");
+		dataframe_save_to_file(results, output, "w");
 	}
 	
-    matrix_free(results);
+    dataframe_free(&results);
     cloud_free(&cloud);
     
     return 0;

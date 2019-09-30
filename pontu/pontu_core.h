@@ -6,6 +6,7 @@
 #include "include/matrix.h"
 #include "include/algebra.h"
 #include "include/plane.h"
+#include "include/pointset.h"
 #include "include/cloud.h"
 #include "include/kdtree.h"
 #include "include/octree.h"

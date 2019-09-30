@@ -17,7 +17,6 @@ struct cloud *cloud_new(uint numpts)
 
 	cloud->centroid = NULL;
 	cloud->numpts = numpts;
-	cloud->kdt = NULL;
 	
 	return cloud;
 }
@@ -34,7 +33,6 @@ void cloud_free(struct cloud **cloud)
 	
 	free((*cloud)->points);
 	vector3_free(&(*cloud)->centroid);
-	kdtree_free(&(*cloud)->kdt);
 	free(*cloud);
 	*cloud = NULL;
 }
@@ -87,15 +85,6 @@ struct vector3 *cloud_add_point_vector(struct cloud *cloud, struct vector3 *p)
 uint cloud_size(struct cloud *cloud)
 {
 	return cloud->numpts;
-}
-
-void cloud_partitionate(struct cloud *cloud)
-{
-	if (cloud->kdt != NULL)
-		return;
-	
-	cloud->kdt = kdtree_new(NULL, cloud->points, cloud->numpts, VECTOR3_AXIS_X);
-	kdtree_partitionate(cloud->kdt);
 }
 
 struct cloud *cloud_load_xyz(const char *filename)
@@ -877,33 +866,6 @@ real cloud_nearest_neighbors_bruteforce(struct cloud* source,
 	return vector3_distance(*src_pt, *tgt_pt);
 }
 
-real cloud_nearest_neighbors_partition(struct cloud* source,
-                                       struct cloud* target,
-                                       struct vector3 **src_pt,
-                                       struct vector3 **tgt_pt)
-{
-	cloud_partitionate(target);
-	
-	*src_pt = &source->points[0];
-	*tgt_pt = &target->points[0];
-	real dist = vector3_squared_distance(*src_pt, *tgt_pt);
-	real temp = 0.0f;
-	struct vector3 *nn = NULL;
-	
-	for (uint i = 0; i < source->numpts; i++) {
-		nn = kdtree_nearest_neighbor(target->kdt, &source->points[i]);
-		temp = vector3_squared_distance(nn, &source->points[i]);
-		
-		if (temp < dist) {
-			dist = temp;
-			*src_pt = &source->points[i];
-			*tgt_pt = nn;
-		}
-	}
-	
-	return vector3_distance(*src_pt, *tgt_pt);
-}
-
 struct vector3 *cloud_min_x(struct cloud *cloud)
 {
 	uint index = 0;
@@ -1174,35 +1136,6 @@ real cloud_rmse(struct cloud *source, struct cloud *target)
 	}
 
 	return rmse / (double) source->numpts;
-}
-
-struct vector3 *cloud_remove_point(struct cloud *cloud, uint idx)
-{
-	if (idx >= cloud->numpts) {
-		return NULL;
-	}
-
-	struct vector3 *removed_point;
-	removed_point = vector3_from_vector(&cloud->points[idx]);
-
-	if (cloud->numpts == 1) {
-		cloud_free(&cloud);
-		cloud = cloud_empty();
-	} else {
-		cloud->numpts--;
-		for (uint i = idx; i < cloud->numpts; i++) {
-			vector3_copy(&cloud->points[i], &cloud->points[i + 1]);
-		}
-
-		uint new_size = cloud->numpts * sizeof(struct vector3);
-		struct vector3 *new_points = realloc(cloud->points, new_size);
-		if (!new_points)
-			return NULL;
-
-		cloud_calc_center(cloud);
-	}
-
-	return removed_point;
 }
 
 void cloud_ritter(struct cloud *cloud, struct vector3 **center, real *radius)

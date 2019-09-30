@@ -574,15 +574,6 @@ real cloud_curvature(struct cloud *cloud);
 real cloud_rmse(struct cloud *source, struct cloud *target);
 
 /**
- * \brief Removes a point from the cloud
- * \param cloud Target cloud
- * \param idx Index of the point to be removed
- * \return Point removed or NULL if there were no memory or if the index were 
- * invalid
- */
-struct vector3 *cloud_remove_point(struct cloud *cloud, uint idx);
-
-/**
  * \brief Calculates a bounding sphere using Ritter's Algorithm
  * \param cloud Target cloud
  * \param center Point in which the center of the bounding sphere will be stored

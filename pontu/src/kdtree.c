@@ -66,7 +66,7 @@ void kdtree_partitionate(struct kdtree *kdt)
 	uint nright = 0;
 	
 	for (uint i = 0; i < kdt->numpts; i++) {
-		if (kdt->points[i]->coord[kdt->axis] < kdt->midpnt->coord[kdt->axis]) {
+		if (kdt->points[i]->coord[kdt->axis] <= kdt->midpnt->coord[kdt->axis]) {
 			left_points[nleft] = kdt->points[i];
 			nleft++;
 		} else {
@@ -75,12 +75,12 @@ void kdtree_partitionate(struct kdtree *kdt)
 		}
 	}
 	
-	if (nleft != 0)
+	if (nleft > 0)
 		kdt->left = kdtree_new(kdt, *left_points, nleft, kdt->axis + 1);
 	
 	free(left_points);
 	
-	if (nright != 0)
+	if (nright > 0)
 		kdt->right = kdtree_new(kdt, *right_points, nright, kdt->axis + 1);
 	
 	free(right_points);
@@ -91,8 +91,6 @@ void kdtree_partitionate(struct kdtree *kdt)
 	if (nright > 1)
 		kdtree_partitionate(kdt->right);
 }
-
-// -----------------------------------------------------------------------------
 
 // @TODO
 struct kdtree *kdtree_unwind(struct kdtree *node)
