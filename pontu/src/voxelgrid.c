@@ -14,9 +14,9 @@ struct cloud *voxelgrid_sampling(struct cloud *src, real leafsize) {
     struct vector3 *centroid = cloud_get_center(src);
     struct vector3 *axis_size = cloud_axis_size(src);
     
-    uint num_voxels_x = (uint) ceil(axis_size->x/leafsize) + 1;
-    uint num_voxels_y = (uint) ceil(axis_size->y/leafsize) + 1;
-    uint num_voxels_z = (uint) ceil(axis_size->z/leafsize) + 1;
+    uint num_voxels_x = (uint)ceil(axis_size->x/leafsize) + 1;
+    uint num_voxels_y = (uint)ceil(axis_size->y/leafsize) + 1;
+    uint num_voxels_z = (uint)ceil(axis_size->z/leafsize) + 1;
 
     struct vector3 *voxel_o = vector3_zero();
     

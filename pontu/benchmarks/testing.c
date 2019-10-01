@@ -24,10 +24,8 @@ int main()
 	
 	struct pointset *set = pointset_new();
 	
-	for (int i = 0; i < 5; i++) {
-		pointset_add(&set, rand() % 10, rand() % 10, rand() % 10);
-		//pointset_add(&set, i, i, i);
-	}
+	for (int i = 0; i < 10; i++)
+		pointset_insert_real(&set, rand() % 10, rand() % 10, rand() % 10);
 	
 	pointset_sort(set, VECTOR3_AXIS_X);
 	pointset_debug(set, stdout);

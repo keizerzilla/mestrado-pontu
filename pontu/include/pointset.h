@@ -27,12 +27,16 @@ struct pointset *pointset_new();
 /**
  * @TODO
  */
-void pointset_insert_real(struct pointset **set, real x, real y, real z);
+struct vector3 *pointset_insert_real(struct pointset **set,
+                                     real x,
+                                     real y,
+                                     real z);
 
 /**
  * @TODO
  */
-void pointset_insert_vector3(struct pointset **set, struct vector3 *v);
+struct vector3 *pointset_insert_vector3(struct pointset **set,
+                                        struct vector3 *v);
 
 /**
  * @TODO
@@ -71,12 +75,12 @@ void pointset_sort(struct pointset *set, int axis);
 /**
  * @TODO
  */
-void pointset_debug(struct pointset *set, FILE *out);
+void pointset_debug(struct pointset *set, FILE *output);
 
 /**
  * @TODO
  */
-void pointset_debug_reverse(struct pointset *set, FILE *out);
+void pointset_debug_reverse(struct pointset *set, FILE *output);
 
 /**
  * @TODO

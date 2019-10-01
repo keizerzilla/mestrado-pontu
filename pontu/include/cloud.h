@@ -13,6 +13,7 @@
 #include <string.h>
 
 #include "./vector3.h"
+#include "./pointset.h"
 #include "./plane.h"
 #include "./algebra.h"
 #include "./kdtree.h"
@@ -23,56 +24,22 @@
  * \brief Struct to store a cloud
  */
 struct cloud {
-	struct vector3 *points;
-	struct vector3 *centroid;
+	struct pointset *points;
 	uint numpts;
-	struct kdtree *kdt;
+	struct vector3 *centroid;
 };
 
 /**
  * \brief Initializes a cloud
- * \param numpts Number of points in the cloud
- * \return Pointer to the new cloud or NULL if it fails to allocate memory
+ * \return Pointer to the new cloud (empty)
  */
-struct cloud *cloud_new(uint numpts);
-
-/**
- * \brief Initialize an empty cloud
- * \return Pointer to an empty cloud
- */
-struct cloud *cloud_empty();
+struct cloud *cloud_new();
 
 /**
  * \brief Frees a cloud
  * \param cloud Cloud to be freed
  */
 void cloud_free(struct cloud **cloud);
-
-/**
- * \brief Set values of a point of the cloud
- * \param cloud Target cloud
- * \param index Index of the point to be changed
- * \param x Coordinate x
- * \param y Coordinate y
- * \param z Coordinate z
- * \return Pointer to the point changed
- */
-struct vector3 *cloud_set_point_real(struct cloud *cloud,
-				                     uint index,
-				                     real x,
-				                     real y,
-				                     real z);
-
-/**
- * \brief Set values of a point of a cloud (vector)
- * \param cloud Target cloud
- * \param index Index of the point to be changed
- * \param point Values of coordinates to be set
- * \return Pointer to the point changed
- */
-struct vector3 *cloud_set_point_vector(struct cloud *cloud,
-				                       uint index,
-				                       struct vector3 *point);
 
 /**
  * \brief Adds a new point in the cloud (3 real numbers);
@@ -191,18 +158,18 @@ int cloud_save_pcd(struct cloud *cloud, const char *filename);
 struct cloud *cloud_copy(struct cloud *cloud);
 
 /**
- * \brief Calculates the geometric center of a cloud
+ * \brief Calculates the geometric centroid of a cloud
  * \param cloud Target cloud
- * \return Point with the coordinates of the geometric center of the cloud
+ * \return Point with the coordinates of the geometric centroid of the cloud
  */
-struct vector3 *cloud_calc_center(struct cloud *cloud);
+struct vector3 *cloud_calc_centroid(struct cloud *cloud);
 
 /**
- * \brief Gets the geometric center of a cloud
+ * \brief Gets the geometric centroid of a cloud
  * \param cloud Target cloud
- * \return Point with the coordinates of the geometric center of the cloud
+ * \return Point with the coordinates of the geometric centroid of the cloud
  */
-struct vector3 *cloud_get_center(struct cloud *cloud);
+struct vector3 *cloud_get_centroid(struct cloud *cloud);
 
 /**
  * \brief Scales a cloud from a factor
@@ -239,27 +206,6 @@ void cloud_translate_vector(struct cloud *cloud, struct vector3 *dest);
 void cloud_translate_real(struct cloud *cloud, real x, real y, real z);
 
 /**
- * \brief Rotates cloud around x axis
- * \param cloud Target cloud
- * \param d Rotation angle in degrees
- */
-void cloud_rotate_x(struct cloud *cloud, real d);
-
-/**
- * \brief Rotates cloud around y axis
- * \param cloud Target cloud
- * \param d Rotation angle in degrees
- */
-void cloud_rotate_y(struct cloud *cloud, real d);
-
-/**
- * \brief Rotates cloud around z axis
- * \param cloud Target cloud
- * \param d Rotation angle in degrees
- */
-void cloud_rotate_z(struct cloud *cloud, real d);
-
-/**
  * \brief Transform a cloud with a matrix 4x4 (rotation and translation)
  * \param cloud Target cloud
  * \param rt Transformation matrix 4x4
@@ -267,38 +213,11 @@ void cloud_rotate_z(struct cloud *cloud, real d);
 void cloud_transform(struct cloud *cloud, struct matrix* rt);
 
 /**
- * \brief Gets the mean value of the coordinate x in a cloud
+ * \brief Sort a cloud by an axis using quick sort
  * \param cloud Target cloud
- * \return Mean value of x in the cloud
+ * \param axis The axis to sort with (0: x, 1: y, 2: z)
  */
-real cloud_mean_x(struct cloud *cloud);
-
-/**
- * \brief Gets the mean value of the coordinate y in a cloud
- * \param cloud Target cloud
- * \return Mean value of y in the cloud
- */
-real cloud_mean_y(struct cloud *cloud);
-
-/**
- * \brief Gets the mean value of the coordinate z in a cloud
- * \param cloud Target cloud
- * \return Mean value of z in the cloud
- */
-real cloud_mean_z(struct cloud *cloud);
-
-/**
- * \brief Utility function for qsort
- * \param p1 First point for the comparison
- * \param p2 Second point for the comparison
- */
-int cloud_compare(const void *p1, const void *p2);
-
-/**
- * \brief Sort a cloud in depth using qsort ();
- * \param cloud Target cloud
- */
-void cloud_sort(struct cloud *cloud);
+void cloud_sort(struct cloud *cloud, int axis);
 
 /**
  * \brief Concatenates two clouds
@@ -346,12 +265,12 @@ real cloud_function_volume(struct cloud *cloud);
 struct cloud *cloud_cut_radius(struct cloud *cloud, struct vector3 *p, real r);
 
 /**
- * \brief Crops a cloud with a cut from the center
+ * \brief Crops a cloud with a cut from the centroid
  * \param cloud Target cloud
- * \param cut Value to cut (mm)
+ * \param r Value to cut (mm)
  * \return Cropped cloud
  */
-struct cloud *cloud_cut_center(struct cloud *cloud, real cut);
+struct cloud *cloud_cut_centroid(struct cloud *cloud, real r);
 
 /**
  * \brief Crops a cloud in a direction from a reference
@@ -365,14 +284,14 @@ struct cloud *cloud_cut_plane(struct cloud *cloud, struct plane *plane);
  * \brief Split a cloud in two with a plane
  * \param src Cloud to be split
  * \param plane The plane to be used to split the cloud
- * \param par1 First slice of the split cloud
- * \param par2 Second slice of the split cloud
+ * \param p1 First slice of the split cloud
+ * \param p2 Second slice of the split cloud
  * \return 0 if it fails, or 1 if not
  */
 int cloud_plane_partition(struct cloud *src,
 			              struct plane *plane,
-			              struct cloud *par1,
-			              struct cloud *par2);
+			              struct cloud *p1,
+			              struct cloud *p2);
 
 /**
  * \brief Gets the farthest point in the positive region of a plane
@@ -418,19 +337,20 @@ struct cloud *cloud_segment(struct cloud *cloud,
 struct vector3 *cloud_closest_point(struct cloud *cloud, struct vector3 *point);
 
 /**
- * \brief Gets the closest point of the cloud to an point
+ * \brief Gets the closest point of the cloud to an point (get node)
  * \param cloud Target cloud
  * \param point Target point
- * \return Index to the closest point
+ * \return Address of the pointset node containing the closest point
  */
-uint cloud_closest_point_idx(struct cloud *cloud, struct vector3 *point);
+struct pointset *cloud_closest_point_set(struct cloud *cloud,
+                                         struct vector3 *point);
 
 /**
  * \brief Gets point closest to a cloud centroid
  * \param cloud Target cloud
  * \return Closest point
  */
-struct vector3 *cloud_closest_to_center(struct cloud *cloud);
+struct vector3 *cloud_closest_to_centroid(struct cloud *cloud);
 
 /**
  * \brief Finds the closest point of a cloud to another cloud
@@ -510,20 +430,13 @@ struct vector3 *cloud_max_z(struct cloud *cloud);
 real cloud_max_distance(struct cloud *cloud, struct vector3 *p);
 
 /**
- * \brief Calculates the distance between the center of a cloud and the farthest
+ * \brief Calculates the distance between the centroid of a cloud and the farthest
  * point to it
  * \param cloud Target cloud
- * \return The greater distance possible from the center of a cloud to a point 
+ * \return The greater distance possible from the centroid of a cloud to a point 
  * of it
  */
-real cloud_max_distance_from_center(struct cloud *cloud);
-
-/**
- * \brief Gets the average direction of a point distribution
- * \param cloud Target cloud
- * \return Average direction of the cloud
- */
-struct vector3 *cloud_average_direction(struct cloud *cloud);
+real cloud_max_distance_from_centroid(struct cloud *cloud);
 
 /**
  * \brief Adjuste a plane to a cloud using point function
@@ -572,14 +485,6 @@ real cloud_curvature(struct cloud *cloud);
  * \return A real with the rmse value.
  */
 real cloud_rmse(struct cloud *source, struct cloud *target);
-
-/**
- * \brief Calculates a bounding sphere using Ritter's Algorithm
- * \param cloud Target cloud
- * \param center Point in which the center of the bounding sphere will be stored
- * \param radius Variable to store the radius of the bounding sphere
- */
-void cloud_ritter(struct cloud *cloud, struct vector3 **center, real *radius);
 
 /**
  * \brief Debugs a cloud
