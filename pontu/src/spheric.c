@@ -8,10 +8,10 @@ real spheric_quad(real x, real y, real z, int p, int q, int r)
 real spheric_moment(int p, int q, int r, struct cloud *cloud)
 {
 	struct vector3 *centroid = cloud_get_centroid(cloud);
-	real moment = 0.0f;
-	real centroid_x = 0.0f;
-	real centroid_y = 0.0f;
-	real centroid_z = 0.0f;
+	real moment = 0.0;
+	real centroid_x = 0.0;
+	real centroid_y = 0.0;
+	real centroid_z = 0.0;
 
 	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
 		centroid_x = set->point->x - centroid->x;
@@ -34,7 +34,7 @@ real spheric_normalized_moment(int p, int q, int r, struct cloud *cloud)
 	real central = spheric_moment(p, q, r, cloud);
 	real zero = spheric_moment(0, 0, 0, cloud);
 	
-	return central / pow(zero, ((p + q + r) / 3.0f) + 1.0f);
+	return central / pow(zero, ((p + q + r) / 3.0) + 1.0);
 }
 
 struct dataframe *spheric_cloud_moments(struct cloud *cloud)

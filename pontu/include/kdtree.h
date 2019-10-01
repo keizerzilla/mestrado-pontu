@@ -9,41 +9,32 @@
 #define KDTREE_H
 
 #include "./vector3.h"
+#include "./pointset.h"
 
 /**
- * \brief Structure to store a kdtree node
+ * @TODO
  */
 struct kdtree {
-	struct vector3 **points;
-	uint numpts;
-	struct vector3 *midpnt;
+	struct pointset *points;
+	struct pointset *median;
 	int axis;
-	struct kdtree *parent;
+	uint numpts;
 	struct kdtree *left;
 	struct kdtree *right;
 };
 
 /**
- * \brief Initializes a kdtree
- * \param points Vector of points
- * \param numpts Size of the points vector
- * \param axis The node's separation axis
- * \return NULL if it fails, or the pointer to the kdtree if it doesn't
+ * @TODO
  */
-struct kdtree *kdtree_new(struct kdtree *parent,
-                          struct vector3 *points,
-                          uint numpts,
-                          int axis);
+struct kdtree *kdtree_new(struct pointset *points, uint numpts, int axis);
 
 /**
- * \brief Frees a kdtree
- * \param kdt Kdtree to be freed
+ * @TODO
  */
 void kdtree_free(struct kdtree **kdt);
 
 /**
- * \brief Partitionates the points of a cloud recursively
- * \param kdt Target kdtree
+ * @TODO
  */
 void kdtree_partitionate(struct kdtree *kdt);
 
@@ -51,6 +42,7 @@ void kdtree_partitionate(struct kdtree *kdt);
  * @TODO
  */
 real kdtree_dist_hyperplane(struct kdtree *k1, struct kdtree *k2);
+
 
 /**
  * @TODO
@@ -81,9 +73,7 @@ struct vector3 *kdtree_nearest_neighbor(struct kdtree *kdt,
                                         struct vector3 *point);
 
 /**
- * \brief Debugs a kdtree (number of points in a leaf)
- * \param kdt Target kdtree
- * \param output File to output the debug in
+ * @TODO
  */
 void kdtree_debug(struct kdtree *kdt, FILE *output);
 

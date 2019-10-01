@@ -3,22 +3,22 @@
 real legendre_poly(int n, real x)
 {
 	if (n < 0)
-		return 0.0f;
+		return 0.0;
 
 	if (n == 0)
-		return 1.0f;
+		return 1.0;
 
 	if (n == 1)
 		return x;
 
 	return (((2 * n) - 1) * x * legendre_poly(n - 1, x) -
-	       (n - 1) * legendre_poly(n - 2, x)) / (1.0f * n);
+	       (n - 1) * legendre_poly(n - 2, x)) / (1.0 * n);
 }
 
 real legendre_norm(int p, int q, int r, struct cloud *cloud)
 {
-	real num = ((2.0f * p) + 1) * ((2.0f * q) + 1) * ((2.0f * r) + 1);
-	real den = 1.0f * cloud_size(cloud);
+	real num = ((2.0 * p) + 1) * ((2.0 * q) + 1) * ((2.0 * r) + 1);
+	real den = 1.0 * cloud_size(cloud);
 
 	return num / den;
 }
@@ -27,10 +27,10 @@ real legendre_moment(int p, int q, int r, struct cloud *cloud)
 {
 	struct vector3 *centroid = cloud_get_centroid(cloud);
 	
-	real moment = 0.0f;
-	real centroid_x = 0.0f;
-	real centroid_y = 0.0f;
-	real centroid_z = 0.0f;
+	real moment = 0.0;
+	real centroid_x = 0.0;
+	real centroid_y = 0.0;
+	real centroid_z = 0.0;
 
 	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
 		struct vector3 *point = vector3_from_vector(set->point);

@@ -3,7 +3,7 @@
 real chebyshev_poly(int p, uint n, real x)
 {
 	if (p <= 0)
-		return 1.0f;
+		return 1.0;
 
 	if (p == 1)
 		return x;
@@ -20,7 +20,7 @@ real chebyshev_moment(int p, int q, int r, struct cloud *cloud)
 {
 	struct vector3 *centroid = cloud_get_centroid(cloud);
 	uint n = cloud->numpts;
-	real moment = 0.0f;
+	real moment = 0.0;
 
 	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
 		moment += chebyshev_poly(p, n, set->point->x - centroid->x) *

@@ -2,7 +2,7 @@
 
 real hu_regular_moment(int p, int q, int r, struct cloud *cloud)
 {
-	real moment = 0.0f;
+	real moment = 0.0;
 
 	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
 		moment += pow(set->point->x, p) *
@@ -15,7 +15,7 @@ real hu_regular_moment(int p, int q, int r, struct cloud *cloud)
 
 real hu_central_moment(int p, int q, int r, struct cloud *cloud)
 {
-	real moment = 0.0f;
+	real moment = 0.0;
 	struct vector3 *centroid = cloud_get_centroid(cloud);
 
 	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
@@ -35,7 +35,7 @@ real hu_normalized_moment(int p, int q, int r, struct cloud *cloud)
 	real central = hu_central_moment(p, q, r, cloud);
 	real zero = hu_central_moment(0, 0, 0, cloud);
 	
-	return central / pow(zero, ((p + q + r) / 3.0f) + 1.0f);
+	return central / pow(zero, ((p + q + r) / 3.0) + 1.0);
 }
 
 real hu_refined_moment(int p, int q, int r, struct cloud *cloud)

@@ -15,7 +15,7 @@ struct vector3 *vector3_new(real x, real y, real z)
 
 struct vector3 *vector3_zero()
 {
-	return vector3_new(0.0f, 0.0f, 0.0f);
+	return vector3_new(0.0, 0.0, 0.0);
 }
 
 struct vector3 *vector3_from_vector(struct vector3 *src)
@@ -123,7 +123,7 @@ void vector3_setlength(struct vector3 *v, real l)
 {
 	real mag = calc_length3(v->x, v->y, v->z);
 
-	if (mag > 0.0f) {
+	if (mag > 0.0) {
 		mag = l / mag;
 
 		v->x *= mag;
@@ -201,8 +201,8 @@ real vector3_angle(struct vector3 *a, struct vector3 *b)
 	real l2 = b->x*b->x + b->y*b->y + b->z*b->z;
 	real prod = vector3_dot(a, b) / sqrt(l1 * l2);
 	
-	prod = calc_max2(prod, -1.0f);
-	prod = calc_min2(prod, +1.0f);
+	prod = calc_max2(prod, -1.0);
+	prod = calc_min2(prod, +1.0);
 	
 	return acos(prod);
 }
@@ -221,12 +221,12 @@ real vector3_cross2(struct vector3 *a, struct vector3 *b)
 
 void vector3_push2(struct vector3 *v)
 {
-	v->z = 0.0f;
+	v->z = 0.0;
 }
 
 real vector3_minkowski(struct vector3 *v1, struct vector3 *v2, real m)
 {
-	return pow(pow(v1->x - v2->x, m) + pow(v1->y - v2->y, m), 1.0f / m);
+	return pow(pow(v1->x - v2->x, m) + pow(v1->y - v2->y, m), 1.0 / m);
 }
 
 real vector3_chebyshev(struct vector3 *v1, struct vector3 *v2)
@@ -257,14 +257,14 @@ real vector3_modsse(struct vector3 *v1, struct vector3 *v2)
 
 real vector3_cosdistance(struct vector3 *v1, struct vector3 *v2)
 {
-	return -1.0f * vector3_angle(v1, v2);
+	return -1.0 * vector3_angle(v1, v2);
 }
 
 real vector3_mse(struct vector3 *v1, struct vector3 *v2)
 {
 	real d = calc_squared_length3(v1->x - v2->x, v1->y - v2->y, v1->z - v2->z);
 	
-	return d / 3.0f;
+	return d / 3.0;
 }
 
 real vector3_sse(struct vector3 *v1, struct vector3 *v2)
@@ -352,7 +352,7 @@ struct vector3 *vector3_normal(struct vector3 *a,
 real vector3_area(struct vector3 *a, struct vector3 *b, struct vector3 *c)
 {
 	struct vector3 *n = vector3_normal(a, b, c);
-	real ret = 0.5f * vector3_length(n);
+	real ret = 0.5 * vector3_length(n);
 	
 	vector3_free(&n);
 

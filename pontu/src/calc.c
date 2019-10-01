@@ -70,26 +70,26 @@ real calc_max3(real a, real b, real c)
 
 real calc_sign(real a)
 {
-	return (a >= 0.0f) ? 1.0f : -1.0f;
+	return (a >= 0.0) ? 1.0 : -1.0;
 }
 
 real calc_logt(real a)
 {
-	return -1.0f * calc_sign(a) * log(fabs(a));
+	return -1.0 * calc_sign(a) * log(fabs(a));
 }
 
 real calc_gaussian(real x, real s)
 {
-	real num = exp((-1.0f * x * x) / (2.0f * s * s));
-	real den = s * sqrt(2.0f * CALC_PI);
+	real num = exp((-1.0 * x * x) / (2.0 * s * s));
+	real den = s * sqrt(2.0 * CALC_PI);
 	
 	return num / den;
 }
 
 real calc_gaussian3(real x, real y, real z, real s)
 {
-	real num = exp(-1.0f * ((x * x) + (y * y) + (z * z)) / (2.0f * s * s));
-	real den = pow(2.0f * CALC_PI * s * s, 1.5f);
+	real num = exp(-1.0 * ((x * x) + (y * y) + (z * z)) / (2.0 * s * s));
+	real den = pow(2.0 * CALC_PI * s * s, 1.5);
 	
 	return num / den;
 }

@@ -15,7 +15,7 @@ struct matrix *matrix_new(uint rows, uint cols)
 
 	for (uint i = 0; i < rows; i++)
 		for (uint j = 0; j < cols; j++)
-			mat->data[(i * cols) + j] = 0.0f;
+			mat->data[(i * cols) + j] = 0.0;
 
 	return mat;
 }
@@ -54,7 +54,7 @@ int matrix_add_row(struct matrix *mat)
 		mat->rows++;
 
 		for (uint j = 0; j < mat->cols; j++)
-			mat->data[((mat->rows - 1) * mat->cols) + j] = 0.0f;
+			mat->data[((mat->rows - 1) * mat->cols) + j] = 0.0;
 
 		return mat->rows;
 	} else {
@@ -70,7 +70,7 @@ int matrix_add_col(struct matrix *mat)
 
 	for (uint i = 0; i < mat->rows; i++)
 		for (uint j = 0; j < mat->cols + 1; j++)
-			new_mat[(i * (mat->cols + 1)) + j] = 0.0f;
+			new_mat[(i * (mat->cols + 1)) + j] = 0.0;
 
 	for (uint i = 0; i < mat->rows; i++)
 		for (uint j = 0; j < mat->cols; j++)
@@ -142,7 +142,7 @@ cnum *matrix_set(struct matrix *mat, uint i, uint j, cnum value)
 cnum matrix_get(struct matrix *mat, uint i, uint j)
 {
 	if (i >= mat->rows || j >= mat->cols)
-		return 0.0f;
+		return 0.0;
 	else
 		return mat->data[(i * mat->cols) + j];
 }

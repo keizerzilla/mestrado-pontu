@@ -20,8 +20,8 @@ int harmonics_nummoments(int ord, int rep, int spin)
 
 real harmonics_norm(int m, int l)
 {
-	real num = ((2.0f * m) + 1.0f) * calc_factorial(m - l);
-	real den = (4.0f * CALC_PI * calc_factorial(m + l));
+	real num = ((2.0 * m) + 1.0) * calc_factorial(m - l);
+	real den = (4.0 * CALC_PI * calc_factorial(m + l));
 	real norm = sqrt(num / den);
 	
 	return norm;
@@ -29,16 +29,16 @@ real harmonics_norm(int m, int l)
 
 real harmonics_legendrepoly(int m, int l, real x)
 {
-	real p1 = pow(-1.0f, l) * pow(2.0f, m) * pow(1.0f - x*x, l/2.0f);
-	real p2 = 0.0f;
+	real p1 = pow(-1.0, l) * pow(2.0, m) * pow(1.0 - x*x, l/2.0);
+	real p2 = 0.0;
 	
-	real i1 = 0.0f;
-	real i2 = 0.0f;
-	real i3 = 0.0f;
+	real i1 = 0.0;
+	real i2 = 0.0;
+	real i3 = 0.0;
 	for (int k = l; k <= m; k++) {
 		i1 = (calc_factorial(k) / calc_factorial(k - l)) * pow(x, k-l);
 		i2 = calc_binom_coeff(m, k);
-		i3 = calc_binom_coeff(ceil((m + k - 1.0f)/2.0f), m);
+		i3 = calc_binom_coeff(ceil((m + k - 1.0)/2.0), m);
 		
 		p2 += i1 * i2 * i3;
 	}
@@ -85,16 +85,16 @@ real harmonics_moment_odd(int n, int m, int l, real r, struct cloud *cloud)
 {
 	struct vector3 *centroid = cloud_get_centroid(cloud);
 	
-	real cx = 0.0f;
-	real cy = 0.0f;
-	real cz = 0.0f;
-	real d = 0.0f;
-	real dist = 0.0f;
-	real theta = 0.0f;
-	real phi = 0.0f;
-	real radpoly = 0.0f;
-	real harmonic = 0.0f;
-	real moment = 0.0f;
+	real cx = 0.0;
+	real cy = 0.0;
+	real cz = 0.0;
+	real d = 0.0;
+	real dist = 0.0;
+	real theta = 0.0;
+	real phi = 0.0;
+	real radpoly = 0.0;
+	real harmonic = 0.0;
+	real moment = 0.0;
 	
 	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
 		cx = set->point->x - centroid->x;
@@ -112,23 +112,23 @@ real harmonics_moment_odd(int n, int m, int l, real r, struct cloud *cloud)
 	
 	vector3_free(&centroid);
 	
-	return (3.0f * moment) / (4.0f * CALC_PI);
+	return (3.0 * moment) / (4.0 * CALC_PI);
 }
 
 real harmonics_moment_even(int n, int m, int l, real r, struct cloud *cloud)
 {
 	struct vector3 *centroid = cloud_get_centroid(cloud);
 	
-	real cx = 0.0f;
-	real cy = 0.0f;
-	real cz = 0.0f;
-	real d = 0.0f;
-	real dist = 0.0f;
-	real theta = 0.0f;
-	real phi = 0.0f;
-	real radpoly = 0.0f;
-	real harmonic = 0.0f;
-	real moment = 0.0f;
+	real cx = 0.0;
+	real cy = 0.0;
+	real cz = 0.0;
+	real d = 0.0;
+	real dist = 0.0;
+	real theta = 0.0;
+	real phi = 0.0;
+	real radpoly = 0.0;
+	real harmonic = 0.0;
+	real moment = 0.0;
 	
 	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
 		cx = set->point->x - centroid->x;
@@ -146,21 +146,21 @@ real harmonics_moment_even(int n, int m, int l, real r, struct cloud *cloud)
 	
 	vector3_free(&centroid);
 	
-	return (3.0f * moment) / (4.0f * CALC_PI);
+	return (3.0 * moment) / (4.0 * CALC_PI);
 }
 
 real harmonics_moment_mag(int n, int m, int l, real r, struct cloud *cloud)
 {
 	struct vector3 *centroid = cloud_get_centroid(cloud);
 	
-	real cx = 0.0f;
-	real cy = 0.0f;
-	real d = 0.0f;
-	real dist = 0.0f;
-	real theta = 0.0f;
-	real radpoly = 0.0f;
-	real harmonic = 0.0f;
-	real moment = 0.0f;
+	real cx = 0.0;
+	real cy = 0.0;
+	real d = 0.0;
+	real dist = 0.0;
+	real theta = 0.0;
+	real radpoly = 0.0;
+	real harmonic = 0.0;
+	real moment = 0.0;
 	
 	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
 		cx = set->point->x - centroid->x;
@@ -176,23 +176,23 @@ real harmonics_moment_mag(int n, int m, int l, real r, struct cloud *cloud)
 	
 	vector3_free(&centroid);
 	
-	return (3.0f * moment) / (4.0f * CALC_PI);
+	return (3.0 * moment) / (4.0 * CALC_PI);
 }
 
 real harmonics_moment_full(int n, int m, int l, real r, struct cloud *cloud)
 {
 	struct vector3 *centroid = cloud_get_centroid(cloud);
 	
-	real cx = 0.0f;
-	real cy = 0.0f;
-	real cz = 0.0f;
-	real d = 0.0f;
-	real dist = 0.0f;
-	real theta = 0.0f;
-	real phi = 0.0f;
-	real radpoly = 0.0f;
-	real harmonic = 0.0f;
-	real moment = 0.0f;
+	real cx = 0.0;
+	real cy = 0.0;
+	real cz = 0.0;
+	real d = 0.0;
+	real dist = 0.0;
+	real theta = 0.0;
+	real phi = 0.0;
+	real radpoly = 0.0;
+	real harmonic = 0.0;
+	real moment = 0.0;
 	
 	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
 		cx = set->point->x - centroid->x;
@@ -210,7 +210,7 @@ real harmonics_moment_full(int n, int m, int l, real r, struct cloud *cloud)
 	
 	vector3_free(&centroid);
 	
-	return (3.0f * moment) / (4.0f * CALC_PI);
+	return (3.0 * moment) / (4.0 * CALC_PI);
 }
 
 struct dataframe *harmonics_cloud_moments_odd(struct cloud *cloud)
@@ -218,7 +218,7 @@ struct dataframe *harmonics_cloud_moments_odd(struct cloud *cloud)
 	int s = harmonics_nummoments(HARMON_ORD, HARMON_REP, HARMON_SPIN);
 	struct dataframe *results = dataframe_new(1, s);
 	real r = cloud_max_distance_from_centroid(cloud);
-	real moment = 0.0f;
+	real moment = 0.0;
 	
 	int col = 0;
 	for (int n = 0; n <= HARMON_ORD; n++) {
@@ -241,7 +241,7 @@ struct dataframe *harmonics_cloud_moments_even(struct cloud *cloud)
 	int s = harmonics_nummoments(HARMON_ORD, HARMON_REP, HARMON_SPIN);
 	struct dataframe *results = dataframe_new(1, s);
 	real r = cloud_max_distance_from_centroid(cloud);
-	real moment = 0.0f;
+	real moment = 0.0;
 	
 	int col = 0;
 	for (int n = 0; n <= HARMON_ORD; n++) {
@@ -264,7 +264,7 @@ struct dataframe *harmonics_cloud_moments_mag(struct cloud *cloud)
 	int s = harmonics_nummoments(HARMON_ORD, HARMON_REP, HARMON_SPIN);
 	struct dataframe *results = dataframe_new(1, s);
 	real r = cloud_max_distance_from_centroid(cloud);
-	real moment = 0.0f;
+	real moment = 0.0;
 	
 	int col = 0;
 	for (int n = 0; n <= HARMON_ORD; n++) {
@@ -287,7 +287,7 @@ struct dataframe *harmonics_cloud_moments_full(struct cloud *cloud)
 	int s = harmonics_nummoments(HARMON_ORD, HARMON_REP, HARMON_SPIN);
 	struct dataframe *results = dataframe_new(1, s);
 	real r = cloud_max_distance_from_centroid(cloud);
-	real moment = 0.0f;
+	real moment = 0.0;
 	
 	int col = 0;
 	for (int n = 0; n <= HARMON_ORD; n++) {

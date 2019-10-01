@@ -97,22 +97,22 @@ struct dataframe *extraction_radial(struct cloud *cloud,
 				                 struct dataframe *(*mfunc) (struct cloud *))
 {
 	struct vector3 *nosetip = cloud_point_faraway_bestfit(cloud);
-	real slice = 25.0f;
+	real slice = 25.0;
 
 	struct cloud *sub1 = cloud_new();
 	struct cloud *sub2 = cloud_new();
 	struct cloud *sub3 = cloud_new();
 	struct cloud *sub4 = cloud_new();
 
-	real d = 0.0f;
+	real d = 0.0;
 	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
 		d = vector3_distance(set->point, nosetip);
 
 		if (d <= slice)
 			cloud_insert_vector3(sub1, set->point);
-		else if (d > slice && d <= 2.0f * slice)
+		else if (d > slice && d <= 2.0 * slice)
 			cloud_insert_vector3(sub2, set->point);
-		else if (d > 2.0f * slice && d <= 3.0f * slice)
+		else if (d > 2.0 * slice && d <= 3.0 * slice)
 			cloud_insert_vector3(sub3, set->point);
 		else
 			cloud_insert_vector3(sub4, set->point);
@@ -174,12 +174,12 @@ struct dataframe *extraction_manhattan(struct cloud *cloud,
 {
 	struct vector3 *nosetip = cloud_point_faraway_bestfit(cloud);
 	struct cloud *nose = cloud_new();
-	real d = 0.0f;
+	real d = 0.0;
 
 	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
 		d = vector3_manhattan(set->point, nosetip);
 
-		if (d <= 150.0f)
+		if (d <= 150.0)
 			cloud_insert_vector3(nose, set->point);
 	}
 
@@ -374,8 +374,8 @@ struct dataframe *extraction_7(struct cloud *cloud,
 
 struct cloud *extraction_vshape_base(struct cloud *cloud)
 {
-	real y_margin = 15.0f;
-	real x_margin = 25.0f;
+	real y_margin = 15.0;
+	real x_margin = 25.0;
 
 	struct vector3 *nosetip = cloud_point_faraway_bestfit(cloud);
 	nosetip->y += y_margin;

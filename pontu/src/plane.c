@@ -43,7 +43,7 @@ uint plane_on_direction(struct plane *plane, struct vector3 *point)
 	
 	vector3_free(&proj);
 	
-	return (d >= 0.0f) ? 1 : 0;
+	return (d >= 0.0) ? 1 : 0;
 }
 
 void plane_debug(struct plane *plane, FILE *out)

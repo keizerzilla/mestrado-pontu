@@ -87,7 +87,7 @@ struct matrix *registration_align(struct cloud *source, struct cloud *target)
 		tgt = tgt->next;
     }
 
-    s = algebra_mat_vs_scalar(s, 1.0f/((double)source->numpts));
+    s = algebra_mat_vs_scalar(s, 1.0/((double)source->numpts));
     
     struct matrix *a = algebra_mat_sub(s, algebra_mat_transpose(s));
     struct matrix *q = matrix_new(4, 4);
@@ -102,9 +102,9 @@ struct matrix *registration_align(struct cloud *source, struct cloud *target)
     matrix_set(q, 2, 0, matrix_get(a, 2, 0));
     matrix_set(q, 3, 0, matrix_get(a, 0, 1));
 
-    matrix_set(q, 1, 1, matrix_get(s, 0, 0) * 2.0f - tr_s);
-    matrix_set(q, 2, 2, matrix_get(s, 1, 1) * 2.0f - tr_s);
-    matrix_set(q, 3, 3, matrix_get(s, 2, 2) * 2.0f - tr_s);
+    matrix_set(q, 1, 1, matrix_get(s, 0, 0) * 2.0 - tr_s);
+    matrix_set(q, 2, 2, matrix_get(s, 1, 1) * 2.0 - tr_s);
+    matrix_set(q, 3, 3, matrix_get(s, 2, 2) * 2.0 - tr_s);
 
     matrix_set(q, 1, 2, matrix_get(s, 0, 1) + matrix_get(s, 1, 0));
     matrix_set(q, 1, 3, matrix_get(s, 0, 2) + matrix_get(s, 2, 0));
@@ -141,13 +141,13 @@ struct matrix *registration_align(struct cloud *source, struct cloud *target)
     q3 /= mag;
 
     matrix_set(r, 0, 0, q0 * q0 + q1 * q1 - q2 * q2 - q3 * q3);
-    matrix_set(r, 0, 1, 2.0f * (q1 * q2 - q0 * q3));
-    matrix_set(r, 0, 2, 2.0f * (q1 * q3 + q0 * q2));
-    matrix_set(r, 1, 0, 2.0f * (q1 * q2 + q0 * q3));
+    matrix_set(r, 0, 1, 2.0 * (q1 * q2 - q0 * q3));
+    matrix_set(r, 0, 2, 2.0 * (q1 * q3 + q0 * q2));
+    matrix_set(r, 1, 0, 2.0 * (q1 * q2 + q0 * q3));
     matrix_set(r, 1, 1, q0 * q0 + q2 * q2 - q1 * q1 - q3 * q3);
-    matrix_set(r, 1, 2, 2.0f * (q2 * q3 - q0 * q1));
-    matrix_set(r, 2, 0, 2.0f * (q1 * q3 - q0 * q2));
-    matrix_set(r, 2, 1, 2.0f * (q2 * q3 + q0 * q1));
+    matrix_set(r, 1, 2, 2.0 * (q2 * q3 - q0 * q1));
+    matrix_set(r, 2, 0, 2.0 * (q1 * q3 - q0 * q2));
+    matrix_set(r, 2, 1, 2.0 * (q2 * q3 + q0 * q1));
     matrix_set(r, 2, 2, q0 * q0 + q3 * q3 - q1 * q1 - q2 * q2);
 
     matrix_free(&target_aux);
@@ -174,10 +174,10 @@ struct matrix *registration_align(struct cloud *source, struct cloud *target)
     matrix_set(rt, 1, 3, creal(matrix_get(t, 1, 0)));
     matrix_set(rt, 2, 3, creal(matrix_get(t, 2, 0)));
 
-    matrix_set(rt, 3, 0, 0.0f);
-    matrix_set(rt, 3, 1, 0.0f);
-    matrix_set(rt, 3, 2, 0.0f);
-    matrix_set(rt, 3, 3, 1.0f);
+    matrix_set(rt, 3, 0, 0.0);
+    matrix_set(rt, 3, 1, 0.0);
+    matrix_set(rt, 3, 2, 0.0);
+    matrix_set(rt, 3, 3, 1.0);
 
 
     matrix_free(&t);

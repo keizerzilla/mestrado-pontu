@@ -5,6 +5,18 @@ struct pointset *pointset_new()
 	return NULL;
 }
 
+void pointset_free(struct pointset **set)
+{
+	if (*set == NULL)
+		return;
+	
+	vector3_free(&(*set)->point);
+	pointset_free(&(*set)->next);
+	
+	free(*set);
+	*set = NULL;
+}
+
 struct vector3 *pointset_insert(struct pointset **set, real x, real y, real z)
 {
 	struct pointset *new = malloc(sizeof(struct pointset));
@@ -26,6 +38,16 @@ struct vector3 *pointset_insert(struct pointset **set, real x, real y, real z)
 	return new->point;
 }
 
+struct pointset *pointset_copy(struct pointset *set)
+{
+	struct pointset *cpy = pointset_new();
+	
+	for (struct pointset *tmp = set; tmp != NULL; tmp = tmp->next)
+		pointset_insert(&cpy, tmp->point->x, tmp->point->y, tmp->point->z);
+	
+	return cpy;
+}
+
 struct pointset *pointset_tail(struct pointset *set)
 {
 	struct pointset *temp = set;
@@ -34,6 +56,44 @@ struct pointset *pointset_tail(struct pointset *set)
 		temp = temp->next;
 	
 	return temp;
+}
+
+struct pointset *pointset_segment(struct pointset *begin,
+                                  struct pointset *end,
+                                  uint *size)
+{
+	struct pointset* segment = pointset_new();
+	
+	for (struct pointset *set = begin; set != end; set = set->next) {
+		pointset_insert(&segment, set->point->x, set->point->y, set->point->z);
+		*size = *size + 1;
+	}
+	
+	return segment;
+}
+
+struct pointset *pointset_segment_reverse(struct pointset *begin,
+                                          struct pointset *end,
+                                          uint *size)
+{
+	struct pointset* segment = pointset_new();
+	
+	for (struct pointset *set = begin; set != end; set = set->prev) {
+		pointset_insert(&segment, set->point->x, set->point->y, set->point->z);
+		*size = *size + 1;
+	}
+	
+	return segment;
+}
+
+uint pointset_size(struct pointset *set)
+{
+	uint size = 0;
+	
+	for (struct pointset *tmp = set; tmp != NULL; tmp = tmp->next)
+		size++;
+	
+	return size;
 }
 
 void pointset_swap(struct vector3 **a, struct vector3 **b)
@@ -86,6 +146,12 @@ void pointset_sort(struct pointset *set, int axis)
 
 struct pointset *pointset_median(struct pointset *set, int axis, uint size)
 {
+	if (set == NULL || size == 0)
+		return NULL;
+	
+	if (size == 1)
+		return set;
+	
 	pointset_sort(set, axis);
 	
 	struct pointset *tmp = set;
@@ -97,7 +163,10 @@ struct pointset *pointset_median(struct pointset *set, int axis, uint size)
 		tmp = tmp->next;
 	} while (tmp != NULL && i < h);
 	
-	return tmp;
+	if (size % 2 == 0)
+		return tmp->prev;
+	else
+		return tmp; // @TODO mudar, mas nao eh isso que faz comer os pontos
 }
 
 void pointset_debug(struct pointset *set, FILE *output)
@@ -112,15 +181,5 @@ void pointset_debug_reverse(struct pointset *set, FILE *output)
 	
 	for (struct pointset *s = tail; s != NULL; s = s->prev)
 		vector3_debug(s->point, output);
-}
-
-void pointset_free(struct pointset **set)
-{
-	if (*set == NULL)
-		return;
-	
-	vector3_free(&(*set)->point);
-	pointset_free(&(*set)->next);
-	free(*set);
 }
 

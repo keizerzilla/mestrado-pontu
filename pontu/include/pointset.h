@@ -27,17 +27,41 @@ struct pointset *pointset_new();
 /**
  * @TODO
  */
+void pointset_free(struct pointset **set);
+
+/**
+ * @TODO
+ */
 struct vector3 *pointset_insert(struct pointset **set, real x, real y, real z);
 
 /**
  * @TODO
  */
-struct vector3 *pointset_next(struct pointset *set);
+struct pointset *pointset_copy(struct pointset *set);
 
 /**
  * @TODO
  */
 struct pointset *pointset_tail(struct pointset *set);
+
+/**
+ * @TODO
+ */
+struct pointset *pointset_segment(struct pointset *begin,
+                                  struct pointset *end,
+                                  uint *size);
+
+/**
+ * @TODO
+ */
+struct pointset *pointset_segment_reverse(struct pointset *begin,
+                                          struct pointset *end,
+                                          uint *size);
+
+/**
+ * @TODO
+ */
+uint pointset_size(struct pointset *set);
 
 /**
  * @TODO
@@ -77,11 +101,6 @@ void pointset_debug(struct pointset *set, FILE *output);
  * @TODO
  */
 void pointset_debug_reverse(struct pointset *set, FILE *output);
-
-/**
- * @TODO
- */
-void pointset_free(struct pointset **set);
 
 #endif // POINTSET_H
 

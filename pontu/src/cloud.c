@@ -27,8 +27,11 @@ void cloud_free(struct cloud **cloud)
 struct vector3 *cloud_insert_real(struct cloud *cloud, real x, real y, real z)
 {
 	struct vector3 *i = pointset_insert(&cloud->points, x, y, z);
+	
 	if (i != NULL)
 		cloud->numpts++;
+	else
+		return NULL;
 	
 	return i;
 }
@@ -48,7 +51,7 @@ struct cloud *cloud_load_xyz(const char *filename)
 	FILE *file = fopen(filename, "r");
 	if (file == NULL)
 		return NULL;
-
+	
 	struct cloud *cloud = cloud_new();
 	if (cloud == NULL) {
 		fclose(file);
@@ -60,9 +63,9 @@ struct cloud *cloud_load_xyz(const char *filename)
 	real z = 0;
 	while (!feof(file) && (fscanf(file, "%le %le %le\n", &x, &y, &z) != EOF))
 		cloud_insert_real(cloud, x, y, z);
-
+	
 	fclose(file);
-
+	
 	return cloud;
 }
 
@@ -211,54 +214,6 @@ struct cloud *cloud_load_obj(const char *filename)
 		if (buffer[0] == 'v' && buffer[1] == ' ') {
 			sscanf(buffer, "v %lf %lf %lf\n", &x, &y, &z);
 			cloud_insert_real(cloud, x, y, z);
-		}
-	}
-
-	fclose(file);
-
-	return cloud;
-}
-
-struct cloud *cloud_load_off(const char *filename) {
-	FILE *file = fopen(filename, "r");
-	if (file == NULL)
-		return NULL;
-	
-	uint numpts = 0;
-	char buffer[CLOUD_MAXBUFFER];
-	
-	if (fgets(buffer, CLOUD_MAXBUFFER, file)) {
-		if (strcmp(buffer, "OFF\n")) {
-			fclose(file);
-			return NULL;
-		}
-	} else {
-		fclose(file);
-		return NULL;
-	}
-	
-	if (fgets(buffer, CLOUD_MAXBUFFER, file)) {
-		sscanf(buffer, "%u %*u %*u\n", &numpts);
-	} else {
-		fclose(file);
-		return NULL;
-	}
-	
-	struct cloud *cloud = cloud_new();
-	if (cloud == NULL) {
-		fclose(file);
-		return NULL;
-	}
-	
-	real x = 0;
-	real y = 0;
-	real z = 0;
-	for (uint i = 0; i < numpts; i++) {
-		if (fgets(buffer, CLOUD_MAXBUFFER, file)) {
-			sscanf(buffer, "%le %le %le\n", &x, &y, &z);
-			cloud_insert_real(cloud, x, y, z);
-		} else {
-			break;
 		}
 	}
 
@@ -462,7 +417,7 @@ void cloud_transform(struct cloud *cloud, struct matrix* rt)
 		matrix_set(cloud_mat, 0, i, set->point->x);
 		matrix_set(cloud_mat, 1, i, set->point->y);
 		matrix_set(cloud_mat, 2, i, set->point->z);
-		matrix_set(cloud_mat, 3, i, 1.0f);
+		matrix_set(cloud_mat, 3, i, 1.0);
 		
 		i++;
 	}
@@ -536,9 +491,9 @@ real cloud_boundingbox_area(struct cloud *cloud)
 {
 	struct vector3 *axis = cloud_axis_size(cloud);
 	
-	real area = (2.0f * axis->x * axis->y) +
-	            (2.0f * axis->y * axis->z) +
-	            (2.0f * axis->x * axis->z);
+	real area = (2.0 * axis->x * axis->y) +
+	            (2.0 * axis->y * axis->z) +
+	            (2.0 * axis->x * axis->z);
 	
 	vector3_free(&axis);
 
@@ -558,7 +513,7 @@ real cloud_boundingbox_volume(struct cloud *cloud)
 real cloud_function_volume(struct cloud *cloud)
 {
 	struct vector3 *centroid = cloud_get_centroid(cloud);
-	real vol = 0.0f;
+	real vol = 0.0;
 
 	for (struct pointset *set = cloud->points; set != NULL; set = set->next)
 		vol += vector3_distance(centroid, set->point);
@@ -629,8 +584,8 @@ struct vector3 *cloud_max_distance_from_plane(struct cloud *cloud,
 					                          struct plane *plane)
 {
 	struct vector3 *p = NULL;
-	real dist = 0.0f;
-	real temp = 0.0f;
+	real dist = 0.0;
+	real temp = 0.0;
 	
 	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
 		if (plane_on_direction(plane, set->point)) {
@@ -656,7 +611,7 @@ struct cloud *cloud_cut_cylinder(struct cloud *cloud,
 		return NULL;
 	
 	real dirl = vector3_length(dir);
-	real dist = 0.0f;
+	real dist = 0.0;
 
 	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
 		struct vector3 *dot = vector3_sub(ref, set->point);
@@ -697,7 +652,7 @@ struct cloud *cloud_segment(struct cloud *cloud,
 struct vector3 *cloud_closest_point(struct cloud *cloud, struct vector3 *point)
 {
 	struct vector3* closest = NULL;
-	real temp = 0.0f;
+	real temp = 0.0;
 	real dist = INFINITY;
 
 	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
@@ -716,7 +671,7 @@ struct pointset *cloud_closest_point_set(struct cloud *cloud,
                                          struct vector3 *point)
 {
 	struct pointset *closest = NULL;
-	real temp = 0.0f;
+	real temp = 0.0;
 	real dist = INFINITY;
 
 	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
@@ -742,7 +697,7 @@ real cloud_nearest_neighbors_bruteforce(struct cloud* source,
                                         struct vector3 **tgt_pt)
 {
 	real dist = INFINITY;
-	real temp = 0.0f;
+	real temp = 0.0;
 	
 	for (struct pointset *s = source->points; s != NULL; s = s->next) {
 		for (struct pointset *t = target->points; t != NULL; t = t->next) {
@@ -852,7 +807,7 @@ struct vector3 *cloud_max_z(struct cloud *cloud)
 real cloud_max_distance(struct cloud *cloud, struct vector3 *p)
 {
 	real dist = INFINITY;
-	real temp = 0.0f;
+	real temp = 0.0;
 
 	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
 		temp = vector3_squared_distance(p, set->point);
@@ -880,12 +835,12 @@ struct plane *cloud_dispersion_plane(struct cloud *cloud, struct vector3 *ref)
 	if (cloud->numpts < 3)
 		return NULL;
 
-	real xx = 0.0f;
-	real xy = 0.0f;
-	real xz = 0.0f;
-	real yy = 0.0f;
-	real yz = 0.0f;
-	real zz = 0.0f;
+	real xx = 0.0;
+	real xy = 0.0;
+	real xz = 0.0;
+	real yy = 0.0;
+	real yz = 0.0;
+	real zz = 0.0;
 
 	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
 		struct vector3 *r = vector3_sub(set->point, ref);
@@ -906,12 +861,12 @@ struct plane *cloud_dispersion_plane(struct cloud *cloud, struct vector3 *ref)
 
 	real det_max = calc_max3(det_x, det_y, det_z);
 
-	if (det_max <= 0.0f)
+	if (det_max <= 0.0)
 		return NULL;
 
-	real x = 0.0f;
-	real y = 0.0f;
-	real z = 0.0f;
+	real x = 0.0;
+	real y = 0.0;
+	real z = 0.0;
 
 	if (det_max == det_x) {
 		x = det_x;
@@ -972,7 +927,7 @@ real cloud_curvature(struct cloud *cloud)
 	struct vector3 *centroid = cloud_get_centroid(cloud);
 	struct vector3 *p = NULL;
 	uint size = cloud->numpts;
-	real radius = 0.0f;
+	real radius = 0.0;
 	real a = centroid->x;
 	real b = centroid->y;
 	real c = centroid->z;
@@ -999,15 +954,15 @@ real cloud_curvature(struct cloud *cloud)
 
 	vector3_free(&centroid);
 
-	return 1.0f / radius;
+	return 1.0 / radius;
 }
 
 real cloud_rmse(struct cloud *source, struct cloud *target)
 {
 	if (source->numpts < target->numpts)
-		return -1.0f;
+		return -1.0;
 
-	real rmse = 0.0f;
+	real rmse = 0.0;
 	struct pointset *s = source->points;
 	struct pointset *t = target->points;
 	
