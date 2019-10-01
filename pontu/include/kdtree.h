@@ -43,12 +43,6 @@ void kdtree_partitionate(struct kdtree *kdt);
  */
 real kdtree_dist_hyperplane(struct kdtree *k1, struct kdtree *k2);
 
-
-/**
- * @TODO
- */
-struct kdtree *kdtree_unwind(struct kdtree *node);
-
 /**
  * @TODO
  */

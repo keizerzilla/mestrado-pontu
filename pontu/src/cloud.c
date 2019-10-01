@@ -425,11 +425,14 @@ void cloud_transform(struct cloud *cloud, struct matrix* rt)
 	output_mat = algebra_mat_prod(rt, cloud_mat);
 
 	matrix_free(&cloud_mat);
-
+	
+	i = 0;
 	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
 		set->point->x = matrix_get(output_mat, 0, i);
 		set->point->y = matrix_get(output_mat, 1, i);
 		set->point->z = matrix_get(output_mat, 2, i);
+		
+		i++;
 	}
 
 	matrix_free(&output_mat);

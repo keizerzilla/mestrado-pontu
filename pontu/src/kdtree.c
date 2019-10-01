@@ -56,22 +56,16 @@ void kdtree_partitionate(struct kdtree *kdt)
 	                                                         kdt->median,
 	                                                         &numpts_right);
 	
-	//printf("OK, dividi! (l:%u, r:%u)\n", numpts_left, numpts_right); // debug
-	
 	kdt->left = kdtree_new(left_points, numpts_left, kdt->axis + 1);
 	pointset_free(&left_points);
 	
 	kdt->right = kdtree_new(right_points, numpts_right, kdt->axis + 1);	
 	pointset_free(&right_points);
 	
-	//printf("fui left\n\n"); // debug
 	kdtree_partitionate(kdt->left);
-	
-	//printf("fui right\n\n"); // debug
 	kdtree_partitionate(kdt->right);
 }
 
-// @TODO
 real kdtree_dist_hyperplane(struct kdtree *k1, struct kdtree *k2)
 {
 	real d = fabs(k1->median->point->coord[k1->axis] -
@@ -81,23 +75,14 @@ real kdtree_dist_hyperplane(struct kdtree *k1, struct kdtree *k2)
 }
 
 // @TODO
-struct kdtree *kdtree_unwind(struct kdtree *node)
-{
-	if (node->parent->parent == NULL)
-		return node;
-	
-	return kdtree_unwind(node->parent);
-}
-
-// @TODO
 struct kdtree *kdtree_closest_node(struct kdtree *kdt,
                                    struct vector3 *p,
                                    real *r)
 {
+	*r = vector3_squared_distance(p, kdt->median->point);
+	
 	if (kdt->left == NULL && kdt->right == NULL)
 		return kdt;
-	
-	*r = vector3_squared_distance(p, kdt->median->point);
 	
 	if (p->coord[kdt->axis] < kdt->median->point->coord[kdt->axis]) {
 		if (kdt->left != NULL)
@@ -125,6 +110,7 @@ void kdtree_closest_point(struct kdtree *node,
 	
 	if (kdtree_dist_hyperplane(node, current) < *radius) {
 		real d = vector3_squared_distance(point, current->median->point);
+		
 		if (d < *dist) {
 			*best = current->median->point;
 			*dist = d;
@@ -139,27 +125,20 @@ void kdtree_closest_point(struct kdtree *node,
 struct vector3 *kdtree_nearest_neighbor(struct kdtree *kdt,
                                         struct vector3 *point)
 {
+	// v01
 	real radius = 0.0f;
 	struct kdtree *node = kdtree_closest_node(kdt, point, &radius);
-	struct vector3 *best = node->median->point;
-	real dist = radius;
+	return node->median->point;
 	
+	// v02
+	//real radius = 0.0f;
+	//struct kdtree *node = kdtree_closest_node(kdt, point, &radius);
+	//struct vector3 *best = node->median->point;
+	//real dist = INFINITY;
+	//
 	//kdtree_closest_point(node, kdt, point, &best, &radius, &dist);
+	//
 	//return best;
-	
-	struct kdtree *branch = kdtree_unwind(node);
-	
-	//printf("uwind ok!\n");
-	
-	if (kdt->left == branch) {
-		//printf("bora right\n");
-		kdtree_closest_point(node, kdt->right, point, &best, &radius, &dist);
-	} else {
-		//printf("bora left\n");
-		kdtree_closest_point(node, kdt->left, point, &best, &radius, &dist);
-	}
-	
-	return best;
 }
 
 // @TODO

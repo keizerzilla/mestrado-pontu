@@ -18,13 +18,27 @@ void to_cloud(struct kdtree *kdt, struct cloud *cloud)
 
 int main()
 {
+	struct cloud *source = cloud_load_ply("../samples/bun045.ply");
+	struct cloud *target = cloud_load_ply("../samples/bun000.ply");
+	struct cloud *aligned = NULL;
+	struct matrix *rt = registration_icp(source, target, &aligned, 0.000001, 20);
+	
+	matrix_debug(rt, stdout);
+	
+	cloud_save_xyz(aligned, "../samples/kdtree_aligned_t1.xyz");
+	
+	matrix_free(&rt);
+	cloud_free(&aligned);
+	cloud_free(&target);
+	cloud_free(&source);
+	
+	/**
 	struct cloud *target = cloud_load_ply("../samples/bun000.ply");
 	struct cloud *source = cloud_load_ply("../samples/bun045.ply");
 	struct cloud *closest_points = cloud_new();
 	struct kdtree *kdt = kdtree_new(target->points, target->numpts, 0);
 	
 	kdtree_partitionate(kdt);
-	
 	
 	struct vector3 *closest = NULL;
 	for (struct pointset *set = source->points; set != NULL; set = set->next) {
@@ -41,6 +55,7 @@ int main()
 	cloud_free(&closest_points);
 	cloud_free(&source);
 	cloud_free(&target);
+	*/
 	
 	/**
 	struct cloud *target = cloud_load_ply("../samples/bun000.ply");

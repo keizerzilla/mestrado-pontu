@@ -20,6 +20,15 @@ struct cloud *registration_closest_points_bf(struct cloud *source,
                                              struct cloud *target);
 
 /**
+ * \brief Finds a equivalence cloud with closest points of source in target
+ * \param source The source cloud
+ * \param target The target cloud
+ * \return The equivalence cloud
+ */
+struct cloud *registration_closest_points_tree(struct cloud *source,
+                                               struct cloud *target);
+
+/**
  * \brief Finds the transformation matrix 4x4 (rotation + translation)
  * \param source The source cloud
  * \param target The target cloud
