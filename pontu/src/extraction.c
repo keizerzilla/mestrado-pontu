@@ -4,9 +4,9 @@ struct dataframe *extraction_plane(struct cloud *cloud,
 				                struct dataframe *(*mfunc) (struct cloud *),
 				                struct vector3 *norm)
 {
-	struct cloud *par1 = cloud_empty();
-	struct cloud *par2 = cloud_empty();
-	struct vector3 *pt = cloud_get_center(cloud);
+	struct cloud *par1 = cloud_new();
+	struct cloud *par2 = cloud_new();
+	struct vector3 *pt = cloud_get_centroid(cloud);
 	struct plane *plane = plane_new(norm, pt);
 
 	cloud_plane_partition(cloud, plane, par1, par2);
@@ -29,25 +29,25 @@ struct dataframe *extraction_recursive(struct cloud *cloud,
 				                    struct dataframe *(*mfunc) (struct cloud *),
 				                    struct vector3 *norm)
 {
-	struct cloud *par1 = cloud_empty();
-	struct cloud *par2 = cloud_empty();
-	struct vector3 *pt = cloud_get_center(cloud);
+	struct cloud *par1 = cloud_new();
+	struct cloud *par2 = cloud_new();
+	struct vector3 *pt = cloud_get_centroid(cloud);
 	struct plane *plane = plane_new(norm, pt);
 
 	cloud_plane_partition(cloud, plane, par1, par2);
 
-	struct cloud *par1_fh = cloud_empty();
-	struct cloud *par2_fh = cloud_empty();
-	struct vector3 *pt_fh = cloud_get_center(par1);
+	struct cloud *par1_fh = cloud_new();
+	struct cloud *par2_fh = cloud_new();
+	struct vector3 *pt_fh = cloud_get_centroid(par1);
 	struct plane *plane_fh = plane_new(norm, pt_fh);
 
 	cloud_plane_partition(par1, plane_fh, par1_fh, par2_fh);
 
 	struct dataframe *r1 = dataframe_concat_hor((*mfunc) (par1_fh),
 	                                      (*mfunc) (par2_fh));
-	struct cloud *par1_sh = cloud_empty();
-	struct cloud *par2_sh = cloud_empty();
-	struct vector3 *pt_sh = cloud_get_center(par2);
+	struct cloud *par1_sh = cloud_new();
+	struct cloud *par2_sh = cloud_new();
+	struct vector3 *pt_sh = cloud_get_centroid(par2);
 	struct plane *plane_sh = plane_new(norm, pt_sh);
 
 	cloud_plane_partition(par2, plane_sh, par1_sh, par2_sh);
@@ -99,23 +99,23 @@ struct dataframe *extraction_radial(struct cloud *cloud,
 	struct vector3 *nosetip = cloud_point_faraway_bestfit(cloud);
 	real slice = 25.0f;
 
-	struct cloud *sub1 = cloud_empty();
-	struct cloud *sub2 = cloud_empty();
-	struct cloud *sub3 = cloud_empty();
-	struct cloud *sub4 = cloud_empty();
+	struct cloud *sub1 = cloud_new();
+	struct cloud *sub2 = cloud_new();
+	struct cloud *sub3 = cloud_new();
+	struct cloud *sub4 = cloud_new();
 
 	real d = 0.0f;
-	for (uint i = 0; i < cloud_size(cloud); i++) {
-		d = vector3_distance(&cloud->points[i], nosetip);
+	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
+		d = vector3_distance(set->point, nosetip);
 
 		if (d <= slice)
-			cloud_add_point_vector(sub1, &cloud->points[i]);
+			cloud_insert_vector3(sub1, set->point);
 		else if (d > slice && d <= 2.0f * slice)
-			cloud_add_point_vector(sub2, &cloud->points[i]);
+			cloud_insert_vector3(sub2, set->point);
 		else if (d > 2.0f * slice && d <= 3.0f * slice)
-			cloud_add_point_vector(sub3, &cloud->points[i]);
+			cloud_insert_vector3(sub3, set->point);
 		else
-			cloud_add_point_vector(sub4, &cloud->points[i]);
+			cloud_insert_vector3(sub4, set->point);
 	}
 
 	struct dataframe *ans1 = dataframe_concat_hor((*mfunc) (sub1),
@@ -173,14 +173,14 @@ struct dataframe *extraction_manhattan(struct cloud *cloud,
 				                    struct dataframe *(*mfunc) (struct cloud *))
 {
 	struct vector3 *nosetip = cloud_point_faraway_bestfit(cloud);
-	struct cloud *nose = cloud_empty();
+	struct cloud *nose = cloud_new();
 	real d = 0.0f;
 
-	for (uint i = 0; i < cloud_size(cloud); i++) {
-		d = vector3_manhattan(&cloud->points[i], nosetip);
+	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
+		d = vector3_manhattan(set->point, nosetip);
 
 		if (d <= 150.0f)
-			cloud_add_point_vector(nose, &cloud->points[i]);
+			cloud_insert_vector3(nose, set->point);
 	}
 
 	struct dataframe *ans = (*mfunc) (nose);
@@ -195,20 +195,20 @@ struct dataframe *extraction_4(struct cloud *cloud,
 			                struct dataframe *(*mfunc) (struct cloud *))
 {
 	struct vector3 *norm_sagit = vector3_new(1, 0, 0);
-	struct vector3 *center = cloud_get_center(cloud);
-	struct plane *plane_sagit = plane_new(norm_sagit, center);
-	struct cloud *left = cloud_empty();
-	struct cloud *right = cloud_empty();
+	struct vector3 *centroid = cloud_get_centroid(cloud);
+	struct plane *plane_sagit = plane_new(norm_sagit, centroid);
+	struct cloud *left = cloud_new();
+	struct cloud *right = cloud_new();
 
 	cloud_plane_partition(cloud, plane_sagit, left, right);
 
 	struct vector3 *norm_trans = vector3_new(0, 1, 0);
-	struct cloud *left_1 = cloud_empty();
-	struct cloud *left_2 = cloud_empty();
-	struct cloud *right_1 = cloud_empty();
-	struct cloud *right_2 = cloud_empty();
-	struct plane *plane_left = plane_new(norm_trans, center);
-	struct plane *plane_right = plane_new(norm_trans, center);
+	struct cloud *left_1 = cloud_new();
+	struct cloud *left_2 = cloud_new();
+	struct cloud *right_1 = cloud_new();
+	struct cloud *right_2 = cloud_new();
+	struct plane *plane_left = plane_new(norm_trans, centroid);
+	struct plane *plane_right = plane_new(norm_trans, centroid);
 
 	cloud_plane_partition(left, plane_left, left_1, left_2);
 	cloud_plane_partition(right, plane_right, right_1, right_2);
@@ -223,7 +223,7 @@ struct dataframe *extraction_4(struct cloud *cloud,
 	struct dataframe *ret = dataframe_concat_hor(subleft, subright);
 
 	vector3_free(&norm_sagit);
-	vector3_free(&center);
+	vector3_free(&centroid);
 	plane_free(&plane_sagit);
 	cloud_free(&left);
 	cloud_free(&right);
@@ -248,20 +248,20 @@ struct dataframe *extraction_6(struct cloud *cloud,
 			                struct dataframe *(*mfunc) (struct cloud *))
 {
 	struct vector3 *norm_sagit = vector3_new(1, 0, 0);
-	struct vector3 *center = cloud_get_center(cloud);
-	struct plane *plane_sagit = plane_new(norm_sagit, center);
-	struct cloud *left = cloud_empty();
-	struct cloud *right = cloud_empty();
+	struct vector3 *centroid = cloud_get_centroid(cloud);
+	struct plane *plane_sagit = plane_new(norm_sagit, centroid);
+	struct cloud *left = cloud_new();
+	struct cloud *right = cloud_new();
 
 	cloud_plane_partition(cloud, plane_sagit, left, right);
 
 	struct vector3 *norm_trans = vector3_new(0, 1, 0);
-	struct cloud *left_1 = cloud_empty();
-	struct cloud *left_2 = cloud_empty();
-	struct cloud *right_1 = cloud_empty();
-	struct cloud *right_2 = cloud_empty();
-	struct plane *plane_left = plane_new(norm_trans, center);
-	struct plane *plane_right = plane_new(norm_trans, center);
+	struct cloud *left_1 = cloud_new();
+	struct cloud *left_2 = cloud_new();
+	struct cloud *right_1 = cloud_new();
+	struct cloud *right_2 = cloud_new();
+	struct plane *plane_left = plane_new(norm_trans, centroid);
+	struct plane *plane_right = plane_new(norm_trans, centroid);
 
 	cloud_plane_partition(left, plane_left, left_1, left_2);
 	cloud_plane_partition(right, plane_right, right_1, right_2);
@@ -280,7 +280,7 @@ struct dataframe *extraction_6(struct cloud *cloud,
 	struct dataframe *ret = dataframe_concat_hor(full, subs);
 
 	vector3_free(&norm_sagit);
-	vector3_free(&center);
+	vector3_free(&centroid);
 	plane_free(&plane_sagit);
 	cloud_free(&left);
 	cloud_free(&right);
@@ -309,10 +309,10 @@ struct dataframe *extraction_7(struct cloud *cloud,
 			                struct dataframe *(*mfunc) (struct cloud *))
 {
 	struct vector3 *norm_sagit = vector3_new(1, 0, 0);
-	struct vector3 *center = cloud_get_center(cloud);
-	struct plane *plane_sagit = plane_new(norm_sagit, center);
-	struct cloud *left = cloud_empty();
-	struct cloud *right = cloud_empty();
+	struct vector3 *centroid = cloud_get_centroid(cloud);
+	struct plane *plane_sagit = plane_new(norm_sagit, centroid);
+	struct cloud *left = cloud_new();
+	struct cloud *right = cloud_new();
 
 	cloud_plane_partition(cloud, plane_sagit, left, right);
 
@@ -320,12 +320,12 @@ struct dataframe *extraction_7(struct cloud *cloud,
 	struct dataframe *ans_right = (*mfunc) (right);
 
 	struct vector3 *norm_trans = vector3_new(0, 1, 0);
-	struct cloud *left_1 = cloud_empty();
-	struct cloud *left_2 = cloud_empty();
-	struct cloud *right_1 = cloud_empty();
-	struct cloud *right_2 = cloud_empty();
-	struct plane *plane_left = plane_new(norm_trans, center);
-	struct plane *plane_right = plane_new(norm_trans, center);
+	struct cloud *left_1 = cloud_new();
+	struct cloud *left_2 = cloud_new();
+	struct cloud *right_1 = cloud_new();
+	struct cloud *right_2 = cloud_new();
+	struct plane *plane_left = plane_new(norm_trans, centroid);
+	struct plane *plane_right = plane_new(norm_trans, centroid);
 
 	cloud_plane_partition(left, plane_left, left_1, left_2);
 	cloud_plane_partition(right, plane_right, right_1, right_2);
@@ -345,7 +345,7 @@ struct dataframe *extraction_7(struct cloud *cloud,
 	struct dataframe *ret = dataframe_concat_hor(subs, tris);
 
 	vector3_free(&norm_sagit);
-	vector3_free(&center);
+	vector3_free(&centroid);
 	plane_free(&plane_sagit);
 	cloud_free(&left);
 	cloud_free(&right);

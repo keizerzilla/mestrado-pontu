@@ -4,10 +4,10 @@ real hu_regular_moment(int p, int q, int r, struct cloud *cloud)
 {
 	real moment = 0.0f;
 
-	for (uint i = 0; i < cloud->numpts; i++) {
-		moment += pow(cloud->points[i].x, p) *
-		          pow(cloud->points[i].y, q) *
-		          pow(cloud->points[i].z, r);
+	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
+		moment += pow(set->point->x, p) *
+		          pow(set->point->y, q) *
+		          pow(set->point->z, r);
 	}
 	
 	return moment;
@@ -16,16 +16,16 @@ real hu_regular_moment(int p, int q, int r, struct cloud *cloud)
 real hu_central_moment(int p, int q, int r, struct cloud *cloud)
 {
 	real moment = 0.0f;
-	struct vector3 *center = cloud_get_center(cloud);
+	struct vector3 *centroid = cloud_get_centroid(cloud);
 
-	for (uint i = 0; i < cloud->numpts; i++) {
-		moment += pow(cloud->points[i].x - center->x, p) *
-		          pow(cloud->points[i].y - center->y, q) *
-		          pow(cloud->points[i].z - center->z, r) *
-		          vector3_distance(&cloud->points[i], center);
+	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
+		moment += pow(set->point->x - centroid->x, p) *
+		          pow(set->point->y - centroid->y, q) *
+		          pow(set->point->z - centroid->z, r) *
+		          vector3_distance(set->point, centroid);
 	}
 
-	vector3_free(&center);
+	vector3_free(&centroid);
 
 	return moment;
 }

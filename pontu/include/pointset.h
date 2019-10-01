@@ -27,16 +27,7 @@ struct pointset *pointset_new();
 /**
  * @TODO
  */
-struct vector3 *pointset_insert_real(struct pointset **set,
-                                     real x,
-                                     real y,
-                                     real z);
-
-/**
- * @TODO
- */
-struct vector3 *pointset_insert_vector3(struct pointset **set,
-                                        struct vector3 *v);
+struct vector3 *pointset_insert(struct pointset **set, real x, real y, real z);
 
 /**
  * @TODO

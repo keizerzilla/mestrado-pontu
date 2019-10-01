@@ -25,29 +25,29 @@ real legendre_norm(int p, int q, int r, struct cloud *cloud)
 
 real legendre_moment(int p, int q, int r, struct cloud *cloud)
 {
-	struct vector3 *center = cloud_get_center(cloud);
+	struct vector3 *centroid = cloud_get_centroid(cloud);
 	
 	real moment = 0.0f;
-	real center_x = 0.0f;
-	real center_y = 0.0f;
-	real center_z = 0.0f;
+	real centroid_x = 0.0f;
+	real centroid_y = 0.0f;
+	real centroid_z = 0.0f;
 
-	for (uint i = 0; i < cloud->numpts; i++) {
-		struct vector3 *point = vector3_from_vector(&cloud->points[i]);
+	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
+		struct vector3 *point = vector3_from_vector(set->point);
 		
-		center_x = point->x - center->x;
-		center_y = point->y - center->y;
-		center_z = point->z - center->z;
+		centroid_x = point->x - centroid->x;
+		centroid_y = point->y - centroid->y;
+		centroid_z = point->z - centroid->z;
 
-		moment += legendre_poly(p, center_x) *
-		          legendre_poly(q, center_y) *
-		          legendre_poly(r, center_z) *
-		          vector3_distance(point, center);
+		moment += legendre_poly(p, centroid_x) *
+		          legendre_poly(q, centroid_y) *
+		          legendre_poly(r, centroid_z) *
+		          vector3_distance(point, centroid);
 
 		vector3_free(&point);
 	}
 
-	vector3_free(&center);
+	vector3_free(&centroid);
 
 	return legendre_norm(p, q, r, cloud) * moment;
 }

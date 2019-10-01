@@ -10,7 +10,7 @@ void to_cloud(struct kdtree *kdt, struct cloud *cloud)
 		return;
 	
 	if (kdt->left == NULL && kdt->right == NULL) {
-		cloud_add_point_vector(cloud, kdt->midpnt);
+		cloud_insert_vector3(cloud, kdt->midpnt);
 		return;
 	}
 	
@@ -25,9 +25,9 @@ int main()
 	struct pointset *set = pointset_new();
 	
 	for (int i = 0; i < 10; i++)
-		pointset_insert_real(&set, rand() % 10, rand() % 10, rand() % 10);
+		pointset_insert(&set, rand() % 10, rand() % 10, rand() % 10);
 	
-	pointset_sort(set, VECTOR3_AXIS_X);
+	pointset_sort(set, VECTOR3_AXIS_Y);
 	pointset_debug(set, stdout);
 	printf("--------------------------\n");
 	pointset_debug_reverse(set, stdout);

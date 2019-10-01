@@ -11,7 +11,7 @@ struct cloud *voxelgrid_sampling(struct cloud *src, real leafsize) {
 
     real apothem = leafsize / 2;
 
-    struct vector3 *centroid = cloud_get_center(src);
+    struct vector3 *centroid = cloud_get_centroid(src);
     struct vector3 *axis_size = cloud_axis_size(src);
     
     uint num_voxels_x = (uint)ceil(axis_size->x/leafsize) + 1;
@@ -32,7 +32,7 @@ struct cloud *voxelgrid_sampling(struct cloud *src, real leafsize) {
     real d_x, min_x, max_x, d_y, min_y, max_y, d_z, min_z, max_z;
     uint idx_aux;
 
-    struct cloud *output = cloud_empty();
+    struct cloud *output = cloud_new();
     
     uint total_dim = num_voxels_x * num_voxels_y * num_voxels_z;
 
@@ -42,91 +42,100 @@ struct cloud *voxelgrid_sampling(struct cloud *src, real leafsize) {
         return NULL;
     }
 
-    for (uint n = 0; n < src->numpts; n++) {
-        d_x = src->points[n].x - voxel_o->x;
+    for (struct pointset *set = src->points; set != NULL; set = set->next) {
+        d_x = set->point->x - voxel_o->x;
         if (d_x < 0.0) {
             pos_x = 0;
         } else {
-            pos_x = (uint) ceil(d_x / leafsize);
+            pos_x = (uint)ceil(d_x / leafsize);
         
             min_x = voxel_o->x + (pos_x * leafsize) - apothem;
             max_x = voxel_o->x + (pos_x * leafsize) + apothem;
 
-            if (src->points[n].x < centroid->x) {
-                if (src->points[n].x < min_x) {
+            if (set->point->x < centroid->x) {
+                if (set->point->x < min_x) {
                     pos_x--;
-                } else if (src->points[n].x >= max_x) {
+                } else if (set->point->x >= max_x) {
                     pos_x++;
                 }
-            } else if (src->points[n].x > centroid->x) {
-                if (src->points[n].x <= min_x) {
+            } else if (set->point->x > centroid->x) {
+                if (set->point->x <= min_x) {
                     pos_x--;
-                } else if (src->points[n].x > max_x) {
+                } else if (set->point->x > max_x) {
                     pos_x++;
                 }
             }
         }
         
-        d_y = src->points[n].y - voxel_o->y;
+        d_y = set->point->y - voxel_o->y;
         if (d_y < 0.0) {
             pos_y = 0;
         } else {
             pos_y = (uint) ceil(d_y / leafsize);
             min_y = voxel_o->y + (pos_y * leafsize) - apothem;
             max_y = voxel_o->y + (pos_y * leafsize) + apothem;
-            if (src->points[n].y < centroid->y) {
-                if (src->points[n].y < min_y) {
+            if (set->point->y < centroid->y) {
+                if (set->point->y < min_y) {
                     pos_y--;
-                } else if (src->points[n].y >= max_y) {
+                } else if (set->point->y >= max_y) {
                     pos_y++;
                 }
-            } else if (src->points[n].y > centroid->y) {
-                if (src->points[n].y <= min_y) {
+            } else if (set->point->y > centroid->y) {
+                if (set->point->y <= min_y) {
                     pos_y--;
-                } else if (src->points[n].y > max_y) {
+                } else if (set->point->y > max_y) {
                     pos_y++;
                 }
             }
         }
         
-        d_z = src->points[n].z - voxel_o->z;
+        d_z = set->point->z - voxel_o->z;
         if (d_z < 0.0) {
             pos_z = 0;
         } else {
             pos_z = (uint) ceil(d_z / leafsize);
             min_z = voxel_o->z + (pos_z * leafsize) - apothem;
             max_z = voxel_o->z + (pos_z * leafsize) + apothem;
-            if (src->points[n].z < centroid->z) {
-                if (src->points[n].z < min_z) {
+            if (set->point->z < centroid->z) {
+                if (set->point->z < min_z) {
                     pos_z--;
-                } else if (src->points[n].z >= max_z) {
+                } else if (set->point->z >= max_z) {
                     pos_z++;
                 }
-            } else if (src->points[n].z > centroid->z) {
-                if (src->points[n].z <= min_z) {
+            } else if (set->point->z > centroid->z) {
+                if (set->point->z <= min_z) {
                     pos_z--;
-                } else if (src->points[n].z > max_z) {
+                } else if (set->point->z > max_z) {
                     pos_z++;
                 }
             }
         }
 
-        idx_aux = voxelgrid_idx_offset(pos_x, pos_y, pos_z, num_voxels_x, num_voxels_y);
+        idx_aux = voxelgrid_idx_offset(pos_x,
+                                       pos_y,
+                                       pos_z,
+                                       num_voxels_x,
+                                       num_voxels_y);
 
         if (clouds[idx_aux] == 0) {
-            clouds[idx_aux] = cloud_empty();
+            clouds[idx_aux] = cloud_new();
         }
 
-        cloud_add_point_vector(clouds[idx_aux], &src->points[n]);
+        cloud_insert_vector3(clouds[idx_aux], set->point);
     }
 
     for (uint i = 0; i < num_voxels_x; i++) {
         for (uint j = 0; j < num_voxels_y; j++) {
             for (uint k = 0; k < num_voxels_z; k++) {
-                idx_aux = voxelgrid_idx_offset(i, j, k, num_voxels_x, num_voxels_y);
+                idx_aux = voxelgrid_idx_offset(i,
+                                               j,
+                                               k,
+                                               num_voxels_x,
+                                               num_voxels_y);
+				
                 if (clouds[idx_aux] != 0) {
-                    cloud_add_point_vector(output, 
-                                           cloud_calc_center(clouds[idx_aux]));
+                    cloud_insert_vector3(output, 
+                                         cloud_calc_centroid(clouds[idx_aux]));
                     cloud_free(&clouds[idx_aux]);
                 }
             }

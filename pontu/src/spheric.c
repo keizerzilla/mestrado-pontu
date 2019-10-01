@@ -7,24 +7,24 @@ real spheric_quad(real x, real y, real z, int p, int q, int r)
 
 real spheric_moment(int p, int q, int r, struct cloud *cloud)
 {
-	struct vector3 *center = cloud_get_center(cloud);
+	struct vector3 *centroid = cloud_get_centroid(cloud);
 	real moment = 0.0f;
-	real center_x = 0.0f;
-	real center_y = 0.0f;
-	real center_z = 0.0f;
+	real centroid_x = 0.0f;
+	real centroid_y = 0.0f;
+	real centroid_z = 0.0f;
 
-	for (uint i = 0; i < cloud->numpts; i++) {
-		center_x = cloud->points[i].x - center->x;
-		center_y = cloud->points[i].y - center->y;
-		center_z = cloud->points[i].z - center->z;
+	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
+		centroid_x = set->point->x - centroid->x;
+		centroid_y = set->point->y - centroid->y;
+		centroid_z = set->point->z - centroid->z;
 
-		moment += pow(center_x, p) *
-		          pow(center_y, q) *
-		          pow(center_z, r) *
-		          spheric_quad(center_x, center_y, center_z, p, q, r);
+		moment += pow(centroid_x, p) *
+		          pow(centroid_y, q) *
+		          pow(centroid_z, r) *
+		          spheric_quad(centroid_x, centroid_y, centroid_z, p, q, r);
 	}
 
-	vector3_free(&center);
+	vector3_free(&centroid);
 
 	return moment / cloud_boundingbox_volume(cloud);
 }

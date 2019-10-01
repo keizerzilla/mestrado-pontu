@@ -3,19 +3,13 @@
 struct cloud *registration_closest_points_bf(struct cloud *source,
                                              struct cloud *target)
 {
-    struct cloud *closest_points = cloud_new(source->numpts);
-
+    struct cloud *closest_points = cloud_new();
     if (closest_points == NULL)
         return NULL;
-
-    uint idx = 0;
-
-    for (uint i = 0; i < source->numpts; i++) {
-        idx = cloud_closest_point_idx(target, &source->points[i]);
-
-        closest_points->points[i].x = target->points[idx].x;
-        closest_points->points[i].y = target->points[idx].y;
-        closest_points->points[i].z = target->points[idx].z;
+	
+    for (struct pointset *set = source->points; set != NULL; set = set->next) {
+        struct vector3 *p = cloud_closest_point(target, set->point);
+        cloud_insert_vector3(closest_points, p);
     }
 
     return closest_points;
@@ -23,8 +17,8 @@ struct cloud *registration_closest_points_bf(struct cloud *source,
 
 struct matrix *registration_align(struct cloud *source, struct cloud *target)
 {
-    cloud_calc_center(source);
-    cloud_calc_center(target);
+    cloud_calc_centroid(source);
+    cloud_calc_centroid(target);
 
     struct matrix *source_aux = matrix_new(3, 1);
     struct matrix *target_aux = matrix_new(1, 3);
@@ -39,53 +33,58 @@ struct matrix *registration_align(struct cloud *source, struct cloud *target)
 
     struct matrix *centroid_prod = algebra_mat_prod(source_aux, target_aux);
     struct matrix *s = matrix_new(3, 3);
-
-    for (uint i = 0; i < source->numpts; i++) {
-
+	
+	struct pointset *src = source->points;
+	struct pointset *tgt = target->points;
+	
+    while (src != NULL && tgt != NULL) {
         matrix_set(s, 0, 0,
-                    matrix_get(s, 0, 0) +
-                    source->points[i].x * target->points[i].x - 
-                    matrix_get(centroid_prod, 0, 0));
+                   matrix_get(s, 0, 0) +
+                   src->point->x * tgt->point->x - 
+                   matrix_get(centroid_prod, 0, 0));
 
         matrix_set(s, 0, 1,
-                    matrix_get(s, 0, 1) +
-                    source->points[i].x * target->points[i].y - 
-                    matrix_get(centroid_prod, 0, 1));
+                   matrix_get(s, 0, 1) +
+                   src->point->x * tgt->point->y - 
+                   matrix_get(centroid_prod, 0, 1));
 
         matrix_set(s, 0, 2,
-                    matrix_get(s, 0, 2) +
-                    source->points[i].x * target->points[i].z - 
-                    matrix_get(centroid_prod, 0, 2));
+                   matrix_get(s, 0, 2) +
+                   src->point->x * tgt->point->z - 
+                   matrix_get(centroid_prod, 0, 2));
 
         matrix_set(s, 1, 0,
-                    matrix_get(s, 1, 0) +
-                    source->points[i].y * target->points[i].x - 
-                    matrix_get(centroid_prod, 1, 0));
+                   matrix_get(s, 1, 0) +
+                   src->point->y * tgt->point->x - 
+                   matrix_get(centroid_prod, 1, 0));
 
         matrix_set(s, 1, 1,
-                    matrix_get(s, 1, 1) +
-                    source->points[i].y * target->points[i].y - 
-                    matrix_get(centroid_prod, 1, 1));
+                   matrix_get(s, 1, 1) +
+                   src->point->y * tgt->point->y - 
+                   matrix_get(centroid_prod, 1, 1));
 
         matrix_set(s, 1, 2,
-                    matrix_get(s, 1, 2) +
-                    source->points[i].y * target->points[i].z - 
-                    matrix_get(centroid_prod, 1, 2));
+                   matrix_get(s, 1, 2) +
+                   src->point->y * tgt->point->z - 
+                   matrix_get(centroid_prod, 1, 2));
 
         matrix_set(s, 2, 0,
-                    matrix_get(s, 2, 0) +
-                    source->points[i].z * target->points[i].x - 
-                    matrix_get(centroid_prod, 2, 0));
+                   matrix_get(s, 2, 0) +
+                   src->point->z * tgt->point->x - 
+                   matrix_get(centroid_prod, 2, 0));
 
         matrix_set(s, 2, 1,
-                    matrix_get(s, 2, 1) +
-                    source->points[i].z * target->points[i].y - 
-                    matrix_get(centroid_prod, 2, 1));
+                   matrix_get(s, 2, 1) +
+                   src->point->z * tgt->point->y - 
+                   matrix_get(centroid_prod, 2, 1));
 
         matrix_set(s, 2, 2,
-                    matrix_get(s, 2, 2) +
-                    source->points[i].z * target->points[i].z - 
-                    matrix_get(centroid_prod, 2, 2));
+                   matrix_get(s, 2, 2) +
+                   src->point->z * tgt->point->z - 
+                   matrix_get(centroid_prod, 2, 2));
+		
+		src = src->next;
+		tgt = tgt->next;
     }
 
     s = algebra_mat_vs_scalar(s, 1.0f/((double)source->numpts));
@@ -196,10 +195,10 @@ struct matrix *registration_align(struct cloud *source, struct cloud *target)
 }
 
 struct matrix *registration_icp(struct cloud *source,
-                                 struct cloud *target,
-                                 struct cloud **aligned,
-                                 real t,
-                                 uint k)
+                                struct cloud *target,
+                                struct cloud **aligned,
+                                real t,
+                                uint k)
 {
     struct cloud *eq_points = registration_closest_points_bf(source, target);
     if (eq_points == NULL)
@@ -337,6 +336,5 @@ struct matrix *registration_icp(struct cloud *source,
     matrix_free(&rt);
 
     return rt_final;
-
 }
 

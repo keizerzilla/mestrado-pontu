@@ -5,10 +5,7 @@ struct pointset *pointset_new()
 	return NULL;
 }
 
-struct vector3 *pointset_insert_real(struct pointset **set,
-                                     real x,
-                                     real y,
-                                     real z)
+struct vector3 *pointset_insert(struct pointset **set, real x, real y, real z)
 {
 	struct pointset *new = malloc(sizeof(struct pointset));
 	if (new == NULL)
@@ -27,12 +24,6 @@ struct vector3 *pointset_insert_real(struct pointset **set,
 	*set = new;
 	
 	return new->point;
-}
-
-struct vector3 *pointset_insert_vector3(struct pointset **set,
-                                        struct vector3 *v)
-{
-	return pointset_insert_real(set, v->x, v->y, v->z);
 }
 
 struct pointset *pointset_tail(struct pointset *set)
@@ -99,12 +90,11 @@ void pointset_debug(struct pointset *set, FILE *output)
 		vector3_debug(s->point, output);
 }
 
-// TRANSFORMAR EM FOR
 void pointset_debug_reverse(struct pointset *set, FILE *output)
 {
 	struct pointset *tail = pointset_tail(set);
 	
-	for (struct pointset *s = tail; s != NULL; s = s->next)
+	for (struct pointset *s = tail; s != NULL; s = s->prev)
 		vector3_debug(s->point, output);
 }
 

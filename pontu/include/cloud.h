@@ -18,7 +18,7 @@
 #include "./algebra.h"
 #include "./kdtree.h"
 
-#define CLOUD_MAXBUFFER 512
+#define CLOUD_MAXBUFFER 1024
 
 /**
  * \brief Struct to store a cloud
@@ -50,18 +50,15 @@ void cloud_free(struct cloud **cloud);
  * \return Pointer to the new point on the cloud or NULL if it fails to be 
  * allocated
  */
-struct vector3 *cloud_add_point_real(struct cloud *cloud,
-				                     real x,
-				                     real y,
-				                     real z);
+struct vector3 *cloud_insert_real(struct cloud *cloud, real x, real y, real z);
 /**
- * \brief Adds a new point in the cloud (vector);
+ * \brief Adds a new point in the cloud (vector3);
  * \param cloud Target cloud
  * \param p Point to be added
  * \return Pointer to the new poin on the cloud or NULL if it fails to be 
  * allocated
  */
-struct vector3 *cloud_add_point_vector(struct cloud *cloud, struct vector3 *p);
+struct vector3 *cloud_insert_vector3(struct cloud *cloud, struct vector3 *p);
 
 /**
  * \brief Counts points in a cloud

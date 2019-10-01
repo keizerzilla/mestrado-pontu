@@ -18,18 +18,18 @@ real chebyshev_poly(int p, uint n, real x)
 
 real chebyshev_moment(int p, int q, int r, struct cloud *cloud)
 {
-	struct vector3 *center = cloud_get_center(cloud);
+	struct vector3 *centroid = cloud_get_centroid(cloud);
 	uint n = cloud->numpts;
 	real moment = 0.0f;
 
-	for (uint i = 0; i < cloud->numpts; i++) {
-		moment += chebyshev_poly(p, n, cloud->points[i].x - center->x) *
-		          chebyshev_poly(q, n, cloud->points[i].y - center->y) *
-		          chebyshev_poly(r, n, cloud->points[i].z - center->z) *
-		          vector3_distance(&cloud->points[i], center);
+	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
+		moment += chebyshev_poly(p, n, set->point->x - centroid->x) *
+		          chebyshev_poly(q, n, set->point->y - centroid->y) *
+		          chebyshev_poly(r, n, set->point->z - centroid->z) *
+		          vector3_distance(set->point, centroid);
 	}
 
-	vector3_free(&center);
+	vector3_free(&centroid);
 
 	return moment;
 }

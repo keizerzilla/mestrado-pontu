@@ -26,14 +26,14 @@ void cloud_free(struct cloud **cloud)
 
 struct vector3 *cloud_insert_real(struct cloud *cloud, real x, real y, real z)
 {
-	struct vector3 *i = pointset_insert_real(&cloud->points, x, y, z);
+	struct vector3 *i = pointset_insert(&cloud->points, x, y, z);
 	if (i != NULL)
 		cloud->numpts++;
 	
 	return i;
 }
 
-struct vector3 *cloud_insert_vector(struct cloud *cloud, struct vector3 *p)
+struct vector3 *cloud_insert_vector3(struct cloud *cloud, struct vector3 *p)
 {
 	return cloud_insert_real(cloud, p->x, p->y, p->z);
 }
@@ -664,7 +664,7 @@ struct cloud *cloud_cut_cylinder(struct cloud *cloud,
 
 		dist = vector3_length(cross) / dirl;
 		if (dist <= radius)
-			cloud_add_point_vector(sub, set->point);
+			cloud_insert_vector3(sub, set->point);
 
 		vector3_free(&dot);
 		vector3_free(&cross);
@@ -715,7 +715,7 @@ struct vector3 *cloud_closest_point(struct cloud *cloud, struct vector3 *point)
 struct pointset *cloud_closest_point_set(struct cloud *cloud,
                                          struct vector3 *point)
 {
-	struct pointset *closest;
+	struct pointset *closest = NULL;
 	real temp = 0.0f;
 	real dist = INFINITY;
 
