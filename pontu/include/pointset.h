@@ -66,6 +66,11 @@ void pointset_sort(struct pointset *set, int axis);
 /**
  * @TODO
  */
+struct pointset *pointset_median(struct pointset *set, int axis, uint size);
+
+/**
+ * @TODO
+ */
 void pointset_debug(struct pointset *set, FILE *output);
 
 /**

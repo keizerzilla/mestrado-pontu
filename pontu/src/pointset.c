@@ -84,6 +84,22 @@ void pointset_sort(struct pointset *set, int axis)
 	pointset_recursive_sort(set, end, axis);
 }
 
+struct pointset *pointset_median(struct pointset *set, int axis, uint size)
+{
+	pointset_sort(set, axis);
+	
+	struct pointset *tmp = set;
+	uint i = 0;
+	uint h = size / 2;
+	
+	do {
+		i++;
+		tmp = tmp->next;
+	} while (tmp != NULL && i < h);
+	
+	return tmp;
+}
+
 void pointset_debug(struct pointset *set, FILE *output)
 {
 	for (struct pointset *s = set; s != NULL; s = s->next)

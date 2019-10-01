@@ -23,14 +23,16 @@ int main()
 	srand(time(NULL));
 	
 	struct pointset *set = pointset_new();
+	uint n = 6;
 	
-	for (int i = 0; i < 10; i++)
+	for (uint i = 0; i < n; i++)
 		pointset_insert(&set, rand() % 10, rand() % 10, rand() % 10);
 	
-	pointset_sort(set, VECTOR3_AXIS_Y);
-	pointset_debug(set, stdout);
+	
+	vector3_debug(pointset_median(set, VECTOR3_AXIS_X, n)->point, stdout);
 	printf("--------------------------\n");
-	pointset_debug_reverse(set, stdout);
+	pointset_debug(set, stdout);
+	
 	pointset_free(&set);
 	
 	/**
