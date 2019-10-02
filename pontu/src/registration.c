@@ -23,18 +23,13 @@ struct cloud *registration_closest_points_tree(struct cloud *source,
 	if (closest_points == NULL)
         return NULL;
 	
-	struct kdtree *kdt = kdtree_new(target->points,
-	                                target->numpts,
-	                                VECTOR3_AXIS_X);
-	kdtree_partitionate(kdt);
+	cloud_partitionate(target);
 	
 	struct pointset *tail = pointset_tail(source->points);
 	for (struct pointset *set = tail; set != NULL; set = set->prev) {
-        struct vector3 *p = kdtree_nearest_neighbor(kdt, set->point);
-        cloud_insert_vector3(closest_points, p);
+		struct vector3 *p = octree_nearest_neighbor(target->tree, set->point);
+		cloud_insert_vector3(closest_points, p);
     }
-    
-    kdtree_free(&kdt);
     
     return closest_points;
 }
@@ -222,10 +217,10 @@ struct matrix *registration_icp(struct cloud *source,
                                 struct cloud *target,
                                 struct cloud **aligned,
                                 real t,
-                                uint k)
+                                uint k,
+                                closest_points_func closest)
 {
-    //struct cloud *eq_points = registration_closest_points_bf(source, target);
-    struct cloud *eq_points = registration_closest_points_tree(source, target);
+    struct cloud *eq_points = (*closest)(source, target);
     if (eq_points == NULL)
         return NULL;
 
@@ -277,8 +272,7 @@ struct matrix *registration_icp(struct cloud *source,
     cloud_free(&eq_points);
     eq_points = NULL;
 
-    //eq_points = registration_closest_points_bf(*aligned, target);
-    eq_points = registration_closest_points_tree(*aligned, target);
+    eq_points = (*closest)(*aligned, target);
     if (eq_points == NULL) {
         cloud_free(aligned);
         matrix_free(&rt);
@@ -338,8 +332,7 @@ struct matrix *registration_icp(struct cloud *source,
         cloud_free(&eq_points);
         eq_points = NULL;
 
-        //eq_points = registration_closest_points_bf(*aligned, target);
-        eq_points = registration_closest_points_tree(*aligned, target);
+        eq_points = (*closest)(*aligned, target);
         if (eq_points == NULL) {
             cloud_free(aligned);
             matrix_free(&rt);
@@ -357,8 +350,6 @@ struct matrix *registration_icp(struct cloud *source,
         }
 
         dif_err -= err;
-        
-        printf("err: %f\nitr: %u\n", err, i);
     }
 	
     cloud_free(&eq_points);

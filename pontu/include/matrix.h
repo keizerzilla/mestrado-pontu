@@ -9,8 +9,9 @@
 #define CMATRIX_H
 
 #include <complex.h>
-
 #include "./vector3.h"
+
+#define MATRIX_FLOAT_PADDING 9
 
 /**
  * \brief Struct to store complex matrices
@@ -122,6 +123,13 @@ int matrix_save_to_file(struct matrix *mat,
  * \param output File to save the debug
  */
 void matrix_debug(struct matrix *mat, FILE * output);
+
+/**
+ * \brief Debugs a complex matrix printing all its values (only real ones)
+ * \param mat Target complex matrix
+ * \param output File to save the debug
+ */
+void matrix_debug_real(struct matrix *mat, FILE * output);
 
 #endif // MATRIX_H
 

@@ -243,3 +243,26 @@ void matrix_debug(struct matrix *mat, FILE *output)
 	}
 }
 
+void matrix_debug_real(struct matrix *mat, FILE *output)
+{
+	if (mat == NULL) {
+		fprintf(output, "!!! matrix empty !!!\n");
+		return;
+	}
+
+	for (uint i = 0; i < mat->rows; i++) {
+		for (uint j = 0; j < mat->cols; j++) {
+			if (j == mat->cols - 1)
+				fprintf(output, "%*lf",
+				        MATRIX_FLOAT_PADDING,
+				        creal(mat->data[(i * mat->cols) + j]));
+			else
+				fprintf(output, "%*lf, ",
+				        MATRIX_FLOAT_PADDING,
+				        creal(mat->data[(i * mat->cols) + j]));
+		}
+
+		fprintf(output, "\n");
+	}
+}
+

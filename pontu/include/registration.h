@@ -10,8 +10,10 @@
 
 #include "./cloud.h"
 
+typedef struct cloud *(*closest_points_func)(struct cloud *, struct cloud *);
+
 /**
- * \brief Finds a equivalence cloud with closest points of source in target
+ * \brief Equivalence cloud with closest points of source in target (bruteforce)
  * \param source The source cloud
  * \param target The target cloud
  * \return The equivalence cloud
@@ -20,7 +22,7 @@ struct cloud *registration_closest_points_bf(struct cloud *source,
                                              struct cloud *target);
 
 /**
- * \brief Finds a equivalence cloud with closest points of source in target
+ * \brief Equivalence cloud with closest points of source in target (using tree)
  * \param source The source cloud
  * \param target The target cloud
  * \return The equivalence cloud
@@ -49,7 +51,8 @@ struct matrix *registration_icp(struct cloud *source,
                                  struct cloud *target,
                                  struct cloud **aligned,
                                  real t,
-                                 uint k);
+                                 uint k,
+                                 closest_points_func cp);
 
 #endif // REGISTRATION_H
 

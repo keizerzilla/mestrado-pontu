@@ -166,7 +166,7 @@ struct pointset *pointset_median(struct pointset *set, int axis, uint size)
 	if (size % 2 == 0)
 		return tmp->prev;
 	else
-		return tmp; // @TODO mudar, mas nao eh isso que faz comer os pontos
+		return tmp;
 }
 
 void pointset_debug(struct pointset *set, FILE *output)

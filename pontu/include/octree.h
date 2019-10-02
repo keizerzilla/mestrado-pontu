@@ -13,12 +13,13 @@
 #define OCTREE_AXIS_Z 0
 
 #include "./vector3.h"
+#include "./pointset.h"
 
 /**
  * \brief Structure to store a octree node
  */
 struct octree {
-	struct vector3 **points;
+	struct pointset *points;
 	uint numpts;
 	struct vector3 *midpnt;
 	int depth;
@@ -32,7 +33,7 @@ struct octree {
  * \param depth Current depth of the octree node
  * \return NULL if it fails, or the pointer to the octree if it doesn't
  */
-struct octree *octree_new(struct vector3 *points, uint numpts, int depth);
+struct octree *octree_new(struct pointset *points, uint numpts, int depth);
 
 /**
  * \brief Frees a octree
@@ -51,9 +52,8 @@ int octree_quadrant(struct octree *oct, struct vector3 *p);
 /**
  * \brief Partitionates the points of a cloud recursively
  * \param oct Target octree
- * \param depth The depth of the node
  */
-void octree_partitionate(struct octree *oct, int depth);
+void octree_partitionate(struct octree *oct);
 
 /**
  * \brief Bruteforce search of the closest point in a quadrant

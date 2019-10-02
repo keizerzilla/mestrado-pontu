@@ -10,8 +10,10 @@ struct kdtree *kdtree_new(struct pointset *points, uint numpts, int axis)
 		return NULL;
 	
 	kdt->points = pointset_copy(points);
-	if (kdt->points == NULL)
+	if (kdt->points == NULL) {
+		free(kdt);
 		return NULL;
+	}
 	
 	kdt->median = pointset_median(kdt->points, axis % 3, numpts);
 	
@@ -74,7 +76,6 @@ real kdtree_dist_hyperplane(struct kdtree *k1, struct kdtree *k2)
 	return d;
 }
 
-// @TODO
 struct kdtree *kdtree_closest_node(struct kdtree *kdt,
                                    struct vector3 *p,
                                    real *r)
@@ -97,7 +98,6 @@ struct kdtree *kdtree_closest_node(struct kdtree *kdt,
 	}
 }
 
-// @TODO
 void kdtree_closest_point(struct kdtree *node,
                           struct kdtree* current,
                           struct vector3 *point,
@@ -120,30 +120,29 @@ void kdtree_closest_point(struct kdtree *node,
 	kdtree_closest_point(node, current->left, point, best, radius, dist);
 	kdtree_closest_point(node, current->right, point, best, radius, dist);
 }
-
-// @TODO
 struct vector3 *kdtree_nearest_neighbor(struct kdtree *kdt,
                                         struct vector3 *point)
 {
-	// v01
 	real radius = 0.0f;
 	struct kdtree *node = kdtree_closest_node(kdt, point, &radius);
 	return node->median->point;
-	
-	// v02
-	//real radius = 0.0f;
-	//struct kdtree *node = kdtree_closest_node(kdt, point, &radius);
-	//struct vector3 *best = node->median->point;
-	//real dist = INFINITY;
-	//
-	//kdtree_closest_point(node, kdt, point, &best, &radius, &dist);
-	//
-	//return best;
 }
 
-// @TODO
 void kdtree_debug(struct kdtree *kdt, FILE *output)
 {
-	if (kdt == NULL) return;
-	fprintf(output, "debug in construction...\n");
+	if (kdt == NULL)
+		return;
+	
+	if (kdt->left == NULL && kdt->right == NULL) {
+		fprintf(output,
+		        "node (%.4f, %.4f, %.4f), size: %d\n",
+		        kdt->median->point->x,
+		        kdt->median->point->y,
+		        kdt->median->point->z,
+		        kdt->numpts);
+	}
+	
+	kdtree_debug(kdt->left, output);
+	kdtree_debug(kdt->right, output);
 }
+

@@ -9,6 +9,7 @@ struct cloud *cloud_new()
 	cloud->points = pointset_new();
 	cloud->numpts = 0;
 	cloud->centroid = vector3_zero();
+	cloud->tree = NULL;
 	
 	return cloud;
 }
@@ -20,6 +21,8 @@ void cloud_free(struct cloud **cloud)
 	
 	pointset_free(&(*cloud)->points);
 	vector3_free(&(*cloud)->centroid);
+	octree_free(&(*cloud)->tree);
+	
 	free(*cloud);
 	*cloud = NULL;
 }
@@ -321,6 +324,14 @@ struct cloud *cloud_copy(struct cloud *cloud)
 		cloud_insert_real(cpy, set->point->x, set->point->y, set->point->z);
 	
 	return cpy;
+}
+
+void cloud_partitionate(struct cloud *cloud)
+{
+	if (cloud->tree == NULL) {
+		cloud->tree = octree_new(cloud->points, cloud->numpts, 5);
+		octree_partitionate(cloud->tree);
+	}
 }
 
 struct vector3 *cloud_calc_centroid(struct cloud *cloud)

@@ -97,7 +97,7 @@ struct dataframe *extraction_radial(struct cloud *cloud,
 				                 struct dataframe *(*mfunc) (struct cloud *))
 {
 	struct vector3 *nosetip = cloud_point_faraway_bestfit(cloud);
-	real slice = 25.0;
+	real slice = 25.0 * 25.0;
 
 	struct cloud *sub1 = cloud_new();
 	struct cloud *sub2 = cloud_new();
@@ -106,7 +106,7 @@ struct dataframe *extraction_radial(struct cloud *cloud,
 
 	real d = 0.0;
 	for (struct pointset *set = cloud->points; set != NULL; set = set->next) {
-		d = vector3_distance(set->point, nosetip);
+		d = vector3_squared_distance(set->point, nosetip);
 
 		if (d <= slice)
 			cloud_insert_vector3(sub1, set->point);

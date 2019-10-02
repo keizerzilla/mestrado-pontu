@@ -16,7 +16,7 @@
 #include "./pointset.h"
 #include "./plane.h"
 #include "./algebra.h"
-#include "./kdtree.h"
+#include "./octree.h"
 
 #define CLOUD_MAXBUFFER 1024
 
@@ -27,6 +27,7 @@ struct cloud {
 	struct pointset *points;
 	uint numpts;
 	struct vector3 *centroid;
+	struct octree *tree;
 };
 
 /**
@@ -146,6 +147,12 @@ int cloud_save_pcd(struct cloud *cloud, const char *filename);
  * \return A copy of the input cloud
  */
 struct cloud *cloud_copy(struct cloud *cloud);
+
+/**
+ * \brief Generates a tree data structure that partitionates the cloud
+ * \param cloud The target cloud
+ */
+void cloud_partitionate(struct cloud *cloud);
 
 /**
  * \brief Calculates the geometric centroid of a cloud
